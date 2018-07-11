@@ -1,0 +1,201 @@
+{
+  "hashCode" : -1052607190,
+  "id" : "Dhx5cG1AAAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "TopicName" ]
+    } ],
+    "metric" : "NumberOfMessagesPublished"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5cG1AAAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "TopicName" ]
+        } ],
+        "metric" : "NumberOfMessagesPublished"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "SNS Topics",
+      "navigatorCategory" : "AWS",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:TopicName",
+        "category" : "AWS",
+        "categoryPriority" : 100,
+        "discoveryQuery" : [ "sf_key:TopicName" ],
+        "displayName" : "SNS Topics",
+        "filterProperties" : null,
+        "id" : "sns",
+        "idName" : "Topic",
+        "idTemplate" : "{{TopicName}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "ID",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#e2ed6a", "#e2ed6a", "#e2ed6a", "#6bd37e" ]
+          },
+          "description" : "Number of messages successfully delivered / Number of messages published. Under 80% is Red, 80-95% Yellow, above 95% is Green",
+          "displayName" : "Delivery Success %",
+          "id" : "aws.sns.delivery_success_percent",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "NOTIFICATIONS_DELIVERED1 = data(\"NumberOfNotificationsDelivered\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"sum\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TopicName\"])\nNOTIFICATIONS_FAILED1 = data(\"NumberOfNotificationsFailed\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"sum\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TopicName\"])\nDELIVERY_SUCCESS = ((NOTIFICATIONS_DELIVERED1 / (NOTIFICATIONS_DELIVERED1 + NOTIFICATIONS_FAILED1)) * 100)",
+            "varName" : "DELIVERY_SUCCESS"
+          },
+          "metricSelectors" : [ "NumberOfNotificationsDelivered" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "Success %",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Messages Published",
+          "displayName" : "Messages / Min",
+          "id" : "aws.sns.messagespublished",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "NumberOfMessagesPublished = data(\"NumberOfMessagesPublished\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"sum\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TopicName\"]).scale(60)",
+            "varName" : "NumberOfMessagesPublished"
+          },
+          "metricSelectors" : [ "NumberOfMessagesPublished" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "Messages",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Size of messages published",
+          "displayName" : "Publish Size",
+          "id" : "aws.sns.messagesize",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "PUBLISH_SIZE = data(\"PublishSize\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"mean\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TopicName\"])",
+            "varName" : "PUBLISH_SIZE"
+          },
+          "metricSelectors" : [ "PublishSize" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Messages",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages successfully delivered per minute",
+          "displayName" : "Notifications Delivered",
+          "id" : "aws.sns.notifications_delivered",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "NOTIFICATIONS_DELIVERED = data(\"NumberOfNotificationsDelivered\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"sum\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TopicName\"]).scale(60)",
+            "varName" : "NOTIFICATIONS_DELIVERED"
+          },
+          "metricSelectors" : [ "NumberOfNotificationsDelivered" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "Messages / min",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages that Amazon SNS failed to deliver per minute",
+          "displayName" : "Notifications Failed",
+          "id" : "aws.sns.notifications_failed",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "NOTIFICATIONS_FAILED = data(\"NumberOfNotificationsFailed\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"sum\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TopicName\"]).scale(60)",
+            "varName" : "NOTIFICATIONS_FAILED"
+          },
+          "metricSelectors" : [ "NumberOfNotificationsFailed" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "Messages / min",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "sf_metric:NumberOfMessagesPublished AND sf_key:TopicName AND _exists_:TopicName",
+        "propertyColumns" : [ [ {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ], [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "TopicName" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "SNS",
+        "tooltipKeyList" : [ {
+          "displayName" : "ID",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "id"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

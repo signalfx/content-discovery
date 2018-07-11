@@ -1,0 +1,151 @@
+{
+  "hashCode" : 381735871,
+  "id" : "Dhx5dtZAEAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "kubernetes_cluster" ]
+    } ],
+    "metric" : "cpu.utilization"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5dtZAEAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "kubernetes_cluster" ]
+        } ],
+        "metric" : "cpu.utilization"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Overview",
+      "navigatorCategory" : "Kubernetes",
+      "navigatorType" : "architectural",
+      "uiModel" : {
+        "alertQuery" : "_exists_:kubernetes_cluster",
+        "category" : "Kubernetes",
+        "categoryPriority" : 10,
+        "discoveryQuery" : [ "_exists_:kubernetes_cluster" ],
+        "displayName" : "Overview",
+        "filterProperties" : null,
+        "id" : "kubernetes architecture",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Host",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Cluster",
+          "format" : null,
+          "metric" : null,
+          "property" : "kubernetes_cluster",
+          "sortable" : null
+        } ],
+        "map" : {
+          "groupingStructure" : {
+            "children" : [ {
+              "children" : null,
+              "drawBoundary" : false,
+              "key" : "sf_streamLabel",
+              "memberSettings" : [ {
+                "bigger" : true,
+                "name" : "Masters"
+              }, {
+                "bigger" : true,
+                "name" : "Nodes"
+              } ]
+            } ],
+            "drawBoundary" : true,
+            "key" : "kubernetes_cluster",
+            "memberSettings" : null
+          },
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "NODES = data(\"cpu.utilization\", filter=filter(\"kubernetes_cluster\", \"*\") and (not filter(\"kubernetes_role\", \"master\") and not filter(\"sf_tags\", \"node-role_kubernetes_io_master\")){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"kubernetes_cluster\"])\nMASTERS = data(\"cpu.utilization\", filter=filter(\"kubernetes_cluster\", \"*\") and (filter(\"kubernetes_role\", \"master\") or filter(\"sf_tags\", \"node-role_kubernetes_io_master\")){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"kubernetes_cluster\"])",
+            "varName" : null
+          },
+          "metrics" : [ {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{host}} ({{kubernetes_cluster}})",
+            "name" : "Nodes",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU Use",
+            "varName" : "NODES"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{host}} ({{kubernetes_cluster}})",
+            "name" : "Masters",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU Use",
+            "varName" : "MASTERS"
+          } ]
+        },
+        "mtsQuery" : "sf_metric:cpu.utilization AND _exists_:kubernetes_cluster",
+        "propertyColumns" : [ [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        }, {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ] ],
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : "K8s Node",
+        "systemDashboardName" : "K8s Clusters",
+        "systemDashboardPrefix" : null,
+        "tooltipKeyList" : [ {
+          "displayName" : "Host",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "id"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "Cluster",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "kubernetes_cluster"
+        } ],
+        "type" : "architectural",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

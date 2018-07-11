@@ -1,0 +1,172 @@
+{
+  "hashCode" : 1474045270,
+  "id" : "Dhx5P7eAEAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "azure_function_name" ]
+    } ],
+    "metric" : "azure.function.invocations"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "azure_function_name" ]
+    } ],
+    "metric" : "azure.function.errors"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "azure_function_name" ]
+    } ],
+    "metric" : "azure.function.duration"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5P7eAEAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "azure_function_name" ]
+        } ],
+        "metric" : "azure.function.invocations"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "azure_function_name" ]
+        } ],
+        "metric" : "azure.function.errors"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "azure_function_name" ]
+        } ],
+        "metric" : "azure.function.duration"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Azure Functions (SignalFx Wrapper)",
+      "navigatorCategory" : "Azure",
+      "navigatorType" : "list",
+      "uiModel" : {
+        "alertQuery" : "_exists_:azure_resource_name",
+        "alwaysGroupBy" : "azure_resource_name",
+        "category" : "Azure",
+        "categoryPriority" : 100,
+        "discoveryQuery" : [ "metric_source:azure_function_wrapper", "is_Azure_Function:true" ],
+        "displayName" : "Azure Functions (SignalFx Wrapper)",
+        "filterProperties" : null,
+        "id" : "azurefunctionssignalfx",
+        "idName" : "Function",
+        "idProperties" : [ {
+          "displayName" : "SignalFx Azure Wrapper",
+          "id" : "azure.function.invocations"
+        }, {
+          "displayName" : "Azure Monitor",
+          "id" : "FunctionExecutionUnits"
+        } ],
+        "idTemplate" : "{{azure_resource_name}} | {{azure_function_name}} | {{azure_region}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Function App | Function",
+          "format" : null,
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : "sum",
+          "displayName" : "Invocations",
+          "format" : "Number",
+          "metric" : "InvocationsWrapper",
+          "property" : null,
+          "sortable" : null
+        }, {
+          "aggregate" : "mean",
+          "displayName" : "Duration (avg ms)",
+          "format" : "Number",
+          "metric" : "Duration",
+          "property" : null,
+          "sortable" : null
+        }, {
+          "aggregate" : "sum",
+          "displayName" : "Errors",
+          "format" : "Number",
+          "metric" : "Errors",
+          "property" : null,
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "InvocationsWrapper",
+          "id" : "InvocationsWrapper",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "invocations_from_wrapper = data(\"azure.function.invocations\", filter=filter(\"azure_function_name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"azure_function_name\", \"azure_resource_name\", \"azure_region\"]).sum(over=\"{{{timeRange}}}\")",
+            "varName" : "invocations_from_wrapper"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "Duration",
+          "id" : "Duration",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "duration_from_wrapper = data(\"azure.function.duration\", filter=filter(\"azure_function_name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"azure_resource_name\", \"azure_region\", \"azure_function_name\"]).mean(over=\"{{{timeRange}}}\")",
+            "varName" : "duration_from_wrapper"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "Errors",
+          "id" : "Errors",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "errors_from_wrapper = data(\"azure.function.errors\", filter=filter(\"azure_function_name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"azure_resource_name\", \"azure_region\", \"azure_function_name\"]).sum(over=\"{{{timeRange}}}\")",
+            "varName" : "errors_from_wrapper"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        } ],
+        "mtsQuery" : "(sf_metric:azure.function.invocations OR sf_metric:azure.function.errors OR sf_metric:azure.function.duration) AND _exists_:azure_function_name",
+        "propertyColumns" : [ [ {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "requiredProperties" : [ "azure_resource_name" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "(SignalFx) Azure Function",
+        "tooltipKeyList" : null,
+        "type" : "list",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

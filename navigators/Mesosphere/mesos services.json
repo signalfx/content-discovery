@@ -1,0 +1,142 @@
+{
+  "hashCode" : 930687791,
+  "id" : "Dhx5cI8AAAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "mesos_cluster" ]
+    } ],
+    "metric" : "gauge.mesos.service.health"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5cI8AAAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "mesos_cluster" ]
+        } ],
+        "metric" : "gauge.mesos.service.health"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Services",
+      "navigatorCategory" : "Mesosphere",
+      "navigatorType" : "architectural",
+      "uiModel" : {
+        "alertQuery" : "(_exists_:system_component_name OR _exists_:system_component) AND _exists_:mesos_cluster",
+        "category" : "Mesosphere",
+        "categoryPriority" : 100,
+        "discoveryQuery" : [ "sf_key:system_component_name" ],
+        "displayName" : "Services",
+        "filterProperties" : null,
+        "id" : "mesos services",
+        "listColumns" : null,
+        "map" : {
+          "groupingStructure" : {
+            "children" : [ {
+              "children" : [ {
+                "key" : "mesos_framework_name",
+                "onlyForMember" : "Frameworks"
+              }, {
+                "key" : "system_component_name",
+                "onlyForMember" : "Services"
+              } ],
+              "drawBoundary" : true,
+              "key" : "sf_streamLabel",
+              "memberSettings" : [ {
+                "bigger" : true,
+                "name" : "Services"
+              }, {
+                "bigger" : true,
+                "name" : "Frameworks"
+              } ]
+            } ],
+            "drawBoundary" : false,
+            "key" : "mesos_cluster",
+            "memberSettings" : null
+          },
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "FRAMEWORK_IS_ACTIVE = data(\"gauge.framework.is_active\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"mesos_framework_id\", \"mesos_framework_name\", \"mesos_cluster\"])\nSERVICE_HEALTH = data(\"gauge.mesos.service.health\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"system_component\", \"system_component_name\", \"mesos_cluster\"])",
+            "varName" : null
+          },
+          "metrics" : [ {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 1,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#ea1849", "#6bd37e" ]
+            },
+            "idTemplate" : "{{mesos_framework_name}}",
+            "name" : "Frameworks",
+            "valueFormat" : "Boolean",
+            "valueLabel" : "Active",
+            "varName" : "FRAMEWORK_IS_ACTIVE"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{system_component}}, {{system_component_name}}",
+            "name" : "Services",
+            "valueFormat" : "Number",
+            "valueLabel" : "Health",
+            "varName" : "SERVICE_HEALTH"
+          } ]
+        },
+        "mtsQuery" : "sf_metric:gauge.mesos.service.health AND _exists_:system_component",
+        "propertyColumns" : null,
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : null,
+        "tooltipKeyList" : [ {
+          "displayName" : "Name",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "aws_tag_Name"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "collectd version",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "host_collect_version"
+        }, {
+          "displayName" : "OS",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "host_kernel_name"
+        }, {
+          "displayName" : "Memory",
+          "format" : "Kilobytes",
+          "isSummaryProperty" : false,
+          "property" : "host_mem_total"
+        }, {
+          "displayName" : "vCPU",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "host_logical_cpus"
+        } ],
+        "type" : "architectural",
+        "unreleased" : true
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

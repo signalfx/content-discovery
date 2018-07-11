@@ -1,0 +1,283 @@
+{
+  "hashCode" : 1733636618,
+  "id" : "Dhx5dvpAEAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "plugin",
+      "values" : [ "docker" ]
+    } ],
+    "metric" : "cpu.usage.total"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5dvpAEAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "plugin",
+          "values" : [ "docker" ]
+        } ],
+        "metric" : "cpu.usage.total"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Docker Containers",
+      "navigatorCategory" : "Containers",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:plugin_instance AND plugin:docker",
+        "category" : "Containers",
+        "categoryPriority" : 0,
+        "discoveryQuery" : [ "_exists_:plugin", "plugin:docker", "sf_key:plugin_instance" ],
+        "displayName" : "Docker Containers",
+        "filterProperties" : [ "kubernetes_pod_name" ],
+        "id" : "Docker containers",
+        "idName" : "Container (Host)",
+        "idTemplate" : "{{plugin_instance}} ({{host}})",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Container (Host)",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : "true"
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : "true"
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Color containers by percent of CPU utilized as measured by \"cpu.usage.total / cpu.usage.system * 100\".",
+          "displayName" : "CPU Utilization",
+          "id" : "cpu.usage.total",
+          "job" : {
+            "filters" : [ {
+              "property" : "plugin",
+              "propertyValue" : "docker",
+              "type" : "property"
+            }, {
+              "property" : "_exists_",
+              "propertyValue" : "plugin_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "CPU_USE_TOTAL = data(\"cpu.usage.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"plugin_instance\"])\nCPU_USE_SYSTEM = data(\"cpu.usage.system\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"plugin_instance\"])\nCPU_USE = (CPU_USE_TOTAL / CPU_USE_SYSTEM * 100)",
+            "varName" : "CPU_USE"
+          },
+          "metricSelectors" : [ "cpu.usage.total", "cpu.usage.system" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "CPU Use",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Color containers by percent of memory utilized as measured by \"100 * memory.usage.total / memory.usage.limit\".",
+          "displayName" : "Memory Utilization",
+          "id" : "memory.usage.total",
+          "job" : {
+            "filters" : [ {
+              "property" : "plugin",
+              "propertyValue" : "docker",
+              "type" : "property"
+            }, {
+              "property" : "_exists_",
+              "propertyValue" : "plugin_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "MEMORY_USE_TOTAL = data(\"memory.usage.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"plugin_instance\"])\nMEMORY_USE_SYSTEM = data(\"memory.usage.limit\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"plugin_instance\"])\nMEMORY_USE = (MEMORY_USE_TOTAL / MEMORY_USE_SYSTEM * 100)",
+            "varName" : "MEMORY_USE"
+          },
+          "metricSelectors" : [ "memory.usage.total", "memory.usage.system" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "Memory Use",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Color containers based on network in bits/sec (\"network.usage.rx_bytes * 8\").",
+          "displayName" : "Network In (bits/second)",
+          "id" : "network.usage.rx_bytes",
+          "job" : {
+            "filters" : [ {
+              "property" : "plugin",
+              "propertyValue" : "docker",
+              "type" : "property"
+            }, {
+              "property" : "_exists_",
+              "propertyValue" : "plugin_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "NETWORK_IN_A = data(\"network.usage.rx_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"plugin_instance\"])\nNETWORK_IN = (NETWORK_IN_A * 8)",
+            "varName" : "NETWORK_IN"
+          },
+          "metricSelectors" : [ "network.usage.rx_bytes" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Color containers based on network out bits/sec (\"network.usage.tx_bytes * 8\").",
+          "displayName" : "Network Out (bits/second)",
+          "id" : "network.usage.tx_bytes",
+          "job" : {
+            "filters" : [ {
+              "property" : "plugin",
+              "propertyValue" : "docker",
+              "type" : "property"
+            }, {
+              "property" : "_exists_",
+              "propertyValue" : "plugin_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "NETWORK_OUT_A = data(\"network.usage.tx_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"plugin_instance\"])\nNETWORK_OUT = (NETWORK_OUT_A * 8)",
+            "varName" : "NETWORK_OUT"
+          },
+          "metricSelectors" : [ "network.usage.tx_bytes" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "alertAggregation" : [ "host", "plugin_instance" ],
+          "alertFilters" : [ {
+            "property" : "plugin",
+            "propertyValue" : "docker",
+            "type" : null
+          } ],
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Color hosts by the highest alert level they are currently reporting – critical, major, minor, warning, none",
+          "displayName" : "Most severe alert",
+          "id" : "___SF_ALERT_DOCKER_METRIC___",
+          "job" : {
+            "filters" : [ {
+              "property" : "plugin",
+              "propertyValue" : "docker",
+              "type" : "property"
+            }, {
+              "property" : "_exists_",
+              "propertyValue" : "plugin_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "CPU_USE = data(\"cpu.usage.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"plugin_instance\"])",
+            "varName" : "CPU_USE"
+          },
+          "metricSelectors" : [ ],
+          "type" : "event",
+          "valueFormat" : "AlertSeverity",
+          "valueLabel" : "Most severe alert"
+        } ],
+        "mtsQuery" : "sf_metric:cpu.usage.total AND plugin:docker",
+        "propertyColumns" : [ [ {
+          "header" : "Memory",
+          "properties" : [ "host_mem_total" ]
+        }, {
+          "header" : "Processor",
+          "properties" : [ "host_processor", "host_cpu_cores", "host_cpu_model", "host_logical_cpus", "host_physical_cpus" ]
+        }, {
+          "header" : "OS",
+          "properties" : [ "host_kernel_name", "host_kernel_release", "host_kernel_version" ]
+        }, {
+          "header" : "Agent",
+          "properties" : [ "host_collectd_version", "host_metadata_version" ]
+        } ], [ {
+          "header" : "AWS",
+          "properties" : [ ]
+        }, {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "plugin_instance", "host" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Docker",
+        "tooltipKeyList" : [ {
+          "displayName" : "Host",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "host"
+        }, {
+          "displayName" : "Container",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "plugin_instance"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "collectd version",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "host_collect_version"
+        }, {
+          "displayName" : "OS",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "host_kernel_name"
+        }, {
+          "displayName" : "Memory",
+          "format" : "Kilobytes",
+          "isSummaryProperty" : false,
+          "property" : "host_mem_total"
+        }, {
+          "displayName" : "vCPU",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "host_logical_cpus"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

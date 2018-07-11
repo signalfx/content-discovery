@@ -1,0 +1,530 @@
+{
+  "hashCode" : -415897338,
+  "id" : "Dhx5cIoAEAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "QueueName" ]
+    } ],
+    "metric" : "NumberOfMessagesSent"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5cIoAEAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "QueueName" ]
+        } ],
+        "metric" : "NumberOfMessagesSent"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "SQS Queues",
+      "navigatorCategory" : "AWS",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:QueueName",
+        "category" : "AWS",
+        "categoryPriority" : 100,
+        "discoveryQuery" : [ "namespace:AWS/SQS" ],
+        "displayName" : "SQS Queues",
+        "filterProperties" : null,
+        "id" : "sqs queues",
+        "idName" : "Queue",
+        "idTemplate" : "{{QueueName}} ({{aws_region}})",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "ID",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Region",
+          "format" : null,
+          "metric" : null,
+          "property" : "aws_region",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Name",
+          "format" : null,
+          "metric" : null,
+          "property" : "QueueName",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : null,
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of in-flight, visible, delayed messages in queue",
+          "displayName" : "Current Queue Size",
+          "id" : "aws.sqs.currentqueuesize",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "APPROX_VISIBLE_MSGS = data(\"ApproximateNumberOfMessagesVisible\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\", \"aws_account_id\", \"aws_created_timestamp\", \"aws_fifo_queue\", \"aws_maximum_message_size\", \"aws_queue_arn\", \"aws_queue_url\", \"aws_visibility_timeout\"])\nAPPROX_NOT_VISIBLE_MSGS = data(\"ApproximateNumberOfMessagesNotVisible\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\", \"aws_account_id\", \"aws_created_timestamp\", \"aws_fifo_queue\", \"aws_maximum_message_size\", \"aws_queue_arn\", \"aws_queue_url\", \"aws_visibility_timeout\"])\nAPPROX_MESSAGES_DELAYED = data(\"ApproximateNumberOfMessagesDelayed\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\", \"aws_account_id\", \"aws_created_timestamp\", \"aws_fifo_queue\", \"aws_maximum_message_size\", \"aws_queue_arn\", \"aws_queue_url\", \"aws_visibility_timeout\"])\nCURRENT_QUEUE_SIZE = (APPROX_VISIBLE_MSGS + APPROX_NOT_VISIBLE_MSGS + APPROX_MESSAGES_DELAYED).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\", \"aws_account_id\", \"aws_created_timestamp\", \"aws_fifo_queue\", \"aws_maximum_message_size\", \"aws_queue_arn\", \"aws_queue_url\", \"aws_visibility_timeout\"])",
+            "varName" : "CURRENT_QUEUE_SIZE"
+          },
+          "metricSelectors" : [ "ApproximateNumberOfMessagesVisible" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Queue Size",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages added to the queue per minute",
+          "displayName" : "Sent Messages",
+          "id" : "aws.sqs.msgsent",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "sum",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "NumberOfMessagesSent = data(\"NumberOfMessagesSent\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(60).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "NumberOfMessagesSent"
+          },
+          "metricSelectors" : [ "NumberOfMessagesSent" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Messages / min",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages returned by calls to the ReceiveMessage API action per minute",
+          "displayName" : "Received Messages",
+          "id" : "aws.sqs.msgrecv",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "sum",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "NumberOfMessagesReceived = data(\"NumberOfMessagesReceived\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(60).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "NumberOfMessagesReceived"
+          },
+          "metricSelectors" : [ "NumberOfMessagesReceived" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Messages / min",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages deleted from the queue",
+          "displayName" : "Deleted Messages",
+          "id" : "aws.sqs.deleted_messages",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "sum",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "DELETED_MESSAGES = data(\"NumberOfMessagesDeleted\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(60).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "DELETED_MESSAGES"
+          },
+          "metricSelectors" : [ "NumberOfMessagesDeleted" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Deleted Messages / min",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of ReceiveMessage API calls that did not return a message per minute",
+          "displayName" : "Empty Receives",
+          "id" : "aws.sqs.empty_receives",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "sum",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "EMPTY_MESSAGES = data(\"NumberOfEmptyReceives\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(60).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "EMPTY_MESSAGES"
+          },
+          "metricSelectors" : [ "NumberOfEmptyReceives" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Empty Messages / min",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "The average size of messages added to a queue",
+          "displayName" : "Sent Message Size",
+          "id" : "aws.sqs.sent_message_size",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "AVG_MESSAGE_SIZE = data(\"SentMessageSize\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "AVG_MESSAGE_SIZE"
+          },
+          "metricSelectors" : [ "SentMessageSize" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Avg. Message Size",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages in the queue that are delayed and not available for reading immediately",
+          "displayName" : "Delayed Messages",
+          "id" : "aws.sqs.delayed_messages",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "DELAYED_MESSAGES = data(\"ApproximateNumberOfMessagesDelayed\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "DELAYED_MESSAGES"
+          },
+          "metricSelectors" : [ "ApproximateNumberOfMessagesDelayed" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Delayed Messages",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages sent to a client but have not yet been deleted or have not yet reached the end of their visibility window",
+          "displayName" : "In-Flight Messages",
+          "id" : "aws.sqs.inflight_messages",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "INFLIGHT_MESSAGES = data(\"ApproximateNumberOfMessagesNotVisible\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "INFLIGHT_MESSAGES"
+          },
+          "metricSelectors" : [ "ApproximateNumberOfMessagesNotVisible" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "In-Flight Messages",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of messages available for retrieval from the queue",
+          "displayName" : "Visible Messages",
+          "id" : "aws.sqs.visible_messages",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "VISIBLE_MESSAGES = data(\"ApproximateNumberOfMessagesVisible\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "VISIBLE_MESSAGES"
+          },
+          "metricSelectors" : [ "ApproximateNumberOfMessagesVisible" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Visible Messages",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Age of the oldest non-deleted message in the queue",
+          "displayName" : "Oldest Message Age",
+          "id" : "aws.sqs.oldest_message_age",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/SQS",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "aws_region",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "QueueName",
+              "propertyValue" : "*",
+              "type" : "property"
+            }, {
+              "property" : "AWSUniqueId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "OLDEST_MESSAGE_AGE = data(\"ApproximateAgeOfOldestMessage\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\", \"QueueName\", \"aws_region\"])",
+            "varName" : "OLDEST_MESSAGE_AGE"
+          },
+          "metricSelectors" : [ "ApproximateAgeOfOldestMessage" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "Oldest Message Age",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "sf_metric:NumberOfMessagesSent AND sf_key:QueueName AND _exists_:QueueName",
+        "propertyColumns" : [ [ {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ], [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "QueueName" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "SQS",
+        "tooltipKeyList" : [ {
+          "displayName" : "Name",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "QueueName"
+        }, {
+          "displayName" : "Region",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "aws_region"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

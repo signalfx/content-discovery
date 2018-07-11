@@ -1,0 +1,474 @@
+{
+  "hashCode" : 2079705206,
+  "id" : "Dhx5P0OAEAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "CacheNodeId" ]
+    } ],
+    "metric" : "CurrConnections"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5P0OAEAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "CacheNodeId" ]
+        } ],
+        "metric" : "CurrConnections"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "ElastiCache Nodes",
+      "navigatorCategory" : "AWS",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:CacheClusterId",
+        "category" : "AWS",
+        "categoryPriority" : 100,
+        "discoveryQuery" : [ "namespace:AWS/ElastiCache" ],
+        "displayName" : "ElastiCache Nodes",
+        "filterProperties" : null,
+        "id" : "elasticache",
+        "idName" : "Cluster",
+        "idTemplate" : "{{aws_region}} | {{CacheClusterId}} | {{CacheNodeId}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "ID",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Node Id",
+          "format" : null,
+          "metric" : null,
+          "property" : "CacheNodeId",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Cluster Id",
+          "format" : null,
+          "metric" : null,
+          "property" : "CacheClusterId",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Cluster Name",
+          "format" : null,
+          "metric" : null,
+          "property" : "aws_cache_cluster_name",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Region",
+          "format" : null,
+          "metric" : null,
+          "property" : "aws_region",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 65000,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Number of client connections (max: 65000)",
+          "displayName" : "Current Connections",
+          "id" : "aws.elasticache.currconnections",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "CURRENT_CONNECTIONS = data(\"CurrConnections\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "CURRENT_CONNECTIONS"
+          },
+          "metricSelectors" : [ "CurrConnections" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Connections",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#ea1849", "#e2ed6a", "#6bd37e" ]
+          },
+          "description" : "Cache Hits / (Cache Hits + Cache Misses). Under 80% is Red, 80-90% Yellow, above 90% is Green",
+          "displayName" : "Hit Ratio",
+          "id" : "aws.elasticache.hitrate",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "sum",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "CACHE_HITS = data(\"*Hits\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=4).sum(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])\nCACHE_MISSES = data(\"*Misses\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=4).sum(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])\nCACHE_RATIO = (CACHE_HITS / (CACHE_HITS + CACHE_MISSES) * 100)",
+            "varName" : "CACHE_RATIO"
+          },
+          "metricSelectors" : [ "CacheHits" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "Hit Ratio",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of non-expired items evicted to allow space for new writes",
+          "displayName" : "Evictions",
+          "id" : "aws.elasticache.evictions",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "EVICTIONS = data(\"Evictions\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "EVICTIONS"
+          },
+          "metricSelectors" : [ "Evictions" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Evictions",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#810f7c", "#8856a7", "#8c96c6", "#9ebcda", "#bfd3e6" ]
+          },
+          "description" : "Amount of free memory available on the host",
+          "displayName" : "Freeable Memory",
+          "id" : "aws.elasticache.freeablememory",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "FREEABLE_MEMORY = data(\"FreeableMemory\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "FREEABLE_MEMORY"
+          },
+          "metricSelectors" : [ "FreeableMemory" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Free Memory",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#810f7c", "#8856a7", "#8c96c6", "#9ebcda", "#bfd3e6" ]
+          },
+          "description" : "Amount of swap used on the host",
+          "displayName" : "Swap Usage",
+          "id" : "aws.elasticache.swapusage",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "SWAP_USAGE = data(\"SwapUsage\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "SWAP_USAGE"
+          },
+          "metricSelectors" : [ "SwapUsage" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Swap Usage",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "The percentage of CPU utilization",
+          "displayName" : "CPU Utilization",
+          "id" : "aws.elasticache.cpuutilization",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "CPU_UTIL = data(\"CPUUtilization\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "CPU_UTIL"
+          },
+          "metricSelectors" : [ "CPUUtilization" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "CPU Utilization",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "The number of successful key lookups",
+          "displayName" : "Cache Hits",
+          "id" : "aws.elasticache.cachehits",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "sum",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "CACHE_HITS1 = data(\"*Hits\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "CACHE_HITS1"
+          },
+          "metricSelectors" : [ "CacheHits" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Hits",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#810f7c", "#8856a7", "#8c96c6", "#9ebcda", "#bfd3e6" ]
+          },
+          "description" : "The number of unsuccessful key lookups",
+          "displayName" : "Cache Misses",
+          "id" : "aws.elasticache.cachemisses",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "sum",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "CACHE_MISSES1 = data(\"*Misses\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "CACHE_MISSES1"
+          },
+          "metricSelectors" : [ "CacheMisses" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Misses",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Number of bytes the host has read from the network",
+          "displayName" : "Network In",
+          "id" : "aws.elasticache.networkin",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "NETWORK_IN = data(\"NetworkBytesIn\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "NETWORK_IN"
+          },
+          "metricSelectors" : [ "NetworkBytesIn" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Network In",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#810f7c", "#8856a7", "#8c96c6", "#9ebcda", "#bfd3e6" ]
+          },
+          "description" : "Number of bytes the host has written to the network",
+          "displayName" : "Network Out",
+          "id" : "aws.elasticache.networkout",
+          "job" : {
+            "filters" : [ {
+              "property" : "namespace",
+              "propertyValue" : "AWS/ElastiCache",
+              "type" : "property"
+            }, {
+              "property" : "stat",
+              "propertyValue" : "mean",
+              "type" : "property"
+            }, {
+              "property" : "CacheNodeId",
+              "propertyValue" : "*",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "NETWORK_OUT = data(\"NetworkBytesOut\", filter={{#filter}}{{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"aws_region\", \"CacheNodeId\", \"CacheClusterId\"])",
+            "varName" : "NETWORK_OUT"
+          },
+          "metricSelectors" : [ "NetworkBytesOut" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Network Out",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "sf_key:CacheNodeId AND _exists_:CacheNodeId",
+        "propertyColumns" : [ [ {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ], [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "CacheNodeId" ],
+        "singleHostSystemDashboardName" : "ElastiCache Node",
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "ElastiCache",
+        "tooltipKeyList" : [ {
+          "displayName" : "Node Id",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "CacheNodeId"
+        }, {
+          "displayName" : "Cluster Id",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "CacheClusterId"
+        }, {
+          "displayName" : "Cluster Name",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "aws_cache_cluster_name"
+        }, {
+          "displayName" : "Region",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "aws_region"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

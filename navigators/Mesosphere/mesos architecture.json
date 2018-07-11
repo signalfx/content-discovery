@@ -1,0 +1,135 @@
+{
+  "hashCode" : -1266878633,
+  "id" : "Dhx5cI9AIAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "mesos_role",
+      "values" : [ "worker", "master" ]
+    } ],
+    "metric" : "cpu.utilization"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5cI9AIAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "mesos_role",
+          "values" : [ "worker", "master" ]
+        } ],
+        "metric" : "cpu.utilization"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Overview",
+      "navigatorCategory" : "Mesosphere",
+      "navigatorType" : "architectural",
+      "uiModel" : {
+        "alertQuery" : "(_exists_:mesos_cluster)",
+        "category" : "Mesosphere",
+        "categoryPriority" : 10,
+        "discoveryQuery" : [ "sf_key:mesos_cluster" ],
+        "displayName" : "Overview",
+        "filterProperties" : null,
+        "id" : "mesos architecture",
+        "listColumns" : null,
+        "map" : {
+          "groupingStructure" : {
+            "children" : [ {
+              "children" : null,
+              "drawBoundary" : true,
+              "key" : "sf_streamLabel",
+              "memberSettings" : [ {
+                "bigger" : true,
+                "name" : "Agents"
+              }, {
+                "bigger" : true,
+                "name" : "Masters"
+              } ]
+            } ],
+            "drawBoundary" : true,
+            "key" : "mesos_cluster",
+            "memberSettings" : null
+          },
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "MASTER_CPU_UTIL = data(\"cpu.utilization\", filter=filter(\"mesos_role\", \"master\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\", \"mesos_cluster\", \"mesos_master\"])\nAGENT_CPU_UTIL = data(\"cpu.utilization\", filter=filter(\"mesos_role\", \"worker\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\", \"mesos_cluster\", \"mesos_agent\"])",
+            "varName" : null
+          },
+          "metrics" : [ {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{host}}",
+            "name" : "Masters",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU Utilization",
+            "varName" : "MASTER_CPU_UTIL"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{host}}",
+            "name" : "Agents",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU Utilization",
+            "varName" : "AGENT_CPU_UTIL"
+          } ]
+        },
+        "mtsQuery" : "sf_metric:gauge.task.state AND _exists_:mesos_cluster",
+        "propertyColumns" : [ [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        }, {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ] ],
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Mesos",
+        "tooltipKeyList" : [ {
+          "displayName" : "Agent",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "mesos_agent"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "Master",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "mesos_master"
+        }, {
+          "displayName" : "Cluster",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "mesos_cluster"
+        } ],
+        "type" : "architectural",
+        "unreleased" : true
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

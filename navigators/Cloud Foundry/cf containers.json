@@ -1,0 +1,168 @@
+{
+  "hashCode" : 753279622,
+  "id" : "Dhx5PcoAEAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "metric_source",
+      "values" : [ "cloudfoundry" ]
+    } ],
+    "metric" : "container.cpu_percentage"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5PcoAEAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "metric_source",
+          "values" : [ "cloudfoundry" ]
+        } ],
+        "metric" : "container.cpu_percentage"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Garden Containers",
+      "navigatorCategory" : "Cloud Foundry",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "metric_source:cloudfoundry",
+        "category" : "Cloud Foundry",
+        "categoryPriority" : 11,
+        "discoveryQuery" : [ "sf_key:app_name" ],
+        "displayName" : "Garden Containers",
+        "filterProperties" : [ ],
+        "id" : "cf containers",
+        "idName" : "App Instance",
+        "idTemplate" : "{{app_name}} #{{app_instance_index}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "App Instance",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Color containers by CPU percentage consumed by the container application.",
+          "displayName" : "Total CPU Load",
+          "id" : "cf.container.cpu_percentage",
+          "job" : {
+            "filters" : [ {
+              "property" : "metric_source",
+              "propertyValue" : "cloudfoundry",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "CPU_LOAD = data(\"container.cpu_percentage\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"app_name\", \"app_instance_index\"])",
+            "varName" : "CPU_LOAD"
+          },
+          "metricSelectors" : [ "container.cpu_percentage" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "Total CPU Load",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : [ {
+              "color" : "#ea1849",
+              "lowerLimit" : 80.0
+            }, {
+              "color" : "#eac24b",
+              "lowerLimit" : 60.0
+            }, {
+              "color" : "#e2ed6a",
+              "lowerLimit" : 40.0
+            }, {
+              "color" : "#acef7f",
+              "lowerLimit" : 20.0
+            }, {
+              "color" : "#6bd37e",
+              "lowerLimit" : null
+            } ],
+            "maxValue" : null,
+            "method" : "threshold",
+            "minValue" : null,
+            "range" : null
+          },
+          "description" : "Color hosts by percentage of RAM memory used: under 20% (green) to over 80% (red).",
+          "displayName" : "RAM Utilization",
+          "id" : "cf.container.memory.percent",
+          "job" : {
+            "filters" : [ {
+              "property" : "metric_source",
+              "propertyValue" : "cloudfoundry",
+              "type" : "property"
+            } ],
+            "resolution" : 300000,
+            "template" : "MEMORY_USED = data(\"container.memory_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"app_name\", \"app_instance_index\"])\nMEMORY_QUOTA = data(\"container.memory_bytes_quota\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"app_name\", \"app_instance_index\"])\nMEMORY_PERCENT = MEMORY_USED / MEMORY_QUOTA",
+            "varName" : "MEMORY_PERCENT"
+          },
+          "metricSelectors" : [ "container.memory_bytes", "container.memory_bytes_quota" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "RAM Utilization",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "metric_source:cloudfoundry",
+        "propertyColumns" : [ [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        }, {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "host", "app_name", "app_instance_index", "app_id" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Garden Container",
+        "tooltipKeyList" : [ {
+          "displayName" : "App Instance",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "App Instance"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "Space",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "app_space"
+        }, {
+          "displayName" : "Org",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "app_org"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

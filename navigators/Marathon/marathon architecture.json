@@ -1,0 +1,132 @@
+{
+  "hashCode" : -289727244,
+  "id" : "Dhx5PE_AEAA",
+  "importQualifiers" : [ {
+    "filters" : [ ],
+    "metric" : "gauge.marathon.app.tasks.unhealthy"
+  }, {
+    "filters" : [ ],
+    "metric" : "gauge.marathon.app.instances.total"
+  }, {
+    "filters" : [ ],
+    "metric" : "gauge.marathon.task.start.time.elapsed"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5PE_AEAA",
+      "importQualifiers" : [ {
+        "filters" : [ ],
+        "metric" : "gauge.marathon.app.tasks.unhealthy"
+      }, {
+        "filters" : [ ],
+        "metric" : "gauge.marathon.app.instances.total"
+      }, {
+        "filters" : [ ],
+        "metric" : "gauge.marathon.task.start.time.elapsed"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Overview",
+      "navigatorCategory" : "Marathon",
+      "navigatorType" : "architectural",
+      "uiModel" : {
+        "alertQuery" : "(_exists_:mesos_cluster)",
+        "category" : "Marathon",
+        "categoryPriority" : 10,
+        "discoveryQuery" : [ "sf_key:mesos_task_name" ],
+        "displayName" : "Overview",
+        "filterProperties" : null,
+        "id" : "marathon architecture",
+        "listColumns" : null,
+        "map" : {
+          "groupingStructure" : {
+            "children" : [ {
+              "children" : [ {
+                "key" : "mesos_task_name",
+                "onlyForMember" : "Applications"
+              } ],
+              "drawBoundary" : true,
+              "key" : "sf_streamLabel",
+              "memberSettings" : [ {
+                "bigger" : true,
+                "name" : "Applications"
+              } ]
+            } ],
+            "drawBoundary" : false,
+            "key" : "mesos_cluster",
+            "memberSettings" : null
+          },
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "UNHEALTHY = data(\"gauge.marathon.app.tasks.unhealthy\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"mesos_task_name\",\"mesos_cluster\"])\nTOTAL = data(\"gauge.marathon.app.instances.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"mesos_task_name\",\"mesos_cluster\"])\nHEALTHY_TASKS = ((1 - UNHEALTHY / TOTAL) * 100)\nTIME_ELAPSED = data(\"gauge.marathon.task.start.time.elapsed\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"mesos_task_id\", \"mesos_task_name\", \"mesos_framework_id\", \"mesos_cluster\"])",
+            "varName" : null
+          },
+          "metrics" : [ {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#ea1849", "#eac24b", "#e2ed6a", "#acef7f", "#6bd37e" ]
+            },
+            "idTemplate" : "{{mesos_task_name}}",
+            "name" : "Applications",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "Heathy Tasks",
+            "varName" : "HEALTHY_TASKS"
+          } ]
+        },
+        "mtsQuery" : "sf_metric:gauge.marathon.app.tasks.unhealthy AND _exists_:mesos_task_name",
+        "propertyColumns" : null,
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Marathon Application",
+        "tooltipKeyList" : [ {
+          "displayName" : "Task Name",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "mesos_task_name"
+        }, {
+          "displayName" : "Task ID",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "mesos_task_id"
+        }, {
+          "displayName" : "Framework",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "mesos_framework_id"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "Agent",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "mesos_agent"
+        }, {
+          "displayName" : "Master",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "mesos_master"
+        }, {
+          "displayName" : "Cluster",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "mesos_cluster"
+        } ],
+        "type" : "architectural",
+        "unreleased" : true
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

@@ -1,0 +1,178 @@
+{
+  "hashCode" : -1067800341,
+  "id" : "Dhx5cGvAEAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "gcp_id" ]
+    }, {
+      "not" : false,
+      "property" : "service",
+      "values" : [ "spanner" ]
+    } ],
+    "metric" : "instance/cpu/utilization"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5cGvAEAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "gcp_id" ]
+        }, {
+          "not" : false,
+          "property" : "service",
+          "values" : [ "spanner" ]
+        } ],
+        "metric" : "instance/cpu/utilization"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Cloud Spanner",
+      "navigatorCategory" : "Google Cloud Platform",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:gcp_id",
+        "category" : "Google Cloud Platform",
+        "categoryPriority" : 90,
+        "discoveryQuery" : [ "service:spanner" ],
+        "displayName" : "Cloud Spanner",
+        "filterProperties" : null,
+        "id" : "gcp spanner",
+        "idName" : "Cloud Spanner",
+        "idTemplate" : "{{instance_id}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Spanner Instance",
+          "format" : null,
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Project ID",
+          "format" : null,
+          "metric" : null,
+          "property" : "project_id",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Color hosts based on percentage of spanner CPU being used: under 20% (green) to over 80% (red)",
+          "displayName" : "Spanner CPU Load",
+          "id" : "gcp.instance/cpu/utilization",
+          "job" : {
+            "filters" : [ {
+              "property" : "monitored_resource",
+              "propertyValue" : "spanner_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "SPANNER_CPU = data(\"instance/cpu/utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_id\", \"project_id\"]).scale(100)",
+            "varName" : "SPANNER_CPU"
+          },
+          "metricSelectors" : [ "instance/cpu/utilization" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "CPU Use",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts based on number of bytes sent",
+          "displayName" : "API Sent Bytes",
+          "id" : "gcp.api/sent_bytes_count",
+          "job" : {
+            "filters" : [ {
+              "property" : "monitored_resource",
+              "propertyValue" : "spanner_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "SENT_BYTES = data(\"api/sent_bytes_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_id\", \"project_id\"])",
+            "varName" : "SENT_BYTES"
+          },
+          "metricSelectors" : [ "api/sent_bytes_count" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Sent Bytes",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts based on number of bytes received",
+          "displayName" : "API Received Bytes",
+          "id" : "gcp.api/sent_bytes_count",
+          "job" : {
+            "filters" : [ {
+              "property" : "monitored_resource",
+              "propertyValue" : "spanner_instance",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "RECEIVED_BYTES = data(\"api/received_bytes_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_id\", \"project_id\"])",
+            "varName" : "RECEIVED_BYTES"
+          },
+          "metricSelectors" : [ "api/received_bytes_count" ],
+          "type" : "metric",
+          "valueFormat" : "Bytes",
+          "valueLabel" : "Received Bytes",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "sf_metric:instance\\/cpu\\/utilization AND _exists_:gcp_id AND service:spanner",
+        "propertyColumns" : [ [ {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "instance_id" ],
+        "singleHostSystemDashboardName" : "Spanner Instance",
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Spanner Overview",
+        "tooltipKeyList" : [ {
+          "displayName" : "Spanner Instance",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "instance_id"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

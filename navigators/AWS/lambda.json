@@ -1,0 +1,238 @@
+{
+  "hashCode" : 2073540795,
+  "id" : "Dhx5P8LAAAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "FunctionName" ]
+    } ],
+    "metric" : "Invocations"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "FunctionName" ]
+    } ],
+    "metric" : "Errors"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "FunctionName" ]
+    } ],
+    "metric" : "Throttles"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "aws_function_name" ]
+    } ],
+    "metric" : "function.invocations"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5P8LAAAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "FunctionName" ]
+        } ],
+        "metric" : "Invocations"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "FunctionName" ]
+        } ],
+        "metric" : "Errors"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "FunctionName" ]
+        } ],
+        "metric" : "Throttles"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "aws_function_name" ]
+        } ],
+        "metric" : "function.invocations"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Lambda Functions",
+      "navigatorCategory" : "AWS",
+      "navigatorType" : "list",
+      "uiModel" : {
+        "alertQuery" : "_exists_:aws_function_name",
+        "alwaysGroupBy" : "aws_function_name",
+        "category" : "AWS",
+        "categoryPriority" : 100,
+        "discoveryQuery" : [ "sf_key:FunctionName", "namespace:AWS/Lambda", "sf_key:lambda_arn", "metric_source:lambda_wrapper" ],
+        "displayName" : "Lambda Functions",
+        "filterProperties" : null,
+        "id" : "lambda",
+        "idName" : "Function",
+        "idProperties" : [ {
+          "displayName" : "AWS CloudWatch",
+          "id" : "FunctionName"
+        }, {
+          "displayName" : "SignalFx Lambda Wrapper",
+          "id" : "lambda_arn"
+        } ],
+        "idTemplate" : "{{aws_function_name}} | {{aws_function_version}} | {{aws_region}} | {{aws_account_id}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Function",
+          "format" : null,
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : "sum",
+          "displayName" : "Invocations",
+          "format" : "Number",
+          "metric" : "Invocations",
+          "property" : null,
+          "sortable" : null
+        }, {
+          "aggregate" : "sum",
+          "displayName" : "Throttles",
+          "format" : "Number",
+          "metric" : "Throttles",
+          "property" : null,
+          "sortable" : null
+        }, {
+          "aggregate" : "sum",
+          "displayName" : "Errors",
+          "format" : "Number",
+          "metric" : "Errors",
+          "property" : null,
+          "sortable" : null
+        }, {
+          "aggregate" : "mean",
+          "displayName" : "Duration (avg ms)",
+          "format" : "Number",
+          "metric" : "Duration",
+          "property" : null,
+          "sortable" : null
+        }, {
+          "aggregate" : "sum",
+          "displayName" : "Cold Starts",
+          "format" : "Number",
+          "metric" : "Cold Starts",
+          "property" : null,
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "Invocations",
+          "id" : "Invocations",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "invocations_from_cw = data(\"Invocations\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\ninvocations_from_wrapper = data(\"function.invocations\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nINVOCATIONS = union(invocations_from_cw, invocations_from_wrapper)",
+            "varName" : "INVOCATIONS"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "Throttles",
+          "id" : "Throttles",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "THROTTLES = data(\"Throttles\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\", \"aws_function_memory_size\", \"aws_function_runtime\", \"aws_function_timeout\", \"FunctionName\"]).sum(over=\"{{{timeRange}}}\")",
+            "varName" : "THROTTLES"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "Errors",
+          "id" : "Errors",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "errors_from_cw = data(\"Errors\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nerrors_from_wrapper = data(\"function.errors\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nERRORS = union(errors_from_cw, errors_from_wrapper)",
+            "varName" : "ERRORS"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "Duration",
+          "id" : "Duration",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "cw_duration_sum = data(\"Duration\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\ncw_duration_count = data(\"Duration\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"count\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nduration_from_cw = cw_duration_sum / cw_duration_count\nduration_from_wrapper = data(\"function.duration\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nDURATION = union(duration_from_cw, duration_from_wrapper)",
+            "varName" : "DURATION"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : null,
+          "displayName" : "Cold Starts",
+          "id" : "function.cold_starts",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "COLD_STARTS = data(\"function.cold_starts\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\", \"lambda_arn\"]).sum(over=\"{{{timeRange}}}\")",
+            "varName" : "COLD_STARTS"
+          },
+          "metricSelectors" : null,
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        } ],
+        "mtsQuery" : "(sf_metric:Invocations OR sf_metric:function.invocations OR sf_metric:Errors OR sf_metric:function.errors OR sf_metric:Throttles) AND _exists_:aws_function_name",
+        "propertyColumns" : [ [ {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ], [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Lambda (AWS)",
+        "tooltipKeyList" : null,
+        "type" : "list",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

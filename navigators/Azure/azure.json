@@ -1,0 +1,310 @@
+{
+  "hashCode" : 1027957398,
+  "id" : "Dhx5d_XAIAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Sql/servers/databases" ]
+    } ],
+    "metric" : "dtu_consumption_percent"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Compute/virtualMachines" ]
+    } ],
+    "metric" : "Percentage CPU"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Cache/Redis" ]
+    } ],
+    "metric" : "cachehits"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Storage/storageAccounts" ]
+    } ],
+    "metric" : "Ingress"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Web/sites" ]
+    } ],
+    "metric" : "AverageResponseTime"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.EventHub/namespaces" ]
+    } ],
+    "metric" : "IncomingRequests"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Logic/workflows" ]
+    } ],
+    "metric" : "TotalBillableExecutions"
+  }, {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Batch/batchAccounts" ]
+    } ],
+    "metric" : "TaskCompleteEvent"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5d_XAIAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Sql/servers/databases" ]
+        } ],
+        "metric" : "dtu_consumption_percent"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Compute/virtualMachines" ]
+        } ],
+        "metric" : "Percentage CPU"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Cache/Redis" ]
+        } ],
+        "metric" : "cachehits"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Storage/storageAccounts" ]
+        } ],
+        "metric" : "Ingress"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Web/sites" ]
+        } ],
+        "metric" : "AverageResponseTime"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.EventHub/namespaces" ]
+        } ],
+        "metric" : "IncomingRequests"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Logic/workflows" ]
+        } ],
+        "metric" : "TotalBillableExecutions"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Batch/batchAccounts" ]
+        } ],
+        "metric" : "TaskCompleteEvent"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Overview",
+      "navigatorCategory" : "Azure",
+      "navigatorType" : "architectural",
+      "uiModel" : {
+        "alertQuery" : "(_exists_:resource_type)",
+        "category" : "Azure",
+        "categoryPriority" : 10,
+        "discoveryQuery" : [ "_exists_:resource_type" ],
+        "displayName" : "Overview",
+        "filterProperties" : null,
+        "id" : "azure",
+        "listColumns" : null,
+        "map" : {
+          "groupingStructure" : {
+            "children" : null,
+            "drawBoundary" : true,
+            "key" : "sf_streamLabel",
+            "memberSettings" : [ ]
+          },
+          "job" : {
+            "filters" : [ {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "DTU_PERCENTAGE = data(\"dtu_consumption_percent\", filter=filter(\"resource_type\", \"Microsoft.Sql/servers/databases\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"azure_resource_name\"])\nVM_CPU = data(\"Percentage CPU\", filter=(filter(\"resource_type\", \"Microsoft.Compute/virtualMachines\") or filter(\"resource_type\", \"Microsoft.ClassicCompute/virtualMachines\")){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"azure_resource_name\"])\nCACHE_HITS = data(\"cachehits\", filter=filter(\"resource_type\", \"Microsoft.Cache/Redis\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"azure_resource_name\"])\nCACHE_MISSES = data(\"cachemisses\", filter=filter(\"resource_type\", \"Microsoft.Cache/Redis\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"azure_resource_name\"])\nCACHE_HIT_PERCENT=((CACHE_HITS) / ((CACHE_HITS) + CACHE_MISSES) * 100)\nINGRESS_TRAFFIC = data(\"Ingress\", filter=filter(\"resource_type\", \"Microsoft.Storage/storageAccounts\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"azure_resource_name\"])\nAPP_AVG_RESPONSE_TIME = data(\"AverageResponseTime\", filter=filter(\"resource_type\", \"Microsoft.Web/sites\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])\nEH_INCOMING_REQS = data(\"IncomingRequests\", filter=filter(\"resource_type\", \"Microsoft.EventHub/namespaces\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])\nLOGIC_BILLABLE_EXECS = data(\"TotalBillableExecutions\", filter=filter(\"resource_type\", \"Microsoft.Logic/workflows\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])\nBATCH_TASKS_COMPLETED = data(\"TaskCompleteEvent\", filter=filter(\"resource_type\", \"Microsoft.Batch/batchAccounts\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : null
+          },
+          "metrics" : [ {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "azure-{{azure_resource_name}}",
+            "name" : "Virtual Machines",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU %",
+            "varName" : "VM_CPU"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "azure-{{azure_resource_name}}",
+            "name" : "Storage Accounts",
+            "valueFormat" : "Bytes",
+            "valueLabel" : "Ingress",
+            "varName" : "INGRESS_TRAFFIC"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "azure-{{azure_resource_name}}",
+            "name" : "App Services",
+            "valueFormat" : "Number",
+            "valueLabel" : "Avg Response Time (s)",
+            "varName" : "APP_AVG_RESPONSE_TIME"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "azure-{{azure_resource_name}}",
+            "name" : "Batch Accounts",
+            "valueFormat" : "Number",
+            "valueLabel" : "Tasks Completed",
+            "varName" : "BATCH_TASKS_COMPLETED"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "azure-{{azure_resource_name}}",
+            "name" : "Logic Apps",
+            "valueFormat" : "Number",
+            "valueLabel" : "Billable Executions",
+            "varName" : "LOGIC_BILLABLE_EXECS"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "azure-{{azure_resource_name}}",
+            "name" : "Event Hubs",
+            "valueFormat" : "Number",
+            "valueLabel" : "Incoming Requests",
+            "varName" : "EH_INCOMING_REQS"
+          }, {
+            "coloring" : {
+              "limits" : [ {
+                "color" : "#6bd37e",
+                "lowerLimit" : 90.0
+              }, {
+                "color" : "#e2ed6a",
+                "lowerLimit" : 80.0
+              }, {
+                "color" : "#ea1849",
+                "lowerLimit" : 0.0
+              }, {
+                "color" : "#ea1849",
+                "lowerLimit" : null
+              } ],
+              "maxValue" : null,
+              "method" : "threshold",
+              "minValue" : null,
+              "range" : null
+            },
+            "idTemplate" : "azure-{{azure_resource_name}}",
+            "name" : "Redis Caches",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "Hit %",
+            "varName" : "CACHE_HIT_PERCENT"
+          }, {
+            "coloring" : {
+              "limits" : [ {
+                "color" : "#ea1849",
+                "lowerLimit" : 80.0
+              }, {
+                "color" : "#eac24b",
+                "lowerLimit" : 60.0
+              }, {
+                "color" : "#e2ed6a",
+                "lowerLimit" : 40.0
+              }, {
+                "color" : "#acef7f",
+                "lowerLimit" : 20.0
+              }, {
+                "color" : "#6bd37e",
+                "lowerLimit" : null
+              } ],
+              "maxValue" : null,
+              "method" : "threshold",
+              "minValue" : null,
+              "range" : null
+            },
+            "idTemplate" : "azure-{{{azure_resource_name}}}",
+            "name" : "SQL Databases",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "DTU %",
+            "varName" : "DTU_PERCENTAGE"
+          } ]
+        },
+        "mtsQuery" : "resource_type:Microsoft.Web\\/sites OR resource_type:Microsoft.Batch\\/batchAccounts OR resource_type:Microsoft.EventHub\\/namespaces OR resource_type:Microsoft.Logic\\/workflows OR resource_type:Microsoft.Cache\\/Redis OR resource_type:Microsoft.Sql\\/servers\\/databases OR resource_type:Microsoft.Storage\\/storageAccounts OR resource_type:Microsoft.Compute\\/virtualMachines",
+        "propertyColumns" : [ [ {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : null,
+        "tooltipKeyList" : [ {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "architectural",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

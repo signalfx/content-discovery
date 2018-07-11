@@ -1,0 +1,236 @@
+{
+  "hashCode" : -1420319961,
+  "id" : "Dhx5cHwAAAE",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "monitored_resource",
+      "values" : [ "spanner_instance", "gce_instance" ]
+    } ],
+    "metric" : "instance/cpu/utilization"
+  }, {
+    "filters" : [ ],
+    "metric" : "http/server/response_count"
+  }, {
+    "filters" : [ ],
+    "metric" : "container/memory/bytes_used"
+  }, {
+    "filters" : [ ],
+    "metric" : "network/received_bytes_count"
+  }, {
+    "filters" : [ ],
+    "metric" : "subscription/num_undelivered_messages"
+  }, {
+    "filters" : [ ],
+    "metric" : "topic/send_request_count"
+  }, {
+    "filters" : [ ],
+    "metric" : "function/execution_count"
+  }, {
+    "filters" : [ ],
+    "metric" : "cluster/cpu_load"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5cHwAAAE",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "monitored_resource",
+          "values" : [ "spanner_instance", "gce_instance" ]
+        } ],
+        "metric" : "instance/cpu/utilization"
+      }, {
+        "filters" : [ ],
+        "metric" : "http/server/response_count"
+      }, {
+        "filters" : [ ],
+        "metric" : "container/memory/bytes_used"
+      }, {
+        "filters" : [ ],
+        "metric" : "network/received_bytes_count"
+      }, {
+        "filters" : [ ],
+        "metric" : "subscription/num_undelivered_messages"
+      }, {
+        "filters" : [ ],
+        "metric" : "topic/send_request_count"
+      }, {
+        "filters" : [ ],
+        "metric" : "function/execution_count"
+      }, {
+        "filters" : [ ],
+        "metric" : "cluster/cpu_load"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Overview",
+      "navigatorCategory" : "Google Cloud Platform",
+      "navigatorType" : "architectural",
+      "uiModel" : {
+        "alertQuery" : "(_exists_:gcp_id)",
+        "category" : "Google Cloud Platform",
+        "categoryPriority" : 10,
+        "discoveryQuery" : [ "" ],
+        "displayName" : "Overview",
+        "filterProperties" : null,
+        "id" : "gcp architecture",
+        "listColumns" : null,
+        "map" : {
+          "groupingStructure" : {
+            "children" : null,
+            "drawBoundary" : true,
+            "key" : "sf_streamLabel",
+            "memberSettings" : null
+          },
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "COMPUTE = data(\"instance/cpu/utilization\", filter=filter(\"monitored_resource\", \"gce_instance\"){{#filter}} and filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(100).mean(by=[\"instance_name\", \"project_id\"])\nAPPENGINE_INSTANCES = data(\"http/server/response_count\"{{#filter}} and {{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=-1).sum(by=[\"version_id\", \"module_id\", \"project_id\"])\nCONTAINER_CLUSTERS = data(\"container/memory/bytes_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"cluster_name\", \"project_id\"])\nSTORAGEBUCKETS = data(\"network/received_bytes_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"bucket_name\", \"project_id\"])\nPUBSUB_SUB = data(\"subscription/num_undelivered_messages\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"subscription_id\", \"project_id\"])\nPUBSUB_TOPIC = data(\"topic/send_request_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"topic_id\", \"project_id\"])\nCLOUDFUNCTIONS = data(\"function/execution_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"function_name\", \"project_id\"])\nSPANNER_CPU = data(\"instance/cpu/utilization\", filter=filter(\"monitored_resource\", \"spanner_instance\"){{#filter}} and filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_id\", \"project_id\"]).scale(100)\nCLUSTER_CPU = data(\"cluster/cpu_load\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"cluster\", \"project_id\"]).scale(100)",
+            "varName" : null
+          },
+          "metrics" : [ {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{instance_name}}--{{project_id}}",
+            "name" : "Compute Engine",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU Usage",
+            "varName" : "COMPUTE"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{instance_id}}--{{project_id}}",
+            "name" : "Spanner",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU Usage",
+            "varName" : "SPANNER_CPU"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : 100,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : null
+            },
+            "idTemplate" : "{{cluster}}--{{project_id}}",
+            "name" : "Bigtable",
+            "valueFormat" : "Percentage",
+            "valueLabel" : "CPU Usage",
+            "varName" : "CLUSTER_CPU"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "{{version_id}}--{{project_id}}",
+            "name" : "App Engine",
+            "valueFormat" : null,
+            "valueLabel" : "Responses / min",
+            "varName" : "APPENGINE_INSTANCES"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "{{cluster_name}}--{{project_id}}",
+            "name" : "Container Engine",
+            "valueFormat" : "Bytes",
+            "valueLabel" : "Memory Usage",
+            "varName" : "CONTAINER_CLUSTERS"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "{{bucket_name}}--{{project_id}}",
+            "name" : "Cloud Storage",
+            "valueFormat" : "Bytes",
+            "valueLabel" : "Bytes Received / min",
+            "varName" : "STORAGEBUCKETS"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "{{subscription_id}}--{{project_id}}",
+            "name" : "Pub/Sub Subscriptions",
+            "valueFormat" : null,
+            "valueLabel" : "Unack. Messages",
+            "varName" : "PUBSUB_SUB"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "{{topic_id}}--{{project_id}}",
+            "name" : "Pub/Sub Topics",
+            "valueFormat" : null,
+            "valueLabel" : "Sent Requests / min",
+            "varName" : "PUBSUB_TOPIC"
+          }, {
+            "coloring" : {
+              "limits" : null,
+              "maxValue" : null,
+              "method" : "quantile",
+              "minValue" : 0,
+              "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            },
+            "idTemplate" : "{{function_name}}--{{project_id}}",
+            "name" : "Cloud Functions",
+            "valueFormat" : null,
+            "valueLabel" : "Executions / min",
+            "varName" : "CLOUDFUNCTIONS"
+          } ]
+        },
+        "mtsQuery" : "sf_metric:instance\\/cpu\\/utilization",
+        "propertyColumns" : [ [ {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : null,
+        "tooltipKeyList" : [ {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "architectural",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

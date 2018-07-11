@@ -1,0 +1,203 @@
+{
+  "hashCode" : -1502415819,
+  "id" : "Dhx5QD-AIAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "sf_key",
+      "values" : [ "host" ]
+    }, {
+      "not" : false,
+      "property" : "mesos_role",
+      "values" : [ "worker" ]
+    } ],
+    "metric" : "cpu.utilization"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5QD-AIAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "sf_key",
+          "values" : [ "host" ]
+        }, {
+          "not" : false,
+          "property" : "mesos_role",
+          "values" : [ "worker" ]
+        } ],
+        "metric" : "cpu.utilization"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Mesos Agents",
+      "navigatorCategory" : "Mesosphere",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:mesos_agent",
+        "category" : "Mesosphere",
+        "categoryPriority" : 1000,
+        "discoveryQuery" : [ "sf_key:mesos_agent" ],
+        "displayName" : "Mesos Agents",
+        "filterProperties" : [ ],
+        "id" : "mesos agents",
+        "idName" : "Agent",
+        "idTemplate" : "{{mesos_agent}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Host",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "OS",
+          "format" : null,
+          "metric" : null,
+          "property" : "host_kernel_name",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Memory",
+          "format" : "Kilobytes",
+          "metric" : null,
+          "property" : "host_mem_total",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "vCPU",
+          "format" : null,
+          "metric" : null,
+          "property" : "host_logical_cpus",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "CPU Utilization for the agent: under 20% (green) to over 80% (red)",
+          "displayName" : "CPU Utilization",
+          "id" : "mesos.cpu.utilization",
+          "job" : {
+            "filters" : [ {
+              "property" : "_exists_",
+              "propertyValue" : "host",
+              "type" : "property"
+            }, {
+              "property" : "mesos_role",
+              "propertyValue" : "worker",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "CPU_UTILIZATION = data(\"cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\", \"mesos_cluster\", \"mesos_agent\"]).publish(\"heatmap data\")",
+            "varName" : "CPU_UTILIZATION"
+          },
+          "metricSelectors" : [ "gauge.task.state" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "CPU Use",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Number of tasks running on the agent",
+          "displayName" : "Tasks Running",
+          "id" : "mesos.tasks.running",
+          "job" : {
+            "filters" : [ {
+              "property" : "mesos_role",
+              "propertyValue" : "worker",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "TASKS_RUNNING = data(\"gauge.slave_tasks_running\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"mesos_agent\"])",
+            "varName" : "TASKS_RUNNING"
+          },
+          "metricSelectors" : [ "gauge.slave_tasks_running " ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : null,
+          "valueType" : null
+        } ],
+        "mtsQuery" : "_exists_:mesos_cluster AND _exists_:mesos_agent",
+        "propertyColumns" : [ [ {
+          "header" : "Memory",
+          "properties" : [ "host_mem_total" ]
+        }, {
+          "header" : "Processor",
+          "properties" : [ "host_processor", "host_cpu_cores", "host_cpu_model", "host_logical_cpus", "host_physical_cpus" ]
+        }, {
+          "header" : "OS",
+          "properties" : [ "host_kernel_name", "host_kernel_release", "host_kernel_version" ]
+        }, {
+          "header" : "Agent",
+          "properties" : [ "host_collectd_version", "host_metadata_version" ]
+        } ], [ {
+          "header" : "AWS",
+          "properties" : [ ]
+        }, {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "mesos_agent" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Mesos Agent",
+        "tooltipKeyList" : [ {
+          "displayName" : "Agent",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "mesos_agent"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "Cluster",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "mesos_cluster"
+        }, {
+          "displayName" : "Master",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "mesos_master"
+        }, {
+          "displayName" : "Host",
+          "format" : null,
+          "isSummaryProperty" : false,
+          "property" : "host"
+        } ],
+        "type" : "elemental",
+        "unreleased" : true
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}

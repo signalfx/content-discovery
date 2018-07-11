@@ -1,0 +1,429 @@
+{
+  "hashCode" : -1662952473,
+  "id" : "Dhx5cGNAIAA",
+  "importQualifiers" : [ {
+    "filters" : [ {
+      "not" : false,
+      "property" : "resource_type",
+      "values" : [ "Microsoft.Logic/workflows" ]
+    } ],
+    "metric" : "TotalBillableExecutions"
+  } ],
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Dhx5cGNAIAA",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "resource_type",
+          "values" : [ "Microsoft.Logic/workflows" ]
+        } ],
+        "metric" : "TotalBillableExecutions"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Logic Apps",
+      "navigatorCategory" : "Azure",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:azure_resource_id",
+        "category" : "Azure",
+        "categoryPriority" : 50,
+        "discoveryQuery" : [ "resource_type:Microsoft.Logic/workflows" ],
+        "displayName" : "Logic Apps",
+        "filterProperties" : null,
+        "id" : "azurelogicapps",
+        "idName" : "azure_event_hubs",
+        "idTemplate" : "{{azure_resource_name}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Resource Name",
+          "format" : null,
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Group",
+          "format" : null,
+          "metric" : null,
+          "property" : "azure_resource_group_name",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Region",
+          "format" : null,
+          "metric" : null,
+          "property" : "azure_region",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of workflow billable executions in the past minute",
+          "displayName" : "Billable Executions",
+          "id" : "azure.logicapp.billable_executions",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 60000,
+            "template" : "BILLABLE_EXECS = data(\"TotalBillableExecutions\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "BILLABLE_EXECS"
+          },
+          "metricSelectors" : [ "TotalBillableExecutions" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Billable Executions",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by average latency (s) of succeeded workflow runs",
+          "displayName" : "Success Latency (s)",
+          "id" : "azure.logicapp.success_latency",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 60000,
+            "template" : "RUN_SUCCESS_LATENCY = data(\"RunSuccessLatency\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "RUN_SUCCESS_LATENCY"
+          },
+          "metricSelectors" : [ "RunSuccessLatency" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Latency (s)",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by average action latency (s) of workflow runs",
+          "displayName" : "Action Latency (s)",
+          "id" : "azure.logicapp.action_latency",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "aggregation_type",
+              "propertyValue" : "average",
+              "type" : null
+            } ],
+            "resolution" : 60000,
+            "template" : "ACTION_LATENCY = data(\"ActionLatency\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "ACTION_LATENCY"
+          },
+          "metricSelectors" : [ "ActionLatency" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Latency (s)",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of runs succeeded in past minute",
+          "displayName" : "Runs Succeeded",
+          "id" : "azure.logicapp.runs_succeeded",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 60000,
+            "template" : "RUNS_SUCCEEDED = data(\"RunsSucceeded\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "RUNS_SUCCEEDED"
+          },
+          "metricSelectors" : [ "RunsSucceeded" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Runs Succeeded",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of runs completed in past 5 minutes",
+          "displayName" : "Runs Completed",
+          "id" : "azure.logicapp.runs_completed",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 300000,
+            "template" : "RUNS_COMPLETED = data(\"RunsCompleted\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "RUNS_COMPLETED"
+          },
+          "metricSelectors" : [ "RunsCompleted" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Runs Completed",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of runs failed in past 5 minutes",
+          "displayName" : "Runs Failed",
+          "id" : "azure.logicapp.runs_failed",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 300000,
+            "template" : "RUNS_FAILED = data(\"RunsFailed\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "RUNS_FAILED"
+          },
+          "metricSelectors" : [ "RunsFailed" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Runs Failed",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of run throttled events in the past minute",
+          "displayName" : "Throttled Runs",
+          "id" : "azure.logicapp.runs_throttled",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 60000,
+            "template" : "RUNS_THROTTLED = data(\"RunThrottledEvents\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "RUNS_THROTTLED"
+          },
+          "metricSelectors" : [ "RunThrottledEvents" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Throttled Runs",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of actions completed in past 5 minutes",
+          "displayName" : "Actions Completed",
+          "id" : "azure.logicapp.actions_completed",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 300000,
+            "template" : "ACTIONS_COMPLETED = data(\"ActionsCompleted\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "ACTIONS_COMPLETED"
+          },
+          "metricSelectors" : [ "ActionsCompleted" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Actions Completed",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of actions failed in past 5 minutes",
+          "displayName" : "Actions Failed",
+          "id" : "azure.logicapp.actions_failed",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 300000,
+            "template" : "ACTIONS_FAILED = data(\"ActionsFailed\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "ACTIONS_FAILED"
+          },
+          "metricSelectors" : [ "ActionsFailed" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Actions Failed",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of triggers succeeded in past 5 minutes",
+          "displayName" : "Triggers Succeeded",
+          "id" : "azure.logicapp.triggers_succeeded",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 300000,
+            "template" : "TRIGGERS_SUCCEEDED = data(\"TriggersSucceeded\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "TRIGGERS_SUCCEEDED"
+          },
+          "metricSelectors" : [ "TriggersSucceeded" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Triggers Succeeded",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Color hosts by number of triggers failed in past 5 minutes",
+          "displayName" : "Triggers Failed",
+          "id" : "azure.logicapp.triggers_failed",
+          "job" : {
+            "filters" : [ {
+              "property" : "resource_type",
+              "propertyValue" : "Microsoft.Logic/workflows",
+              "type" : "property"
+            }, {
+              "property" : "primary_aggregation_type",
+              "propertyValue" : "true",
+              "type" : null
+            } ],
+            "resolution" : 300000,
+            "template" : "TRIGGERS_FAILED = data(\"TriggersFailed\", filter={{#filter}}{{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+            "varName" : "TRIGGERS_FAILED"
+          },
+          "metricSelectors" : [ "TriggersFailed" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Triggers Failed",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "resource_type:Microsoft.Logic\\/workflows",
+        "propertyColumns" : [ [ {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "azure_resource_name" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : "Azure Logic App",
+        "tooltipKeyList" : [ {
+          "displayName" : "ID",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "id"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}
