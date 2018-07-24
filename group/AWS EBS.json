@@ -4,11 +4,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWpuAYAA",
+      "description" : "percentile distribution",
+      "id" : "DiVWXIzAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Ops/Min",
+      "name" : "Bytes/Write Op",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -16,15 +16,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "writes - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "reads - RED",
+          "label" : "bytes/op",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -32,7 +24,7 @@
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
+        "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
@@ -54,35 +46,113 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "VolumeWriteOps",
+          "displayName" : "VolumeWriteBytes",
           "label" : "A",
-          "paletteIndex" : 1,
+          "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "VolumeReadOps",
+          "displayName" : "min",
           "label" : "B",
-          "paletteIndex" : 4,
+          "paletteIndex" : 14,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
-          "yAxis" : 1
+          "yAxis" : 0
+        }, {
+          "displayName" : "p10",
+          "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "median",
+          "label" : "D",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p90",
+          "label" : "E",
+          "paletteIndex" : 5,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "max",
+          "label" : "F",
+          "paletteIndex" : 7,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
-          "range" : 3600000,
+          "range" : 7200000,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeWriteBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EBS'), extrapolation='zero').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWXRPAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Write Ops/Interval",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 3,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean().publish(label='A')\nB = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean().publish(label='B')",
+      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).mean(by=['VolumeId']).top(count=5).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -178,10 +248,96 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWWzaAgAA",
+      "id" : "DiVWXjTAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Avg Bytes/Write Op",
+      "name" : "Total Ops/Reporting Interval",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "reads - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "writes - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "VolumeReadOps",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "VolumeWriteOps",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 7200000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).sum().publish(label='A')\nB = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).sum().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWWW0AgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Avg Bytes/Read Op",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -193,7 +349,7 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "VolumeWriteBytes - Mean by VolumeId - Mean(1h)",
+          "displayName" : "VolumeReadBytes - Mean by VolumeId - Mean(1h)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -202,7 +358,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "VolumeWriteOps - Mean by VolumeId - Mean(1h)",
+          "displayName" : "VolumeReadOps - Mean by VolumeId - Mean(1h)",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -213,7 +369,7 @@
         }, {
           "displayName" : "bytes",
           "label" : "C",
-          "paletteIndex" : 1,
+          "paletteIndex" : 4,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -228,162 +384,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('VolumeWriteBytes', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='A')\nB = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWXbpAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Bytes/Read Op",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes/op",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "VolumeReadBytes",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "E",
-          "paletteIndex" : 5,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeReadBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EBS'), extrapolation='zero').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "that reported in last hour",
-      "id" : "DiVWXIDAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Volumes",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "VolumeIdleTime - Maximum(1h) - Count",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeIdleTime', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EBS')).max(over='1h').count().publish(label='A')",
+      "programText" : "A = data('VolumeReadBytes', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='A')\nB = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)",
       "tags" : null
     }
   }, {
@@ -392,48 +393,24 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWWagAgAA",
+      "id" : "DiVWXRWAcAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Idle Time/Min (sec)",
+      "name" : "Top Read Ops/Interval",
       "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "seconds",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
+        "colorScale2" : null,
         "legendOptions" : {
           "fields" : null
         },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
+        "maximumPrecision" : 3,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "VolumeIdleTime - Scale:60",
+          "displayName" : "",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -442,17 +419,14 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('VolumeIdleTime', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).scale(60).publish(label='A')",
+      "programText" : "A = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean(by=['VolumeId']).top(count=5).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -567,65 +541,6 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('VolumeTotalReadTime', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EBS'), extrapolation='zero').scale(1000).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWW0AgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Avg Bytes/Read Op",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "VolumeReadBytes - Mean by VolumeId - Mean(1h)",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "VolumeReadOps - Mean by VolumeId - Mean(1h)",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeReadBytes', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='A')\nB = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)",
       "tags" : null
     }
   }, {
@@ -834,10 +749,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWXjTAgAA",
+      "id" : "DiVWWtrAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Total Ops/Reporting Interval",
+      "name" : "Read Bytes 24h Change %",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -845,23 +760,15 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "reads - RED",
+          "label" : "change %",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "writes - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
+          "min" : null
         } ],
         "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "ColumnChart",
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
@@ -883,23 +790,32 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "VolumeReadOps",
+          "displayName" : "VolumeReadBytes - Scale:60 - Mean(1h)",
           "label" : "A",
-          "paletteIndex" : 4,
+          "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "VolumeWriteOps",
+          "displayName" : "A - Timeshift 1d",
           "label" : "B",
-          "paletteIndex" : 1,
+          "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
-          "yAxis" : 1
+          "yAxis" : 0
+        }, {
+          "displayName" : "24h change %",
+          "label" : "C",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -911,7 +827,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).sum().publish(label='A')\nB = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).sum().publish(label='B')",
+      "programText" : "A = data('VolumeReadBytes', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')",
       "tags" : null
     }
   }, {
@@ -1007,6 +923,75 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
+      "id" : "DiVWWagAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Idle Time/Min (sec)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "seconds",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "VolumeIdleTime - Scale:60",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeIdleTime', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).scale(60).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
       "id" : "DiVWXIyAgAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -1092,11 +1077,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWXIzAcAA",
+      "description" : "",
+      "id" : "DiVWW34AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Bytes/Write Op",
+      "name" : "Avg Queue Length",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1104,13 +1089,13 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "bytes/op",
+          "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
         } ],
-        "axisPrecision" : null,
+        "axisPrecision" : 4,
         "colorBy" : "Dimension",
         "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ ],
@@ -1134,141 +1119,9 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "VolumeWriteBytes",
+          "displayName" : "VolumeQueueLength",
           "label" : "A",
           "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "E",
-          "paletteIndex" : 5,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeWriteBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EBS'), extrapolation='zero').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWtrAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Read Bytes 24h Change %",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "change %",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "VolumeReadBytes - Scale:60 - Mean(1h)",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A - Timeshift 1d",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "24h change %",
-          "label" : "C",
-          "paletteIndex" : 4,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -1285,292 +1138,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('VolumeReadBytes', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXRWAcAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Read Ops/Interval",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : null,
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean(by=['VolumeId']).top(count=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXRPAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Write Ops/Interval",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : null,
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).mean(by=['VolumeId']).top(count=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWXI0AYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Write Ops/Interval",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "ops/interval",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "VolumeWriteOps - Scale:60",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "E",
-          "paletteIndex" : 5,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWZHAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Write Ops 24h Change %",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "change %",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "VolumeWriteOps - Scale:60 - Mean(1h)",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A - Timeshift 1d",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "24h change %",
-          "label" : "C",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')",
+      "programText" : "A = data('VolumeQueueLength', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -1814,17 +1382,15 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXRAAgAA",
+      "description" : "that reported in last hour",
+      "id" : "DiVWXIDAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Avg Queue Length (# ops)",
+      "name" : "# Volumes",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
         "maximumPrecision" : null,
         "programOptions" : {
           "disableSampling" : false,
@@ -1832,7 +1398,7 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : null,
+          "displayName" : "VolumeIdleTime - Maximum(1h) - Count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1842,13 +1408,14 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('VolumeQueueLength', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'mean')).mean(by=['VolumeId']).top(count=5).publish(label='A')",
+      "programText" : "A = data('VolumeIdleTime', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EBS')).max(over='1h').count().publish(label='A')",
       "tags" : null
     }
   }, {
@@ -1874,11 +1441,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWW34AcAA",
+      "description" : "percentile distribution",
+      "id" : "DiVWXI0AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Avg Queue Length",
+      "name" : "Write Ops/Interval",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1886,13 +1453,13 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "ops/interval",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
         } ],
-        "axisPrecision" : 4,
+        "axisPrecision" : null,
         "colorBy" : "Dimension",
         "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ ],
@@ -1916,9 +1483,54 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "VolumeQueueLength",
+          "displayName" : "VolumeWriteOps - Scale:60",
           "label" : "A",
           "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "min",
+          "label" : "B",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p10",
+          "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "median",
+          "label" : "D",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p90",
+          "label" : "E",
+          "paletteIndex" : 5,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "max",
+          "label" : "F",
+          "paletteIndex" : 7,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -1935,7 +1547,395 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('VolumeQueueLength', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
+      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'sum'), rollup='rate', extrapolation='zero').scale(60).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWWpuAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Ops/Min",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "writes - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "reads - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "VolumeWriteOps",
+          "label" : "A",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "VolumeReadOps",
+          "label" : "B",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean().publish(label='A')\nB = data('VolumeReadOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWWZHAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Write Ops 24h Change %",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "change %",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "VolumeWriteOps - Scale:60 - Mean(1h)",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A - Timeshift 1d",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "24h change %",
+          "label" : "C",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 7200000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'sum'), extrapolation='zero').scale(60).mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "percentile distribution",
+      "id" : "DiVWXbpAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Bytes/Read Op",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "bytes/op",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "VolumeReadBytes",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "min",
+          "label" : "B",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p10",
+          "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "median",
+          "label" : "D",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p90",
+          "label" : "E",
+          "paletteIndex" : 5,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "max",
+          "label" : "F",
+          "paletteIndex" : 7,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 7200000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeReadBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EBS'), extrapolation='zero').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWWzaAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Avg Bytes/Write Op",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : 3,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "VolumeWriteBytes - Mean by VolumeId - Mean(1h)",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "VolumeWriteOps - Mean by VolumeId - Mean(1h)",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "bytes",
+          "label" : "C",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeWriteBytes', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='A')\nB = data('VolumeWriteOps', filter=filter('namespace', 'AWS/EBS') and filter('VolumeId', 'vol-46dcc55f') and filter('stat', 'mean'), extrapolation='zero').mean(by=['VolumeId']).mean(over='1h').publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWXRAAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Avg Queue Length (# ops)",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('VolumeQueueLength', filter=filter('namespace', 'AWS/EBS') and filter('stat', 'mean')).mean(by=['VolumeId']).top(count=5).publish(label='A')",
       "tags" : null
     }
   } ],
@@ -2180,24 +2180,8 @@
       "teams" : null
     }
   },
-  "hashCode" : 1210867025,
+  "hashCode" : 2130455202,
   "id" : "DiVWWUzAcAA",
-  "importQualifiers" : [ {
-    "filters" : [ {
-      "not" : false,
-      "property" : "namespace",
-      "values" : [ "AWS/EBS" ]
-    }, {
-      "not" : false,
-      "property" : "stat",
-      "values" : [ "mean" ]
-    }, {
-      "not" : false,
-      "property" : "VolumeId",
-      "values" : [ ]
-    } ],
-    "metric" : "VolumeIdleTime"
-  } ],
   "modelVersion" : 1,
   "packageType" : "GROUP"
 }

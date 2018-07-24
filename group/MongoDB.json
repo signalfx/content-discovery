@@ -4,11 +4,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWRGCAgBs",
+      "description" : "percentile distribution",
+      "id" : "DiVWUQwAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Total Background Flushes/sec",
+      "name" : "Heap Usage",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -16,15 +16,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "flushes/sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "write to disk avg time (sec)",
+          "label" : "bytes used",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -54,10 +46,55 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.backgroundFlushing.flushes",
+          "displayName" : "total heap size used by db",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : "AreaChart",
+          "paletteIndex" : 4,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Min",
+          "label" : "B",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P10",
+          "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P50",
+          "label" : "D",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P90",
+          "label" : "E",
+          "paletteIndex" : 9,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Max",
+          "label" : "F",
+          "paletteIndex" : 7,
+          "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
@@ -73,7 +110,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.backgroundFlushing.flushes', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')",
+      "programText" : "A = data('gauge.extra_info.heap_usage_bytes', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
       "tags" : null
     }
   }, {
@@ -82,10 +119,79 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWWW2AcAA",
+      "id" : "DiVWXFCAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Hosts by Resident Memory (bytes)",
+      "name" : "Queries/sec",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "counter.opcounters.query",
+          "label" : "A",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.opcounters.query', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWSzDAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Hosts by Non Mapped Memory (bytes)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -99,8 +205,26 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : null,
+          "displayName" : "gauge.mem.virtual",
           "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "gauge.mem.mapped",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "",
+          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -115,7 +239,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.mem.resident', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), extrapolation='last_value').top(count=5).sum(by=['host']).scale(1024).scale(1024).publish(label='A')",
+      "programText" : "A = data('gauge.mem.virtual', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = data('gauge.mem.mapped', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='B', enable=False)\nC = (A - B).top(count=5).mean(by=['host']).scale(1024).scale(1024).publish(label='C')",
       "tags" : null
     }
   }, {
@@ -124,10 +248,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWVQmAYAA",
+      "id" : "DiVWVKAAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top DBs by Document Count",
+      "name" : "Total Global Lock Active Operations",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -135,7 +259,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "# documents",
+          "label" : "readers - RED",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -143,14 +267,14 @@
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "writers - BLUE",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
-          "min" : null
+          "min" : 0.0
         } ],
         "axisPrecision" : null,
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
         "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
@@ -173,14 +297,23 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.objects",
+          "displayName" : "# active readers",
           "label" : "A",
-          "paletteIndex" : null,
+          "paletteIndex" : 4,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "# active writers",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -192,7 +325,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.objects', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).sum(by=['db']).top(count=100).publish(label='A')",
+      "programText" : "A = data('gauge.globalLock.activeClients.readers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='A')\nB = data('gauge.globalLock.activeClients.writers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='B')",
       "tags" : null
     }
   }, {
@@ -201,10 +334,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "percentile distribution",
-      "id" : "DiVWVngAYAA",
+      "id" : "DiVWVqxAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Queries/sec",
+      "name" : "Deletes/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -219,7 +352,7 @@
           "min" : 0.0
         } ],
         "axisPrecision" : null,
-        "colorBy" : "Metric",
+        "colorBy" : "Dimension",
         "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
@@ -244,7 +377,7 @@
         "publishLabelOptions" : [ {
           "displayName" : "Total",
           "label" : "A",
-          "paletteIndex" : 15,
+          "paletteIndex" : 4,
           "plotType" : "LineChart",
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -278,7 +411,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "p90",
+          "displayName" : "p95",
           "label" : "E",
           "paletteIndex" : 9,
           "plotType" : null,
@@ -306,7 +439,633 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.opcounters.query', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "A = data('counter.opcounters.delete', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=95).publish(label='E')\nF = (A).max().publish(label='F')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWVRhAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Hosts by Distinct Requests/sec",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "counter.network.numRequests - Mean by host",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "",
+          "label" : "B",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.network.numRequests', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).mean(by=['host']).publish(label='A', enable=False)\nB = (A).top(count=5).publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWXGBAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Non Mapped Memory",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "bytes",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Resident Memory",
+          "label" : "A",
+          "paletteIndex" : 1,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "gauge.mem.mapped",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "non mapped memory",
+          "label" : "C",
+          "paletteIndex" : 10,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.mem.virtual', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), extrapolation='last_value').publish(label='A', enable=False)\nB = data('gauge.mem.mapped', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B', enable=False)\nC = (A-B).scale(1024).scale(1024).publish(label='C')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWU50AYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Hosts",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "gauge.uptime - Mean by host - Count",
+          "label" : "A",
+          "paletteIndex" : 10,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.uptime', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).mean(by=['host']).count().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "bytes",
+      "id" : "DiVWVImAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "DBs with Lagest Storage, Index, Data Size",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "collections",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "index",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "documents",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.storageSize', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='A')\nB = data('gauge.indexSize', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='B')\nC = data('gauge.dataSize', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='C')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWS0_AYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total Global Lock Active Operations",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "readers - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "writers - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "# active readers",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "# active writers",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.globalLock.activeClients.readers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')\nB = data('gauge.globalLock.activeClients.writers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWVKIAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total Network I/O bytes/sec",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "received - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "sent - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "bytes received/sec",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "bytes written/sec",
+          "label" : "B",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.network.bytesIn', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='A')\nB = data('counter.network.bytesOut', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWXIwAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Page Faults/sec",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "counter.extra_info.page_faults",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.extra_info.page_faults', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "readers/writers queued for global lock",
+      "id" : "DiVWWhjAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Global Lock  Queued Operations",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "readers - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "writers - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "gauge.globalLock.currentQueue.readers",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "gauge.globalLock.currentQueue.writers",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.globalLock.currentQueue.readers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('gauge.globalLock.currentQueue.writers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWVItAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Hosts by Non Mapped Memory (bytes)",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "gauge.mem.virtual",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "gauge.mem.mapped",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.mem.virtual', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A', enable=False)\nB = data('gauge.mem.mapped', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='B', enable=False)\nC = (A - B).top(count=5).mean(by=['host']).scale(1024).scale(1024).publish(label='C')",
       "tags" : null
     }
   }, {
@@ -429,85 +1188,14 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWXIwAcAA",
+      "id" : "DiVWXI3AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Page Faults/sec",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "counter.extra_info.page_faults",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.extra_info.page_faults', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVRhAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Hosts by Distinct Requests/sec",
+      "name" : "# Connections",
       "options" : {
         "colorBy" : "Metric",
+        "colorScale" : null,
         "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
         "maximumPrecision" : 4,
         "programOptions" : {
           "disableSampling" : false,
@@ -515,32 +1203,24 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.network.numRequests - Mean by host",
+          "displayName" : "Current",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
+          "paletteIndex" : 14,
+          "plotType" : "LineChart",
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
         "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.network.numRequests', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).mean(by=['host']).publish(label='A', enable=False)\nB = (A).top(count=5).publish(label='B')",
+      "programText" : "A = data('gauge.connections.current', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).mean().publish(label='A')",
       "tags" : null
     }
   }, {
@@ -549,10 +1229,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWWk2AYAA",
+      "id" : "DiVWRGCAgBs",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Deletes/sec",
+      "name" : "Total Background Flushes/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -560,7 +1240,15 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "flushes/sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "write to disk avg time (sec)",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -590,7 +1278,84 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.opcounters.delete",
+          "displayName" : "counter.backgroundFlushing.flushes",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : "AreaChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.backgroundFlushing.flushes', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWT32AcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top DBs by Document Count",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "# documents",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "# documents",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -609,7 +1374,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.opcounters.delete', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
+      "programText" : "A = data('gauge.objects', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).sum(by=['db']).top(count=100).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -618,10 +1383,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "readers/writers queued for global lock",
-      "id" : "DiVWWhjAgAA",
+      "id" : "DiVWWUCAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Global Lock  Queued Operations",
+      "name" : "Total Global Lock Queued Operations",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -667,7 +1432,7 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.globalLock.currentQueue.readers",
+          "displayName" : "readers",
           "label" : "A",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -676,7 +1441,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "gauge.globalLock.currentQueue.writers",
+          "displayName" : "writers",
           "label" : "B",
           "paletteIndex" : 1,
           "plotType" : null,
@@ -695,7 +1460,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.globalLock.currentQueue.readers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('gauge.globalLock.currentQueue.writers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
+      "programText" : "A = data('gauge.globalLock.currentQueue.readers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='A')\nB = data('gauge.globalLock.currentQueue.writers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='B')",
       "tags" : null
     }
   }, {
@@ -704,51 +1469,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWU50AYAA",
+      "id" : "DiVWW8WAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Hosts",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "gauge.uptime - Mean by host - Count",
-          "label" : "A",
-          "paletteIndex" : 10,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.uptime', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).mean(by=['host']).count().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWRQeAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Page Faults/sec",
+      "name" : "Heap Usage",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -756,7 +1480,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "bytes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -786,54 +1510,9 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Page Faults",
+          "displayName" : "gauge.extra_info.heap_usage_bytes",
           "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "E",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
+          "paletteIndex" : 5,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -847,348 +1526,10 @@
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.extra_info.page_faults', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "bytes",
-      "id" : "DiVWVImAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "DBs with Lagest Storage, Index, Data Size",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "collections",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "index",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "documents",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.storageSize', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='A')\nB = data('gauge.indexSize', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='B')\nC = data('gauge.dataSize', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWR9sAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Deletes/sec",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Total",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P50",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P95",
-          "label" : "E",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.opcounters.delete', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=95).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXABAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Mutations/sec",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "counter.opcounters.insert",
-          "label" : "A",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "counter.opcounters.update",
-          "label" : "B",
-          "paletteIndex" : 6,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.opcounters.insert', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('counter.opcounters.update', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWUdlAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "BackgroundFlush Time (ms)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "ms",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "write to disk avg time (sec)",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "gauge.backgroundFlushing.average_ms",
-          "label" : "A",
-          "paletteIndex" : 0,
-          "plotType" : "AreaChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "gauge.backgroundFlushing.last_ms",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.backgroundFlushing.average_ms', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).mean().publish(label='A')\nB = data('gauge.backgroundFlushing.last_ms', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).mean().publish(label='B')",
+      "programText" : "A = data('gauge.extra_info.heap_usage_bytes', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -1214,7 +1555,7 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : null,
+          "displayName" : "",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1238,125 +1579,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWUQwAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Heap Usage",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes used",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "total heap size used by db",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P50",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P90",
-          "label" : "E",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.extra_info.heap_usage_bytes', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
       "description" : "",
-      "id" : "DiVWW8pAcAA",
+      "id" : "DiVWXHTAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Global Lock Active Clients",
+      "name" : "Total Storage, Index, Data Size",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1364,15 +1591,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "readers - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "writers - BLUE",
+          "label" : "bytes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -1402,23 +1621,32 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.globalLock.activeClients.readers",
+          "displayName" : "gauge.storageSize (collections)",
           "label" : "A",
-          "paletteIndex" : 4,
+          "paletteIndex" : 1,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "gauge.globalLock.activeClients.writers",
+          "displayName" : "gauge.indexSize",
           "label" : "B",
-          "paletteIndex" : 1,
+          "paletteIndex" : 14,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
-          "yAxis" : 1
+          "yAxis" : 0
+        }, {
+          "displayName" : "gauge.dataSize (documents)",
+          "label" : "C",
+          "paletteIndex" : 7,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -1427,10 +1655,52 @@
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.storageSize', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).sum().publish(label='A')\nB = data('gauge.indexSize', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).sum().publish(label='B')\nC = data('gauge.dataSize', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).sum().publish(label='C')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWVMuAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Hosts by #Connections",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "",
+          "label" : "A",
+          "paletteIndex" : 8,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.globalLock.activeClients.readers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('gauge.globalLock.activeClients.writers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
+      "programText" : "A = data('gauge.connections.current', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=5).mean(by=['host']).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -1507,11 +1777,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVj8AcAA",
+      "description" : "readers/writers queued for global lock",
+      "id" : "DiVWUz_AgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Maximum Replication Lag",
+      "name" : "Total Global Lock Queued Operations",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1519,15 +1789,23 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "sec",
+          "label" : "readers - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "writers - BLUE",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
         } ],
         "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "colorBy" : "Metric",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
@@ -1549,14 +1827,23 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.repl.max_lag",
+          "displayName" : "readers",
           "label" : "A",
-          "paletteIndex" : 11,
+          "paletteIndex" : 4,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "writers",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -1568,7 +1855,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.repl.max_lag', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A')",
+      "programText" : "A = data('gauge.globalLock.currentQueue.readers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')\nB = data('gauge.globalLock.currentQueue.writers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='B')",
       "tags" : null
     }
   }, {
@@ -1577,48 +1864,24 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWWbUAcAA",
+      "id" : "DiVWWTGAcAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Document Counts by DB",
+      "name" : "Master Node",
       "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
+        "colorBy" : "Metric",
+        "colorScale2" : null,
         "legendOptions" : {
           "fields" : null
         },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
+        "maximumPrecision" : 1,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.objects",
+          "displayName" : "",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1627,92 +1890,6 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.objects', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).sum(by=['db']).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXI3AYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Connections",
-      "options" : {
-        "colorBy" : "Metric",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Current",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.connections.current', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).mean().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVMuAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Hosts by #Connections",
-      "options" : {
-        "colorBy" : "Metric",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : null,
-          "label" : "A",
-          "paletteIndex" : 8,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
@@ -1720,221 +1897,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.connections.current', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).top(count=5).mean(by=['host']).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVyuAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "BackgroundFlush Time (ms)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "ms",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "write to disk avg time (sec)",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "avg: gauge.backgroundFlushing.average_ms",
-          "label" : "A",
-          "paletteIndex" : 0,
-          "plotType" : "AreaChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "latest: gauge.backgroundFlushing.last_ms",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.backgroundFlushing.average_ms', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).mean().publish(label='A')\nB = data('gauge.backgroundFlushing.last_ms', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).mean().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWRCkAYAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Hosts by #Connections",
-      "options" : {
-        "colorBy" : "Metric",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : null,
-          "label" : "A",
-          "paletteIndex" : 8,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.connections.current', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).mean(by=['host']).top(count=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXHTAYAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "BackgroundFlush Time",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "ms",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "write to disk avg time (sec)",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "avg: gauge.backgroundFlushing.average_ms",
-          "label" : "A",
-          "paletteIndex" : 3,
-          "plotType" : "AreaChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "most recent: gauge.backgroundFlushing.last_ms",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.backgroundFlushing.average_ms', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-3.0-0') and filter('cluster', 'rs0')).publish(label='A')\nB = data('gauge.backgroundFlushing.last_ms', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-3.0-0') and filter('cluster', 'rs0')).publish(label='B')",
+      "programText" : "A = data('gauge.repl.is_primary_node', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).top(count=1).sum(by=['host']).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -2057,204 +2020,22 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWVItAgAA",
+      "id" : "DiVWVMlAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Hosts by Non Mapped Memory (bytes)",
+      "name" : "# Hosts",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
+        "maximumPrecision" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.mem.virtual",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "gauge.mem.mapped",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.mem.virtual', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A', enable=False)\nB = data('gauge.mem.mapped', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='B', enable=False)\nC = (A - B).top(count=5).mean(by=['host']).scale(1024).scale(1024).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWSzDAcAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Hosts by Non Mapped Memory (bytes)",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "gauge.mem.virtual",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "gauge.mem.mapped",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.mem.virtual', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = data('gauge.mem.mapped', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='B', enable=False)\nC = (A - B).top(count=5).mean(by=['host']).scale(1024).scale(1024).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "bytes",
-      "id" : "DiVWSPDAcAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "DBs with Lagest Storage, Index, Data Size",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Collections",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Index",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Documents",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "",
-        "type" : "List",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.storageSize', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='A')\nB = data('gauge.indexSize', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='B')\nC = data('gauge.dataSize', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWTGAcAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Master Node",
-      "options" : {
-        "colorBy" : "Metric",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 1,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : null,
+          "displayName" : "gauge.repl.active_nodes - Mean by host - Count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2264,13 +2045,14 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.repl.is_primary_node', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).top(count=1).sum(by=['host']).publish(label='A')",
+      "programText" : "A = data('gauge.repl.active_nodes', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), extrapolation='last_value', maxExtrapolations=5).mean(by=['host']).count().publish(label='A')",
       "tags" : null
     }
   }, {
@@ -2278,11 +2060,53 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "readers/writers queued for global lock",
-      "id" : "DiVWUz_AgAA",
+      "description" : "",
+      "id" : "DiVWWW2AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Total Global Lock Queued Operations",
+      "name" : "Top Hosts by Resident Memory (bytes)",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.mem.resident', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), extrapolation='last_value').top(count=5).sum(by=['host']).scale(1024).scale(1024).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWUdlAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "BackgroundFlush Time (ms)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -2290,7 +2114,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "readers - RED",
+          "label" : "ms",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -2298,7 +2122,7 @@
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "writers - BLUE",
+          "label" : "write to disk avg time (sec)",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -2328,23 +2152,23 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "readers",
+          "displayName" : "gauge.backgroundFlushing.average_ms",
           "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : null,
+          "paletteIndex" : 0,
+          "plotType" : "AreaChart",
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "writers",
+          "displayName" : "gauge.backgroundFlushing.last_ms",
           "label" : "B",
-          "paletteIndex" : 1,
+          "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
-          "yAxis" : 1
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -2356,7 +2180,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.globalLock.currentQueue.readers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')\nB = data('gauge.globalLock.currentQueue.writers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='B')",
+      "programText" : "A = data('gauge.backgroundFlushing.average_ms', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).mean().publish(label='A')\nB = data('gauge.backgroundFlushing.last_ms', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).mean().publish(label='B')",
       "tags" : null
     }
   }, {
@@ -2365,33 +2189,144 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWT32AcAA",
+      "id" : "DiVWWk2AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top DBs by Document Count",
+      "name" : "Deletes/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
         },
         "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "# documents",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
           "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
-          "min" : null
+          "min" : 0.0
         } ],
         "axisPrecision" : null,
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "counter.opcounters.delete",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.opcounters.delete', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWRCkAYAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Hosts by #Connections",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "",
+          "label" : "A",
+          "paletteIndex" : 8,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.connections.current', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).mean(by=['host']).top(count=5).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWVyuAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "BackgroundFlush Time (ms)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "ms",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "write to disk avg time (sec)",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
         "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
@@ -2414,9 +2349,18 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "# documents",
+          "displayName" : "avg: gauge.backgroundFlushing.average_ms",
           "label" : "A",
-          "paletteIndex" : null,
+          "paletteIndex" : 0,
+          "plotType" : "AreaChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "latest: gauge.backgroundFlushing.last_ms",
+          "label" : "B",
+          "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -2433,7 +2377,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.objects', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).sum(by=['db']).top(count=100).publish(label='A')",
+      "programText" : "A = data('gauge.backgroundFlushing.average_ms', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).mean().publish(label='A')\nB = data('gauge.backgroundFlushing.last_ms', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).mean().publish(label='B')",
       "tags" : null
     }
   }, {
@@ -2556,24 +2500,56 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWSrEAYF8",
+      "id" : "DiVWVQmAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Hosts by Requests/sec",
+      "name" : "Top DBs by Document Count",
       "options" : {
-        "colorBy" : "Metric",
-        "colorScale2" : null,
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "# documents",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
         "legendOptions" : {
           "fields" : null
         },
-        "maximumPrecision" : 4,
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.network.numRequests - Mean by host",
+          "displayName" : "gauge.objects",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2581,184 +2557,6 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.network.numRequests', filter=filter('plugin', 'mongo') and (not filter('cluster', 'rs0'))).mean(by=['host']).publish(label='A', enable=False)\nB = (A).top(count=5).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWTeKAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Network I/O bytes/sec",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "received - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "sent - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "bytes received/sec",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes written/sec",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.network.bytesIn', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')\nB = data('counter.network.bytesOut', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWS0_AYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Global Lock Active Operations",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "readers - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "writers - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "# active readers",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "# active writers",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -2770,379 +2568,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.globalLock.activeClients.readers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')\nB = data('gauge.globalLock.activeClients.writers', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWW-JAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Network I/O Bytes/sec",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "received - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "sent - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Incoming bytes",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Outgoing bytes",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.network.bytesIn', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('counter.network.bytesOut', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWVqxAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Deletes/sec",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "count/sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Total",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p95",
-          "label" : "E",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.opcounters.delete', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=95).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "readers/writers queued for global lock",
-      "id" : "DiVWWUCAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Global Lock Queued Operations",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "readers - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "writers - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "readers",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "writers",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.globalLock.currentQueue.readers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='A')\nB = data('gauge.globalLock.currentQueue.writers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVKIAcAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Network I/O bytes/sec",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "received - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "sent - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "bytes received/sec",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes written/sec",
-          "label" : "B",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.network.bytesIn', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='A')\nB = data('counter.network.bytesOut', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='B')",
+      "programText" : "A = data('gauge.objects', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), maxExtrapolations=2).sum(by=['db']).top(count=100).publish(label='A')",
       "tags" : null
     }
   }, {
@@ -3274,58 +2700,25 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWXGBAgAA",
+      "id" : "DiVWSrEAYF8",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Non Mapped Memory",
+      "name" : "Top Hosts by Requests/sec",
       "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
+        "colorBy" : "Metric",
+        "colorScale2" : null,
         "legendOptions" : {
           "fields" : null
         },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
+        "maximumPrecision" : 4,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Resident Memory",
+          "displayName" : "counter.network.numRequests - Mean by host",
           "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "gauge.mem.mapped",
-          "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -3333,113 +2726,23 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "non mapped memory",
-          "label" : "C",
-          "paletteIndex" : 10,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.mem.virtual', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), extrapolation='last_value').publish(label='A', enable=False)\nB = data('gauge.mem.mapped', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B', enable=False)\nC = (A-B).scale(1024).scale(1024).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXHTAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Storage, Index, Data Size",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "gauge.storageSize (collections)",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "gauge.indexSize",
+          "displayName" : "",
           "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "gauge.dataSize (documents)",
-          "label" : "C",
-          "paletteIndex" : 7,
+          "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.storageSize', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).sum().publish(label='A')\nB = data('gauge.indexSize', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).sum().publish(label='B')\nC = data('gauge.dataSize', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0'), maxExtrapolations=2).sum().publish(label='C')",
+      "programText" : "A = data('counter.network.numRequests', filter=filter('plugin', 'mongo') and (not filter('cluster', 'rs0'))).mean(by=['host']).publish(label='A', enable=False)\nB = (A).top(count=5).publish(label='B')",
       "tags" : null
     }
   }, {
@@ -3447,11 +2750,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWXFCAYAA",
+      "description" : "percentile distribution",
+      "id" : "DiVWR9sAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Queries/sec",
+      "name" : "Deletes/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -3466,7 +2769,7 @@
           "min" : 0.0
         } ],
         "axisPrecision" : null,
-        "colorBy" : "Metric",
+        "colorBy" : "Dimension",
         "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
@@ -3489,9 +2792,54 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.opcounters.query",
+          "displayName" : "Total",
           "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Min",
+          "label" : "B",
           "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P10",
+          "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P50",
+          "label" : "D",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P95",
+          "label" : "E",
+          "paletteIndex" : 9,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Max",
+          "label" : "F",
+          "paletteIndex" : 7,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -3508,48 +2856,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.opcounters.query', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVMlAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Hosts",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "gauge.repl.active_nodes - Mean by host - Count",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.repl.active_nodes', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0'), extrapolation='last_value', maxExtrapolations=5).mean(by=['host']).count().publish(label='A')",
+      "programText" : "A = data('counter.opcounters.delete', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=95).publish(label='E')\nF = (A).max().publish(label='F')",
       "tags" : null
     }
   }, {
@@ -3680,11 +2987,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWW8WAgAA",
+      "description" : "percentile distribution",
+      "id" : "DiVWRQeAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Heap Usage",
+      "name" : "Page Faults/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -3692,7 +2999,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "bytes",
+          "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -3722,9 +3029,54 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.extra_info.heap_usage_bytes",
+          "displayName" : "Page Faults",
           "label" : "A",
-          "paletteIndex" : 5,
+          "paletteIndex" : 4,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "min",
+          "label" : "B",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p10",
+          "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "median",
+          "label" : "D",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p90",
+          "label" : "E",
+          "paletteIndex" : 9,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "max",
+          "label" : "F",
+          "paletteIndex" : 7,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -3738,10 +3090,10 @@
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
+        "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.extra_info.heap_usage_bytes', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
+      "programText" : "A = data('counter.extra_info.page_faults', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
       "tags" : null
     }
   }, {
@@ -3750,10 +3102,535 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWVKAAgAA",
+      "id" : "DiVWVj8AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Total Global Lock Active Operations",
+      "name" : "Maximum Replication Lag",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "gauge.repl.max_lag",
+          "label" : "A",
+          "paletteIndex" : 11,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.repl.max_lag', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWW-JAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total Network I/O Bytes/sec",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "received - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "sent - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Incoming bytes",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Outgoing bytes",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.network.bytesIn', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('counter.network.bytesOut', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWWbUAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Document Counts by DB",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "gauge.objects",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.objects', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).sum(by=['db']).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "bytes",
+      "id" : "DiVWSPDAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "DBs with Lagest Storage, Index, Data Size",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Collections",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Index",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Documents",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "",
+        "type" : "List",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.storageSize', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='A')\nB = data('gauge.indexSize', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='B')\nC = data('gauge.dataSize', filter=filter('plugin', 'mongo') and (not filter('cluster', '*')), maxExtrapolations=2).top(count=1).sum(by=['db', 'host']).publish(label='C')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWXIuAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Requests/sec",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Total distinct requests",
+          "label" : "A",
+          "paletteIndex" : 1,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.network.numRequests', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWTeKAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total Network I/O bytes/sec",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "received - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "sent - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "bytes received/sec",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "bytes written/sec",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Binary"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.network.bytesIn', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='A')\nB = data('counter.network.bytesOut', filter=filter('plugin', 'mongo') and (not filter('cluster', '*'))).sum().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "percentile distribution",
+      "id" : "DiVWVngAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Queries/sec",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "count/sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Total",
+          "label" : "A",
+          "paletteIndex" : 15,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "min",
+          "label" : "B",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p10",
+          "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "median",
+          "label" : "D",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "p90",
+          "label" : "E",
+          "paletteIndex" : 9,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "max",
+          "label" : "F",
+          "paletteIndex" : 7,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.opcounters.query', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWW8pAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Global Lock Active Clients",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -3799,7 +3676,7 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "# active readers",
+          "displayName" : "gauge.globalLock.activeClients.readers",
           "label" : "A",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -3808,7 +3685,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "# active writers",
+          "displayName" : "gauge.globalLock.activeClients.writers",
           "label" : "B",
           "paletteIndex" : 1,
           "plotType" : null,
@@ -3827,7 +3704,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('gauge.globalLock.activeClients.readers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='A')\nB = data('gauge.globalLock.activeClients.writers', filter=filter('plugin', 'mongo') and filter('cluster', 'rs0')).sum().publish(label='B')",
+      "programText" : "A = data('gauge.globalLock.activeClients.readers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('gauge.globalLock.activeClients.writers', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
       "tags" : null
     }
   }, {
@@ -3836,43 +3713,296 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWXIuAgAA",
+      "id" : "DiVWXHTAYAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Requests/sec",
+      "name" : "BackgroundFlush Time",
       "options" : {
-        "colorBy" : "Metric",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : 4,
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "ms",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "write to disk avg time (sec)",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Total distinct requests",
+          "displayName" : "avg: gauge.backgroundFlushing.average_ms",
           "label" : "A",
-          "paletteIndex" : 1,
+          "paletteIndex" : 3,
+          "plotType" : "AreaChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "most recent: gauge.backgroundFlushing.last_ms",
+          "label" : "B",
+          "paletteIndex" : 8,
           "plotType" : "LineChart",
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.network.numRequests', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')",
+      "programText" : "A = data('gauge.backgroundFlushing.average_ms', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-3.0-0') and filter('cluster', 'rs0')).publish(label='A')\nB = data('gauge.backgroundFlushing.last_ms', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-3.0-0') and filter('cluster', 'rs0')).publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWXABAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Mutations/sec",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "counter.opcounters.insert",
+          "label" : "A",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "counter.opcounters.update",
+          "label" : "B",
+          "paletteIndex" : 6,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 3600000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.opcounters.insert', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='A')\nB = data('counter.opcounters.update', filter=filter('plugin', 'mongo') and filter('host', 'integration-test-mongodb-2.6-0')).publish(label='B')",
       "tags" : null
     }
   } ],
   "dashboardExports" : [ {
+    "dashboard" : {
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
+        "chartId" : "DiVWU50AYAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWSrEAYF8",
+        "column" : 4,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWRCkAYAE",
+        "column" : 8,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWR9sAgAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWSvNAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWU5kAcAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWUQwAYAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWRQeAcAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWTeKAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWSPDAcAE",
+        "column" : 0,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWRlKAYAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWSzDAcAE",
+        "column" : 8,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWUz_AgAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 4,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWT32AcAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 4,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWS0_AYAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 4,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWUdlAgAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 5,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWRGCAgBs",
+        "column" : 0,
+        "height" : 1,
+        "row" : 5,
+        "width" : 4
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "",
+      "discoveryOptions" : {
+        "query" : "plugin:mongo",
+        "selectors" : [ "sf_hostHasService:mongo", "plugin:mongo" ]
+      },
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : null,
+        "time" : null,
+        "variables" : null
+      },
+      "groupId" : "DiVWQ8qAgAA",
+      "id" : "DiVWQ-CAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "locked" : false,
+      "maxDelayOverride" : null,
+      "name" : "MongoDB Hosts",
+      "selectedEventOverlays" : null,
+      "tags" : null
+    }
+  }, {
     "dashboard" : {
       "chartDensity" : "DEFAULT",
       "charts" : [ {
@@ -4146,136 +4276,6 @@
       "selectedEventOverlays" : null,
       "tags" : null
     }
-  }, {
-    "dashboard" : {
-      "chartDensity" : "DEFAULT",
-      "charts" : [ {
-        "chartId" : "DiVWU50AYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWSrEAYF8",
-        "column" : 4,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWRCkAYAE",
-        "column" : 8,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWR9sAgAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWSvNAgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWU5kAcAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWUQwAYAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWRQeAcAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWTeKAgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWSPDAcAE",
-        "column" : 0,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWRlKAYAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWSzDAcAE",
-        "column" : 8,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWUz_AgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWT32AcAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWS0_AYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWUdlAgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 5,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWRGCAgBs",
-        "column" : 0,
-        "height" : 1,
-        "row" : 5,
-        "width" : 4
-      } ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : null,
-      "description" : "",
-      "discoveryOptions" : {
-        "query" : "plugin:mongo",
-        "selectors" : [ "sf_hostHasService:mongo", "plugin:mongo" ]
-      },
-      "eventOverlays" : null,
-      "filters" : {
-        "sources" : null,
-        "time" : null,
-        "variables" : null
-      },
-      "groupId" : "DiVWQ8qAgAA",
-      "id" : "DiVWQ-CAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "locked" : false,
-      "maxDelayOverride" : null,
-      "name" : "MongoDB Hosts",
-      "selectedEventOverlays" : null,
-      "tags" : null
-    }
   } ],
   "groupExport" : {
     "group" : {
@@ -4299,16 +4299,8 @@
       "teams" : null
     }
   },
-  "hashCode" : -909002133,
+  "hashCode" : -195090657,
   "id" : "DiVWQ8qAgAA",
-  "importQualifiers" : [ {
-    "filters" : [ {
-      "not" : false,
-      "property" : "plugin",
-      "values" : [ "mongo" ]
-    } ],
-    "metric" : "counter.network.numRequests"
-  } ],
   "modelVersion" : 1,
   "packageType" : "GROUP"
 }

@@ -4,11 +4,98 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Shows a stack of append requests received by all the members",
-      "id" : "DiVW3lSAYAA",
+      "description" : "Shows top 3 instances for (send+receive) bandwidth rate",
+      "id" : "DiVWzjXAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Receive Append Requests",
+      "name" : "Top Bandwidth Rate",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Receive bandwidth rate",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Send bandwdith rate",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Overall bandwidth rate",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.etcd.self.recvbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='A', enable=False)\nB = data('gauge.etcd.self.sendbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='B', enable=False)\nC = (A+B).top(count=3).publish(label='C')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Gets successful per second for each instance",
+      "id" : "DiVWzerAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Gets Successful Trend",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -16,7 +103,223 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "reqs / sec",
+          "label" : "gets successful / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : true,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Gets successful per second",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Gets successful and failed per second on the instance",
+      "id" : "DiVWz0jAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Gets (successful/failed)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "gets / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "counter.etcd.store.gets.success - Rate of Change",
+          "label" : "B",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "counter.etcd.store.gets.fail - Rate of Change",
+          "label" : "A",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "B = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='B')\nA = data('counter.etcd.store.gets.fail', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVW138AcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Packet stats",
+      "options" : {
+        "markdown" : "```Receive Packet Rate``` and  ```Send Packet Rate```  show the number of packets sent (by the leader) and received (by the followers) per second. In an ideal scenario, the number of packets sent by the leader should be equal to the number of packets received by all the followers put together. The two charts can be compared to analyze if there is discrepancy. \n```Receive Append Requests``` and ```Send Append Requests``` show the number of append requests sent (by the leader) and received (by the followers) per second. In an ideal scenario, the number of append requests sent by the leader should be equal to the number of append requests received by all the followers put together. The two charts can be compared to analyze if there is discrepancy.",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Sets successful and failed per second in the store",
+      "id" : "DiVW3PCAYAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Sets (successful/failed)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "sets / sec",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -70,8 +373,308 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Received append requests",
+          "displayName" : "Successful Sets per sec",
+          "label" : "A",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Failed Sets per sec",
+          "label" : "B",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.store.sets.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='A')\nB = data('counter.etcd.store.sets.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows top 3 instances for (successful+failed) gets",
+      "id" : "DiVWzkCAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Gets per second",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "metric_source"
+          }, {
+            "enabled" : false,
+            "property" : "job"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "failed gets / sec",
+          "label" : "B",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "successful gets / sec",
           "label" : "C",
+          "paletteIndex" : 15,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Overall get operations /sec",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "B = data('counter.etcd.store.gets.fail', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='B', enable=False)\nC = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='C', enable=False)\nD = (B+C).top(count=3).publish(label='D')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Compare-and-Deletes successful and failed per second in the store",
+      "id" : "DiVW4VXAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Compare-and-Deletes (successful/failed)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "cads / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Succesful CAD per sec",
+          "label" : "A",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Failed CAD per sec",
+          "label" : "B",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.store.compareanddelete.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='A')\nB = data('counter.etcd.store.compareanddelete.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows the per second failed RPCs for each member",
+      "id" : "DiVW3RxAgDw",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Per Member Failed RPCs",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "failed rpcs / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "follower"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Failed RPC per second",
+          "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -89,7 +692,441 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('counter.etcd.self.recvappendreq.cnt', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='C')",
+      "programText" : "B = data('counter.etcd.leader.counts.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest', extrapolation='zero').rateofchange().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows top 3 instances for number of watchers",
+      "id" : "DiVWzlOAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Instances with Most Number of Watchers",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "metric_source"
+          }, {
+            "enabled" : false,
+            "property" : "job"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Number of watchers",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).top(count=3).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Total RPC requests successful and failed per second in the cluster",
+      "id" : "DiVW2xXAYMI",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total RPC Requests (successful/failed)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "rpcs / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "follower"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : false,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Successful RPCs per sec",
+          "label" : "A",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Failed RPCs per sec",
+          "label" : "B",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.leader.counts.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['state', 'cluster']).rateofchange().publish(label='A')\nB = data('counter.etcd.leader.counts.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['state', 'cluster']).rateofchange().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows receive and send bandwidth rates. There is activity on this chart when the cluster is active",
+      "id" : "DiVW1W6AgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Receive / Send Bandwidth Rate",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "bytes / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Receive bandwidth rate",
+          "label" : "C",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Send bandwidth rate",
+          "label" : "D",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "C = data('gauge.etcd.self.recvbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='C')\nD = data('gauge.etcd.self.sendbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='D')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Total number of watchers",
+      "id" : "DiVW3euAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Number of Watchers",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "gauge.etcd.store.watchers - Sum",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).sum().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows a stack of append requests sent by all the members. Compare above chart, to see if append requests not received",
+      "id" : "DiVW3EEAgAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Send Append Requests",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "reqs / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Sent append requests",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "E = data('counter.etcd.self.sendappendreq.cnt', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='E')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "The charts on the right show information about RPC requests",
+      "id" : "DiVW3V8AcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "RPC stats",
+      "options" : {
+        "markdown" : "These charts: ```Total RPC Requests (successful/failed)```, ```Per Member Failed RPCs``` and ```Top RPC Requests```, together can be used to gain insights regarding the overall ratio of successful and failed RPC requests. Also, it gives an idea of how the followers compare to each other in terms in failed RPC requests per second and which followers contribute more the RPC failures.",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
       "tags" : null
     }
   }, {
@@ -199,29 +1236,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVW138AcAA",
+      "description" : "Rate of expiry of keys / directory per second",
+      "id" : "DiVWznpAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Packet stats",
-      "options" : {
-        "markdown" : "```Receive Packet Rate``` and  ```Send Packet Rate```  show the number of packets sent (by the leader) and received (by the followers) per second. In an ideal scenario, the number of packets sent by the leader should be equal to the number of packets received by all the followers put together. The two charts can be compared to analyze if there is discrepancy. \n```Receive Append Requests``` and ```Send Append Requests``` show the number of append requests sent (by the leader) and received (by the followers) per second. In an ideal scenario, the number of append requests sent by the leader should be equal to the number of append requests received by all the followers put together. The two charts can be compared to analyze if there is discrepancy.",
-        "type" : "Text"
-      },
-      "packageSpecifications" : "",
-      "programText" : "",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Gets failed per second for each instance",
-      "id" : "DiVWzxKAgCk",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Gets Failed Trend",
+      "name" : "Expire Rate Trend",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -229,7 +1248,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "failed gets / sec",
+          "label" : "items / sec",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -237,7 +1256,7 @@
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
@@ -283,8 +1302,101 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Gets failed per second",
+          "displayName" : "Rate of expiry",
           "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.store.expire.count', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows a stack of append requests received by all the members",
+      "id" : "DiVW3lSAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Receive Append Requests",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "reqs / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Received append requests",
+          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -302,7 +1414,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.store.gets.fail', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
+      "programText" : "C = data('counter.etcd.self.recvappendreq.cnt', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='C')",
       "tags" : null
     }
   }, {
@@ -405,6 +1517,583 @@
       },
       "packageSpecifications" : "",
       "programText" : "C = data('counter.etcd.self.recvappendreq.cnt', filter=filter('plugin', 'etcd'), rollup='latest', extrapolation='zero').rateofchange().publish(label='C')\nE = data('counter.etcd.self.sendappendreq.cnt', filter=filter('plugin', 'etcd'), rollup='latest', extrapolation='zero').rateofchange().publish(label='E')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVW0alAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Number of Watchers",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Number of watchers",
+          "label" : "A",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd'), extrapolation='last_value').publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Number of keys / directories that expire per second",
+      "id" : "DiVW01sAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Expire Rate",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "expired items / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Metric",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Expired keys per sec",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "B = data('counter.etcd.store.expire.count', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows top 3 instances for expire rate",
+      "id" : "DiVWzvSAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top Expire Rate",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Rate of expiry",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.store.expire.count', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().top(count=3).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Gets failed per second for each instance",
+      "id" : "DiVWzxKAgCk",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Gets Failed Trend",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "failed gets / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : true,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Gets failed per second",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.store.gets.fail', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Total number of etcd nodes",
+      "id" : "DiVWzdCAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Number of instances",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Leaders",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Followers",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-sf_metric",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader')).count().publish(label='A')\nB = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd') and filter('state', 'StateFollower')).count().publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Number of watchers on instances",
+      "id" : "DiVWziRAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Instances by Number of Watchers",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "number of watchers",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : true,
+            "property" : "state"
+          }, {
+            "enabled" : false,
+            "property" : "key"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Number of watchers",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Total number of followers in the cluster",
+      "id" : "DiVW3jfAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Number of Followers",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "counter.etcd.self.recvappendreq.cnt - Count",
+          "label" : "A",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 5000,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.self.recvappendreq.cnt', filter=filter('plugin', 'etcd') and filter('state', 'StateFollower')).count().publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Shows the packets received per second for each member. There is activity on this chart when the cluster is active",
+      "id" : "DiVW4UQAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Receive Packet Rate",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "packets / sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "plugin_instance",
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Receive bandwidth rate",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "C = data('gauge.etcd.self.recvpkg.rate', filter=filter('plugin', 'etcd')).publish(label='C')",
       "tags" : null
     }
   }, {
@@ -694,1034 +2383,6 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Shows the packets received per second for each member. There is activity on this chart when the cluster is active",
-      "id" : "DiVW4UQAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Receive Packet Rate",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "packets / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : "plugin_instance",
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Receive bandwidth rate",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "C = data('gauge.etcd.self.recvpkg.rate', filter=filter('plugin', 'etcd')).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Total RPC requests successful and failed per second in the cluster",
-      "id" : "DiVW2xXAYMI",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total RPC Requests (successful/failed)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "rpcs / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "follower"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : false,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Successful RPCs per sec",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Failed RPCs per sec",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.leader.counts.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['state', 'cluster']).rateofchange().publish(label='A')\nB = data('counter.etcd.leader.counts.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['state', 'cluster']).rateofchange().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows receive and send bandwidth rates. There is activity on this chart when the cluster is active",
-      "id" : "DiVW1W6AgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Receive / Send Bandwidth Rate",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Receive bandwidth rate",
-          "label" : "C",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Send bandwidth rate",
-          "label" : "D",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "C = data('gauge.etcd.self.recvbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='C')\nD = data('gauge.etcd.self.sendbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='D')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Total number of etcd nodes",
-      "id" : "DiVWzdCAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Number of instances",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Leaders",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Followers",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-sf_metric",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader')).count().publish(label='A')\nB = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd') and filter('state', 'StateFollower')).count().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "The charts on the right show information about RPC requests",
-      "id" : "DiVW3V8AcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "RPC stats",
-      "options" : {
-        "markdown" : "These charts: ```Total RPC Requests (successful/failed)```, ```Per Member Failed RPCs``` and ```Top RPC Requests```, together can be used to gain insights regarding the overall ratio of successful and failed RPC requests. Also, it gives an idea of how the followers compare to each other in terms in failed RPC requests per second and which followers contribute more the RPC failures.",
-        "type" : "Text"
-      },
-      "packageSpecifications" : "",
-      "programText" : "",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Followers with top 3 RPC requests (successful+failed) per second",
-      "id" : "DiVW5E7AcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top RPC Requests",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "follower"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : false,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Successful RPCs per sec",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Failed RPCs per sec",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A+B",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.leader.counts.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['follower']).rateofchange().publish(label='A', enable=False)\nB = data('counter.etcd.leader.counts.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['follower']).rateofchange().publish(label='B', enable=False)\nG = (A+B).publish(label='G')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows a stack of append requests sent by all the members. Compare above chart, to see if append requests not received",
-      "id" : "DiVW3EEAgAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Send Append Requests",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "reqs / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Sent append requests",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "E = data('counter.etcd.self.sendappendreq.cnt', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='E')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Total number of followers in the cluster",
-      "id" : "DiVW3jfAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Number of Followers",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "counter.etcd.self.recvappendreq.cnt - Count",
-          "label" : "A",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : 5000,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.self.recvappendreq.cnt', filter=filter('plugin', 'etcd') and filter('state', 'StateFollower')).count().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows top 3 instances for expire rate",
-      "id" : "DiVWzvSAcAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Expire Rate",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          }, {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Rate of expiry",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.store.expire.count', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().top(count=3).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Rate of expiry of keys / directory per second",
-      "id" : "DiVWznpAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Expire Rate Trend",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "items / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : true,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Rate of expiry",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.store.expire.count', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Gets successful and failed per second on the instance",
-      "id" : "DiVWz0jAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Gets (successful/failed)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "gets / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          }, {
-            "enabled" : true,
-            "property" : "AWSUniqueId"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "counter.etcd.store.gets.success - Rate of Change",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "counter.etcd.store.gets.fail - Rate of Change",
-          "label" : "A",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "B = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='B')\nA = data('counter.etcd.store.gets.fail', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows the per second failed RPCs for each member",
-      "id" : "DiVW3RxAgDw",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Per Member Failed RPCs",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "failed rpcs / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "follower"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Failed RPC per second",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "B = data('counter.etcd.leader.counts.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest', extrapolation='zero').rateofchange().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows top 3 instances for number of watchers",
-      "id" : "DiVWzlOAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Instances with Most Number of Watchers",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          }, {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "metric_source"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Number of watchers",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).top(count=3).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
       "description" : "Followers with top 3 latency",
       "id" : "DiVW3dGAYAA",
       "lastUpdated" : 0,
@@ -1787,698 +2448,6 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('gauge.etcd.leader.latency.current', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), extrapolation='zero').top(count=3).above(0).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows top 3 instances for (successful+failed) gets",
-      "id" : "DiVWzkCAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Gets per second",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          }, {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "metric_source"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "failed gets / sec",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "successful gets / sec",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Overall get operations /sec",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "B = data('counter.etcd.store.gets.fail', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='B', enable=False)\nC = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='C', enable=False)\nD = (B+C).top(count=3).publish(label='D')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows the packets sent per second for each member. There is activity on this chart when the cluster is active",
-      "id" : "DiVW1wtAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Send Packet Rate",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "packets / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Send bandwidth rate",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "D = data('gauge.etcd.self.sendpkg.rate', filter=filter('plugin', 'etcd')).publish(label='D')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Compare-and-Deletes successful and failed per second in the store",
-      "id" : "DiVW4VXAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Compare-and-Deletes (successful/failed)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "cads / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Succesful CAD per sec",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Failed CAD per sec",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.store.compareanddelete.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='A')\nB = data('counter.etcd.store.compareanddelete.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Members with top 3 number of watchers",
-      "id" : "DiVW5QsAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Members with Max Number of Watchers",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "cluster"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          }, {
-            "enabled" : false,
-            "property" : "key"
-          }, {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "metric_source"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "gauge.etcd.store.watchers",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Sets successful and failed per second in the store",
-      "id" : "DiVW3PCAYAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Sets (successful/failed)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "sets / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Successful Sets per sec",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Failed Sets per sec",
-          "label" : "B",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.store.sets.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='A')\nB = data('counter.etcd.store.sets.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVW0alAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Number of Watchers",
-      "options" : {
-        "colorBy" : "Metric",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Number of watchers",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd'), extrapolation='last_value').publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Number of watchers on instances",
-      "id" : "DiVWziRAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Instances by Number of Watchers",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "number of watchers",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : true,
-            "property" : "state"
-          }, {
-            "enabled" : false,
-            "property" : "key"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Number of watchers",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Shows top 3 instances for (send+receive) bandwidth rate",
-      "id" : "DiVWzjXAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Bandwidth Rate",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          }, {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Receive bandwidth rate",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Send bandwdith rate",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Overall bandwidth rate",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.etcd.self.recvbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='A', enable=False)\nB = data('gauge.etcd.self.sendbandwidth.rate', filter=filter('plugin', 'etcd')).publish(label='B', enable=False)\nC = (A+B).top(count=3).publish(label='C')",
       "tags" : null
     }
   }, {
@@ -2588,11 +2557,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Number of keys / directories that expire per second",
-      "id" : "DiVW01sAYAA",
+      "description" : "Shows the packets sent per second for each member. There is activity on this chart when the cluster is active",
+      "id" : "DiVW1wtAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Expire Rate",
+      "name" : "Send Packet Rate",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -2600,145 +2569,11 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "expired items / sec",
+          "label" : "packets / sec",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "cluster"
-          }, {
-            "enabled" : false,
-            "property" : "dsname"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "plugin"
-          }, {
-            "enabled" : true,
-            "property" : "plugin_instance"
-          }, {
-            "enabled" : false,
-            "property" : "state"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Expired keys per sec",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "B = data('counter.etcd.store.expire.count', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Total number of watchers",
-      "id" : "DiVW3euAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Number of Watchers",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "gauge.etcd.store.watchers - Sum",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).sum().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Gets successful per second for each instance",
-      "id" : "DiVWzerAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Gets Successful Trend",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "gets successful / sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
+          "min" : 0.0
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
@@ -2771,7 +2606,7 @@
             "enabled" : true,
             "property" : "plugin_instance"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "state"
           } ]
         },
@@ -2788,8 +2623,8 @@
           "minimumResolution" : 0
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Gets successful per second",
-          "label" : "A",
+          "displayName" : "Send bandwidth rate",
+          "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -2807,25 +2642,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('counter.etcd.store.gets.success', filter=filter('plugin', 'etcd'), rollup='latest').rateofchange().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVW1z7AgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Ops stats",
-      "options" : {
-        "markdown" : "```Creates (successful/failed)```, ```Sets (successful/failed)```, ```Updates (successful/failed)```, ```Deletes (successful/failed)```, ```Compare-and-Swaps (successful/failed)``` and ```Compare-and-Deletes (successful/failed)``` charts visualize the ratio of successful to failed operations for each of the mentioned types. These operations are on the store and hence common to all the members in the cluster.",
-        "type" : "Text"
-      },
-      "packageSpecifications" : "",
-      "programText" : "",
+      "programText" : "D = data('gauge.etcd.self.sendpkg.rate', filter=filter('plugin', 'etcd')).publish(label='D')",
       "tags" : null
     }
   }, {
@@ -2930,86 +2747,191 @@
       "programText" : "A = data('counter.etcd.store.create.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='A')\nB = data('counter.etcd.store.create.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').rateofchange().publish(label='B')",
       "tags" : null
     }
-  } ],
-  "dashboardExports" : [ {
-    "dashboard" : {
-      "chartDensity" : "DEFAULT",
-      "charts" : [ {
-        "chartId" : "DiVW01sAYAA",
-        "column" : 3,
-        "height" : 1,
-        "row" : 0,
-        "width" : 3
-      }, {
-        "chartId" : "DiVW0alAcAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 0,
-        "width" : 3
-      }, {
-        "chartId" : "DiVWz0jAYAA",
-        "column" : 6,
-        "height" : 1,
-        "row" : 0,
-        "width" : 6
-      }, {
-        "chartId" : "DiVW1W6AgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 6
-      }, {
-        "chartId" : "DiVW0WvAgAE",
-        "column" : 6,
-        "height" : 1,
-        "row" : 1,
-        "width" : 6
-      } ],
+  }, {
+    "chart" : {
       "created" : 0,
       "creator" : null,
-      "customProperties" : null,
-      "description" : "An overview of an etcd instance",
-      "discoveryOptions" : {
-        "query" : "plugin:etcd",
-        "selectors" : [ "sf_key:host" ]
-      },
-      "eventOverlays" : null,
-      "filters" : {
-        "sources" : null,
-        "time" : null,
-        "variables" : [ {
-          "alias" : "cluster",
-          "applyIfExists" : false,
-          "description" : "cluster you want to monitor",
-          "preferredSuggestions" : [ ],
-          "property" : "cluster",
-          "replaceOnly" : false,
-          "required" : true,
-          "restricted" : false,
-          "value" : ""
-        }, {
-          "alias" : "instance",
-          "applyIfExists" : false,
-          "description" : "instance you want to monitor",
-          "preferredSuggestions" : [ ],
-          "property" : "plugin_instance",
-          "replaceOnly" : false,
-          "required" : true,
-          "restricted" : false,
-          "value" : ""
-        } ]
-      },
-      "groupId" : "DiVWzalAgAA",
-      "id" : "DiVWzxLAcAE",
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVW1z7AgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "locked" : false,
-      "maxDelayOverride" : null,
-      "name" : "etcd instance",
-      "selectedEventOverlays" : [ ],
+      "name" : "Ops stats",
+      "options" : {
+        "markdown" : "```Creates (successful/failed)```, ```Sets (successful/failed)```, ```Updates (successful/failed)```, ```Deletes (successful/failed)```, ```Compare-and-Swaps (successful/failed)``` and ```Compare-and-Deletes (successful/failed)``` charts visualize the ratio of successful to failed operations for each of the mentioned types. These operations are on the store and hence common to all the members in the cluster.",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
       "tags" : null
     }
   }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Followers with top 3 RPC requests (successful+failed) per second",
+      "id" : "DiVW5E7AcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top RPC Requests",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "cluster"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "follower"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : false,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Successful RPCs per sec",
+          "label" : "A",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Failed RPCs per sec",
+          "label" : "B",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A+B",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('counter.etcd.leader.counts.success', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['follower']).rateofchange().publish(label='A', enable=False)\nB = data('counter.etcd.leader.counts.fail', filter=filter('plugin', 'etcd') and filter('state', 'StateLeader'), rollup='latest').sum(by=['follower']).rateofchange().publish(label='B', enable=False)\nG = (A+B).publish(label='G')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Members with top 3 number of watchers",
+      "id" : "DiVW5QsAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Members with Max Number of Watchers",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "cluster"
+          }, {
+            "enabled" : true,
+            "property" : "plugin_instance"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          }, {
+            "enabled" : false,
+            "property" : "dsname"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "state"
+          }, {
+            "enabled" : false,
+            "property" : "key"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "metric_source"
+          }, {
+            "enabled" : false,
+            "property" : "job"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "gauge.etcd.store.watchers",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('gauge.etcd.store.watchers', filter=filter('plugin', 'etcd')).publish(label='A')",
+      "tags" : null
+    }
+  } ],
+  "dashboardExports" : [ {
     "dashboard" : {
       "chartDensity" : "DEFAULT",
       "charts" : [ {
@@ -3281,6 +3203,84 @@
       "selectedEventOverlays" : [ ],
       "tags" : null
     }
+  }, {
+    "dashboard" : {
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
+        "chartId" : "DiVW01sAYAA",
+        "column" : 3,
+        "height" : 1,
+        "row" : 0,
+        "width" : 3
+      }, {
+        "chartId" : "DiVW0alAcAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 0,
+        "width" : 3
+      }, {
+        "chartId" : "DiVWz0jAYAA",
+        "column" : 6,
+        "height" : 1,
+        "row" : 0,
+        "width" : 6
+      }, {
+        "chartId" : "DiVW1W6AgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 6
+      }, {
+        "chartId" : "DiVW0WvAgAE",
+        "column" : 6,
+        "height" : 1,
+        "row" : 1,
+        "width" : 6
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "An overview of an etcd instance",
+      "discoveryOptions" : {
+        "query" : "plugin:etcd",
+        "selectors" : [ "sf_key:host" ]
+      },
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : null,
+        "time" : null,
+        "variables" : [ {
+          "alias" : "cluster",
+          "applyIfExists" : false,
+          "description" : "cluster you want to monitor",
+          "preferredSuggestions" : [ ],
+          "property" : "cluster",
+          "replaceOnly" : false,
+          "required" : true,
+          "restricted" : false,
+          "value" : ""
+        }, {
+          "alias" : "instance",
+          "applyIfExists" : false,
+          "description" : "instance you want to monitor",
+          "preferredSuggestions" : [ ],
+          "property" : "plugin_instance",
+          "replaceOnly" : false,
+          "required" : true,
+          "restricted" : false,
+          "value" : ""
+        } ]
+      },
+      "groupId" : "DiVWzalAgAA",
+      "id" : "DiVWzxLAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "locked" : false,
+      "maxDelayOverride" : null,
+      "name" : "etcd instance",
+      "selectedEventOverlays" : [ ],
+      "tags" : null
+    }
   } ],
   "groupExport" : {
     "group" : {
@@ -3304,16 +3304,8 @@
       "teams" : null
     }
   },
-  "hashCode" : 1461703933,
+  "hashCode" : 1571335528,
   "id" : "DiVWzalAgAA",
-  "importQualifiers" : [ {
-    "filters" : [ {
-      "not" : false,
-      "property" : "plugin",
-      "values" : [ "etcd" ]
-    } ],
-    "metric" : "counter.etcd.leader.counts.success"
-  } ],
   "modelVersion" : 1,
   "packageType" : "GROUP"
 }

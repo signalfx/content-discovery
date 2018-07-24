@@ -5,22 +5,24 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWJ3VAgAA",
+      "id" : "DiVWId1AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Active Hosts",
+      "name" : "Top CPU %",
       "options" : {
         "colorBy" : "Dimension",
-        "colorScale" : null,
         "colorScale2" : null,
-        "maximumPrecision" : 4,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 3,
         "programOptions" : {
           "disableSampling" : true,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 30000
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu.idle - COUNT",
+          "displayName" : "%Idle - Mean(1m) - Mean by node",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -28,16 +30,24 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
-        "refreshInterval" : 5000,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('Used %', filter=filter('metric_source', 'AppDynamics'), extrapolation='last_value', maxExtrapolations=5).count().max(over='1m').publish(label='A')",
+      "programText" : "A = data('%Idle', filter=filter('metric_source', 'AppDynamics')).mean(over='1m').mean(by=['node']).publish(label='A', enable=False)\nC = (100 - A).top(count=5).publish(label='C')",
       "tags" : null
     }
   }, {
@@ -116,6 +126,219 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('Free (MB)', filter=filter('metric_source', 'AppDynamics') and filter('component_type', 'Memory')).sum(by=['sf_metric']).publish(label='A')\nB = data('Used (MB)', filter=filter('metric_source', 'AppDynamics') and filter('component_type', 'Memory')).sum(by=['sf_metric']).publish(label='B')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWJXcAYAU",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total Network I/O",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "transmitted - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "received - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 300000
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "transmitted bits/sec",
+          "label" : "A",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "received bits/sec",
+          "label" : "C",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600560,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('Outgoing KB/sec', filter=filter('metric_source', 'AppDynamics') and filter('component_type', 'Network') and (not filter('component_instance', '*'))).sum().scale(8192).publish(label='A')\nC = data('Incoming KB/sec', filter=filter('metric_source', 'AppDynamics') and filter('component_type', 'Network') and (not filter('component_instance', '*'))).sum().scale(8192).publish(label='C')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWJ3VAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Active Hosts",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : true,
+          "maxDelay" : null,
+          "minimumResolution" : 0
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "cpu.idle - COUNT",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 5000,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('Used %', filter=filter('metric_source', 'AppDynamics'), extrapolation='last_value', maxExtrapolations=5).count().max(over='1m').publish(label='A')",
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVWIdsAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total Disk I/O Ops",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "writes / s - BLUE",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "reads / s - RED",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 300000
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "write ops/sec",
+          "label" : "A",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "read ops/sec",
+          "label" : "C",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 3600666,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('Writes/sec', filter=filter('metric_source', 'AppDynamics') and (not filter('component_instance', '*'))).sum().publish(label='A')\nC = data('Reads/sec', filter=filter('metric_source', 'AppDynamics') and (not filter('component_instance', '*'))).sum().publish(label='C')",
       "tags" : null
     }
   }, {
@@ -334,57 +557,6 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWId1AYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top CPU %",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : true,
-          "maxDelay" : null,
-          "minimumResolution" : 30000
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "%Idle - Mean(1m) - Mean by node",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('%Idle', filter=filter('metric_source', 'AppDynamics')).mean(over='1m').mean(by=['node']).publish(label='A', enable=False)\nC = (100 - A).top(count=5).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
       "id" : "DiVWKRuAcKA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -502,178 +674,6 @@
       "programText" : "A = data('%Idle', filter=filter('metric_source', 'AppDynamics')).mean(by=['node']).publish(label='A', enable=False)\nC = (100 - A).publish(label='C', enable=False)\nD = (C).min().publish(label='D')\nE = (C).percentile(pct=10).publish(label='E')\nF = (C).percentile(pct=50).publish(label='F')\nG = (C).percentile(pct=90).publish(label='G')\nH = (C).max().publish(label='H')",
       "tags" : null
     }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWJXcAYAU",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Network I/O",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "transmitted - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "received - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 300000
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "transmitted bits/sec",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "received bits/sec",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600560,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('Outgoing KB/sec', filter=filter('metric_source', 'AppDynamics') and filter('component_type', 'Network') and (not filter('component_instance', '*'))).sum().scale(8192).publish(label='A')\nC = data('Incoming KB/sec', filter=filter('metric_source', 'AppDynamics') and filter('component_type', 'Network') and (not filter('component_instance', '*'))).sum().scale(8192).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWIdsAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total Disk I/O Ops",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "writes / s - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "reads / s - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 300000
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "write ops/sec",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "read ops/sec",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 3600666,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('Writes/sec', filter=filter('metric_source', 'AppDynamics') and (not filter('component_instance', '*'))).sum().publish(label='A')\nC = data('Reads/sec', filter=filter('metric_source', 'AppDynamics') and (not filter('component_instance', '*'))).sum().publish(label='C')",
-      "tags" : null
-    }
   } ],
   "dashboardExports" : [ {
     "dashboard" : {
@@ -771,16 +771,8 @@
       "teams" : null
     }
   },
-  "hashCode" : -1091744299,
+  "hashCode" : 1824353608,
   "id" : "DiVWIWVAcBA",
-  "importQualifiers" : [ {
-    "filters" : [ {
-      "not" : false,
-      "property" : "metric_source",
-      "values" : [ "AppDynamics" ]
-    } ],
-    "metric" : "Used %"
-  } ],
   "modelVersion" : 1,
   "packageType" : "GROUP"
 }
