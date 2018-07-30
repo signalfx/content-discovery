@@ -335,6 +335,100 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
+        "description": "From purchasing reservations (assuming 3 Year No-Upfront Convertibles) for running On-Demand instances",
+        "id": "DiVWLemAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Potential Savings",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 2,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# OnDemand Instances",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "on_demand_instance.published_cost - Mean by aws_instance_type,aws_platform,aws_region,aws_tenancy,aws_account_id",
+              "label": "M",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "ri.published_cost - Mean by aws_instance_type,aws_platform,aws_region,aws_tenancy,aws_account_id",
+              "label": "N",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "A*M - Sum",
+              "label": "O",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "A*N - Sum",
+              "label": "P",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "O-P - Scale:1440",
+              "label": "Q",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "$",
+              "valueSuffix": "/day",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('on_demand_instance.count', rollup='min', extrapolation='last_value', maxExtrapolations=10).sum(by=['aws_instance_type', 'aws_platform', 'aws_region', 'aws_tenancy', 'aws_account_id']).publish(label='A', enable=False)\nM = data('on_demand_instance.published_cost', extrapolation='last_value', maxExtrapolations=10).mean(by=['aws_instance_type', 'aws_platform', 'aws_region', 'aws_tenancy', 'aws_account_id']).publish(label='M', enable=False)\nN = data('ri.published_cost', extrapolation='last_value', maxExtrapolations=10).mean(by=['aws_instance_type', 'aws_platform', 'aws_region', 'aws_tenancy', 'aws_account_id']).publish(label='N', enable=False)\nO = (A*M).sum().publish(label='O', enable=False)\nP = (A*N).sum().publish(label='P', enable=False)\nQ = (O-P).scale(1440).publish(label='Q')",
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
         "description": "Cost is for time interval equal to the chart resolution.",
         "id": "DiVWF5fAcAA",
         "lastUpdated": 0,
@@ -1520,7 +1614,7 @@
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": "$",
-              "valueSuffix": "/hour",
+              "valueSuffix": "/day",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -3167,100 +3261,6 @@
         },
         "packageSpecifications": "",
         "programText": "A = data('cpu.utilization').mean(over='7d').below(50).sum(by=['host']).publish(label='A', enable=False)\nC = data('memory.utilization', rollup='average').mean(over='7d').below(50).sum(by=['host']).publish(label='C', enable=False)\nF = data('disk.utilization', rollup='average').max(by=['host']).mean(over='7d').below(50).sum(by=['host']).publish(label='F', enable=False)\nG = (A+C+F).sum(by=['host']).publish(label='G')",
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "From purchasing reservations (assuming 3 Year No-Upfront Convertibles) for running On-Demand instances",
-        "id": "DiVWLemAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Potential Savings",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 2,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "# OnDemand Instances",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "on_demand_instance.published_cost - Mean by aws_instance_type,aws_platform,aws_region,aws_tenancy,aws_account_id",
-              "label": "M",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "ri.published_cost - Mean by aws_instance_type,aws_platform,aws_region,aws_tenancy,aws_account_id",
-              "label": "N",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "A*M - Sum",
-              "label": "O",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "A*N - Sum",
-              "label": "P",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "O-P - Scale:60",
-              "label": "Q",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": "$",
-              "valueSuffix": "/ hour",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": 60000,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('on_demand_instance.count', rollup='min', extrapolation='last_value', maxExtrapolations=10).sum(by=['aws_instance_type', 'aws_platform', 'aws_region', 'aws_tenancy', 'aws_account_id']).publish(label='A', enable=False)\nM = data('on_demand_instance.published_cost', extrapolation='last_value', maxExtrapolations=10).mean(by=['aws_instance_type', 'aws_platform', 'aws_region', 'aws_tenancy', 'aws_account_id']).publish(label='M', enable=False)\nN = data('ri.published_cost', extrapolation='last_value', maxExtrapolations=10).mean(by=['aws_instance_type', 'aws_platform', 'aws_region', 'aws_tenancy', 'aws_account_id']).publish(label='N', enable=False)\nO = (A*M).sum().publish(label='O', enable=False)\nP = (A*N).sum().publish(label='P', enable=False)\nQ = (O-P).scale(60).publish(label='Q')",
         "tags": null
       }
     },
@@ -5108,7 +5108,7 @@
       "teams": null
     }
   },
-  "hashCode": 366699141,
+  "hashCode": -1736290843,
   "id": "DiVWBUtAcAA",
   "modelVersion": 1,
   "packageType": "GROUP"
