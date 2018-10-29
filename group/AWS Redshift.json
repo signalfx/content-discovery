@@ -5,11 +5,58 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Read in IOPS/sec for the data warehouse cluster",
-        "id": "DiVWROTAcAA",
+        "description": "The top 5 consumers with writes to the data warehouse",
+        "id": "DiVWPTbAgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Read IOPS/sec",
+        "name": "Top Data Warehouse Writes in IOPS/sec",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('WriteIOPS', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).top(count=5).mean(by=['ClusterIdentifier']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "The write latency for the data warehouse cluster",
+        "id": "DiVWQSUAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Write Latency (ms)",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -18,7 +65,7 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "iops/sec",
+              "label": "ms",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
@@ -50,7 +97,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "ReadIOPS - Mean by DWInstance",
+              "displayName": "WriteLatency - Mean by DWInstance",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -80,7 +127,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "P50",
+              "displayName": "median",
               "label": "D",
               "paletteIndex": 2,
               "plotType": null,
@@ -120,54 +167,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('ReadIOPS', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "The top 5 consumers for reads to the data warehouse",
-        "id": "DiVWPi1AYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Data Warehouse Reads in IOPS/sec",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "",
-          "time": null,
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('ReadIOPS', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).top(count=5).mean(by=['ClusterIdentifier']).publish(label='A')",
+        "programText": "A = data('WriteLatency', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).scale(1000).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -243,349 +243,6 @@
         },
         "packageSpecifications": "",
         "programText": "A = data('PercentageDiskSpaceUsed', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "The aggregated CPU utilization for the cluster",
-        "id": "DiVWPunAgAE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Cluster CPU Utilization",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 110,
-              "min": 0
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "CPUUtilization - Mean by Cluster Identifier",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "min",
-              "label": "D",
-              "paletteIndex": 14,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "P10",
-              "label": "E",
-              "paletteIndex": 2,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "median",
-              "label": "G",
-              "paletteIndex": 6,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "P90",
-              "label": "F",
-              "paletteIndex": 5,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "max",
-              "label": "C",
-              "paletteIndex": 7,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nD = (A).min().publish(label='D')\nE = (A).percentile(pct=10).publish(label='E')\nG = (A).percentile(pct=50).publish(label='G')\nF = (A).percentile(pct=90).publish(label='F')\nC = (A).max().publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Network traffic transmitted out from the data warehouse cluster",
-        "id": "DiVWQ2FAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Network Transmit Throughput",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "bytes/sec",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "NetworkTransmitThroughput - Mean by Cluster Identifier",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "min",
-              "label": "B",
-              "paletteIndex": 14,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "P10",
-              "label": "C",
-              "paletteIndex": 15,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "median",
-              "label": "D",
-              "paletteIndex": 2,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "P90",
-              "label": "E",
-              "paletteIndex": 9,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "max",
-              "label": "F",
-              "paletteIndex": 8,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('NetworkTransmitThroughput', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "The top 5 consumers impacting read latency to the data warehouse",
-        "id": "DiVWRp9AgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Data Warehouse Read Latency (ms)",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "",
-          "time": null,
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('ReadLatency', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).scale(1000).top(count=5).mean(by=['ClusterIdentifier']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "The number of active connections to the data warehouse",
-        "id": "DiVWOv4AYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Data Warehouse Connections",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "DatabaseConnections - Count by Cluster Identifier",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": null,
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('DatabaseConnections', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'count') and filter('ClusterIdentifier', '*')).count(by=['ClusterIdentifier']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -814,103 +471,6 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Displays maintenance on members of the cluster",
-        "id": "DiVWOQ0AcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Maintenance Mode",
-        "options": {
-          "colorBy": "Range",
-          "colorRange": {
-            "color": "#05ce00",
-            "max": null,
-            "min": null
-          },
-          "colorScale": null,
-          "colorScale2": null,
-          "groupBy": [],
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "A",
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            }
-          ],
-          "refreshInterval": null,
-          "sortDirection": "Ascending",
-          "sortProperty": null,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "Heatmap",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('MaintenanceMode', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'upper') and filter('ClusterIdentifier', '*')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "The total number of data warehouse instances",
-        "id": "DiVWOoiAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Data Warehouse Instances",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "CPUUtilization - Count",
-              "label": "A",
-              "paletteIndex": 1,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": null,
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/Redshift') and filter('ClusterIdentifier', 'dw-instance') and filter('stat', 'count')).count().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
         "description": "The read throughput for the data warehouse cluster",
         "id": "DiVWOTzAYAA",
         "lastUpdated": 0,
@@ -1036,11 +596,284 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "The write latency for the data warehouse cluster",
-        "id": "DiVWQSUAYAA",
+        "description": "The total number of data warehouse instances",
+        "id": "DiVWOoiAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Write Latency (ms)",
+        "name": "# Data Warehouse Instances",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "CPUUtilization - Count",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": null,
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/Redshift') and filter('ClusterIdentifier', 'dw-instance') and filter('stat', 'count')).count().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "The aggregated CPU utilization for the cluster",
+        "id": "DiVWPunAgAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Cluster CPU Utilization",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 110,
+              "min": 0
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "CPUUtilization - Mean by Cluster Identifier",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "min",
+              "label": "D",
+              "paletteIndex": 14,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "P10",
+              "label": "E",
+              "paletteIndex": 2,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "median",
+              "label": "G",
+              "paletteIndex": 6,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "P90",
+              "label": "F",
+              "paletteIndex": 5,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "max",
+              "label": "C",
+              "paletteIndex": 7,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nD = (A).min().publish(label='D')\nE = (A).percentile(pct=10).publish(label='E')\nG = (A).percentile(pct=50).publish(label='G')\nF = (A).percentile(pct=90).publish(label='F')\nC = (A).max().publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "The health status of the cluster",
+        "id": "DiVWRLuAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Cluster Health Status",
+        "options": {
+          "colorBy": "Range",
+          "colorRange": {
+            "color": "#05ce00",
+            "max": null,
+            "min": null
+          },
+          "colorScale": null,
+          "colorScale2": null,
+          "groupBy": [],
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": null,
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": null,
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortDirection": "Ascending",
+          "sortProperty": null,
+          "time": null,
+          "timestampHidden": false,
+          "type": "Heatmap",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('HealthStatus', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'count') and filter('ClusterIdentifier', '*')).count(by=['stat']).publish(label='A', enable=False)\nC = (A).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "The top 5 consumers for reads to the data warehouse",
+        "id": "DiVWPi1AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Data Warehouse Reads in IOPS/sec",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('ReadIOPS', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).top(count=5).mean(by=['ClusterIdentifier']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Read latency for the data warehouse cluster",
+        "id": "DiVWRjpAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Read Latency",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1081,7 +914,132 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "WriteLatency - Mean by DWInstance",
+              "displayName": "ReadLatency - Mean by Cluster Identifier",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "min",
+              "label": "B",
+              "paletteIndex": 14,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "P10",
+              "label": "D",
+              "paletteIndex": 15,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "median",
+              "label": "E",
+              "paletteIndex": 2,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "P90",
+              "label": "F",
+              "paletteIndex": 9,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "max",
+              "label": "C",
+              "paletteIndex": 8,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('ReadLatency', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).scale(1000).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nD = (A).percentile(pct=10).publish(label='D')\nE = (A).percentile(pct=50).publish(label='E')\nF = (A).percentile(pct=90).publish(label='F')\nC = (A).max().publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Read in IOPS/sec for the data warehouse cluster",
+        "id": "DiVWROTAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Read IOPS/sec",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "iops/sec",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "ReadIOPS - Mean by DWInstance",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -1104,6 +1062,131 @@
               "displayName": "P10",
               "label": "C",
               "paletteIndex": 13,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "P50",
+              "label": "D",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "P90",
+              "label": "E",
+              "paletteIndex": 9,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "max",
+              "label": "F",
+              "paletteIndex": 8,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('ReadIOPS', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Network traffic transmitted out from the data warehouse cluster",
+        "id": "DiVWQ2FAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network Transmit Throughput",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes/sec",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "NetworkTransmitThroughput - Mean by Cluster Identifier",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "min",
+              "label": "B",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "P10",
+              "label": "C",
+              "paletteIndex": 15,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -1151,7 +1234,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('WriteLatency', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).scale(1000).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+        "programText": "A = data('NetworkTransmitThroughput', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1161,18 +1244,32 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "The top 5 consumers with writes to the data warehouse",
-        "id": "DiVWPTbAgAA",
+        "description": "Displays maintenance on members of the cluster. Green, when maintenance mode for a cluster is OFF and yellow when maintenance mode if ON",
+        "id": "DiVWOQ0AcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top Data Warehouse Writes in IOPS/sec",
+        "name": "Maintenance Mode",
         "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
+          "colorBy": "Scale",
+          "colorRange": null,
+          "colorScale": null,
+          "colorScale2": [
+            {
+              "gt": 0,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 17
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0,
+              "paletteIndex": 20
+            }
+          ],
+          "groupBy": [],
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -1180,25 +1277,26 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "",
+              "displayName": "A",
               "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
             }
           ],
           "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "",
-          "time": null,
-          "type": "List",
+          "sortDirection": "Ascending",
+          "sortProperty": null,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "Heatmap",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('WriteIOPS', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).top(count=5).mean(by=['ClusterIdentifier']).publish(label='A')",
+        "programText": "A = data('MaintenanceMode', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'upper') and filter('ClusterIdentifier', '*')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1333,61 +1431,6 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "The health status of the cluster",
-        "id": "DiVWRLuAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Cluster Health Status",
-        "options": {
-          "colorBy": "Range",
-          "colorRange": {
-            "color": "#05ce00",
-            "max": null,
-            "min": null
-          },
-          "colorScale": null,
-          "colorScale2": null,
-          "groupBy": [],
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": null,
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": null,
-              "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            }
-          ],
-          "refreshInterval": null,
-          "sortDirection": "Ascending",
-          "sortProperty": null,
-          "time": null,
-          "timestampHidden": false,
-          "type": "Heatmap",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('HealthStatus', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'count') and filter('ClusterIdentifier', '*')).count(by=['stat']).publish(label='A', enable=False)\nC = (A).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
         "description": "The writes throughput for the data warehouse cluster",
         "id": "DiVWOePAgAA",
         "lastUpdated": 0,
@@ -1513,44 +1556,16 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Read latency for the data warehouse cluster",
-        "id": "DiVWRjpAYAA",
+        "description": "The number of active connections to the data warehouse",
+        "id": "DiVWOv4AYAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Read Latency",
+        "name": "Data Warehouse Connections",
         "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "ms",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            }
-          ],
-          "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -1558,77 +1573,73 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "ReadLatency - Mean by Cluster Identifier",
+              "displayName": "DatabaseConnections - Count by Cluster Identifier",
               "label": "A",
-              "paletteIndex": 2,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "min",
-              "label": "B",
-              "paletteIndex": 14,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "P10",
-              "label": "D",
-              "paletteIndex": 15,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "median",
-              "label": "E",
-              "paletteIndex": 2,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "P90",
-              "label": "F",
-              "paletteIndex": 9,
-              "plotType": "AreaChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "max",
-              "label": "C",
-              "paletteIndex": 8,
-              "plotType": "AreaChart",
+              "paletteIndex": null,
+              "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": null,
+          "timestampHidden": false,
+          "type": "SingleValue",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('ReadLatency', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).scale(1000).mean(by=['ClusterIdentifier']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nD = (A).percentile(pct=10).publish(label='D')\nE = (A).percentile(pct=50).publish(label='E')\nF = (A).percentile(pct=90).publish(label='F')\nC = (A).max().publish(label='C')",
+        "programText": "A = data('DatabaseConnections', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'count') and filter('ClusterIdentifier', '*')).count(by=['ClusterIdentifier']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "The top 5 consumers impacting read latency to the data warehouse",
+        "id": "DiVWRp9AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Data Warehouse Read Latency (ms)",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('ReadLatency', filter=filter('namespace', 'AWS/Redshift') and filter('stat', 'mean') and filter('ClusterIdentifier', '*')).scale(1000).top(count=5).mean(by=['ClusterIdentifier']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1806,6 +1817,19 @@
     "group": {
       "created": 0,
       "creator": null,
+      "dashboardConfigs": [
+        {
+          "chartDensityOverride": null,
+          "configId": "DoN4_ReAgAI",
+          "dashboardId": "DiVWOPjAgAA",
+          "descriptionOverride": null,
+          "eventOverlaysOverride": null,
+          "filtersOverride": null,
+          "maxDelayOverride": null,
+          "nameOverride": null,
+          "selectedEventOverlaysOverride": null
+        }
+      ],
       "dashboards": [
         "DiVWOPjAgAA"
       ],
@@ -1844,7 +1868,7 @@
       "teams": null
     }
   },
-  "hashCode": -223301078,
+  "hashCode": -652908076,
   "id": "DiVWOPWAYAA",
   "modelVersion": 1,
   "packageType": "GROUP"
