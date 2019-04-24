@@ -6,145 +6,10 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D48Ux52AYAA",
+        "id": "D48zYnxAgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "# Running Services",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "CPUUtilization - Count by ClusterName,ServiceName - Sum",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "services",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('ClusterName', '*') and filter('ServiceName', '*') and filter('stat', 'mean') and filter('namespace', 'AWS/ECS'), extrapolation='last_value', maxExtrapolations=5).count(by=['ClusterName', 'ServiceName']).sum().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1ay8clAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks by Cluster",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# tasks",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "# running tasks",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*')).sum(by=['ecs_task_arn']).count(by=['ClusterName']).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UxlrAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Clusters by Memory %",
+        "name": "Top Services by Memory %",
         "options": {
           "colorBy": "Dimension",
           "colorScale2": null,
@@ -173,12 +38,251 @@
           "refreshInterval": null,
           "secondaryVisualization": "Sparkline",
           "sortBy": "-value",
-          "time": null,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
           "type": "List",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('MemoryUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*')), extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
+        "programText": "A = data('MemoryUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/ECS') and filter('ServiceName', '*')).sum(by=['ServiceName', 'ClusterName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1azV6dAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Task Definitions",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "cpu.usage.total - Sum by ecs_task_group - Count",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*')).sum(by=['ecs_task_group']).count().publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1ay8DTAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Clusters by CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('cpu.percent', extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48zA3aAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Memory %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "memory %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": true,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "MemoryUtilization - Mean by ClusterName,ServiceName",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('MemoryUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean')).mean(by=['ClusterName', 'ServiceName']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48zY9HAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Active Clusters",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "A",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "clusters",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUReservation', filter=filter('namespace', 'AWS/ECS'), extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).count().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -264,525 +368,6 @@
         },
         "packageSpecifications": "",
         "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*')).mean(by=['ecs_task_group']).count().publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1ay8QVAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Task Definitions by Memory %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*')).sum(by=['ecs_task_group']).top(count=5).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1azaRiAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Memory %",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "memory %",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "memory.percent",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*') and filter('ecs_task_group', '*')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1azV6dAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Task Definitions",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "cpu.usage.total - Sum by ecs_task_group - Count",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*')).sum(by=['ecs_task_group']).count().publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48Uw1CAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Active Clusters",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "A",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "clusters",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUReservation', filter=filter('namespace', 'AWS/ECS'), extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).count().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48VIq_AYAE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# tasks",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": true,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "# tasks",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean')).sum(by=['ClusterName', 'ServiceName']).count().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1azV59AYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Task Definitions by CPU %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('cpu.percent', filter=filter('ClusterName', '*')).mean(by=['ecs_task_group']).top(count=5).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1ay8DTAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Clusters by CPU %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('cpu.percent', extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UwQmAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Services by CPU %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": null,
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and filter('ServiceName', '*')).mean(by=['ServiceName', 'ClusterName']).top(count=5).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UwSxAcAE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Clusters by CPU %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": null,
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*')), extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -928,10 +513,61 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D48UrEUAcAA",
+        "id": "D1azV59AYAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "# Running Tasks",
+        "name": "Top Task Definitions by CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('cpu.percent', filter=filter('ClusterName', '*')).mean(by=['ecs_task_group']).top(count=5).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1ay8clAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks by Cluster",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -958,12 +594,12 @@
           ],
           "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
+          "defaultPlotType": "LineChart",
           "eventPublishLabelOptions": [],
           "histogramChartOptions": {
             "colorThemeIndex": 16
           },
-          "includeZero": true,
+          "includeZero": false,
           "legendOptions": {
             "fields": null
           },
@@ -983,17 +619,17 @@
           "publishLabelOptions": [
             {
               "displayName": "# running tasks",
-              "label": "A",
+              "label": "B",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": "tasks",
+              "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
             }
           ],
           "showEventLines": false,
-          "stacked": true,
+          "stacked": false,
           "time": {
             "range": 7200000,
             "type": "relative"
@@ -1002,7 +638,168 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'mean')).count(by=['ClusterName']).publish(label='A')",
+        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*')).sum(by=['ecs_task_arn']).count(by=['ClusterName']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48ynJUAYBQ",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "CPU %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "cpu %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "ClusterName"
+              },
+              {
+                "enabled": true,
+                "property": "namespace"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "stat"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "CPUUtilization",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*'))).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1ay8QVAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Task Definitions by Memory %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*')).sum(by=['ecs_task_group']).top(count=5).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1084,10 +881,60 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D48UqcFAcAA",
+        "id": "D48ynPGAgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Memory %",
+        "name": "# Running Tasks",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "A",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "tasks",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'count'), rollup='average').sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48zbsgAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks by Cluster",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1096,7 +943,194 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "memory %",
+              "label": "# tasks",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "ClusterName",
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# running tasks",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "tasks",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'count'), rollup='average').sum(by=['ClusterName']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1ay76WAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Clusters by Memory %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('memory.percent', extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48ymTxAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Services by CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and filter('ServiceName', '*')).mean(by=['ServiceName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48zBvnAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "CPU %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "cpu %",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
@@ -1121,32 +1155,7 @@
           },
           "includeZero": true,
           "legendOptions": {
-            "fields": [
-              {
-                "enabled": true,
-                "property": "ClusterName"
-              },
-              {
-                "enabled": true,
-                "property": "namespace"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "stat"
-              }
-            ]
+            "fields": null
           },
           "lineChartOptions": {
             "showDataMarkers": false
@@ -1163,7 +1172,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "MemoryUtilization",
+              "displayName": "CPUUtilization - Mean by ClusterName,ServiceName",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -1183,7 +1192,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('MemoryUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*'))).publish(label='A')",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean')).mean(by=['ClusterName', 'ServiceName']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1194,7 +1203,422 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D48UsfuAcAA",
+        "id": "D48zb5CAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Clusters by Memory %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('MemoryUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*')), extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48za1hAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Services by CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and filter('ServiceName', '*')).mean(by=['ServiceName', 'ClusterName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48zZVFAYGw",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Clusters by CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*')), extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48ymtqAcEY",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# tasks",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": true,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# running tasks",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "tasks",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'count'), rollup='average').sum(by=['ClusterName']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1ay8fDAcAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Clusters",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "A",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('cpu.usage.system', extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).count().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1azV3nAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Task Definitions by Memory %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*')).sum(by=['ecs_task_group']).top(count=5).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1azaF2AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# Running Tasks",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*') and filter('ecs_task_group', '*')).sum(by=['ecs_task_arn']).count().publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48ymBXAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "# Running Services",
@@ -1269,56 +1693,6 @@
         },
         "packageSpecifications": "",
         "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'mean')).mean(by=['ServiceName']).count(by=['ClusterName']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UsoRAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "A",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "tasks",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'mean')).count().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1414,6 +1788,193 @@
         "creator": null,
         "customProperties": {},
         "description": "",
+        "id": "D48ymqmAYDs",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Services by Memory %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('MemoryUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/ECS') and filter('ServiceName', '*')).sum(by=['ServiceName']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48zCAiAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# tasks",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": true,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# tasks",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'count') and filter('ServiceName', '*'), rollup='average').sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1ay8YjAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Task Definitions by CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('cpu.percent', filter=filter('ClusterName', '*')).mean(by=['ecs_task_group']).top(count=5).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
         "id": "D1ay7_ZAcH8",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
@@ -1489,106 +2050,6 @@
         },
         "packageSpecifications": "",
         "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*')).count(by=['ClusterName']).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UsREAYGo",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Services",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "CPUUtilization - Count by ServiceName - Sum",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "services",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('ServiceName', '*') and filter('stat', 'mean') and filter('namespace', 'AWS/ECS')).count(by=['ServiceName']).sum().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1ay8fDAcAE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Clusters",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "A",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('cpu.usage.system', extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).count().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1734,61 +2195,10 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D48UqdZAgAA",
+        "id": "D48zZUnAgAE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top Services by Memory %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('MemoryUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/ECS') and filter('ServiceName', '*')).sum(by=['ServiceName']).top(count=5).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UrJuAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "CPU %",
+        "name": "# Running Services by Cluster",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1797,167 +2207,7 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "cpu %",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": true,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": true,
-                "property": "ClusterName"
-              },
-              {
-                "enabled": true,
-                "property": "namespace"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "stat"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "CPUUtilization",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*'))).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48VJUxAcAE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "tasks",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean')).sum(by=['ClusterName', 'ServiceName']).count().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1azaF2AgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
+              "label": "# services",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
@@ -1999,384 +2249,12 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "# Running Tasks",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*') and filter('ecs_task_group', '*')).sum(by=['ecs_task_arn']).count().publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UwPpAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "A",
+              "displayName": "# running services",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": "tasks",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'mean'), extrapolation='last_value', maxExtrapolations=5).count().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1ay8YjAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Task Definitions by CPU %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('cpu.percent', filter=filter('ClusterName', '*')).mean(by=['ecs_task_group']).top(count=5).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1azaFmAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "cpu.usage.total - Sum by ecs_task_arn - Count",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*', match_missing=True) and filter('ecs_task_group', '*', match_missing=True)).sum(by=['ecs_task_arn']).count().publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UqdrAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Services by CPU %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and filter('ServiceName', '*')).mean(by=['ServiceName']).top(count=5).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1azWADAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Memory %",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "memory %",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "memory.percent",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UxZwAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks by Cluster",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# tasks",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": "ClusterName",
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "# running tasks",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "tasks",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -2391,7 +2269,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'mean')).count(by=['ClusterName']).publish(label='A')",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ClusterName', '*') and filter('ServiceName', '*') and filter('stat', 'mean')).mean(by=['ClusterName', 'ServiceName']).count(by=['ClusterName']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2402,52 +2280,15 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D1azWGYAcAA",
+        "id": "D48zAtyAYAE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "CPU %",
+        "name": "# Running Tasks",
         "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "CPU %",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -2456,27 +2297,29 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "cpu.percent",
-              "label": "B",
+              "displayName": "",
+              "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": null,
+              "valueSuffix": "tasks",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "showEventLines": false,
-          "stacked": false,
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
           "time": {
-            "range": 7200000,
+            "range": 900000,
             "type": "relative"
           },
-          "type": "TimeSeriesChart",
+          "timestampHidden": false,
+          "type": "SingleValue",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "B = data('cpu.percent', filter=filter('ClusterName', '*')).publish(label='B')",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'count') and filter('ServiceName', '*'), rollup='average').sum().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2572,290 +2415,7 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D1ay76WAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Clusters by Memory %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('memory.percent', extrapolation='last_value', maxExtrapolations=5).mean(by=['ClusterName']).top(count=5).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48VIbPAgEg",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "CPU %",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "cpu %",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": true,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "CPUUtilization - Mean by ClusterName,ServiceName",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean')).mean(by=['ClusterName', 'ServiceName']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48UyMoAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Services by Cluster",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# services",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "# running services",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 7200000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ClusterName', '*') and filter('ServiceName', '*') and filter('stat', 'mean')).mean(by=['ClusterName', 'ServiceName']).count(by=['ClusterName']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D1ay8H4AYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Running Tasks",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "All Tasks",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "EC2 Tasks",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Fargate Tasks",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('cpu.usage.system', filter=filter('ecs_task_arn', '*')).sum(by=['ecs_task_arn']).count().publish(label='A')\nB = data('cpu.usage.system', filter=filter('ecs_task_arn', '*') and filter('AWSUniqueId', '*')).sum(by=['ecs_task_arn']).count().publish(label='B')\nC = (A-B).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "D48VJXuAgAA",
+        "id": "D48ynK2AcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Memory %",
@@ -2892,7 +2452,32 @@
           },
           "includeZero": true,
           "legendOptions": {
-            "fields": null
+            "fields": [
+              {
+                "enabled": true,
+                "property": "ClusterName"
+              },
+              {
+                "enabled": true,
+                "property": "namespace"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "stat"
+              }
+            ]
           },
           "lineChartOptions": {
             "showDataMarkers": false
@@ -2909,7 +2494,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "MemoryUtilization - Mean by ClusterName,ServiceName",
+              "displayName": "MemoryUtilization",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -2929,7 +2514,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('MemoryUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean')).mean(by=['ClusterName', 'ServiceName']).publish(label='A')",
+        "programText": "A = data('MemoryUtilization', filter=filter('namespace', 'AWS/ECS') and filter('stat', 'mean') and (not filter('ServiceName', '*'))).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2940,17 +2525,52 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D48UwDnAcAA",
+        "id": "D1azWGYAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top Services by Memory %",
+        "name": "CPU %",
         "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "CPU %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
           "colorBy": "Dimension",
-          "colorScale2": null,
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
           "legendOptions": {
             "fields": null
           },
-          "maximumPrecision": 3,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -2959,8 +2579,8 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "",
-              "label": "A",
+              "displayName": "cpu.percent",
+              "label": "B",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -2969,18 +2589,237 @@
               "yAxis": 0
             }
           ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('cpu.percent', filter=filter('ClusterName', '*')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48zchNAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "A",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "tasks",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
           "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "type": "List",
+          "timestampHidden": false,
+          "type": "SingleValue",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('MemoryUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/ECS') and filter('ServiceName', '*')).sum(by=['ServiceName', 'ClusterName']).top(count=5).publish(label='A')",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/ECS') and filter('ServiceName', '*') and filter('stat', 'count'), rollup='average', extrapolation='last_value', maxExtrapolations=5).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1azWADAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Memory %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "memory %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "memory.percent",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1azaRiAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Memory %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "memory %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "memory.percent",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*') and filter('ecs_task_group', '*')).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -3062,17 +2901,15 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "D1azV3nAgAA",
+        "id": "D48zZPzAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top Task Definitions by Memory %",
+        "name": "# Running Services",
         "options": {
           "colorBy": "Dimension",
+          "colorScale": null,
           "colorScale2": null,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
+          "maximumPrecision": null,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -3081,7 +2918,57 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "",
+              "displayName": "CPUUtilization - Count by ClusterName,ServiceName - Sum",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "services",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('ClusterName', '*') and filter('ServiceName', '*') and filter('stat', 'mean') and filter('namespace', 'AWS/ECS'), extrapolation='last_value', maxExtrapolations=5).count(by=['ClusterName', 'ServiceName']).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1azaFmAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "cpu.usage.total - Sum by ecs_task_arn - Count",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -3092,7 +2979,79 @@
             }
           ],
           "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('cpu.usage.total', filter=filter('ClusterName', '*', match_missing=True) and filter('ecs_task_group', '*', match_missing=True)).sum(by=['ecs_task_arn']).count().publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D1ay8H4AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Tasks",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "All Tasks",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "EC2 Tasks",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Fargate Tasks",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
           "sortBy": "-value",
           "time": {
             "range": 900000,
@@ -3102,7 +3061,57 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "B = data('memory.percent', filter=filter('ClusterName', '*')).sum(by=['ecs_task_group']).top(count=5).publish(label='B')",
+        "programText": "A = data('cpu.usage.system', filter=filter('ecs_task_arn', '*')).sum(by=['ecs_task_arn']).count().publish(label='A')\nB = data('cpu.usage.system', filter=filter('ecs_task_arn', '*') and filter('AWSUniqueId', '*')).sum(by=['ecs_task_arn']).count().publish(label='B')\nC = (A-B).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "D48ym3HAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Running Services",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "CPUUtilization - Count by ServiceName - Sum",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "services",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('ServiceName', '*') and filter('stat', 'mean') and filter('namespace', 'AWS/ECS')).count(by=['ServiceName']).sum().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -3184,106 +3193,6 @@
         "locked": false,
         "maxDelayOverride": null,
         "name": "ECS (SignalFX) Task Definition",
-        "selectedEventOverlays": [],
-        "tags": null
-      }
-    },
-    {
-      "dashboard": {
-        "chartDensity": "DEFAULT",
-        "charts": [
-          {
-            "chartId": "D48UsREAYGo",
-            "column": 0,
-            "height": 1,
-            "row": 0,
-            "width": 6
-          },
-          {
-            "chartId": "D48UsoRAgAA",
-            "column": 6,
-            "height": 1,
-            "row": 0,
-            "width": 6
-          },
-          {
-            "chartId": "D48UqcFAcAA",
-            "column": 6,
-            "height": 1,
-            "row": 1,
-            "width": 6
-          },
-          {
-            "chartId": "D48UrJuAgAA",
-            "column": 0,
-            "height": 1,
-            "row": 1,
-            "width": 6
-          },
-          {
-            "chartId": "D48UrEUAcAA",
-            "column": 0,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          },
-          {
-            "chartId": "D48UsfuAcAA",
-            "column": 6,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          },
-          {
-            "chartId": "D48UqdZAgAA",
-            "column": 6,
-            "height": 1,
-            "row": 3,
-            "width": 6
-          },
-          {
-            "chartId": "D48UqdrAYAA",
-            "column": 0,
-            "height": 1,
-            "row": 3,
-            "width": 6
-          }
-        ],
-        "created": 0,
-        "creator": null,
-        "customProperties": null,
-        "description": "",
-        "discoveryOptions": {
-          "query": "namespace:\"AWS/ECS\" AND _exists_:ServiceName AND _exists_:ClusterName",
-          "selectors": [
-            "_exists_:ClusterName"
-          ]
-        },
-        "eventOverlays": null,
-        "filters": {
-          "sources": null,
-          "time": null,
-          "variables": [
-            {
-              "alias": "Cluster",
-              "applyIfExists": false,
-              "description": "Name of the cluster",
-              "preferredSuggestions": [],
-              "property": "ClusterName",
-              "replaceOnly": false,
-              "required": false,
-              "restricted": false,
-              "value": ""
-            }
-          ]
-        },
-        "groupId": "DiVWWMuAgK4",
-        "id": "D48UqaKAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "locked": false,
-        "maxDelayOverride": null,
-        "name": "ECS (AWS) Cluster",
         "selectedEventOverlays": [],
         "tags": null
       }
@@ -3492,28 +3401,225 @@
         "chartDensity": "DEFAULT",
         "charts": [
           {
-            "chartId": "D48VIq_AYAE",
+            "chartId": "D48ym3HAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 6
+          },
+          {
+            "chartId": "D48ynPGAgAA",
             "column": 6,
             "height": 1,
             "row": 0,
             "width": 6
           },
           {
-            "chartId": "D48VJUxAcAE",
-            "column": 0,
+            "chartId": "D48ynK2AcAA",
+            "column": 6,
             "height": 1,
-            "row": 0,
+            "row": 1,
             "width": 6
           },
           {
-            "chartId": "D48VIbPAgEg",
+            "chartId": "D48ynJUAYBQ",
             "column": 0,
             "height": 1,
             "row": 1,
             "width": 6
           },
           {
-            "chartId": "D48VJXuAgAA",
+            "chartId": "D48ymtqAcEY",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "D48ymBXAcAA",
+            "column": 6,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "D48ymqmAYDs",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "D48ymTxAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": {
+          "query": "namespace:\"AWS/ECS\" AND _exists_:ServiceName AND _exists_:ClusterName",
+          "selectors": [
+            "_exists_:ClusterName"
+          ]
+        },
+        "eventOverlays": null,
+        "filters": {
+          "sources": null,
+          "time": null,
+          "variables": [
+            {
+              "alias": "Cluster",
+              "applyIfExists": false,
+              "description": "Name of the cluster",
+              "preferredSuggestions": [],
+              "property": "ClusterName",
+              "replaceOnly": false,
+              "required": false,
+              "restricted": false,
+              "value": ""
+            }
+          ]
+        },
+        "groupId": "DiVWWMuAgK4",
+        "id": "D48ylhGAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "ECS (AWS) Cluster",
+        "selectedEventOverlays": [],
+        "tags": null
+      }
+    },
+    {
+      "dashboard": {
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "D48zY9HAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "D48zZPzAcAA",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "D48zchNAcAA",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "D48zb5CAYAA",
+            "column": 6,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "D48zZVFAYGw",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "D48zZUnAgAE",
+            "column": 6,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "D48zbsgAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "D48zYnxAgAA",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "D48za1hAcAA",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": {
+          "query": "namespace:\"AWS/ECS\" AND _exists_:ServiceName AND _exists_:ClusterName",
+          "selectors": [
+            "sf_key:ServiceName",
+            "sf_key:ClusterName",
+            "namespace:AWS/ECS"
+          ]
+        },
+        "eventOverlays": null,
+        "filters": {
+          "sources": null,
+          "time": null,
+          "variables": null
+        },
+        "groupId": "DiVWWMuAgK4",
+        "id": "D48zXizAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "ECS (AWS)",
+        "selectedEventOverlays": [],
+        "tags": null
+      }
+    },
+    {
+      "dashboard": {
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "D48zCAiAYAA",
+            "column": 6,
+            "height": 1,
+            "row": 0,
+            "width": 6
+          },
+          {
+            "chartId": "D48zAtyAYAE",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 6
+          },
+          {
+            "chartId": "D48zBvnAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "D48zA3aAcAA",
             "column": 6,
             "height": 1,
             "row": 1,
@@ -3560,109 +3666,12 @@
           ]
         },
         "groupId": "DiVWWMuAgK4",
-        "id": "D48VITFAcAA",
+        "id": "D48zAofAgAE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "locked": false,
         "maxDelayOverride": null,
         "name": "ECS (AWS) Service",
-        "selectedEventOverlays": [],
-        "tags": null
-      }
-    },
-    {
-      "dashboard": {
-        "chartDensity": "DEFAULT",
-        "charts": [
-          {
-            "chartId": "D48Uw1CAgAA",
-            "column": 0,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "D48Ux52AYAA",
-            "column": 4,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "D48UwPpAgAA",
-            "column": 8,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "D48UxlrAgAA",
-            "column": 6,
-            "height": 1,
-            "row": 1,
-            "width": 6
-          },
-          {
-            "chartId": "D48UwSxAcAE",
-            "column": 0,
-            "height": 1,
-            "row": 1,
-            "width": 6
-          },
-          {
-            "chartId": "D48UyMoAcAA",
-            "column": 6,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          },
-          {
-            "chartId": "D48UxZwAYAA",
-            "column": 0,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          },
-          {
-            "chartId": "D48UwDnAcAA",
-            "column": 6,
-            "height": 1,
-            "row": 3,
-            "width": 6
-          },
-          {
-            "chartId": "D48UwQmAYAA",
-            "column": 0,
-            "height": 1,
-            "row": 3,
-            "width": 6
-          }
-        ],
-        "created": 0,
-        "creator": null,
-        "customProperties": null,
-        "description": "",
-        "discoveryOptions": {
-          "query": "namespace:\"AWS/ECS\" AND _exists_:ServiceName AND _exists_:ClusterName",
-          "selectors": [
-            "sf_key:ServiceName",
-            "sf_key:ClusterName",
-            "namespace:AWS/ECS"
-          ]
-        },
-        "eventOverlays": null,
-        "filters": {
-          "sources": null,
-          "time": null,
-          "variables": null
-        },
-        "groupId": "DiVWWMuAgK4",
-        "id": "D48Uv_kAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "locked": false,
-        "maxDelayOverride": null,
-        "name": "ECS (AWS)",
         "selectedEventOverlays": [],
         "tags": null
       }
@@ -3673,12 +3682,12 @@
       "created": 0,
       "creator": null,
       "dashboards": [
+        "D48zXizAcAA",
+        "D48ylhGAYAA",
+        "D48zAofAgAE",
         "D1ay73bAgAA",
         "D1azVmqAYAA",
-        "D1azZzmAYAE",
-        "D48Uv_kAYAA",
-        "D48UqaKAYAA",
-        "D48VITFAcAA"
+        "D1azZzmAYAE"
       ],
       "description": "Dashboards about Amazon EC2 Container Service (ECS).",
       "email": null,
@@ -3725,7 +3734,7 @@
       "teams": null
     }
   },
-  "hashCode": 121190298,
+  "hashCode": 281571227,
   "id": "DiVWWMuAgK4",
   "modelVersion": 1,
   "packageType": "GROUP"
