@@ -5,97 +5,82 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Error rate on requests made to the service",
-        "id": "DsK5qJnAcA8",
-        "importOf": "DqlZTecAIAA",
+        "description": "Memory utilization of the service hosts",
+        "id": "D7x6v1bAgEA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Error rate",
+        "name": "Host memory usage",
         "options": {
-          "colorBy": "Scale",
-          "colorScale": null,
-          "colorScale2": [
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
             {
-              "gt": 5,
-              "gte": null,
-              "lt": null,
-              "lte": null,
-              "paletteIndex": 16
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
             },
             {
-              "gt": 1,
-              "gte": null,
-              "lt": null,
-              "lte": 5,
-              "paletteIndex": 17
-            },
-            {
-              "gt": 0,
-              "gte": null,
-              "lt": null,
-              "lte": 1,
-              "paletteIndex": 18
-            },
-            {
-              "gt": null,
-              "gte": null,
-              "lt": null,
-              "lte": 0,
-              "paletteIndex": 20
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
             }
           ],
-          "maximumPrecision": null,
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": true,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
           "programOptions": {
             "disableSampling": false,
-            "maxDelay": null,
+            "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
           },
           "publishLabelOptions": [
             {
-              "displayName": "Successful equests",
+              "displayName": "memory.utilization",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "All requests",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Error rate",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
+              "valuePrefix": "",
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
+          "showEventLines": false,
+          "stacked": false,
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "timestampHidden": false,
-          "type": "SingleValue",
+          "type": "TimeSeriesChart",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*'), rollup='delta').sum(by=['service']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*'), rollup='delta').sum(by=['service']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "programText": "A = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -106,8 +91,7 @@
         "creator": null,
         "customProperties": {},
         "description": "Requests/sec processed by the endpoint",
-        "id": "DsK5qw1AcAA",
-        "importOf": "Dqlm3FxAAAA",
+        "id": "D7F9BNAAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Request rate",
@@ -181,7 +165,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*')).sum(by=['service', 'operation']).publish(label='A')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*'),rollup='rate').sum(by=['service', 'operation']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -191,82 +175,65 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "CPU Utilization of the service hosts",
-        "id": "DupO1ITAgAA",
+        "description": "Most active service endpoints (1min requests/sec average)",
+        "id": "D7x6v1cAgAU",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Host CPU",
+        "name": "Top endpoints",
         "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
+          "colorScale2": null,
           "legendOptions": {
-            "fields": null
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "operation"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "service"
+              }
+            ]
           },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
+          "maximumPrecision": null,
           "programOptions": {
             "disableSampling": false,
-            "maxDelay": 0,
+            "maxDelay": null,
             "minimumResolution": 0,
             "timezone": null
           },
           "publishLabelOptions": [
             {
-              "displayName": "cpu.utilization",
+              "displayName": "Requests/sec",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
+              "valuePrefix": null,
+              "valueSuffix": "requests/sec",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "showEventLines": false,
-          "stacked": false,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "type": "TimeSeriesChart",
+          "type": "List",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*'),rollup='rate').sum(by=['operation', 'service']).mean(over='1m').publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -276,181 +243,94 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Memory utilization of the service hosts",
-        "id": "DsK5pd_AcFg",
-        "importOf": "Dr64aTDAAAE",
+        "description": "",
+        "id": "D7x6v1cAgAk",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Host memory usage",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "memory.utilization",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Saturation of the service hosts (max of CPU, memory and disk utilization)",
-        "id": "DupMwDxAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Service hosts saturation",
+        "name": "Service map",
         "options": {
           "colorBy": "Scale",
           "colorRange": null,
-          "colorScale": null,
           "colorScale2": [
             {
-              "gt": 90,
+              "gt": 5,
               "gte": null,
               "lt": null,
               "lte": null,
               "paletteIndex": 16
             },
             {
-              "gt": 75,
+              "gt": 1,
               "gte": null,
               "lt": null,
-              "lte": 90,
+              "lte": 5,
               "paletteIndex": 17
             },
             {
-              "gt": 50,
+              "gt": 0,
               "gte": null,
               "lt": null,
-              "lte": 75,
+              "lte": 1,
               "paletteIndex": 18
             },
             {
               "gt": null,
               "gte": null,
               "lt": null,
-              "lte": 50,
-              "paletteIndex": 20
+              "lte": 0,
+              "paletteIndex": 3
             }
           ],
-          "groupBy": [],
+          "defaultColorBy": null,
+          "defaultSizeBy": null,
+          "mapRange": null,
+          "operationFilter": null,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
           },
-          "publishLabelOptions": [
+          "serviceFilter": [],
+          "systemMapLabelOptions": [
             {
-              "displayName": "cpu.utilization",
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "memory.utilization",
+              "displayName": "Requests/sec",
               "label": "B",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "viewMenu": "SizeBy"
             },
             {
-              "displayName": "disk.summary_utilization",
+              "displayName": "Successful requests",
               "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "viewMenu": "SizeBy"
             },
             {
-              "displayName": "Saturation",
+              "displayName": "All requests",
               "label": "D",
-              "valuePrefix": "",
-              "valueSuffix": "%",
-              "valueUnit": null
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "viewMenu": "SizeBy"
+            },
+            {
+              "displayName": "Error rate",
+              "label": "E",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "viewMenu": "ColorBy"
             }
           ],
-          "refreshInterval": null,
-          "sortDirection": "Ascending",
-          "sortProperty": null,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "Heatmap",
-          "unitPrefix": "Metric"
+          "tagFilters": null,
+          "type": "SystemMap"
         },
         "packageSpecifications": "",
-        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A', enable=False)\nB = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=filter('sf_hasService', '*')).publish(label='C',enable=False)\nD = max(A,B,C).sum(by='host').publish(label='D')",
+        "programText": "B = data('spans.count', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('cluster', '*'),rollup='rate').sum(by=['service']).publish(label='B')\nC = data('spans.count', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('cluster', '*') and filter('error', 'false'), rollup='delta').sum(by=['service']).publish(label='C', enable=False)\nD = data('spans.count', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('cluster', '*'), rollup='delta').sum(by=['service']).publish(label='D', enable=False)\nE = (100*(D-C)/D).sum(by=['service']).publish(label='E')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -461,8 +341,7 @@
         "creator": null,
         "customProperties": {},
         "description": "Distribution of request latency with median (50th), 90th and 99th percentiles",
-        "id": "DsK5pkeAcEo",
-        "importOf": "DqlkkqXAAAA",
+        "id": "D7F9CCBAYAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Request latency distribution",
@@ -556,179 +435,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.duration.ns.median', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*')).mean(by=['service', 'operation']).publish(label='A')\nB = data('spans.duration.ns.p90', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*')).mean(by=['service', 'operation']).publish(label='B')\nC = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*')).mean(by=['service', 'operation']).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Disk utilization of the service hosts",
-        "id": "DsK5p-LAcAk",
-        "importOf": "Dr_82RWAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Host disk usage",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "disk.summary_utilization",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('disk.summary_utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Requests/sec processed by the service",
-        "id": "DsK5oLZAcAA",
-        "importOf": "DqlPwItAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Request rate",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Requests/sec",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "requests/sec",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*')).sum(by=['service']).publish(label='A')",
+        "programText": "A = data('spans.duration.ns.median', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*')).mean(by=['service', 'operation']).publish(label='A')\nB = data('spans.duration.ns.p90', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*')).mean(by=['service', 'operation']).publish(label='B')\nC = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*')).mean(by=['service', 'operation']).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -739,8 +446,7 @@
         "creator": null,
         "customProperties": {},
         "description": "Cumulative network utilization of the service hosts",
-        "id": "DsK5rG5AcAE",
-        "importOf": "Dr_96JaAAAA",
+        "id": "D7F9A7jAYAE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Host network utilization",
@@ -814,7 +520,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('network.total', filter=filter('sf_hasService', '*')).publish(label='A')",
+        "programText": "A = data('network.total', filter=filter('sf_hasService', '*'),rollup='rate').publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -824,48 +530,82 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Most active service endpoints (1min requests/sec average)",
-        "id": "DupNkWLAcAA",
+        "description": "CPU Utilization of the service hosts",
+        "id": "D7x6v1cAgAc",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top endpoints",
+        "name": "Host CPU",
         "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
           "colorBy": "Dimension",
-          "colorScale2": null,
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
           "legendOptions": {
             "fields": null
           },
-          "maximumPrecision": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
           "programOptions": {
             "disableSampling": false,
-            "maxDelay": null,
+            "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
           },
           "publishLabelOptions": [
             {
-              "displayName": "Requests/sec",
+              "displayName": "cpu.utilization",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "requests/sec",
+              "valuePrefix": "",
+              "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "",
+          "showEventLines": false,
+          "stacked": false,
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "type": "List",
+          "type": "TimeSeriesChart",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*')).sum(by=['operation', 'service']).mean(over='1m').publish(label='A')",
+        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -875,8 +615,93 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Error rate on requests made to the endpoint",
-        "id": "DupO7rsAYAA",
+        "description": "CPU Utilization of the service hosts",
+        "id": "D7F9CCvAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Host CPU",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "cpu.utilization",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Error rate on requests made to the service",
+        "id": "D7x6v1bAgD4",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Error rate",
@@ -906,7 +731,7 @@
           ],
           "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
+          "defaultPlotType": "AreaChart",
           "eventPublishLabelOptions": [],
           "histogramChartOptions": {
             "colorThemeIndex": 16
@@ -970,7 +795,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*') and filter('operation', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -981,8 +806,7 @@
         "creator": null,
         "customProperties": {},
         "description": "Cumulative network utilization of the service hosts",
-        "id": "DsK5rM1AcC0",
-        "importOf": "DsAXzLYAEAA",
+        "id": "D7x6v1cAgAI",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Host network utilization",
@@ -1056,7 +880,57 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('network.total', filter=filter('sf_hasService', '*')).publish(label='A')",
+        "programText": "A = data('network.total', filter=filter('sf_hasService', '*'),rollup='rate').publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "99th percentile response time",
+        "id": "D7x6v1cAgAM",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request latency (p99)",
+        "options": {
+          "colorBy": "Metric",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 6,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "p99 latency",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Nanosecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('cluster', '*')).mean(by=['service']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1067,8 +941,7 @@
         "creator": null,
         "customProperties": {},
         "description": "Requests/sec by service endpoint",
-        "id": "DsK5o_5AcBM",
-        "importOf": "DqlZIz5AEAA",
+        "id": "D7x6v1bAgEE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Request rate by endpoint",
@@ -1142,7 +1015,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*')).sum(by=['operation', 'service']).publish(label='A')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*'),rollup='rate').sum(by=['operation', 'service']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1152,209 +1025,16 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Distribution of request latency with median (50th), 90th and 99th percentiles",
-        "id": "DsK5qW7AcAA",
-        "importOf": "DqlPwQoAIAA",
+        "description": "Requests/sec processed by the endpoint",
+        "id": "D7F9BFrAgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Request latency distribution",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Metric",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "p50 latency",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Nanosecond",
-              "yAxis": 0
-            },
-            {
-              "displayName": "p90 latency",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Nanosecond",
-              "yAxis": 0
-            },
-            {
-              "displayName": "p99 latency",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Nanosecond",
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('spans.duration.ns.median', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*')).mean(by=['service']).publish(label='A')\nB = data('spans.duration.ns.p90', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*')).mean(by=['service']).publish(label='B')\nC = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*')).mean(by=['service']).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Memory utilization of the service hosts",
-        "id": "DsK5rX4AcC4",
-        "importOf": "DsAX046AIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Host memory usage",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "memory.utilization",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Error rate on requests made to the endpoint",
-        "id": "DsK5pEEAcAw",
-        "importOf": "DqlkkibAIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Error rate",
+        "name": "Request rate",
         "options": {
           "colorBy": "Dimension",
           "colorScale": null,
           "colorScale2": null,
-          "maximumPrecision": null,
+          "maximumPrecision": 4,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -1363,32 +1043,12 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Successful requests",
+              "displayName": "Requests/sec",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "All requests",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Error rate",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
+              "valueSuffix": "requests/sec",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -1405,7 +1065,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*') and filter('operation', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*'),rollup='rate').sum(by=['service', 'operation']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1415,54 +1075,46 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "CPU Utilization of the service hosts",
-        "id": "DsK5pAvAcEA",
-        "importOf": "DrmkvA5AIAA",
+        "description": "Saturation of the service hosts (max of CPU, memory and disk utilization)",
+        "id": "D7x6v1cAgAQ",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Host CPU",
+        "name": "Service hosts saturation",
         "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
+          "colorBy": "Scale",
+          "colorRange": null,
+          "colorScale": null,
+          "colorScale2": [
             {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
+              "gt": 90,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
             },
             {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
+              "gt": 75,
+              "gte": null,
+              "lt": null,
+              "lte": 90,
+              "paletteIndex": 17
+            },
+            {
+              "gt": 50,
+              "gte": null,
+              "lt": null,
+              "lte": 75,
+              "paletteIndex": 18
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 50,
+              "paletteIndex": 20
             }
           ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
+          "groupBy": [],
           "programOptions": {
             "disableSampling": false,
             "maxDelay": 0,
@@ -1473,25 +1125,45 @@
             {
               "displayName": "cpu.utilization",
               "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
               "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
-              "yAxis": 0
+              "valueSuffix": "%",
+              "valueUnit": null
+            },
+            {
+              "displayName": "memory.utilization",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            },
+            {
+              "displayName": "disk.summary_utilization",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Saturation",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
             }
           ],
-          "showEventLines": false,
-          "stacked": false,
+          "refreshInterval": null,
+          "sortDirection": "Ascending",
+          "sortProperty": null,
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "type": "TimeSeriesChart",
+          "timestampHidden": false,
+          "type": "Heatmap",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
+        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A', enable=False)\nB = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=filter('sf_hasService', '*')).publish(label='C', enable=False)\nD = max(A, B, C).sum(by='host').publish(label='D')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1502,7 +1174,7 @@
         "creator": null,
         "customProperties": {},
         "description": "Error rate on requests made to the service, by endpoint",
-        "id": "DupNKpxAYAA",
+        "id": "D7x6v1cAgAE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Error rate by endpoint",
@@ -1596,7 +1268,190 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*'), rollup='delta').sum(by=['operation', 'service']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*'), rollup='delta').sum(by=['operation', 'service']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Saturation of the service hosts (max of CPU, memory and disk utilization)",
+        "id": "D7F9AxgAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Service hosts saturation",
+        "options": {
+          "colorBy": "Scale",
+          "colorRange": null,
+          "colorScale": null,
+          "colorScale2": [
+            {
+              "gt": 90,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": 75,
+              "gte": null,
+              "lt": null,
+              "lte": 90,
+              "paletteIndex": 17
+            },
+            {
+              "gt": 50,
+              "gte": null,
+              "lt": null,
+              "lte": 75,
+              "paletteIndex": 18
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 50,
+              "paletteIndex": 20
+            }
+          ],
+          "groupBy": [],
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "cpu.utilization",
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "disk.summary_utilization",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "memory.utilization",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Saturation",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortDirection": "Ascending",
+          "sortProperty": null,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "Heatmap",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A',enable=False)\nB = data('disk.summary_utilization', filter=filter('sf_hasService', '*')).publish(label='B',enable=False)\nC = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='C',enable=False)\nD = max(A, B, C).sum(by='host').publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "99th percentile request latency by endpoint",
+        "id": "D7x6v1bAgEI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request latency (p99) by endpoint",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Request latency (p99)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Nanosecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('spans.duration.ns.p99', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*')).max(by=['operation', 'service']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1607,8 +1462,7 @@
         "creator": null,
         "customProperties": {},
         "description": "Disk utilization of the service hosts",
-        "id": "DsK5owAAcGI",
-        "importOf": "DsAX03uAAAA",
+        "id": "D7F9CB-AcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Host disk usage",
@@ -1692,65 +1546,45 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "",
-        "id": "DsLqs1OAcAA",
+        "description": "Error rate on requests made to the service",
+        "id": "D7x6v1cAgAY",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Service map",
+        "name": "Error rate",
         "options": {
-          "colorBy": "Range",
-          "colorRange": {
-            "color": null,
-            "max": null,
-            "min": null
-          },
-          "colorScale2": null,
-          "defaultColorBy": null,
-          "defaultSizeBy": null,
-          "mapRange": null,
-          "operationFilter": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "serviceFilter": [],
-          "systemMapLabelOptions": [
+          "colorBy": "Scale",
+          "colorScale": null,
+          "colorScale2": [
             {
-              "displayName": "Requests/sec",
-              "label": "B",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "viewMenu": "SizeBy"
+              "gt": 5,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": 1,
+              "gte": null,
+              "lt": null,
+              "lte": 5,
+              "paletteIndex": 17
+            },
+            {
+              "gt": 0,
+              "gte": null,
+              "lt": null,
+              "lte": 1,
+              "paletteIndex": 18
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0,
+              "paletteIndex": 20
             }
           ],
-          "tagFilters": null,
-          "type": "SystemMap"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('spans.count', filter=filter('kind', 'CONSUMER', 'SERVER')).sum(by=['service']).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "99th percentile response time",
-        "id": "DsK5of0AcAA",
-        "importOf": "Dqlm3FrAIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Request latency (p99)",
-        "options": {
-          "colorBy": "Metric",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 6,
+          "maximumPrecision": null,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -1759,18 +1593,38 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "p99 latency",
+              "displayName": "Successful requests",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Nanosecond",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "All requests",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Error rate",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
               "yAxis": 0
             }
           ],
           "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
+          "secondaryVisualization": "None",
           "showSparkLine": false,
           "time": {
             "range": 900000,
@@ -1781,7 +1635,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*')).mean(by=['service', 'operation']).publish(label='A')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1791,11 +1645,11 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "99th percentile request latency by endpoint",
-        "id": "DupMwbOAYAU",
+        "description": "Distribution of request latency with median (50th), 90th and 99th percentiles",
+        "id": "D7x6v1cAgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Request latency (p99) by endpoint",
+        "name": "Request latency distribution",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1809,6 +1663,111 @@
               "lowWatermarkLabel": null,
               "max": null,
               "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Metric",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "p50 latency",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Nanosecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "p90 latency",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Nanosecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "p99 latency",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Nanosecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('spans.duration.ns.median', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('cluster', '*')).mean(by=['service']).publish(label='A')\nB = data('spans.duration.ns.p90', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('cluster', '*')).mean(by=['service']).publish(label='B')\nC = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('cluster', '*')).mean(by=['service']).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Disk utilization of the service hosts",
+        "id": "D7x6v1cAgAg",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Host disk usage",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
             },
             {
               "highWatermark": null,
@@ -1840,19 +1799,19 @@
           },
           "programOptions": {
             "disableSampling": false,
-            "maxDelay": null,
+            "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
           },
           "publishLabelOptions": [
             {
-              "displayName": "Request latency (p99)",
+              "displayName": "disk.summary_utilization",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Nanosecond",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null,
               "yAxis": 0
             }
           ],
@@ -1866,7 +1825,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.duration.ns.p99', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*')).max(by=['operation', 'service']).publish(label='A')",
+        "programText": "A = data('disk.summary_utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1876,98 +1835,53 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Requests/sec processed by the service",
-        "id": "DsK5pwsAcBc",
-        "importOf": "DqlPwYiAAAA",
+        "description": "Memory utilization of the service hosts",
+        "id": "D7F9BagAYEQ",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Request rate",
+        "name": "Host memory usage",
         "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
           "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 4,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
           },
-          "publishLabelOptions": [
-            {
-              "displayName": "Requests/sec",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "requests/sec",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
           },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*')).sum(by=['service']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Saturation of the service hosts (max of CPU, memory and disk utilization)",
-        "id": "DsK5ou1AcAI",
-        "importOf": "DsAX04GAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Service hosts saturation",
-        "options": {
-          "colorBy": "Scale",
-          "colorRange": null,
-          "colorScale": null,
-          "colorScale2": [
-            {
-              "gt": 90,
-              "gte": null,
-              "lt": null,
-              "lte": null,
-              "paletteIndex": 16
-            },
-            {
-              "gt": 75,
-              "gte": null,
-              "lt": null,
-              "lte": 90,
-              "paletteIndex": 17
-            },
-            {
-              "gt": 50,
-              "gte": null,
-              "lt": null,
-              "lte": 75,
-              "paletteIndex": 18
-            },
-            {
-              "gt": null,
-              "gte": null,
-              "lt": null,
-              "lte": 50,
-              "paletteIndex": 20
-            }
-          ],
-          "groupBy": [],
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
           "programOptions": {
             "disableSampling": false,
             "maxDelay": 0,
@@ -1976,98 +1890,27 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "cpu.utilization",
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
               "displayName": "memory.utilization",
-              "label": "B",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "disk.summary_utilization",
-              "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Saturation",
-              "label": "D",
-              "valuePrefix": "",
-              "valueSuffix": "%",
-              "valueUnit": null
-            }
-          ],
-          "refreshInterval": null,
-          "sortDirection": "Ascending",
-          "sortProperty": null,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "Heatmap",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('cpu.utilization', filter=filter('sf_hasService', '*')).publish(label='A', enable=False)\nB = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=filter('sf_hasService', '*')).publish(label='C', enable=False)\nD = max(A,B,C).sum(by='host').publish(label='D')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Requests/sec processed by the endpoint",
-        "id": "DsK5oKLAcAA",
-        "importOf": "DqlkkagAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Request rate",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 4,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Requests/sec",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "requests/sec",
+              "valuePrefix": "",
+              "valueSuffix": "",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
+          "showEventLines": false,
+          "stacked": false,
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "timestampHidden": false,
-          "type": "SingleValue",
+          "type": "TimeSeriesChart",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*')).sum(by=['service', 'operation']).publish(label='A')",
+        "programText": "A = data('memory.utilization', filter=filter('sf_hasService', '*')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2077,59 +1920,8 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "99th percentile response time",
-        "id": "DsK5n_yAcAE",
-        "importOf": "DqlWiSsAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Request latency (p99)",
-        "options": {
-          "colorBy": "Metric",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 6,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "p99 latency",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Nanosecond",
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*')).mean(by=['service']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Error rate on requests made to the service",
-        "id": "DupMeGOAcAA",
+        "description": "Error rate on requests made to the endpoint",
+        "id": "D7F9CCmAgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Error rate",
@@ -2223,7 +2015,107 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*'), rollup='delta').sum(by=['service']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*'), rollup='delta').sum(by=['service']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Requests/sec processed by the service",
+        "id": "D7x6v1bAgD8",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request rate",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Requests/sec",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "requests/sec",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*'),rollup='rate').sum(by=['service']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "99th percentile response time",
+        "id": "D7F9CB6AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request latency (p99)",
+        "options": {
+          "colorBy": "Metric",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 6,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "p99 latency",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Nanosecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('spans.duration.ns.p99', filter=filter('kind', 'CONSUMER', 'SERVER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*')).mean(by=['service', 'operation']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2234,19 +2126,43 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "DsK5op5AcAk",
-        "importOf": "DqlWiS_AIAA",
+        "id": "D7F9A0cAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Service map",
         "options": {
-          "colorBy": "Range",
-          "colorRange": {
-            "color": null,
-            "max": null,
-            "min": null
-          },
-          "colorScale2": null,
+          "colorBy": "Scale",
+          "colorRange": null,
+          "colorScale2": [
+            {
+              "gt": 5,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": 1,
+              "gte": null,
+              "lt": null,
+              "lte": 5,
+              "paletteIndex": 17
+            },
+            {
+              "gt": 0,
+              "gte": null,
+              "lt": null,
+              "lte": 1,
+              "paletteIndex": 18
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0,
+              "paletteIndex": 3
+            }
+          ],
           "defaultColorBy": null,
           "defaultSizeBy": null,
           "mapRange": null,
@@ -2261,18 +2177,197 @@
           "systemMapLabelOptions": [
             {
               "displayName": "Requests/sec",
+              "label": "A",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "viewMenu": "SizeBy"
+            },
+            {
+              "displayName": "Successful requests",
               "label": "B",
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
               "viewMenu": "SizeBy"
+            },
+            {
+              "displayName": "All requests",
+              "label": "C",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "viewMenu": "SizeBy"
+            },
+            {
+              "displayName": "Error rate",
+              "label": "D",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "viewMenu": "ColorBy"
             }
           ],
           "tagFilters": null,
           "type": "SystemMap"
         },
         "packageSpecifications": "",
-        "programText": "B = data('spans.count', filter=filter('kind', 'CONSUMER', 'SERVER')).sum(by=['service']).publish(label='B')",
+        "programText": "A = data('spans.count', filter=filter('cluster', '*') and filter('kind', 'CONSUMER', 'SERVER'),rollup='rate').sum(by=['service']).publish(label='A')\nB = data('spans.count', filter=filter('cluster', '*') and filter('error', 'false') and filter('kind', 'CONSUMER', 'SERVER'), rollup='delta').sum(by=['service']).publish(label='B', enable=False)\nC = data('spans.count', filter=filter('cluster', '*') and filter('kind', 'CONSUMER', 'SERVER'), rollup='delta').sum(by=['service']).publish(label='C', enable=False)\nD = (100*(C-B)/C).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Error rate on requests made to the endpoint",
+        "id": "D7F9AnUAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Error rate",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Successful requests",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "All requests",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Error rate",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('error', 'false') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('operation', '*') and filter('cluster', '*'), rollup='delta').sum(by=['service', 'operation']).publish(label='B', enable=False)\nC = (100*(B-A)/B).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Requests/sec processed by the service",
+        "id": "D7x6v1bAgEM",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request rate",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Requests/sec",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "requests/sec",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('spans.count', filter=filter('kind', 'SERVER', 'CONSUMER') and filter('service', '*') and filter('cluster', '*'),rollup='rate').sum(by=['service']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2303,88 +2398,238 @@
   "dashboardExports": [
     {
       "dashboard": {
-        "chartDensity": "HIGH",
+        "chartDensity": "DEFAULT",
         "charts": [
           {
-            "chartId": "DsK5oKLAcAA",
-            "column": 5,
-            "height": 1,
-            "row": 0,
-            "width": 3
-          },
-          {
-            "chartId": "DsLqs1OAcAA",
+            "chartId": "D7x6v1cAgAk",
             "column": 0,
-            "height": 2,
+            "height": 3,
             "row": 0,
             "width": 5
           },
           {
-            "chartId": "DsK5qw1AcAA",
+            "chartId": "D7x6v1bAgEM",
             "column": 8,
             "height": 1,
             "row": 0,
             "width": 4
           },
           {
-            "chartId": "DsK5of0AcAA",
+            "chartId": "D7x6v1bAgD8",
+            "column": 5,
+            "height": 1,
+            "row": 0,
+            "width": 3
+          },
+          {
+            "chartId": "D7x6v1cAgAM",
             "column": 5,
             "height": 1,
             "row": 1,
             "width": 3
           },
           {
-            "chartId": "DsK5pkeAcEo",
+            "chartId": "D7x6v1cAgAA",
             "column": 8,
             "height": 1,
             "row": 1,
             "width": 4
           },
           {
-            "chartId": "DsK5pEEAcAw",
+            "chartId": "D7x6v1cAgAY",
             "column": 5,
             "height": 1,
             "row": 2,
             "width": 3
           },
           {
-            "chartId": "DsK5ou1AcAI",
-            "column": 0,
-            "height": 1,
-            "row": 2,
-            "width": 5
-          },
-          {
-            "chartId": "DupO7rsAYAA",
+            "chartId": "D7x6v1bAgD4",
             "column": 8,
             "height": 1,
             "row": 2,
             "width": 4
           },
           {
-            "chartId": "DsK5rX4AcC4",
-            "column": 6,
-            "height": 1,
-            "row": 3,
-            "width": 6
-          },
-          {
-            "chartId": "DupO1ITAgAA",
+            "chartId": "D7x6v1bAgEE",
             "column": 0,
             "height": 1,
             "row": 3,
-            "width": 6
+            "width": 4
           },
           {
-            "chartId": "DsK5owAAcGI",
+            "chartId": "D7x6v1bAgEI",
+            "column": 4,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "D7x6v1cAgAE",
+            "column": 8,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "D7x6v1cAgAU",
             "column": 0,
             "height": 1,
             "row": 4,
             "width": 6
           },
           {
-            "chartId": "DsK5rM1AcC0",
+            "chartId": "D7x6v1cAgAQ",
             "column": 6,
+            "height": 1,
+            "row": 4,
+            "width": 6
+          },
+          {
+            "chartId": "D7x6v1cAgAc",
+            "column": 0,
+            "height": 1,
+            "row": 5,
+            "width": 6
+          },
+          {
+            "chartId": "D7x6v1bAgEA",
+            "column": 6,
+            "height": 1,
+            "row": 5,
+            "width": 6
+          },
+          {
+            "chartId": "D7x6v1cAgAg",
+            "column": 0,
+            "height": 1,
+            "row": 6,
+            "width": 6
+          },
+          {
+            "chartId": "D7x6v1cAgAI",
+            "column": 6,
+            "height": 1,
+            "row": 6,
+            "width": 6
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "µAPM service dashboard",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": null,
+          "time": null,
+          "variables": [
+            {
+              "alias": "Service",
+              "applyIfExists": false,
+              "description": "Service name",
+              "preferredSuggestions": [],
+              "property": "service",
+              "replaceOnly": true,
+              "required": true,
+              "restricted": false,
+              "value": "Choose Service"
+            }
+          ]
+        },
+        "groupId": "DsK5nuJAcAA",
+        "id": "DsK5tQFAcEo",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "maxDelayOverride": null,
+        "name": "Service",
+        "selectedEventOverlays": [],
+        "tags": null
+      }
+    },
+    {
+      "dashboard": {
+        "chartDensity": "HIGH",
+        "charts": [
+          {
+            "chartId": "D7F9A0cAcAA",
+            "column": 0,
+            "height": 2,
+            "row": 0,
+            "width": 5
+          },
+          {
+            "chartId": "D7F9BFrAgAA",
+            "column": 5,
+            "height": 1,
+            "row": 0,
+            "width": 3
+          },
+          {
+            "chartId": "D7F9BNAAcAA",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "D7F9CB6AgAA",
+            "column": 5,
+            "height": 1,
+            "row": 1,
+            "width": 3
+          },
+          {
+            "chartId": "D7F9CCBAYAA",
+            "column": 8,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "D7F9AnUAcAA",
+            "column": 5,
+            "height": 1,
+            "row": 2,
+            "width": 3
+          },
+          {
+            "chartId": "D7F9CCmAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "D7F9AxgAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 5
+          },
+          {
+            "chartId": "D7F9CCvAcAA",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "D7F9BagAYEQ",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "D7F9A7jAYAE",
+            "column": 6,
+            "height": 1,
+            "row": 4,
+            "width": 6
+          },
+          {
+            "chartId": "D7F9CB-AcAA",
+            "column": 0,
             "height": 1,
             "row": 4,
             "width": 6
@@ -2393,7 +2638,7 @@
         "created": 0,
         "creator": null,
         "customProperties": null,
-        "description": "",
+        "description": "µAPM service endpoint dashboard",
         "discoveryOptions": null,
         "eventOverlays": null,
         "filters": {
@@ -2425,165 +2670,11 @@
           ]
         },
         "groupId": "DsK5nuJAcAA",
-        "id": "DsK5tKbAcC4",
-        "importOf": "DqlkkyTAEAA",
+        "id": "D7F9AiGAgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "locked": false,
         "maxDelayOverride": null,
         "name": "Service Endpoint",
-        "selectedEventOverlays": [],
-        "tags": null
-      }
-    },
-    {
-      "dashboard": {
-        "chartDensity": "DEFAULT",
-        "charts": [
-          {
-            "chartId": "DsK5op5AcAk",
-            "column": 0,
-            "height": 3,
-            "row": 0,
-            "width": 5
-          },
-          {
-            "chartId": "DsK5pwsAcBc",
-            "column": 5,
-            "height": 1,
-            "row": 0,
-            "width": 3
-          },
-          {
-            "chartId": "DsK5oLZAcAA",
-            "column": 8,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "DsK5n_yAcAE",
-            "column": 5,
-            "height": 1,
-            "row": 1,
-            "width": 3
-          },
-          {
-            "chartId": "DsK5qW7AcAA",
-            "column": 8,
-            "height": 1,
-            "row": 1,
-            "width": 4
-          },
-          {
-            "chartId": "DsK5qJnAcA8",
-            "column": 5,
-            "height": 1,
-            "row": 2,
-            "width": 3
-          },
-          {
-            "chartId": "DupMeGOAcAA",
-            "column": 8,
-            "height": 1,
-            "row": 2,
-            "width": 4
-          },
-          {
-            "chartId": "DupMwbOAYAU",
-            "column": 0,
-            "height": 1,
-            "row": 3,
-            "width": 4
-          },
-          {
-            "chartId": "DsK5o_5AcBM",
-            "column": 4,
-            "height": 1,
-            "row": 3,
-            "width": 4
-          },
-          {
-            "chartId": "DupNKpxAYAA",
-            "column": 8,
-            "height": 1,
-            "row": 3,
-            "width": 4
-          },
-          {
-            "chartId": "DupNkWLAcAA",
-            "column": 0,
-            "height": 1,
-            "row": 4,
-            "width": 6
-          },
-          {
-            "chartId": "DupMwDxAcAA",
-            "column": 6,
-            "height": 1,
-            "row": 4,
-            "width": 6
-          },
-          {
-            "chartId": "DsK5pd_AcFg",
-            "column": 6,
-            "height": 1,
-            "row": 5,
-            "width": 6
-          },
-          {
-            "chartId": "DsK5pAvAcEA",
-            "column": 0,
-            "height": 1,
-            "row": 5,
-            "width": 6
-          },
-          {
-            "chartId": "DsK5rG5AcAE",
-            "column": 6,
-            "height": 1,
-            "row": 6,
-            "width": 6
-          },
-          {
-            "chartId": "DsK5p-LAcAk",
-            "column": 0,
-            "height": 1,
-            "row": 6,
-            "width": 6
-          }
-        ],
-        "created": 0,
-        "creator": null,
-        "customProperties": null,
-        "description": "",
-        "discoveryOptions": null,
-        "eventOverlays": null,
-        "filters": {
-          "sources": null,
-          "time": null,
-          "variables": [
-            {
-              "alias": "Service",
-              "applyIfExists": false,
-              "description": "Service name",
-              "preferredSuggestions": [],
-              "property": "service",
-              "replaceOnly": true,
-              "required": true,
-              "restricted": false,
-              "value": "Choose Service"
-            }
-          ]
-        },
-        "groupId": "DsK5nuJAcAA",
-        "id": "DsK5tQFAcEo",
-        "importOf": "DqlPv44AIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "locked": false,
-        "maxDelayOverride": null,
-        "name": "Service",
         "selectedEventOverlays": [],
         "tags": null
       }
@@ -2595,7 +2686,7 @@
       "creator": null,
       "dashboards": [
         "DsK5tQFAcEo",
-        "DsK5tKbAcC4"
+        "D7F9AiGAgAA"
       ],
       "description": "Microservices APM dashboards",
       "email": null,
@@ -2618,7 +2709,7 @@
       "teams": null
     }
   },
-  "hashCode": -1372540144,
+  "hashCode": 3718855,
   "id": "DsK5nuJAcAA",
   "modelVersion": 1,
   "packageType": "GROUP"
