@@ -1,18 +1,6 @@
 {
-  "hashCode" : 1501523401,
+  "hashCode" : 4397157,
   "id" : "DiVVQ6FAgAA",
-  "importQualifiers" : [ {
-    "filters" : [ {
-      "not" : false,
-      "property" : "sf_key",
-      "values" : [ "kubernetes_cluster" ]
-    }, {
-      "not" : false,
-      "property" : "sf_key",
-      "values" : [ "kubernetes_pod_name" ]
-    } ],
-    "metric" : "container_cpu_utilization"
-  } ],
   "modelVersion" : 1,
   "navigatorExport" : {
     "navigator" : {
@@ -84,30 +72,34 @@
             "minValue" : 0,
             "range" : null
           },
-          "description" : "Percentage of CPU on this node used by this pod’s containers, from under 20% (green) to over 80% (red).",
+          "description" : "Percentage of CPU on this node used by this pod’s containers, from under 20% (green) to over 80% (red). Calculated by summing each containers container_cpu_utilization per pod, and dividing by the number of CPU cores on the underlying host. These metrics come from the kubelet-stats monitor.",
           "displayName" : "CPU used by containers",
           "id" : "container_cpu_utilization",
           "job" : {
             "filters" : [ {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_cluster",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_pod_name",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "host",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_namespace",
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CPU = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"kubernetes_cluster\", \"kubernetes_namespace\", \"kubernetes_pod_name\", \"host\"])",
-            "varName" : "CPU"
+            "template" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('kubernetes_deployment_name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('machine_cpu_cores', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')",
+            "varName" : "C"
           },
           "metricSelectors" : [ "container_cpu_utilization" ],
           "type" : "metric",
@@ -127,10 +119,12 @@
           "id" : "container_memory_usage_bytes",
           "job" : {
             "filters" : [ {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_cluster",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "host",
               "type" : "property"
@@ -157,18 +151,22 @@
           "id" : "disk.used",
           "job" : {
             "filters" : [ {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_cluster",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_pod_name",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "host",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_namespace",
               "type" : "property"
@@ -195,18 +193,22 @@
           "id" : "kubernetes.network.total",
           "job" : {
             "filters" : [ {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_cluster",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_pod_name",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "host",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_namespace",
               "type" : "property"
@@ -239,18 +241,22 @@
           "id" : "kubernetes.network.errors",
           "job" : {
             "filters" : [ {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_cluster",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_pod_name",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "host",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_namespace",
               "type" : "property"
@@ -279,18 +285,22 @@
           "id" : "___SF_ALERT_COLLECTD",
           "job" : {
             "filters" : [ {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_cluster",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_pod_name",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "host",
               "type" : "property"
             }, {
+              "not" : false,
               "property" : "_exists_",
               "propertyValue" : "kubernetes_namespace",
               "type" : "property"
