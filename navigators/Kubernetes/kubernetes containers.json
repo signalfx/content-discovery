@@ -1,5 +1,5 @@
 {
-  "hashCode" : -1199490672,
+  "hashCode" : -1780350913,
   "id" : "D85Z_TlAcFE",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -14,7 +14,7 @@
           "property" : "sf_key",
           "values" : [ "kubernetes_cluster" ]
         } ],
-        "metric" : "cpu.utilization"
+        "metric" : "container_cpu_utilization"
       } ],
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -27,7 +27,7 @@
         "categoryPriority" : 30,
         "discoveryQuery" : [ "_exists_:container_id" ],
         "displayName" : "Kubernetes Containers",
-        "filterProperties" : [ "host", "container_id", "container_name" ],
+        "filterProperties" : [ "container_id", "container_name" ],
         "id" : "kubernetes containers",
         "idName" : "Container",
         "idTemplate" : "{{container_name}} ({{kubernetes_pod_name}})",
@@ -56,7 +56,7 @@
           },
           "description" : "Percentage of CPU on this node used by this container, from under 20% (green) to over 80% (red).",
           "displayName" : "CPU used by container",
-          "id" : "container_cpu_percent",
+          "id" : "container_cpu_utilization",
           "job" : {
             "filters" : [ {
               "not" : false,
@@ -65,10 +65,10 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
-            "varName" : "CONTAINER_CPU_PERCENT"
+            "template" : "CONTAINER_CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
+            "varName" : "CONTAINER_CPU_UTILIZATION"
           },
-          "metricSelectors" : [ "container_cpu_percent" ],
+          "metricSelectors" : [ "container_cpu_utilization" ],
           "type" : "metric",
           "valueFormat" : "Percentage",
           "valueLabel" : "CPU Use",
@@ -132,10 +132,10 @@
           "alertFilters" : null,
           "coloring" : {
             "limits" : null,
-            "maxValue" : 100,
+            "maxValue" : null,
             "method" : "quantile",
             "minValue" : 0,
-            "range" : null
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
           "description" : "Color pods by the highest alert level they are currently reporting – critical, major, minor, warning, none",
           "displayName" : "Most severe alert",
@@ -148,8 +148,8 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
-            "varName" : "CONTAINER_CPU_PERCENT"
+            "template" : "CONTAINER_CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
+            "varName" : "CONTAINER_CPU_UTILIZATION"
           },
           "metricSelectors" : [ ],
           "type" : "event",
