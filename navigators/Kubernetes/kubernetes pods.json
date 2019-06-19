@@ -1,5 +1,5 @@
 {
-  "hashCode" : 4397157,
+  "hashCode" : 1912684616,
   "id" : "DiVVQ6FAgAA",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -91,14 +91,9 @@
               "property" : "_exists_",
               "propertyValue" : "host",
               "type" : "property"
-            }, {
-              "not" : false,
-              "property" : "_exists_",
-              "propertyValue" : "kubernetes_namespace",
-              "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('kubernetes_deployment_name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('machine_cpu_cores', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')",
+            "template" : "A = data('container_cpu_utilization' {{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('machine_cpu_cores', filter=filter('kubernetes_cluster', '*') and filter('host', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')",
             "varName" : "C"
           },
           "metricSelectors" : [ "container_cpu_utilization" ],
