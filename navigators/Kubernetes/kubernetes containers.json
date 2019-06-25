@@ -1,5 +1,5 @@
 {
-  "hashCode" : -1780350913,
+  "hashCode" : 63042099,
   "id" : "D85Z_TlAcFE",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -14,7 +14,7 @@
           "property" : "sf_key",
           "values" : [ "kubernetes_cluster" ]
         } ],
-        "metric" : "container_cpu_utilization"
+        "metric" : "cpu.utilization"
       } ],
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -27,7 +27,7 @@
         "categoryPriority" : 30,
         "discoveryQuery" : [ "_exists_:container_id" ],
         "displayName" : "Kubernetes Containers",
-        "filterProperties" : [ "container_id", "container_name" ],
+        "filterProperties" : [ "container_id" ],
         "id" : "kubernetes containers",
         "idName" : "Container",
         "idTemplate" : "{{container_name}} ({{kubernetes_pod_name}})",
@@ -56,7 +56,7 @@
           },
           "description" : "Percentage of CPU on this node used by this container, from under 20% (green) to over 80% (red).",
           "displayName" : "CPU used by container",
-          "id" : "container_cpu_utilization",
+          "id" : "container_cpu_percent",
           "job" : {
             "filters" : [ {
               "not" : false,
@@ -65,10 +65,10 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
-            "varName" : "CONTAINER_CPU_UTILIZATION"
+            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
+            "varName" : "CONTAINER_CPU_PERCENT"
           },
-          "metricSelectors" : [ "container_cpu_utilization" ],
+          "metricSelectors" : [ "container_cpu_percent" ],
           "type" : "metric",
           "valueFormat" : "Percentage",
           "valueLabel" : "CPU Use",
@@ -92,7 +92,7 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINERS_MEM = data(\"container_memory_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2)\nNODE_TOTAL = data(\"machine_memory_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(\"kubernetes_node\")\nUTILIZATION = (CONTAINERS_MEM / NODE_TOTAL) * 100",
+            "template" : "CONTAINERS_MEM = data(\"container_memory_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2)\nNODE_TOTAL = data(\"machine_memory_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"kubernetes_node\"])\nUTILIZATION = (CONTAINERS_MEM / NODE_TOTAL) * 100",
             "varName" : "UTILIZATION"
           },
           "metricSelectors" : [ "container_memory_usage_bytes", "machine_memory_bytes" ],
@@ -119,7 +119,7 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "DISK_CONTAINER_USED = data(\"container_fs_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2)",
+            "template" : "DISK_CONTAINER_USED = data(\"container_fs_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"kubernetes_cluster\",\"kubernetes_node\",\"container_id\"])",
             "varName" : "DISK_CONTAINER_USED"
           },
           "metricSelectors" : [ "container_fs_usage_bytes" ],
@@ -148,8 +148,8 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
-            "varName" : "CONTAINER_CPU_UTILIZATION"
+            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
+            "varName" : "CONTAINER_CPU_PERCENT"
           },
           "metricSelectors" : [ ],
           "type" : "event",
