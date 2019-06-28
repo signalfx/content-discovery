@@ -1,5 +1,5 @@
 {
-  "hashCode" : 63042099,
+  "hashCode" : 1623845662,
   "id" : "D85Z_TlAcFE",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -24,16 +24,16 @@
       "uiModel" : {
         "alertQuery" : "_exists_:container_id",
         "category" : "Kubernetes",
-        "categoryPriority" : 30,
+        "categoryPriority" : 40,
         "discoveryQuery" : [ "_exists_:container_id" ],
         "displayName" : "Kubernetes Containers",
         "filterProperties" : [ "container_id" ],
         "id" : "kubernetes containers",
         "idName" : "Container",
-        "idTemplate" : "{{container_name}} ({{kubernetes_pod_name}})",
+        "idTemplate" : "{{container_spec_name}} ({{container_id}})",
         "listColumns" : [ {
           "aggregate" : null,
-          "displayName" : "Container (pod)",
+          "displayName" : "Container name (Container id)",
           "format" : "id",
           "metric" : null,
           "property" : "id",
@@ -45,6 +45,27 @@
           "metric" : null,
           "property" : "value",
           "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Pod",
+          "format" : null,
+          "metric" : null,
+          "property" : "kubernetes_pod_name",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Node",
+          "format" : null,
+          "metric" : null,
+          "property" : "kubernetes_node",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Cluster",
+          "format" : null,
+          "metric" : null,
+          "property" : "kubernetes_cluster",
+          "sortable" : null
         } ],
         "metrics" : [ {
           "coloring" : {
@@ -54,7 +75,7 @@
             "minValue" : 0,
             "range" : null
           },
-          "description" : "Percentage of CPU on this node used by this container, from under 20% (green) to over 80% (red).",
+          "description" : "Percentage of CPU on this node used by this container as reported by metric container_cpu_percent, from under 20% (green) to over 80% (red).",
           "displayName" : "CPU used by container",
           "id" : "container_cpu_percent",
           "job" : {
@@ -65,7 +86,7 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
+            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\")",
             "varName" : "CONTAINER_CPU_PERCENT"
           },
           "metricSelectors" : [ "container_cpu_percent" ],
@@ -81,21 +102,16 @@
             "minValue" : 0,
             "range" : null
           },
-          "description" : "Percentage of memory on this node used by this container, from under 20% (green) to over 80% (red).",
+          "description" : "Percentage of memory on this node used by this container given by metric container_memory_usage_bytes divide by machine_memory_bytes, from under 20% (green) to over 80% (red).",
           "displayName" : "Memory used by container",
           "id" : "container_memory_usage_bytes",
           "job" : {
-            "filters" : [ {
-              "not" : false,
-              "property" : "_exists_",
-              "propertyValue" : "kubernetes_node",
-              "type" : "property"
-            } ],
+            "filters" : [ ],
             "resolution" : 60000,
-            "template" : "CONTAINERS_MEM = data(\"container_memory_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2)\nNODE_TOTAL = data(\"machine_memory_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"kubernetes_node\"])\nUTILIZATION = (CONTAINERS_MEM / NODE_TOTAL) * 100",
+            "template" : "CONTAINERS_MEM = data(\"container_memory_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\")\nNODE_TOTAL = data(\"machine_memory_bytes\").sum(by=[\"kubernetes_cluster\", \"kubernetes_node\"])\nUTILIZATION = (CONTAINERS_MEM / NODE_TOTAL) * 100",
             "varName" : "UTILIZATION"
           },
-          "metricSelectors" : [ "container_memory_usage_bytes", "machine_memory_bytes" ],
+          "metricSelectors" : [ "machine_memory_bytes" ],
           "type" : "metric",
           "valueFormat" : "Percentage",
           "valueLabel" : "Memory Use",
@@ -105,10 +121,10 @@
             "limits" : null,
             "maxValue" : null,
             "method" : "quantile",
-            "minValue" : null,
-            "range" : null
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
-          "description" : "Amount of disk, in bytes, used by this container in pod.",
+          "description" : "Amount of disk, in bytes, used by this container in pod as reported by metric container_fs_usage_bytes.",
           "displayName" : "Disk used by container",
           "id" : "container_fs_usage_bytes",
           "job" : {
@@ -119,7 +135,7 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "DISK_CONTAINER_USED = data(\"container_fs_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"latest\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"kubernetes_cluster\",\"kubernetes_node\",\"container_id\"])",
+            "template" : "DISK_CONTAINER_USED = data(\"container_fs_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"kubernetes_cluster\",\"kubernetes_node\",\"container_id\"])",
             "varName" : "DISK_CONTAINER_USED"
           },
           "metricSelectors" : [ "container_fs_usage_bytes" ],
@@ -132,12 +148,12 @@
           "alertFilters" : null,
           "coloring" : {
             "limits" : null,
-            "maxValue" : null,
+            "maxValue" : 100,
             "method" : "quantile",
             "minValue" : 0,
-            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+            "range" : null
           },
-          "description" : "Color pods by the highest alert level they are currently reporting – critical, major, minor, warning, none",
+          "description" : "Color containers by the highest container_cpu_percent alert level they are currently reporting – critical, major, minor, warning, none",
           "displayName" : "Most severe alert",
           "id" : "___SF_ALERT_CONTAINER",
           "job" : {
@@ -148,7 +164,7 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2)",
+            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\")",
             "varName" : "CONTAINER_CPU_PERCENT"
           },
           "metricSelectors" : [ ],
