@@ -1,14 +1,6 @@
 {
-  "hashCode" : 1440844429,
+  "hashCode" : 386791887,
   "id" : "DiVVOB3AYAA",
-  "importQualifiers" : [ {
-    "filters" : [ {
-      "not" : false,
-      "property" : "sf_key",
-      "values" : [ "LoadBalancerName" ]
-    } ],
-    "metric" : "RequestCount"
-  } ],
   "modelVersion" : 1,
   "navigatorExport" : {
     "navigator" : {
@@ -66,9 +58,14 @@
           "displayName" : "Requests / Min",
           "id" : "aws.elb.requests",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "RequestCount = data(\"RequestCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)",
+            "template" : "RequestCount = data(\"RequestCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)",
             "varName" : "RequestCount"
           },
           "metricSelectors" : [ "RequestCount" ],
@@ -88,9 +85,14 @@
           "displayName" : "ELB HTTP Errors",
           "id" : "aws.elb.http_errors",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "HTTP4ERRORS_CLASSIC1 = data(\"HTTPCode_ELB_4xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP4ERRORS_APPLICATION1 = data(\"HTTPCode_ELB_4xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP_4xx_ERROR_SUM1  = (HTTP4ERRORS_CLASSIC1 + HTTP4ERRORS_APPLICATION1)\nHTTP5ERRORS_CLASSIC1 = data(\"HTTPCode_ELB_5xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP5ERRORS_APPLICATION1 = data(\"HTTPCode_ELB_5xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP_5xx_ERROR_SUM1  = (HTTP5ERRORS_CLASSIC1 + HTTP5ERRORS_APPLICATION1)\nHTTP_ERROR_SUM  = (HTTP_4xx_ERROR_SUM1 + HTTP_5xx_ERROR_SUM1)",
+            "template" : "HTTP4ERRORS_CLASSIC1 = data(\"HTTPCode_ELB_4xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP4ERRORS_APPLICATION1 = data(\"HTTPCode_ELB_4xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP_4xx_ERROR_SUM1  = (HTTP4ERRORS_CLASSIC1 + HTTP4ERRORS_APPLICATION1)\nHTTP5ERRORS_CLASSIC1 = data(\"HTTPCode_ELB_5xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP5ERRORS_APPLICATION1 = data(\"HTTPCode_ELB_5xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP_5xx_ERROR_SUM1  = (HTTP5ERRORS_CLASSIC1 + HTTP5ERRORS_APPLICATION1)\nHTTP_ERROR_SUM  = (HTTP_4xx_ERROR_SUM1 + HTTP_5xx_ERROR_SUM1)",
             "varName" : "HTTP_ERROR_SUM"
           },
           "metricSelectors" : [ "HTTPCode_ELB_4xx_Count", "HTTPCode_ELB_5xx_Count" ],
@@ -110,9 +112,14 @@
           "displayName" : "Unhealthy Hosts %",
           "id" : "aws.elb.unhealthy_host_percent",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "HEALTHY_HOST_COUNT = data(\"HealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"])\nUNHEALTHY_HOST_COUNT = data(\"UnHealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"])\nUNHEALTHY_HOST_PERCENT = (UNHEALTHY_HOST_COUNT / (UNHEALTHY_HOST_COUNT + HEALTHY_HOST_COUNT)) * 100",
+            "template" : "HEALTHY_HOST_COUNT = data(\"HealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"])\nUNHEALTHY_HOST_COUNT = data(\"UnHealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"])\nUNHEALTHY_HOST_PERCENT = (UNHEALTHY_HOST_COUNT / (UNHEALTHY_HOST_COUNT + HEALTHY_HOST_COUNT)) * 100",
             "varName" : "UNHEALTHY_HOST_PERCENT"
           },
           "metricSelectors" : [ "HealthyHostCount" ],
@@ -132,7 +139,12 @@
           "displayName" : "Latency (ms)",
           "id" : "aws.elb.latency",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
             "template" : "LATENCY = data(\"Latency\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"LoadBalancerName\"]).scale(1000)",
             "varName" : "LATENCY"
@@ -154,7 +166,12 @@
           "displayName" : "Surge Queue Length",
           "id" : "aws.elb.surgequeuelength",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
             "template" : "SURGE_QUEUE_LENGTH = data(\"SurgeQueueLength\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"LoadBalancerName\"])",
             "varName" : "SURGE_QUEUE_LENGTH"
@@ -176,9 +193,14 @@
           "displayName" : "ELB 4xx Errors",
           "id" : "aws.elb.http4errors",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "HTTP4ERRORS_CLASSIC = data(\"HTTPCode_ELB_4xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP4ERRORS_APPLICATION = data(\"HTTPCode_ELB_4xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP_4xx_ERROR_SUM  = (HTTP4ERRORS_CLASSIC + HTTP4ERRORS_APPLICATION)",
+            "template" : "HTTP4ERRORS_CLASSIC = data(\"HTTPCode_ELB_4xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP4ERRORS_APPLICATION = data(\"HTTPCode_ELB_4xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP_4xx_ERROR_SUM  = (HTTP4ERRORS_CLASSIC + HTTP4ERRORS_APPLICATION)",
             "varName" : "HTTP_4xx_ERROR_SUM"
           },
           "metricSelectors" : [ "HTTPCode_ELB_4xx" ],
@@ -198,9 +220,14 @@
           "displayName" : "ELB 5xx Errors",
           "id" : "aws.elb.http5errors",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "HTTP5ERRORS_CLASSIC = data(\"HTTPCode_ELB_5xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP5ERRORS_APPLICATION = data(\"HTTPCode_ELB_5xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nHTTP_5xx_ERROR_SUM  = (HTTP5ERRORS_CLASSIC + HTTP5ERRORS_APPLICATION)",
+            "template" : "HTTP5ERRORS_CLASSIC = data(\"HTTPCode_ELB_5xx\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP5ERRORS_APPLICATION = data(\"HTTPCode_ELB_5xx_Count\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nHTTP_5xx_ERROR_SUM  = (HTTP5ERRORS_CLASSIC + HTTP5ERRORS_APPLICATION)",
             "varName" : "HTTP_5xx_ERROR_SUM"
           },
           "metricSelectors" : [ "HTTPCode_ELB_5xx" ],
@@ -220,9 +247,14 @@
           "displayName" : "Healthy Hosts",
           "id" : "aws.elb.healthyhostcount",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "HEALTHY_HOST_COUNT1 = data(\"HealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"])",
+            "template" : "HEALTHY_HOST_COUNT1 = data(\"HealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"])",
             "varName" : "HEALTHY_HOST_COUNT1"
           },
           "metricSelectors" : [ "HealthyHostCount" ],
@@ -242,9 +274,14 @@
           "displayName" : "UnHealthy Hosts",
           "id" : "aws.elb.unhealthyhostcount",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "UNHEALTHY_HOST_COUNT1 = data(\"UnHealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"])",
+            "template" : "UNHEALTHY_HOST_COUNT1 = data(\"UnHealthyHostCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"mean\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"])",
             "varName" : "UNHEALTHY_HOST_COUNT1"
           },
           "metricSelectors" : [ "UnHealthyHostCount" ],
@@ -264,9 +301,14 @@
           "displayName" : "Back-End Connection Errors",
           "id" : "aws.elb.backendconnectionerrors",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "BACKEND_ERRORS_CLASSIC = data(\"BackendConnectionErrors\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nBACKEND_ERRORS_APPLICATION = data(\"TargetConnectionErrorCount\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)\nBACKEND_ERRORS_SUM  = (BACKEND_ERRORS_CLASSIC + BACKEND_ERRORS_APPLICATION)",
+            "template" : "BACKEND_ERRORS_CLASSIC = data(\"BackendConnectionErrors\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nBACKEND_ERRORS_APPLICATION = data(\"TargetConnectionErrorCount\", filter=filter(\"namespace\", \"AWS/ApplicationELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)\nBACKEND_ERRORS_SUM  = (BACKEND_ERRORS_CLASSIC + BACKEND_ERRORS_APPLICATION)",
             "varName" : "BACKEND_ERRORS_SUM"
           },
           "metricSelectors" : [ "BackendConnectionErrors", "TargetConnectionErrorCount" ],
@@ -286,9 +328,14 @@
           "displayName" : "Spillover Count",
           "id" : "aws.elb.spillovercount",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "SPILLOVER_COUNT = data(\"SpilloverCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"])",
+            "template" : "SPILLOVER_COUNT = data(\"SpilloverCount\", filter=filter(\"namespace\", \"AWS/ELB\") and filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"])",
             "varName" : "SPILLOVER_COUNT"
           },
           "metricSelectors" : [ "SpilloverCount" ],
@@ -308,9 +355,14 @@
           "displayName" : "Host HTTP Responses",
           "id" : "aws.elb.host_http_responses",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "AvailabilityZone",
+              "type" : "property"
+            } ],
             "resolution" : 300000,
-            "template" : "RESPONSES_SUM = data(\"HTTPCode_*\", filter=filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\"]).scale(60)",
+            "template" : "RESPONSES_SUM = data(\"HTTPCode_*\", filter=filter(\"stat\", \"sum\") and filter(\"LoadBalancerName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancerName\", \"AWSUniqueId\"]).scale(60)",
             "varName" : "RESPONSES_SUM"
           },
           "metricSelectors" : [ "HTTPCode_*" ],
