@@ -5,17 +5,47 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Traces analyzed per minute",
-        "id": "DzaUUbkAYAE",
-        "importOf": "DyqcncxAEAA",
+        "description": "Saturation of the gateway hosts (max of CPU, memory and disk utilization)",
+        "id": "DzaUWMtAcAA",
+        "importOf": "DyQ2HmRAAAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "TAPM",
+        "name": "Gateway Saturation",
         "options": {
-          "colorBy": "Dimension",
+          "colorBy": "Scale",
+          "colorRange": null,
           "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 2,
+          "colorScale2": [
+            {
+              "gt": 90,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": 75,
+              "gte": null,
+              "lt": null,
+              "lte": 90,
+              "paletteIndex": 17
+            },
+            {
+              "gt": 50,
+              "gte": null,
+              "lt": null,
+              "lte": 75,
+              "paletteIndex": 18
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 50,
+              "paletteIndex": 20
+            }
+          ],
+          "groupBy": [],
           "programOptions": {
             "disableSampling": false,
             "maxDelay": 0,
@@ -24,29 +54,47 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Analyzed",
+              "displayName": "cpu.utilization",
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            },
+            {
+              "displayName": "memory.utilization",
               "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "TAPM",
-              "valueUnit": null,
-              "yAxis": 0
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            },
+            {
+              "displayName": "disk.summary_utilization",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Saturation",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
             }
           ],
           "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
+          "sortDirection": "Ascending",
+          "sortProperty": null,
           "time": {
             "range": 900000,
             "type": "relative"
           },
           "timestampHidden": false,
-          "type": "SingleValue",
+          "type": "Heatmap",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "B = data('gateway.processedTraces').sum().mean(over='1m').scale(60).publish(label='B')",
+        "programText": "A = data('cpu.utilization', filter=filter('source', 'gateway')).publish(label='A', enable=False)\nB = data('memory.utilization', filter=filter('source', 'gateway')).publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=filter('source', 'gateway')).publish(label='C', enable=False)\nD = max(A, B, C).sum(by=['host','cluster']).publish(label='D')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -56,17 +104,54 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Traces selected and retained per minute",
-        "id": "DzaUWRFAYAA",
-        "importOf": "DyqcnD3AAAA",
+        "description": "Memory utilization of the Smart Gateway hosts",
+        "id": "DzaUUOrAcDg",
+        "importOf": "DyGLVPEAIAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Retained TPM",
+        "name": "Memory Utilization",
         "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
           "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 2,
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
           "programOptions": {
             "disableSampling": false,
             "maxDelay": 0,
@@ -75,29 +160,27 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Retained",
-              "label": "B",
+              "displayName": "memory.utilization",
+              "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": "TPM",
+              "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
+          "showEventLines": false,
+          "stacked": false,
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "timestampHidden": false,
-          "type": "SingleValue",
+          "type": "TimeSeriesChart",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "B = data('gateway.sentTraces').sum().mean(over='1m').scale(60).publish(label='B')",
+        "programText": "A = data('memory.utilization', filter=filter('source', 'gateway')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -107,12 +190,213 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "How many traces each machine currently has in memory",
-        "id": "DzaUS-CAYAA",
-        "importOf": "Dy6LicTAIAA",
+        "description": "Number of spans dropped by the Smart Gateway",
+        "id": "DzaUUknAcA8",
+        "importOf": "DyGLVPAAEAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Buffered Traces",
+        "name": "Dropped Spans",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Dropped spans",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Dropped spans (unknown reason)",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Dropped spans",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "E = data('dropped_spans', filter=filter('source', 'gateway'), rollup='delta').sum(by=['reason']).publish(label='E')\nF = data('dropped_spans', filter=(not filter('reason', '*')) and filter('source', 'gateway'), rollup='delta').sum().publish(label='F')\nG = data('gateway.dropped_spans', filter=filter('source', 'gateway')).sum(by=['reason']).publish(label='G')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Number of spans processed per second",
+        "id": "DzaUWAYAcAA",
+        "importOf": "DyVySa-AEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Processed Spans",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "gateway.processedSpans - Sum by cluster,host",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "spans/s",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "gateway.processedSpans Per Minute",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "SPM",
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('gateway.processedSpans').sum(by=['cluster', 'host']).publish(label='B')\nC = data('gateway.processedSpans').sum().scale(60).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "We’re keeping metadata around for expired spans",
+        "id": "D2IzORGAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Expired Buffered Traces",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -163,7 +447,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "gateway.tracing.buffer.totalBufferedTraces - Sum by host,cluster",
+              "displayName": "gateway.tracing.buffer.totalBufferedExpiredTraces - Sum by host,cluster",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -183,92 +467,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('gateway.tracing.buffer.totalBufferedTraces').sum(by=['host', 'cluster']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Memory allocation. For SFx internal use only",
-        "id": "D1eVSjNAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Alloc",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Alloc",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('Alloc', filter=filter('source', 'gateway')).publish(label='A')",
+        "programText": "A = data('gateway.tracing.buffer.totalBufferedExpiredTraces').sum(by=['host', 'cluster']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -340,6 +539,415 @@
         },
         "packageSpecifications": "",
         "programText": "A = data('traces.totalUnique').max().publish(label='A', enable=False)\nB = data('spans.totalUnique').max().publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Disk utilization on the Smart Gateway hosts",
+        "id": "DzaUUFtAYAA",
+        "importOf": "DyLsScPAIAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk Utilization",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "disk.summary_utilization",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('disk.summary_utilization', filter=filter('source', 'gateway')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Traces selected and retained per minute",
+        "id": "DzaUWRFAYAA",
+        "importOf": "DyqcnD3AAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Retained TPM",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 2,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Retained",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "TPM",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('gateway.sentTraces').sum().mean(over='1m').scale(60).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Traces analyzed per second",
+        "id": "DzaUUFLAcBM",
+        "importOf": "DwowEiHAEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Analyzed Traces",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "gateway.processedTraces - Sum by cluster,host",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "traces/s",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('gateway.processedTraces').sum(by=['cluster', 'host']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Transfer of expired state on server restarts",
+        "id": "DzaUUO7AYAI",
+        "importOf": "Dy6Lh3AAAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Expired Buffer Entries Transfer",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "gateway.tracing.sampler.expired_buffer_entries_received",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "gateway.tracing.sampler.expired_buffer_entries_sent",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('gateway.tracing.sampler.expired_buffer_entries_received').publish(label='B')\nC = data('gateway.tracing.sampler.expired_buffer_entries_sent').publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Running versions of the Smart Gateway",
+        "id": "DzaUUraAYAE",
+        "importOf": "DwowFKIAIAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Cluster-Name | Smart Gateway Version",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "cluster"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "samplerCommit"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gateway.commit').count(by=['samplerCommit', 'cluster']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DzaUWSFAgAA",
+        "importOf": "DyqXo-AAEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": ".",
+        "options": {
+          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Smart Gateway Infrastructure</font>\n</td></tr>\n</table>\n<p align=\"center\" ><br />\nOverview of the infrastructure powering your Smart Gateway cluster(s) and its resource utilization.\n</p>",
+          "type": "Text"
+        },
+        "packageSpecifications": "",
+        "programText": "",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -512,6 +1120,112 @@
         },
         "packageSpecifications": "",
         "programText": "B = data('gateway.sentSpans').sum(by=['cluster', 'host']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total number of unique APM identities currently being tracked by cluster",
+        "id": "DzaUVZyAYAA",
+        "importOf": "DwovaqKAEfU",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "APM Identities",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Unique Identities",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('traces.totalUnique').max(by=['cluster']).publish(label='A', enable=False)\nB = data('spans.totalUnique').max(by=['cluster']).publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -830,96 +1544,10 @@
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gateway.tracing.sampler.spans').sum(by=['cluster']).publish(label='A')\nB = data('gateway.tracing.sampler.traces').sum(by=['cluster']).publish(label='B')\nC = data('gateway.tracing.sampler.errs').sum(by=['cluster']).publish(label='C')\nD = data('gateway.tracing.sampler.bothSelected').scale(-1).sum(by=['cluster']).publish(label='D')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Late spans sent are spans that arrived after we released the trace. Late spans sent are these are traces we've selected and we sent the stragglers along to SignalFx",
-        "id": "DzaUUNwAcAg",
-        "importOf": "Dy6LgwwAAAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Late Spans",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
             },
             {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Metric",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "gateway.tracing.buffer.lateSpansSeen - Sum by cluster",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "gateway.tracing.buffer.lateSpansSent - Sum by cluster - Scale:-1",
-              "label": "B",
+              "displayName": "gateway.debugTraces - Sum by cluster",
+              "label": "E",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -938,7 +1566,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('gateway.tracing.buffer.lateSpansSeen').sum(by=['cluster']).publish(label='A')\nB = data('gateway.tracing.buffer.lateSpansSent').sum(by=['cluster']).scale(-1).publish(label='B')",
+        "programText": "A = data('gateway.tracing.sampler.spans').sum(by=['cluster']).publish(label='A')\nB = data('gateway.tracing.sampler.traces').sum(by=['cluster']).publish(label='B')\nC = data('gateway.tracing.sampler.errs').sum(by=['cluster']).publish(label='C')\nD = data('gateway.tracing.sampler.bothSelected').scale(-1).sum(by=['cluster']).publish(label='D')\nE = data('gateway.debugTraces').sum(by=['cluster']).publish(label='E')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -948,47 +1576,17 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Saturation of the gateway hosts (max of CPU, memory and disk utilization)",
-        "id": "DzaUWMtAcAA",
-        "importOf": "DyQ2HmRAAAA",
+        "description": "Traces analyzed per minute",
+        "id": "DzaUUbkAYAE",
+        "importOf": "DyqcncxAEAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Gateway Saturation",
+        "name": "TAPM",
         "options": {
-          "colorBy": "Scale",
-          "colorRange": null,
+          "colorBy": "Dimension",
           "colorScale": null,
-          "colorScale2": [
-            {
-              "gt": 90,
-              "gte": null,
-              "lt": null,
-              "lte": null,
-              "paletteIndex": 16
-            },
-            {
-              "gt": 75,
-              "gte": null,
-              "lt": null,
-              "lte": 90,
-              "paletteIndex": 17
-            },
-            {
-              "gt": 50,
-              "gte": null,
-              "lt": null,
-              "lte": 75,
-              "paletteIndex": 18
-            },
-            {
-              "gt": null,
-              "gte": null,
-              "lt": null,
-              "lte": 50,
-              "paletteIndex": 20
-            }
-          ],
-          "groupBy": [],
+          "colorScale2": null,
+          "maximumPrecision": 2,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": 0,
@@ -997,47 +1595,29 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "cpu.utilization",
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "%",
-              "valueUnit": null
-            },
-            {
-              "displayName": "memory.utilization",
+              "displayName": "Analyzed",
               "label": "B",
-              "valuePrefix": "",
-              "valueSuffix": "%",
-              "valueUnit": null
-            },
-            {
-              "displayName": "disk.summary_utilization",
-              "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "%",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Saturation",
-              "label": "D",
-              "valuePrefix": "",
-              "valueSuffix": "%",
-              "valueUnit": null
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "TAPM",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": null,
-          "sortDirection": "Ascending",
-          "sortProperty": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
           "time": {
             "range": 900000,
             "type": "relative"
           },
           "timestampHidden": false,
-          "type": "Heatmap",
+          "type": "SingleValue",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('cpu.utilization', filter=filter('source', 'gateway')).publish(label='A', enable=False)\nB = data('memory.utilization', filter=filter('source', 'gateway')).publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=filter('source', 'gateway')).publish(label='C', enable=False)\nD = max(A, B, C).sum(by=['host','cluster']).publish(label='D')",
+        "programText": "B = data('gateway.processedTraces').sum().mean(over='1m').scale(60).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1047,11 +1627,12 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "We’re keeping metadata around for expired spans",
-        "id": "D2IzORGAcAA",
+        "description": "Spans that were not interesting",
+        "id": "Dza58JuAgAA",
+        "importOf": "Dy6KeELAAAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Expired Buffered Traces",
+        "name": "Spans Aged Out",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1102,7 +1683,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "gateway.tracing.buffer.totalBufferedExpiredTraces - Sum by host,cluster",
+              "displayName": "gateway.tracing.buffer.numSpansAgedOut - Sum by host,cluster",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -1122,286 +1703,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('gateway.tracing.buffer.totalBufferedExpiredTraces').sum(by=['host', 'cluster']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "CPU utilization of the Smart Gateway hosts",
-        "id": "DzaUUN0AYAE",
-        "importOf": "DyGRadvAIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "CPU Utilization",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": true,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "cpu.utilization",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('cpu.utilization', filter=filter('source', 'gateway')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DzaUWSFAgAA",
-        "importOf": "DyqXo-AAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": ".",
-        "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Smart Gateway Infrastructure</font>\n</td></tr>\n</table>\n<p align=\"center\" ><br />\nOverview of the infrastructure powering your Smart Gateway cluster(s) and its resource utilization.\n</p>",
-          "type": "Text"
-        },
-        "packageSpecifications": "",
-        "programText": "",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Disk utilization on the Smart Gateway hosts",
-        "id": "DzaUUFtAYAA",
-        "importOf": "DyLsScPAIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Disk Utilization",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "disk.summary_utilization",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('disk.summary_utilization', filter=filter('source', 'gateway')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Memory utilization of the Smart Gateway hosts",
-        "id": "DzaUUOrAcDg",
-        "importOf": "DyGLVPEAIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Memory Utilization",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "%",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "memory.utilization",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "%",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('memory.utilization', filter=filter('source', 'gateway')).publish(label='A')",
+        "programText": "A = data('gateway.tracing.buffer.numSpansAgedOut').sum(by=['host', 'cluster']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1507,12 +1809,12 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "How many spans each machine currently has in memory",
-        "id": "DzaUUNxAgAI",
-        "importOf": "Dy6Lh1jAEAA",
+        "description": "Late spans sent are spans that arrived after we released the trace. Late spans sent are these are traces we've selected and we sent the stragglers along to SignalFx",
+        "id": "DzaUUNwAcAg",
+        "importOf": "Dy6LgwwAAAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Buffered Spans",
+        "name": "Late Spans",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1538,7 +1840,7 @@
             }
           ],
           "axisPrecision": null,
-          "colorBy": "Dimension",
+          "colorBy": "Metric",
           "defaultPlotType": "AreaChart",
           "eventPublishLabelOptions": [],
           "histogramChartOptions": {
@@ -1563,7 +1865,123 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "gateway.tracing.buffer.totalBufferedSpans - Sum by host,cluster",
+              "displayName": "gateway.tracing.buffer.lateSpansSeen - Sum by cluster",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "gateway.tracing.buffer.lateSpansSent - Sum by cluster - Scale:-1",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gateway.tracing.buffer.lateSpansSeen').sum(by=['cluster']).publish(label='A')\nB = data('gateway.tracing.buffer.lateSpansSent').sum(by=['cluster']).scale(-1).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DzaUUdfAgAA",
+        "importOf": "Dy6Kf3KAEAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": ".",
+        "options": {
+          "markdown": "<table width=\"100%\" height=\"30%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Internal Smart Gateway Metrics</font>\n</td></tr></table><br>\nThis dashboard requires turning on the sending of [Internal Gateway Metrics] (https://github.com/signalfx/integrations/tree/master/gateway#signalfx-performance-options) by setting either the `StatsDelay` parameter in your Smart Gateway configuration (self-reporting), or using `InternalMetricsListenerAddress` and the Smart Agent to collect and report Smart Gateway internal metrics.\n\n_Note that these metrics will take up some of your Custom Metrics and DPM capacity and are **not** included in your µAPM plan._",
+          "type": "Text"
+        },
+        "packageSpecifications": "",
+        "programText": "",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Memory allocation. For SFx internal use only",
+        "id": "D1eVSjNAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Alloc",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Alloc",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -1574,7 +1992,7 @@
             }
           ],
           "showEventLines": false,
-          "stacked": true,
+          "stacked": false,
           "time": {
             "range": 900000,
             "type": "relative"
@@ -1583,209 +2001,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('gateway.tracing.buffer.totalBufferedSpans').sum(by=['host', 'cluster']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Number of spans processed per second",
-        "id": "DzaUWAYAcAA",
-        "importOf": "DyVySa-AEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Processed Spans",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "gateway.processedSpans - Sum by cluster,host",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "spans/s",
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "gateway.processedSpans Per Minute",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "SPM",
-              "valueUnit": null,
-              "yAxis": 1
-            }
-          ],
-          "showEventLines": false,
-          "stacked": true,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('gateway.processedSpans').sum(by=['cluster', 'host']).publish(label='B')\nC = data('gateway.processedSpans').sum().scale(60).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Traces selected and retained per minute by cluster",
-        "id": "DzaUUVnAcAA",
-        "importOf": "DyUBxTTAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Retained TPM",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Retained",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "TPM",
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Force Retained",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Retained",
-              "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": true,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('gateway.sentTraces').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='B', enable=False)\nC = data('gateway.debugTraces').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='C')\nD = (B - C).sum(by=['cluster']).mean(over='1m').scale(60).publish(label='D')",
+        "programText": "A = data('Alloc', filter=filter('source', 'gateway')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1872,27 +2088,6 @@
         },
         "packageSpecifications": "",
         "programText": "B = data('gateway.processedTraces').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DzaUUdfAgAA",
-        "importOf": "Dy6Kf3KAEAE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": ".",
-        "options": {
-          "markdown": "<table width=\"100%\" height=\"30%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Internal Smart Gateway Metrics</font>\n</td></tr></table><br>\nThis dashboard requires turning on the sending of [Internal Gateway Metrics] (https://github.com/signalfx/integrations/tree/master/gateway#signalfx-performance-options) by setting either the `StatsDelay` parameter in your Smart Gateway configuration (self-reporting), or using `InternalMetricsListenerAddress` and the Smart Agent to collect and report Smart Gateway internal metrics.\n\n_Note that these metrics will take up some of your Custom Metrics and DPM capacity and are **not** included in your µAPM plan._",
-          "type": "Text"
-        },
-        "packageSpecifications": "",
-        "programText": "",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2008,469 +2203,6 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Total number of unique APM identities currently being tracked by cluster",
-        "id": "DzaUVZyAYAA",
-        "importOf": "DwovaqKAEfU",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "APM Identities",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Unique Identities",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": true,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('traces.totalUnique').max(by=['cluster']).publish(label='A', enable=False)\nB = data('spans.totalUnique').max(by=['cluster']).publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Traces analyzed per second",
-        "id": "DzaUUFLAcBM",
-        "importOf": "DwowEiHAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Analyzed Traces",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "gateway.processedTraces - Sum by cluster,host",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "traces/s",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": true,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "B = data('gateway.processedTraces').sum(by=['cluster', 'host']).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Spans that were not interesting",
-        "id": "Dza58JuAgAA",
-        "importOf": "Dy6KeELAAAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Spans Aged Out",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "gateway.tracing.buffer.numSpansAgedOut - Sum by host,cluster",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": true,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gateway.tracing.buffer.numSpansAgedOut').sum(by=['host', 'cluster']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Running versions of the Smart Gateway",
-        "id": "DzaUUraAYAE",
-        "importOf": "DwowFKIAIAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Cluster-Name | Smart Gateway Version",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": true,
-                "property": "cluster"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": true,
-                "property": "samplerCommit"
-              }
-            ]
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gateway.commit').count(by=['samplerCommit', 'cluster']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Number of spans dropped by the Smart Gateway",
-        "id": "DzaUUknAcA8",
-        "importOf": "DyGLVPAAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Dropped Spans",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Dropped spans",
-              "label": "E",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Dropped spans (unknown reason)",
-              "label": "F",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Dropped spans",
-              "label": "G",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Dropped spans (unknown reason)",
-              "label": "H",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": true,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "E = data('dropped_spans', filter=filter('source', 'gateway'), rollup='delta').sum(by=['reason']).publish(label='E')\nF = data('dropped_spans', filter=(not filter('reason', '*')) and filter('source', 'gateway'), rollup='delta').sum().publish(label='F')\nG = data('gateway.dropped_spans', filter=filter('source', 'gateway')).sum(by=['reason']).publish(label='G')\nH = data('gateway.dropped_spans', filter=(not filter('reason', '*')) and filter('source', 'gateway')).sum().publish(label='H')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
         "description": "Network bandwidth usage of the Smart Gateway hosts",
         "id": "DzaUUVoAgAM",
         "importOf": "DyQ2HlGAEAA",
@@ -2557,12 +2289,98 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Transfer of expired state on server restarts",
-        "id": "DzaUUO7AYAI",
-        "importOf": "Dy6Lh3AAAAA",
+        "description": "CPU utilization of the Smart Gateway hosts",
+        "id": "DzaUUN0AYAE",
+        "importOf": "DyGRadvAIAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Expired Buffer Entries Transfer",
+        "name": "CPU Utilization",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "%",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "cpu.utilization",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('cpu.utilization', filter=filter('source', 'gateway')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "How many spans each machine currently has in memory",
+        "id": "DzaUUNxAgAI",
+        "importOf": "Dy6Lh1jAEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Buffered Spans",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -2613,18 +2431,8 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "gateway.tracing.sampler.expired_buffer_entries_received",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "gateway.tracing.sampler.expired_buffer_entries_sent",
-              "label": "C",
+              "displayName": "gateway.tracing.buffer.totalBufferedSpans - Sum by host,cluster",
+              "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -2643,7 +2451,284 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "B = data('gateway.tracing.sampler.expired_buffer_entries_received').publish(label='B')\nC = data('gateway.tracing.sampler.expired_buffer_entries_sent').publish(label='C')",
+        "programText": "A = data('gateway.tracing.buffer.totalBufferedSpans').sum(by=['host', 'cluster']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Traces selected and retained per minute by cluster",
+        "id": "DzaUUVnAcAA",
+        "importOf": "DyUBxTTAEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Retained TPM",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Retained",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "TPM",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Force Retained",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Retained",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('gateway.sentTraces').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='B', enable=False)\nC = data('gateway.debugTraces').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='C')\nD = (B - C).sum(by=['cluster']).mean(over='1m').scale(60).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "How many traces each machine currently has in memory",
+        "id": "DzaUS-CAYAA",
+        "importOf": "Dy6LicTAIAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Buffered Traces",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "gateway.tracing.buffer.totalBufferedTraces - Sum by host,cluster",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gateway.tracing.buffer.totalBufferedTraces').sum(by=['host', 'cluster']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Lightweight processes that do work. For SFx internal use only",
+        "id": "D2I1P21AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Num Go Routines",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "num_goroutine",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('num_goroutine', filter=filter('source', 'gateway')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2754,236 +2839,10 @@
         "relatedDetectorIds": [],
         "tags": null
       }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Lightweight processes that do work. For SFx internal use only",
-        "id": "D2I1P21AgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Num Go Routines",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "num_goroutine",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('num_goroutine', filter=filter('source', 'gateway')).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
     }
   ],
   "crossLinkExports": [],
   "dashboardExports": [
-    {
-      "dashboard": {
-        "chartDensity": "DEFAULT",
-        "charts": [
-          {
-            "chartId": "DzaUUdfAgAA",
-            "column": 0,
-            "height": 1,
-            "row": 0,
-            "width": 12
-          },
-          {
-            "chartId": "DzaUUNwAcAg",
-            "column": 0,
-            "height": 1,
-            "row": 1,
-            "width": 6
-          },
-          {
-            "chartId": "DzaUVz6AYAA",
-            "column": 6,
-            "height": 1,
-            "row": 1,
-            "width": 6
-          },
-          {
-            "chartId": "DzaUS-CAYAA",
-            "column": 0,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          },
-          {
-            "chartId": "DzaUUNxAgAI",
-            "column": 6,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          },
-          {
-            "chartId": "D2IzORGAcAA",
-            "column": 0,
-            "height": 1,
-            "row": 3,
-            "width": 6
-          },
-          {
-            "chartId": "Dza58JuAgAA",
-            "column": 6,
-            "height": 1,
-            "row": 3,
-            "width": 6
-          },
-          {
-            "chartId": "Dza5_CnAYAA",
-            "column": 0,
-            "height": 1,
-            "row": 4,
-            "width": 6
-          },
-          {
-            "chartId": "D2I1P21AgAA",
-            "column": 6,
-            "height": 1,
-            "row": 4,
-            "width": 6
-          },
-          {
-            "chartId": "D1eVSjNAcAA",
-            "column": 6,
-            "height": 1,
-            "row": 5,
-            "width": 6
-          },
-          {
-            "chartId": "DzaUUO7AYAI",
-            "column": 0,
-            "height": 1,
-            "row": 5,
-            "width": 6
-          },
-          {
-            "chartId": "DzaUUOPAgAA",
-            "column": 6,
-            "height": 1,
-            "row": 6,
-            "width": 6
-          },
-          {
-            "chartId": "D3WESuwAgAA",
-            "column": 0,
-            "height": 1,
-            "row": 6,
-            "width": 6
-          }
-        ],
-        "created": 0,
-        "creator": null,
-        "customProperties": null,
-        "description": "More detailed metrics about the SignalFx Smart Gateway internals",
-        "discoveryOptions": null,
-        "eventOverlays": null,
-        "filters": {
-          "sources": null,
-          "time": null,
-          "variables": [
-            {
-              "alias": "Host",
-              "applyIfExists": false,
-              "description": "",
-              "preferredSuggestions": [],
-              "property": "host",
-              "replaceOnly": false,
-              "required": true,
-              "restricted": false,
-              "value": "Choose Host"
-            },
-            {
-              "alias": "Cluster",
-              "applyIfExists": false,
-              "description": "Smart Gateway Cluster",
-              "preferredSuggestions": [],
-              "property": "cluster",
-              "replaceOnly": false,
-              "required": false,
-              "restricted": false,
-              "value": ""
-            }
-          ]
-        },
-        "groupId": "DzaUStBAgAA",
-        "id": "DzaUWnYAgAA",
-        "importOf": "Dy6LjidAEAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "maxDelayOverride": null,
-        "name": "Internals",
-        "selectedEventOverlays": [],
-        "tags": null
-      }
-    },
     {
       "dashboard": {
         "chartDensity": "DEFAULT",
@@ -3165,6 +3024,147 @@
         "selectedEventOverlays": [],
         "tags": null
       }
+    },
+    {
+      "dashboard": {
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "DzaUUdfAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 12
+          },
+          {
+            "chartId": "DzaUUNwAcAg",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "DzaUVz6AYAA",
+            "column": 6,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "DzaUS-CAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "DzaUUNxAgAI",
+            "column": 6,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "D2IzORGAcAA",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "Dza58JuAgAA",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "Dza5_CnAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 4,
+            "width": 6
+          },
+          {
+            "chartId": "D2I1P21AgAA",
+            "column": 6,
+            "height": 1,
+            "row": 4,
+            "width": 6
+          },
+          {
+            "chartId": "D1eVSjNAcAA",
+            "column": 6,
+            "height": 1,
+            "row": 5,
+            "width": 6
+          },
+          {
+            "chartId": "DzaUUO7AYAI",
+            "column": 0,
+            "height": 1,
+            "row": 5,
+            "width": 6
+          },
+          {
+            "chartId": "DzaUUOPAgAA",
+            "column": 6,
+            "height": 1,
+            "row": 6,
+            "width": 6
+          },
+          {
+            "chartId": "D3WESuwAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 6,
+            "width": 6
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "More detailed metrics about the SignalFx Smart Gateway internals",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": null,
+          "time": null,
+          "variables": [
+            {
+              "alias": "Host",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [],
+              "property": "host",
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": "Choose Host"
+            },
+            {
+              "alias": "Cluster",
+              "applyIfExists": false,
+              "description": "Smart Gateway Cluster",
+              "preferredSuggestions": [],
+              "property": "cluster",
+              "replaceOnly": false,
+              "required": false,
+              "restricted": false,
+              "value": ""
+            }
+          ]
+        },
+        "groupId": "DzaUStBAgAA",
+        "id": "DzaUWnYAgAA",
+        "importOf": "Dy6LjidAEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "maxDelayOverride": null,
+        "name": "Internals",
+        "selectedEventOverlays": [],
+        "tags": null
+      }
     }
   ],
   "groupExport": {
@@ -3202,7 +3202,7 @@
       "teams": null
     }
   },
-  "hashCode": 1542360554,
+  "hashCode": 1698307522,
   "id": "DzaUStBAgAA",
   "modelVersion": 1,
   "packageType": "GROUP"
