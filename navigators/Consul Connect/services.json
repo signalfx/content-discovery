@@ -1,0 +1,191 @@
+{
+  "hashCode" : 1859793936,
+  "id" : "EBkLgufAcHU",
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "EBkLgufAcHU",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "plugin",
+          "values" : [ "consul" ]
+        } ],
+        "metric" : "upstream_rq_completed"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Consul Connect Meshes",
+      "navigatorCategory" : "Consul Connect",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:mesh AND _exists_:service AND plugin:consul",
+        "category" : "Consul Connect",
+        "categoryPriority" : 20,
+        "discoveryQuery" : [ "_exists_:mesh AND _exists_:service AND plugin:consul" ],
+        "displayName" : "Services",
+        "filterProperties" : [ "host" ],
+        "id" : "consul connect services",
+        "idName" : "Service",
+        "idTemplate" : "{{service}} ({{mesh}})",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Service",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "# of Completed Requests by Mesh",
+          "displayName" : "Requests",
+          "id" : "mesh_upstream_rq_completed",
+          "job" : {
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "mesh",
+              "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "service",
+              "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "plugin",
+              "propertyValue" : "consul",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "A = data('upstream_rq_completed'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['mesh', 'service']).publish(label='A')",
+            "varName" : "A"
+          },
+          "metricSelectors" : [ "upstream_rq_completed" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Requests",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#6bd37e", "#acef7f", "#e2ed6a", "#eac24b", "#ea1849" ]
+          },
+          "description" : "Request success rate",
+          "displayName" : "Success Rate",
+          "id" : "mesh_request_success_rate",
+          "job" : {
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "mesh",
+              "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "service",
+              "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "plugin",
+              "propertyValue" : "consul",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "A = data('upstream_rq_completed'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['mesh', 'service']).publish(label='A', enable=False)\nB = data('upstream_rq_5xx', extrapolation='zero').sum(by=['mesh']).publish(label='B', enable=False)\nC = (100-(B/A*100)).publish(label='C')",
+            "varName" : "C"
+          },
+          "metricSelectors" : [ "upstream_rq_completed", "upstream_rq_5xx" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "Success Rate",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Response Time",
+          "displayName" : "Response Time",
+          "id" : "mesh_response_time",
+          "job" : {
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "mesh",
+              "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "service",
+              "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "plugin",
+              "propertyValue" : "consul",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "A = data('upstream_rq_time'{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['mesh', 'service']).publish(label='A')",
+            "varName" : "A"
+          },
+          "metricSelectors" : [ "upstream_rq_time" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "Response Time",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "_exists_:mesh",
+        "propertyColumns" : [ [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "mesh" ],
+        "singleHostSystemDashboardName" : null,
+        "systemDashboardName" : null,
+        "systemDashboardPrefix" : null,
+        "tooltipKeyList" : [ {
+          "displayName" : "Mesh Name",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "id"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}
