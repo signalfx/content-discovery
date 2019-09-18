@@ -6,10 +6,10 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "DiVV9i9AYAA",
+        "id": "DiVV7oIAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Connection Errors",
+        "name": "Current Sessions",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -18,7 +18,7 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "# errors",
+              "label": "# of sessions",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
@@ -43,68 +43,7 @@
           },
           "includeZero": false,
           "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": false,
-                "property": "weight"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
+            "fields": null
           },
           "lineChartOptions": {
             "showDataMarkers": false
@@ -121,7 +60,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Connection Errors (collectd)",
+              "displayName": "Current Sessions (collectd)",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -131,7 +70,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "Connection Errors",
+              "displayName": "Current Sessions",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -151,7 +90,197 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('derive.error_connection', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND')), rollup='delta').publish(label='A')\nB = data('haproxy_error_connections', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND'))).publish(label='B')",
+        "programText": "A = data('gauge.session_current', filter=filter('service_name', 'BACKEND', 'FRONTEND')).sum().publish(label='A')\nB = data('haproxy_session_current', filter=filter('service_name', 'BACKEND', 'FRONTEND')).sum().publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV7eCAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Sessions Rate",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "sessions / sec",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Session Rate (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Session Rate",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gauge.session_rate_all').publish(label='A')\nB = data('haproxy_session_rate_all').publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Ratio of system polling time versus total time over the last minute",
+        "id": "DiVV7ZDAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Idle Percent",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "idle %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 100,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "plugin",
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Idle Percentage (collectd)",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Idle Percentage",
+              "label": "B",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gauge.idle_pct', filter=filter('plugin', 'haproxy')).mean(over='1m').publish(label='A')\nB = data('haproxy_idle_percent', filter=filter('plugin', 'haproxy')).mean(over='1m').publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -304,645 +433,6 @@
         },
         "packageSpecifications": "",
         "programText": "A = data('gauge.session_rate', filter=filter('service_name', 'FRONTEND')).publish(label='A')\nB = data('haproxy_session_rate', filter=filter('service_name', 'FRONTEND')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV5YgAgDg",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Bytes In",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "bytes",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Bytes In (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte",
-              "yAxis": 0
-            },
-            {
-              "displayName": "Bytes In",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte",
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('derive.bytes_in', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='A')\nB = data('haproxy_bytes_in', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV7eCAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Sessions Rate",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "sessions / sec",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Session Rate (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Session Rate",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gauge.session_rate_all').publish(label='A')\nB = data('haproxy_session_rate_all').publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Average response time from a server in milliseconds, over the last 1024 requests",
-        "id": "DiVV9lZAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Average Response Time",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": false,
-                "property": "weight"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Average Response Time (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Average Response Time",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gauge.response_time_avg', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND'))).publish(label='A')\nB = data('haproxy_response_time_average', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND'))).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Number of items currently in backend queue",
-        "id": "DiVV9gwAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Current Queue Size",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              }
-            ]
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Current Queue Size (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Current Queue Size",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gauge.queue_current', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_queue_current', filter=filter('plugin', 'haproxy')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV6yGAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Bytes Out",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "bytes",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Bytes Out (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte",
-              "yAxis": 0
-            },
-            {
-              "displayName": "Bytes Out",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte",
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('derive.bytes_out', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='A')\nB = data('haproxy_bytes_out', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1108,11 +598,11 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "The proxies with the most bytes out",
-        "id": "DiVV7k4AgAA",
+        "description": "Number of items currently in backend queue",
+        "id": "DiVV9gwAcAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Highest Bytes Out",
+        "name": "Current Queue Size",
         "options": {
           "colorBy": "Dimension",
           "colorScale2": null,
@@ -1120,15 +610,15 @@
             "fields": [
               {
                 "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
                 "property": "host"
               },
               {
                 "enabled": false,
                 "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
               },
               {
                 "enabled": false,
@@ -1140,15 +630,11 @@
               },
               {
                 "enabled": false,
-                "property": "process_id"
+                "property": "process_num"
               },
               {
                 "enabled": true,
                 "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
               },
               {
                 "enabled": true,
@@ -1156,15 +642,15 @@
               },
               {
                 "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": false,
                 "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": false,
-                "property": "weight"
               },
               {
                 "enabled": true,
@@ -1172,11 +658,11 @@
               },
               {
                 "enabled": false,
-                "property": "metric_source"
+                "property": "dsname"
               },
               {
                 "enabled": false,
-                "property": "process_num"
+                "property": "unique_proxy_id"
               }
             ]
           },
@@ -1189,129 +675,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Bytes Out (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte",
-              "yAxis": 0
-            },
-            {
-              "displayName": "Bytes Out",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte",
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('derive.bytes_out', filter=filter('service_name', 'FRONTEND', 'BACKEND')).publish(label='A')\nB = data('haproxy_bytes_out', filter=filter('service_name', 'FRONTEND', 'BACKEND')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Number of times a server has been selected in the last reporting interval",
-        "id": "DiVV7v-AYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Servers Selected",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": false,
-                "property": "weight"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Servers Selected (collectd)",
+              "displayName": "Current Queue Size (collectd)",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -1321,7 +685,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "Servers Selected",
+              "displayName": "Current Queue Size",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -1342,7 +706,163 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('counter.server_selected_total', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='A')\nB = data('haproxy_server_selected_total', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='B')",
+        "programText": "A = data('gauge.queue_current', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_queue_current', filter=filter('plugin', 'haproxy')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV9ZFAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Denied Responses",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# denied",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": false,
+                "property": "weight"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Denied Responses (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Denied Responses",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('derive.denied_response', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='A')\nB = data('haproxy_denied_response', filter=filter('plugin', 'haproxy')).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1495,6 +1015,1499 @@
         },
         "packageSpecifications": "",
         "programText": "A = data('gauge.request_rate', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='A')\nB = data('haproxy_request_rate', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV5YgAgDg",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Bytes In",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Bytes In (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Byte",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Bytes In",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Byte",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('derive.bytes_in', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='A')\nB = data('haproxy_bytes_in', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Number of times a server has been selected in the last reporting interval",
+        "id": "DiVV7v-AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Servers Selected",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": false,
+                "property": "weight"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Servers Selected (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Servers Selected",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('counter.server_selected_total', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='A')\nB = data('haproxy_server_selected_total', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average response time from a server in milliseconds, over the last 1024 requests",
+        "id": "DiVV9lZAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Average Response Time",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": false,
+                "property": "weight"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average Response Time (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average Response Time",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gauge.response_time_avg', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND'))).publish(label='A')\nB = data('haproxy_response_time_average', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND'))).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV5jpAgAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "2xx, 4xx, 5xx Responses",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# of responses",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "5xx Responses (collectd)",
+              "label": "C",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "4xx Responses (collectd)",
+              "label": "B",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "2xx Responses (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "5xx Responses",
+              "label": "D",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "4xx Responses",
+              "label": "E",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "2xx Responses",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "C = data('derive.response_5xx', filter=filter('plugin', 'haproxy')).publish(label='C')\nB = data('derive.response_4xx', filter=filter('plugin', 'haproxy')).publish(label='B')\nA = data('derive.response_2xx', filter=filter('plugin', 'haproxy')).publish(label='A')\nD = data('haproxy_response_5xx', filter=filter('plugin', 'haproxy')).publish(label='D')\nE = data('haproxy_response_4xx', filter=filter('plugin', 'haproxy')).publish(label='E')\nF = data('haproxy_response_2xx', filter=filter('plugin', 'haproxy')).publish(label='F')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV6yGAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Bytes Out",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Bytes Out (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Byte",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Bytes Out",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Byte",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('derive.bytes_out', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='A')\nB = data('haproxy_bytes_out', filter=filter('plugin', 'haproxy') and filter('service_name', 'FRONTEND')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV7QpAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Requests per Second",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "request /  sec",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Requests per Second (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Requests per Second",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('derive.requests', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_requests', filter=filter('plugin', 'haproxy')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV6LiAYAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request Errors",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# errors",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Request Errors (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Request Errors",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('derive.error_request', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='A')\nB = data('haproxy_error_request', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV6-ZAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Connection Rate",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "conns / sec",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Connection Rate (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Connection Rate",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gauge.connection_rate', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_connection_rate_all', filter=filter('plugin', 'haproxy')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "The average queue time in milliseconds over the past 1024 requests",
+        "id": "DiVV8bKAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Average Queue Time",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "time (ms)",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": false,
+                "property": "weight"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "process_num",
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average Queue Size (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average Queue Size",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gauge.queue_time_avg', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_queue_time_average', filter=filter('plugin', 'haproxy')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV86ZAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Response Errors",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# errors",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": false,
+                "property": "weight"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Response Errors (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Response Errors",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('derive.error_response', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_error_response', filter=filter('plugin', 'haproxy')).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "DiVV9i9AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Connection Errors",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# errors",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "dsname"
+              },
+              {
+                "enabled": false,
+                "property": "host"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "plugin"
+              },
+              {
+                "enabled": false,
+                "property": "process_id"
+              },
+              {
+                "enabled": true,
+                "property": "proxy_name"
+              },
+              {
+                "enabled": true,
+                "property": "service_name"
+              },
+              {
+                "enabled": false,
+                "property": "server_id"
+              },
+              {
+                "enabled": false,
+                "property": "type"
+              },
+              {
+                "enabled": false,
+                "property": "unique_proxy_id"
+              },
+              {
+                "enabled": false,
+                "property": "weight"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": false,
+                "property": "metric_source"
+              },
+              {
+                "enabled": false,
+                "property": "process_num"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Connection Errors (collectd)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Connection Errors",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('derive.error_connection', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND')), rollup='delta').publish(label='A')\nB = data('haproxy_error_connections', filter=filter('plugin', 'haproxy') and (not filter('service_name', 'BACKEND'))).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1680,138 +2693,14 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Ratio of system polling time versus total time over the last minute",
-        "id": "DiVV7ZDAcAA",
+        "description": "Number of times a server has been selected in the last reporting interval",
+        "id": "DiVV8DWAYAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Idle Percent",
+        "name": "Top Servers Selected",
         "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "idle %",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 100,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": "plugin",
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Idle Percentage (collectd)",
-              "label": "A",
-              "paletteIndex": 2,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Idle Percentage",
-              "label": "B",
-              "paletteIndex": 2,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gauge.idle_pct', filter=filter('plugin', 'haproxy')).mean(over='1m').publish(label='A')\nB = data('haproxy_idle_percent', filter=filter('plugin', 'haproxy')).mean(over='1m').publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV86ZAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Response Errors",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# errors",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
+          "colorScale2": null,
           "legendOptions": {
             "fields": [
               {
@@ -1876,13 +2765,7 @@
               }
             ]
           },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
+          "maximumPrecision": null,
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
@@ -1891,7 +2774,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Response Errors (collectd)",
+              "displayName": "Servers Selected (collectd)",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -1901,7 +2784,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "Response Errors",
+              "displayName": "Servers Selected",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -1911,17 +2794,18 @@
               "yAxis": 0
             }
           ],
-          "showEventLines": false,
-          "stacked": false,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "type": "TimeSeriesChart",
+          "type": "List",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('derive.error_response', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_error_response', filter=filter('plugin', 'haproxy')).publish(label='B')",
+        "programText": "A = data('counter.server_selected_total', filter=(not filter('service_name', 'BACKEND')), rollup='delta').publish(label='A')\nB = data('haproxy_server_selected_total', filter=(not filter('service_name', 'BACKEND')), rollup='delta').publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2073,241 +2957,11 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "",
-        "id": "DiVV5jpAgAE",
+        "description": "The proxies with the most bytes out",
+        "id": "DiVV7k4AgAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "2xx, 4xx, 5xx Responses",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# of responses",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": "sf_metric",
-            "showLegend": true
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "5xx Responses (collectd)",
-              "label": "C",
-              "paletteIndex": 5,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "4xx Responses (collectd)",
-              "label": "B",
-              "paletteIndex": 4,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "2xx Responses (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "5xx Responses",
-              "label": "D",
-              "paletteIndex": 5,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "4xx Responses",
-              "label": "E",
-              "paletteIndex": 4,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "2xx Responses",
-              "label": "F",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "C = data('derive.response_5xx', filter=filter('plugin', 'haproxy')).publish(label='C')\nB = data('derive.response_4xx', filter=filter('plugin', 'haproxy')).publish(label='B')\nA = data('derive.response_2xx', filter=filter('plugin', 'haproxy')).publish(label='A')\nD = data('haproxy_response_5xx', filter=filter('plugin', 'haproxy')).publish(label='D')\nE = data('haproxy_response_4xx', filter=filter('plugin', 'haproxy')).publish(label='E')\nF = data('haproxy_response_2xx', filter=filter('plugin', 'haproxy')).publish(label='F')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV7oIAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Current Sessions",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# of sessions",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Current Sessions (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Current Sessions",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gauge.session_current', filter=filter('service_name', 'BACKEND', 'FRONTEND')).sum().publish(label='A')\nB = data('haproxy_session_current', filter=filter('service_name', 'BACKEND', 'FRONTEND')).sum().publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Number of times a server has been selected in the last reporting interval",
-        "id": "DiVV8DWAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Servers Selected",
+        "name": "Highest Bytes Out",
         "options": {
           "colorBy": "Dimension",
           "colorScale2": null,
@@ -2384,23 +3038,23 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Servers Selected (collectd)",
+              "displayName": "Bytes Out (collectd)",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": null,
+              "valueUnit": "Byte",
               "yAxis": 0
             },
             {
-              "displayName": "Servers Selected",
+              "displayName": "Bytes Out",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": null,
+              "valueUnit": "Byte",
               "yAxis": 0
             }
           ],
@@ -2412,664 +3066,10 @@
             "type": "relative"
           },
           "type": "List",
-          "unitPrefix": "Metric"
+          "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('counter.server_selected_total', filter=(not filter('service_name', 'BACKEND')), rollup='delta').publish(label='A')\nB = data('haproxy_server_selected_total', filter=(not filter('service_name', 'BACKEND')), rollup='delta').publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV6LiAYAE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Request Errors",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# errors",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Request Errors (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Request Errors",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('derive.error_request', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='A')\nB = data('haproxy_error_request', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "The average queue time in milliseconds over the past 1024 requests",
-        "id": "DiVV8bKAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Average Queue Time",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "time (ms)",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": false,
-                "property": "weight"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": "process_num",
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Average Queue Size (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            },
-            {
-              "displayName": "Average Queue Size",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gauge.queue_time_avg', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_queue_time_average', filter=filter('plugin', 'haproxy')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV6-ZAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Connection Rate",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "conns / sec",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Connection Rate (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Connection Rate",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('gauge.connection_rate', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_connection_rate_all', filter=filter('plugin', 'haproxy')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV7QpAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Requests per Second",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "request /  sec",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Requests per Second (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Requests per Second",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('derive.requests', filter=filter('plugin', 'haproxy')).publish(label='A')\nB = data('haproxy_requests', filter=filter('plugin', 'haproxy')).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "DiVV9ZFAgAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Denied Responses",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "# denied",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "dsname"
-              },
-              {
-                "enabled": false,
-                "property": "host"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "plugin"
-              },
-              {
-                "enabled": false,
-                "property": "process_id"
-              },
-              {
-                "enabled": true,
-                "property": "proxy_name"
-              },
-              {
-                "enabled": false,
-                "property": "server_id"
-              },
-              {
-                "enabled": true,
-                "property": "service_name"
-              },
-              {
-                "enabled": false,
-                "property": "type"
-              },
-              {
-                "enabled": false,
-                "property": "unique_proxy_id"
-              },
-              {
-                "enabled": false,
-                "property": "weight"
-              },
-              {
-                "enabled": true,
-                "property": "AWSUniqueId"
-              },
-              {
-                "enabled": false,
-                "property": "metric_source"
-              },
-              {
-                "enabled": false,
-                "property": "process_num"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Denied Responses (collectd)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Denied Responses",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('derive.denied_response', filter=filter('plugin', 'haproxy'), rollup='delta').publish(label='A')\nB = data('haproxy_denied_response', filter=filter('plugin', 'haproxy')).publish(label='B')",
+        "programText": "A = data('derive.bytes_out', filter=filter('service_name', 'FRONTEND', 'BACKEND')).publish(label='A')\nB = data('haproxy_bytes_out', filter=filter('service_name', 'FRONTEND', 'BACKEND')).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -3077,105 +3077,6 @@
   ],
   "crossLinkExports": [],
   "dashboardExports": [
-    {
-      "dashboard": {
-        "chartDensity": "DEFAULT",
-        "charts": [
-          {
-            "chartId": "DiVV9gwAcAA",
-            "column": 0,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "DiVV9lZAgAA",
-            "column": 4,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "DiVV8bKAgAA",
-            "column": 8,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "DiVV8pzAcAA",
-            "column": 8,
-            "height": 1,
-            "row": 1,
-            "width": 4
-          },
-          {
-            "chartId": "DiVV8DWAYAA",
-            "column": 0,
-            "height": 1,
-            "row": 1,
-            "width": 4
-          },
-          {
-            "chartId": "DiVV86ZAYAA",
-            "column": 4,
-            "height": 1,
-            "row": 1,
-            "width": 4
-          },
-          {
-            "chartId": "DiVV9ZFAgAA",
-            "column": 6,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          },
-          {
-            "chartId": "DiVV9i9AYAA",
-            "column": 0,
-            "height": 1,
-            "row": 2,
-            "width": 6
-          }
-        ],
-        "created": 0,
-        "creator": null,
-        "customProperties": null,
-        "description": "Metrics related to HAProxy backends",
-        "discoveryOptions": {
-          "query": "plugin:haproxy",
-          "selectors": [
-            "_exists_:service_name"
-          ]
-        },
-        "eventOverlays": null,
-        "filters": {
-          "sources": null,
-          "time": null,
-          "variables": [
-            {
-              "alias": "proxy_name",
-              "applyIfExists": false,
-              "description": "",
-              "preferredSuggestions": [],
-              "property": "proxy_name",
-              "replaceOnly": false,
-              "required": true,
-              "restricted": false,
-              "value": ""
-            }
-          ]
-        },
-        "groupId": "DiVV5WXAcAA",
-        "id": "DiVV8AGAcAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "maxDelayOverride": null,
-        "name": "HAProxy Backend",
-        "selectedEventOverlays": [],
-        "tags": null
-      }
-    },
     {
       "dashboard": {
         "chartDensity": "DEFAULT",
@@ -3272,6 +3173,105 @@
         "maxDelayOverride": null,
         "name": "HAProxy Overview",
         "selectedEventOverlays": null,
+        "tags": null
+      }
+    },
+    {
+      "dashboard": {
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "DiVV9gwAcAA",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "DiVV9lZAgAA",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "DiVV8bKAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "DiVV8pzAcAA",
+            "column": 8,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "DiVV8DWAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "DiVV86ZAYAA",
+            "column": 4,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "DiVV9ZFAgAA",
+            "column": 6,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "DiVV9i9AYAA",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "Metrics related to HAProxy backends",
+        "discoveryOptions": {
+          "query": "plugin:haproxy",
+          "selectors": [
+            "_exists_:service_name"
+          ]
+        },
+        "eventOverlays": null,
+        "filters": {
+          "sources": null,
+          "time": null,
+          "variables": [
+            {
+              "alias": "proxy_name",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [],
+              "property": "proxy_name",
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": ""
+            }
+          ]
+        },
+        "groupId": "DiVV5WXAcAA",
+        "id": "DiVV8AGAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "maxDelayOverride": null,
+        "name": "HAProxy Backend",
+        "selectedEventOverlays": [],
         "tags": null
       }
     },
@@ -3412,7 +3412,7 @@
       "teams": null
     }
   },
-  "hashCode": 2034212718,
+  "hashCode": -880373468,
   "id": "DiVV5WXAcAA",
   "modelVersion": 1,
   "packageType": "GROUP"
