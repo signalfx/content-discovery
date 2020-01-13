@@ -1,1891 +1,1832 @@
 {
-  "chartExports" : [ {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "that reported in last hour",
-      "id" : "DiVWWUEAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Active Hosts by AZ",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
+  "chartExports": [
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDDeuAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network I/O Bytes/Min",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes out - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes in - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": 3,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "bytes out/interval",
+              "label": "B",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "bytes in/interval",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
         },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDBvOAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk Metrics 24h Growth %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": null,
+          "publishLabelOptions": [
+            {
+              "displayName": "A - Timeshift 1d",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "+sf_originatingMetric",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).max(over='1h').count(by=['aws_availability_zone']).publish(label='A')",
-      "tags" : null
+        "packageSpecifications": "",
+        "programText": "A = data('Disk*', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum(by=['sf_metric']).scale(60).mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "percentile distribution",
+        "id": "EOLDBYuAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network Bytes In",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes/interval",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            null
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": null,
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "p10",
+              "label": "C",
+              "paletteIndex": 15,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "min",
+              "label": "B",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "NetworkIn - Scale:60",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "p90",
+              "label": "E",
+              "paletteIndex": 9,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "max",
+              "label": "F",
+              "paletteIndex": 7,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "median",
+              "label": "D",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDEGbAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 2,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": null,
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/EC2') and filter('stat', 'mean') and filter('InstanceId', 'i-e8b1df4b'), extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDBcMAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk I/O Bytes/Min",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes written - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes read - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "bytes written/min",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "bytes read/min",
+              "label": "B",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('DiskWriteBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "that reported in last hour",
+        "id": "EOLDCxgAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Active Hosts Per Instance Type",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).max(over='1h').count(by=['aws_instance_type']).publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDBeqAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Instances by CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).mean(by=['InstanceId']).top(count=5).publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDCo1AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Network Bytes Out/Min",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 4,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).mean(by=['InstanceId']).top(count=5).publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDC85AcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk Ops/Min",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "writes - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "reads - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "read ops/min",
+              "label": "B",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": "write ops/min",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('DiskWriteOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "percentile distribution",
+        "id": "EOLDCTqAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "CPU %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "cpu %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 110,
+              "min": null
+            },
+            null
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": null,
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "p10",
+              "label": "C",
+              "paletteIndex": 15,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "CPUUtilization",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "min",
+              "label": "B",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "p90",
+              "label": "E",
+              "paletteIndex": 9,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "max",
+              "label": "F",
+              "paletteIndex": 7,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "median",
+              "label": "D",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "that reported in last hour",
+        "id": "EOLDCa-AcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Active Hosts",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 5,
+          "programOptions": null,
+          "publishLabelOptions": [
+            {
+              "displayName": "# hosts",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": null,
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/EC2') and filter('stat', 'upper') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).max(over='1h').count().publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDEDOAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk I/O Bytes/Min",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes written - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes read - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": 3,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "bytes read/interval",
+              "label": "B",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": "bytes written/interval",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('DiskWriteBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDC31AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network Bytes In vs. 24h Change %",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes/min - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "% change - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "A - Mean(1h)",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "NetworkIn",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "24h growth %",
+              "label": "D",
+              "paletteIndex": 4,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": null,
+              "label": "C",
+              "paletteIndex": 4,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = (A).mean(over='1h').publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C - 1).scale(100).publish(label='D')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDDmcAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "CPU % Trend",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "cpu %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 110,
+              "min": 0
+            },
+            null
+          ],
+          "axisPrecision": 3,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": null,
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "cpu %",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('namespace', 'AWS/EC2') and filter('stat', 'mean') and filter('InstanceId', 'i-e8b1df4b'), extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDEMQAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk I/O / Min",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 4,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "+sf_originatingMetric",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('Disk*', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).mean(by=['sf_metric']).scale(60).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDEIYAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk IOPs/Min",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "write ops - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "read ops - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": 3,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "read ops/interval",
+              "label": "B",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": "write ops/interval",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('DiskWriteOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDD8rAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network I/O Bytes/Min",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": null,
+          "publishLabelOptions": [
+            {
+              "displayName": "bytes out",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "bytes in",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "+sf_originatingMetric",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).mean().scale(60).publish(label='A')\nB = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).mean().scale(60).publish(label='B')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDCU2AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Images by Mean CPU %",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 3,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).mean(by=['aws_image_id']).top(count=5).publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDCDlAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Network Bytes In/Min",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 4,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).mean(by=['InstanceId']).top(count=5).publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDC6oAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network Bytes Out vs. 24h Change %",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes/min - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "% change - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "24h growth %",
+              "label": "C",
+              "paletteIndex": 4,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": "NetworkIn",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "A - Timeshift 1d",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).sum().mean(over='1h').publish(label='A')\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "percentile distribution",
+        "id": "EOLDCwlAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network Bytes Out",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes/interval",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            null
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": null,
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "p10",
+              "label": "C",
+              "paletteIndex": 15,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "min",
+              "label": "B",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "p90",
+              "label": "E",
+              "paletteIndex": 9,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "max",
+              "label": "F",
+              "paletteIndex": 7,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "NetworkOut - Scale:60",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "median",
+              "label": "D",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": null,
+        "id": "EOLDCtWAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk I/O Bytes/Operation",
+        "options": {
+          "areaChartOptions": null,
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes/write - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes/read - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": 3,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": null,
+          "histogramChartOptions": null,
+          "includeZero": false,
+          "legendOptions": null,
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": null,
+            "timezone": "UTC"
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "byte/read",
+              "label": "F",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": "byte/write",
+              "label": "E",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 7200000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('DiskWriteBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='A', enable=False)\nB = data('DiskReadBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='B', enable=False)\nC = data('DiskWriteOps', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='C', enable=False)\nD = data('DiskReadOps', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='D', enable=False)\nE = (A/C).publish(label='E')\nF = (B/D).publish(label='F')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "that reported in last hour",
+        "id": "EOLDB0FAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Active Hosts by AZ",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": null,
+          "publishLabelOptions": null,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": null,
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).max(over='1h').count(by=['aws_availability_zone']).publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
     }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWPlAgCU",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Images by Mean CPU %",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
+  ],
+  "crossLinkExports": [],
+  "dashboardExports": [
+    {
+      "dashboard": {
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "EOLDEGbAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 6
+          },
+          {
+            "chartId": "EOLDEDOAcAA",
+            "column": 4,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDD8rAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDDeuAcAA",
+            "column": 4,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDEIYAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDDmcAYAA",
+            "column": 6,
+            "height": 1,
+            "row": 0,
+            "width": 6
+          },
+          {
+            "chartId": "EOLDEMQAcAA",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCtWAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": {
+          "query": "namespace:\"AWS/EC2\" AND _exists_:InstanceId",
+          "selectors": [
+            "_exists_:InstanceId"
+          ]
         },
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": [
+            {
+              "alias": "instance",
+              "applyIfExists": false,
+              "description": "EC2 instance",
+              "preferredSuggestions": [],
+              "property": "InstanceId",
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": [
+                "Choose instance"
+              ]
+            }
+          ]
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).mean(by=['aws_image_id']).top(count=5).publish(label='A')",
-      "tags" : null
+        "groupId": "DiVWVMuAgAE",
+        "id": "EOLDCldAYCI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "maxDelayOverride": null,
+        "name": "EC2 Instance",
+        "selectedEventOverlays": null,
+        "tags": null
+      }
+    },
+    {
+      "dashboard": {
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "EOLDC6oAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 4,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDB0FAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCo1AYAA",
+            "column": 4,
+            "height": 1,
+            "row": 4,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCTqAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDBvOAYAA",
+            "column": 8,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCU2AgAA",
+            "column": 8,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDBcMAgAA",
+            "column": 4,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDBeqAcAA",
+            "column": 4,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCwlAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 4,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCa-AcAA",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDC31AYAA",
+            "column": 8,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCDlAcAA",
+            "column": 4,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDBYuAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDC85AcAA",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "EOLDCxgAcAA",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": {
+          "query": "namespace:\"AWS/EC2\" AND _exists_:InstanceId",
+          "selectors": [
+            "sf_key:host",
+            "namespace:AWS/EC2",
+            "sf_key:InstanceId"
+          ]
+        },
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": null
+        },
+        "groupId": "DiVWVMuAgAE",
+        "id": "EOLDBXPAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "maxDelayOverride": null,
+        "name": "EC2 Instances",
+        "selectedEventOverlays": null,
+        "tags": null
+      }
     }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWWVmAYJg",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Network Bytes Out",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes/interval",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "NetworkOut - Scale:60",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "E",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWTIAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Disk I/O Bytes/Min",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes written - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes read - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "bytes written/min",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes read/min",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('DiskWriteBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "that reported in last hour",
-      "id" : "DiVWWWyAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Active Hosts Per Instance Type",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).max(over='1h').count(by=['aws_instance_type']).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWC7AcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Disk Metrics 24h Growth %",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A - Timeshift 1d",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "+sf_originatingMetric",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('Disk*', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum(by=['sf_metric']).scale(60).mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVkGAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Disk I/O Bytes/Min",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes written - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes read - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "bytes written/interval",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes read/interval",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('DiskWriteBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadBytes', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "that reported in last hour",
-      "id" : "DiVWV8AAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Active Hosts",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : 5,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "# hosts",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('namespace', 'AWS/EC2') and filter('stat', 'upper') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).max(over='1h').count().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVS1AgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Disk I/O / Min",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "+sf_originatingMetric",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('Disk*', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).mean(by=['sf_metric']).scale(60).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWViVAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Disk I/O Bytes/Operation",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes/write - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes/read - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "DiskWriteBytes - Sum",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "DiskReadBytes - Sum",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "DiskWriteOps - Sum",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "DiskReadOps - Sum",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes/write",
-          "label" : "E",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes/read",
-          "label" : "F",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('DiskWriteBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='A', enable=False)\nB = data('DiskReadBytes', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='B', enable=False)\nC = data('DiskWriteOps', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='C', enable=False)\nD = data('DiskReadOps', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b')).sum().publish(label='D', enable=False)\nE = (A/C).publish(label='E')\nF = (B/D).publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWcbAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Disk Ops/Min",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "writes - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "reads - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "write ops/min",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "read ops/min",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('DiskWriteOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWW0AcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Network Bytes In/Min",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).mean(by=['InstanceId']).top(count=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWWW6AYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "CPU %",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "cpu %",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : 110.0,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "CPUUtilization",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "E",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVc9AcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "CPU % Trend",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "cpu %",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : 110.0,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "cpu %",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('namespace', 'AWS/EC2') and filter('stat', 'mean') and filter('InstanceId', 'i-e8b1df4b'), extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWUPAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Instances by CPU %",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('stat', 'mean') and filter('namespace', 'AWS/EC2') and filter('InstanceId', '*'), extrapolation='last_value', maxExtrapolations=5).mean(by=['InstanceId']).top(count=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVy-AgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Network I/O Bytes/Min",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "bytes in",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "bytes out",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "+sf_metric",
-        "type" : "List",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).mean().scale(60).publish(label='A')\nB = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).mean().scale(60).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
-      "id" : "DiVWWU1AcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Network Bytes In",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes/interval",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "NetworkIn - Scale:60",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "B",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "C",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "D",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "E",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "F",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVtyAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Network I/O Bytes/Min",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes out - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes in - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "bytes in/interval",
-          "label" : "A",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        }, {
-          "displayName" : "bytes out/interval",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVRfAYAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "CPU %",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : 2,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "cpu %",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('CPUUtilization', filter=filter('namespace', 'AWS/EC2') and filter('stat', 'mean') and filter('InstanceId', 'i-e8b1df4b'), extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWYkAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Network Bytes Out vs. 24h Change %",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes/min - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "% change - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "NetworkIn",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A - Timeshift 1d",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "24h growth %",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).sum().mean(over='1h').publish(label='A')\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWBXAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Network Bytes Out/Min",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkOut', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).mean(by=['InstanceId']).top(count=5).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWVtiAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Disk IOPs/Min",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "write ops - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "read ops - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "write ops/interval",
-          "label" : "A",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "read ops/interval",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('DiskWriteOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = data('DiskReadOps', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', 'i-e8b1df4b') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='B')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWWPkAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Network Bytes In vs. 24h Change %",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes/min - BLUE",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "% change - RED",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "NetworkIn",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A - Mean(1h)",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        }, {
-          "displayName" : "24h growth %",
-          "label" : "D",
-          "paletteIndex" : 4,
-          "plotType" : "LineChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('NetworkIn', filter=filter('namespace', 'AWS/EC2') and filter('InstanceId', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')\nB = (A).mean(over='1h').publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C - 1).scale(100).publish(label='D')",
-      "tags" : null
-    }
-  } ],
-  "dashboardExports" : [ {
-    "dashboard" : {
-      "chartDensity" : "DEFAULT",
-      "charts" : [ {
-        "chartId" : "DiVWV8AAYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWWyAgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWUEAYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWUPAgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWPlAgCU",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWW6AYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWTIAcAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWcbAYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWC7AcAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWU1AcAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWW0AcAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWPkAYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWBXAgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWVmAYJg",
-        "column" : 0,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWWYkAgAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      } ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : null,
-      "description" : "",
-      "discoveryOptions" : {
-        "query" : "namespace:\"AWS/EC2\" AND _exists_:InstanceId",
-        "selectors" : [ "sf_key:host", "namespace:AWS/EC2", "sf_key:InstanceId" ]
-      },
-      "eventOverlays" : null,
-      "filters" : {
-        "sources" : null,
-        "time" : null,
-        "variables" : null
-      },
-      "groupId" : "DiVWVMuAgAE",
-      "id" : "DiVWV2_AcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "locked" : false,
-      "maxDelayOverride" : null,
-      "name" : "EC2 Instances",
-      "selectedEventOverlays" : null,
-      "tags" : null
-    }
-  }, {
-    "dashboard" : {
-      "chartDensity" : "DEFAULT",
-      "charts" : [ {
-        "chartId" : "DiVWVc9AcAA",
-        "column" : 6,
-        "height" : 1,
-        "row" : 0,
-        "width" : 6
-      }, {
-        "chartId" : "DiVWVRfAYAE",
-        "column" : 0,
-        "height" : 1,
-        "row" : 0,
-        "width" : 6
-      }, {
-        "chartId" : "DiVWVS1AgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWVkGAgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWVtiAcAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWViVAYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWVy-AgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWVtyAYAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      } ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : null,
-      "description" : null,
-      "discoveryOptions" : {
-        "query" : "namespace:\"AWS/EC2\" AND _exists_:InstanceId",
-        "selectors" : [ "_exists_:InstanceId" ]
-      },
-      "eventOverlays" : null,
-      "filters" : {
-        "sources" : null,
-        "time" : null,
-        "variables" : [ {
-          "alias" : "instance",
-          "applyIfExists" : false,
-          "description" : "EC2 instance",
-          "preferredSuggestions" : [ ],
-          "property" : "InstanceId",
-          "replaceOnly" : false,
-          "required" : true,
-          "restricted" : false,
-          "value" : null
-        } ]
-      },
-      "groupId" : "DiVWVMuAgAE",
-      "id" : "DiVWVQgAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "locked" : false,
-      "maxDelayOverride" : null,
-      "name" : "EC2 Instance",
-      "selectedEventOverlays" : null,
-      "tags" : null
-    }
-  } ],
-  "groupExport" : {
-    "group" : {
-      "created" : 0,
-      "creator" : null,
-      "dashboards" : [ "DiVWVQgAcAA", "DiVWV2_AcAA" ],
-      "description" : "Dashboards about Amazon Elastic Compute Cloud (EC2).",
-      "email" : null,
-      "id" : "DiVWVMuAgAE",
-      "importQualifiers" : [ {
-        "filters" : [ {
-          "not" : false,
-          "property" : "namespace",
-          "values" : [ "AWS/EC2" ]
-        }, {
-          "not" : false,
-          "property" : "stat",
-          "values" : [ "mean" ]
-        }, {
-          "not" : false,
-          "property" : "InstanceId",
-          "values" : [ ]
-        } ],
-        "metric" : "CPUUtilization"
-      } ],
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "AWS EC2",
-      "teams" : null
+  ],
+  "groupExport": {
+    "group": {
+      "created": 0,
+      "creator": null,
+      "dashboards": [
+        "EOLDBXPAcAA",
+        "EOLDCldAYCI"
+      ],
+      "description": "Dashboards about Amazon Elastic Compute Cloud (EC2).",
+      "email": null,
+      "id": "DiVWVMuAgAE",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "namespace",
+              "values": [
+                "AWS/EC2"
+              ]
+            },
+            {
+              "not": false,
+              "property": "stat",
+              "values": [
+                "mean"
+              ]
+            },
+            {
+              "not": false,
+              "property": "InstanceId",
+              "values": []
+            }
+          ],
+          "metric": "CPUUtilization"
+        }
+      ],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "AWS EC2",
+      "teams": null
     }
   },
-  "hashCode" : -476778822,
-  "id" : "DiVWVMuAgAE",
-  "modelVersion" : 1,
-  "packageType" : "GROUP"
+  "hashCode": 1930943538,
+  "id": "DiVWVMuAgAE",
+  "modelVersion": 1,
+  "packageType": "GROUP"
 }
