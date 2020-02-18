@@ -5,10 +5,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVV4iSAcAA",
+      "id" : "DiVV4WEAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU Utilization %",
+      "name" : "JVM memory usage",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -16,11 +16,19 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "%",
+          "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : 110.0,
-          "min" : 0.0
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
@@ -37,35 +45,37 @@
           "showDataMarkers" : false
         },
         "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
+          "dimensionInLegend" : "id",
+          "showLegend" : true
         },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu utilization",
+          "displayName" : "bytes",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "%",
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
         "showEventLines" : false,
-        "stacked" : false,
+        "stacked" : true,
         "time" : {
           "range" : 900000,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
+        "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('process.cpu.usage').scale(100).mean().publish(label='A')",
+      "programText" : "A = data('jvm.memory.used').mean(by=['id']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -74,10 +84,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVV5ccAYAA",
+      "id" : "DiVV4b9AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Mean time (ms) per request, across hosts",
+      "name" : "JVM GC events by cause",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -85,7 +95,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "ms",
+          "label" : "GC events",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -100,40 +110,65 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : true,
-            "property" : "status"
-          }, {
-            "enabled" : true,
-            "property" : "exception"
-          }, {
-            "enabled" : true,
-            "property" : "method"
-          }, {
-            "enabled" : true,
-            "property" : "uri"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          } ]
+          "fields" : null
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
         "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
+          "dimensionInLegend" : "cause",
+          "showLegend" : true
         },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "GC events",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('jvm.gc.pause.count', rollup='sum').sum(by=['cause']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV4dPAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Mean time (ms) per request",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "mean time per request (ms)",
@@ -163,207 +198,17 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.avg').mean(by=['host']).scale(1000).publish(label='A', enable=False)\nI = (A).percentile(pct=50).publish(label='I')\nJ = (A).percentile(pct=95).publish(label='J')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV5CMAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top 5XX responses per sec",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : true,
-            "property" : "status"
-          }, {
-            "enabled" : true,
-            "property" : "uri"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "responses per sec",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "sortBy" : "",
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.count', filter=filter('status', '5*')).mean(by=['status', 'uri']).top(count=10).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV4leAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Overall requests/sec",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "requests/sec",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "requests/sec",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
         "showSparkLine" : false,
+        "time" : null,
         "timestampHidden" : false,
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV5rFAgBw",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Requests/sec 24h change %",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "day-over-day change (%)",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "requests/sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "requests/sec",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        }, {
-          "displayName" : "A - Timeshift 1d",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "day-over-day change",
-          "label" : "D",
-          "paletteIndex" : 8,
-          "plotType" : "AreaChart",
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')\nC = (A).timeshift('1d').publish(label='C', enable=False)\nD = (A/C-1).scale(100).publish(label='D')",
+      "programText" : "A = data('http.server.requests.avg').mean(by=['host']).scale(1000).publish(label='A')\nI = (A).percentile(pct=50).publish(label='I', enable=False)\nJ = (A).percentile(pct=95).publish(label='J', enable=False)",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -422,7 +267,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "4XX per sec",
@@ -454,6 +300,7 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('http.server.requests.count', filter=filter('status', '4*')).mean(by=['status', 'uri']).publish(label='A')\nB = data('http.server.requests.count', filter=filter('status', '5*')).mean(by=['status', 'uri']).publish(label='B')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -462,230 +309,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVV4pqAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "process uptime (mins)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "mins",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "process.uptime - Scale:0.016667",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "mins",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('process.uptime').scale(0.016667).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV41LAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Requests/sec 24h change %",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "day-over-day change (%)",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "requests/sec",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : "sf_metric",
-          "showLegend" : true
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "requests/sec",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        }, {
-          "displayName" : "A - Timeshift 1d",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "day-over-day change",
-          "label" : "D",
-          "paletteIndex" : 8,
-          "plotType" : "AreaChart",
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')\nC = (A).timeshift('1d').publish(label='C', enable=False)\nD = (A/C-1).scale(100).publish(label='D')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV4dPAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Mean time (ms) per request",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "mean time per request (ms)",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "ms",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P50 mean ms/request",
-          "label" : "I",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P95 mean ms/request",
-          "label" : "J",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.avg').mean(by=['host']).scale(1000).publish(label='A')\nI = (A).percentile(pct=50).publish(label='I', enable=False)\nJ = (A).percentile(pct=95).publish(label='J', enable=False)",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV5UfAcAA",
+      "id" : "DiVV4f4AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Total responses by status code",
@@ -723,7 +347,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "total responses",
@@ -746,6 +371,7 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('http.server.requests.count', rollup='sum').sum(by=['status']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -754,7 +380,193 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVV5HqAgAA",
+      "id" : "DiVV4gGAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Total HTTP client requests by status",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "requests",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.client.requests.count', rollup='sum').sum(by=['status']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV4iSAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "CPU Utilization %",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "%",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : 110.0,
+          "min" : 0.0
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "cpu utilization",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('process.cpu.usage').scale(100).mean().publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV4leAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Overall requests/sec",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "requests/sec",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "requests/sec",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "time" : null,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV4lkAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Top requests/sec per URI",
@@ -777,7 +589,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "http.server.requests.count - Mean by uri",
@@ -792,80 +605,13 @@
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
         "sortBy" : "-value",
+        "time" : null,
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
       "programText" : "A = data('http.server.requests.count').mean(by=['uri']).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV4b9AYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "JVM GC events by cause",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "GC events",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : "cause",
-          "showLegend" : true
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "GC events",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('jvm.gc.pause.count', rollup='sum').sum(by=['cause']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -936,7 +682,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "mean ms per request",
@@ -968,6 +715,7 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('http.server.requests.avg').mean(by=['status']).scale(1000).publish(label='A')\nI = data('http.server.requests.max').mean(by=['status']).scale(1000).publish(label='I')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -976,79 +724,166 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVV45cAcAA",
+      "id" : "DiVV4pqAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top time (ms) per request, by host",
+      "name" : "process uptime (mins)",
       "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : true,
-            "property" : "status"
-          }, {
-            "enabled" : true,
-            "property" : "exception"
-          }, {
-            "enabled" : true,
-            "property" : "method"
-          }, {
-            "enabled" : true,
-            "property" : "uri"
-          }, {
-            "enabled" : true,
-            "property" : "host"
-          } ]
+        "areaChartOptions" : {
+          "showDataMarkers" : false
         },
-        "maximumPrecision" : null,
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "mins",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "mean time per request (ms)",
+          "displayName" : "process.uptime - Scale:0.016667",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "ms",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P50 mean ms/request",
-          "label" : "I",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P95 mean ms/request",
-          "label" : "J",
-          "paletteIndex" : 8,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "mins",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "type" : "List",
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.avg').mean(by=['host']).scale(1000).top(count=5).publish(label='A')\nI = (A).percentile(pct=50).publish(label='I', enable=False)\nJ = (A).percentile(pct=95).publish(label='J', enable=False)",
+      "programText" : "A = data('process.uptime').scale(0.016667).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV41LAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Requests/sec 24h change %",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "day-over-day change (%)",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "requests/sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "requests/sec",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        }, {
+          "displayName" : "A - Timeshift 1d",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "day-over-day change",
+          "label" : "D",
+          "paletteIndex" : 8,
+          "plotType" : "AreaChart",
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')\nC = (A).timeshift('1d').publish(label='C', enable=False)\nD = (A/C-1).scale(100).publish(label='D')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -1083,7 +918,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "responses per sec",
@@ -1098,198 +934,13 @@
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
         "sortBy" : "",
+        "time" : null,
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
       "programText" : "A = data('http.server.requests.count', filter=filter('status', '4*')).mean(by=['status', 'uri']).top(count=10).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV4WEAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "JVM memory usage",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : "id",
-          "showLegend" : true
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "bytes",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Binary"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('jvm.memory.used').mean(by=['id']).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV5OVAcAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Overall requests/sec",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale" : null,
-        "colorScale2" : null,
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "requests/sec",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
-        "timestampHidden" : false,
-        "type" : "SingleValue",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV4gGAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total HTTP client requests by status",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "ColumnChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "requests",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.client.requests.count', rollup='sum').sum(by=['status']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -1354,7 +1005,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "http.server.requests.totalTime - Mean by status",
@@ -1395,6 +1047,292 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('http.server.requests.totalTime').mean(by=['status']).publish(label='A', enable=False)\nG = data('http.server.requests.count', rollup='sum').sum(by=['status']).publish(label='G', enable=False)\nH = (A/G).scale(1000).publish(label='H')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV45cAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top time (ms) per request, by host",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "status"
+          }, {
+            "enabled" : true,
+            "property" : "exception"
+          }, {
+            "enabled" : true,
+            "property" : "method"
+          }, {
+            "enabled" : true,
+            "property" : "uri"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "mean time per request (ms)",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "ms",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P50 mean ms/request",
+          "label" : "I",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P95 mean ms/request",
+          "label" : "J",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : null,
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.avg').mean(by=['host']).scale(1000).top(count=5).publish(label='A')\nI = (A).percentile(pct=50).publish(label='I', enable=False)\nJ = (A).percentile(pct=95).publish(label='J', enable=False)",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV5CMAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top 5XX responses per sec",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "status"
+          }, {
+            "enabled" : true,
+            "property" : "uri"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "responses per sec",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "sortBy" : "",
+        "time" : null,
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.count', filter=filter('status', '5*')).mean(by=['status', 'uri']).top(count=10).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV5HqAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top requests/sec per URI",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "uri"
+          } ]
+        },
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "http.server.requests.count - Mean by uri",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "requests/sec",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "sortBy" : "-value",
+        "time" : null,
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.count').mean(by=['uri']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV5OVAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Overall requests/sec",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : null,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "requests/sec",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "time" : null,
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV5QKAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top requests/sec per host",
+      "options" : {
+        "colorBy" : "Range",
+        "colorRange" : {
+          "color" : "#05ce00",
+          "max" : null,
+          "min" : null
+        },
+        "colorScale" : null,
+        "colorScale2" : null,
+        "groupBy" : [ ],
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : null,
+          "label" : "A",
+          "valuePrefix" : "",
+          "valueSuffix" : "requests/sec",
+          "valueUnit" : null
+        } ],
+        "refreshInterval" : null,
+        "sortDirection" : "Ascending",
+        "sortProperty" : null,
+        "time" : null,
+        "timestampHidden" : false,
+        "type" : "Heatmap",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.count').mean(by=['host']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -1449,7 +1387,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "median bytes",
@@ -1481,6 +1420,7 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('jvm.memory.used').percentile(pct=50, by=['id']).publish(label='A')\nB = data('jvm.memory.used').percentile(pct=95, by=['id']).publish(label='B', enable=False)",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -1489,48 +1429,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVV5QKAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top requests/sec per host",
-      "options" : {
-        "colorBy" : "Range",
-        "colorRange" : {
-          "color" : "#05ce00",
-          "max" : null,
-          "min" : null
-        },
-        "colorScale" : null,
-        "colorScale2" : null,
-        "groupBy" : [ ],
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0
-        },
-        "publishLabelOptions" : [ {
-          "label" : "A",
-          "valuePrefix" : "",
-          "valueSuffix" : "requests/sec",
-          "valueUnit" : null
-        } ],
-        "sortDirection" : "Ascending",
-        "sortProperty" : null,
-        "timestampHidden" : false,
-        "type" : "Heatmap",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.count').mean(by=['host']).publish(label='A')",
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVV4f4AYAA",
+      "id" : "DiVV5UfAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Total responses by status code",
@@ -1568,7 +1467,8 @@
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
           "displayName" : "total responses",
@@ -1591,6 +1491,7 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('http.server.requests.count', rollup='sum').sum(by=['status']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
@@ -1599,13 +1500,31 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVV4lkAgAA",
+      "id" : "DiVV5ccAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top requests/sec per URI",
+      "name" : "Mean time (ms) per request, across hosts",
       "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "ms",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "colorScale2" : null,
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : false,
@@ -1615,134 +1534,176 @@
             "property" : "sf_metric"
           }, {
             "enabled" : true,
+            "property" : "status"
+          }, {
+            "enabled" : true,
+            "property" : "exception"
+          }, {
+            "enabled" : true,
+            "property" : "method"
+          }, {
+            "enabled" : true,
             "property" : "uri"
+          }, {
+            "enabled" : true,
+            "property" : "host"
           } ]
         },
-        "maximumPrecision" : null,
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
-          "minimumResolution" : 0
+          "minimumResolution" : 0,
+          "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "http.server.requests.count - Mean by uri",
+          "displayName" : "mean time per request (ms)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "requests/sec",
+          "valueSuffix" : "ms",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P50 mean ms/request",
+          "label" : "I",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "P95 mean ms/request",
+          "label" : "J",
+          "paletteIndex" : 8,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "sortBy" : "-value",
-        "type" : "List",
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.server.requests.count').mean(by=['uri']).publish(label='A')",
-      "tags" : null
-    }
-  } ],
-  "dashboardExports" : [ {
-    "dashboard" : {
-      "chartDensity" : "DEFAULT",
-      "charts" : [ {
-        "chartId" : "DiVV5QKAYAA",
-        "column" : 4,
-        "height" : 2,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV5OVAcAE",
-        "column" : 0,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV5rFAgBw",
-        "column" : 8,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV5RiAgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV5HqAgAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV45bAgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV45cAcAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV5ccAYAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV45aAYCU",
-        "column" : 0,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV5UfAcAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVV5CMAYAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      } ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : null,
-      "description" : "",
-      "discoveryOptions" : {
-        "query" : "agent:micrometer",
-        "selectors" : [ "sf_key:host", "agent:micrometer" ]
-      },
-      "eventOverlays" : null,
-      "filters" : {
-        "sources" : null,
-        "time" : {
-          "end" : "Now",
-          "start" : "-15m"
-        },
-        "variables" : null
-      },
-      "groupId" : "DiVV4PcAYAA",
-      "id" : "DiVV42iAcIA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "locked" : false,
-      "maxDelayOverride" : null,
-      "name" : "Spring Boot Overview",
-      "selectedEventOverlays" : [ ],
+      "programText" : "A = data('http.server.requests.avg').mean(by=['host']).scale(1000).publish(label='A', enable=False)\nI = (A).percentile(pct=50).publish(label='I')\nJ = (A).percentile(pct=95).publish(label='J')",
+      "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
+    "chart" : {
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "DiVV5rFAgBw",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Requests/sec 24h change %",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "day-over-day change (%)",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "requests/sec",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "requests/sec",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 1
+        }, {
+          "displayName" : "A - Timeshift 1d",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "day-over-day change",
+          "label" : "D",
+          "paletteIndex" : 8,
+          "plotType" : "AreaChart",
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('http.server.requests.count').mean().publish(label='A')\nC = (A).timeshift('1d').publish(label='C', enable=False)\nD = (A/C-1).scale(100).publish(label='D')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  } ],
+  "crossLinkExports" : [ ],
+  "dashboardExports" : [ {
     "dashboard" : {
       "chartDensity" : "DEFAULT",
       "charts" : [ {
@@ -1849,9 +1810,104 @@
       "id" : "DiVV4UOAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "Spring Boot Host",
+      "selectedEventOverlays" : [ ],
+      "tags" : null
+    }
+  }, {
+    "dashboard" : {
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
+        "chartId" : "DiVV5QKAYAA",
+        "column" : 4,
+        "height" : 2,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV5OVAcAE",
+        "column" : 0,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV5rFAgBw",
+        "column" : 8,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV5RiAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV5HqAgAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV45bAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV45cAcAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV5ccAYAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV45aAYCU",
+        "column" : 0,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV5UfAcAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "DiVV5CMAYAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "",
+      "discoveryOptions" : {
+        "query" : "agent:micrometer",
+        "selectors" : [ "sf_key:host", "agent:micrometer" ]
+      },
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : null,
+        "time" : {
+          "end" : "Now",
+          "start" : "-15m"
+        },
+        "variables" : null
+      },
+      "groupId" : "DiVV4PcAYAA",
+      "id" : "DiVV42iAcIA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "maxDelayOverride" : null,
+      "name" : "Spring Boot Overview",
       "selectedEventOverlays" : [ ],
       "tags" : null
     }
@@ -1860,7 +1916,7 @@
     "group" : {
       "created" : 0,
       "creator" : null,
-      "dashboards" : [ "DiVV42iAcIA", "DiVV4UOAgAA" ],
+      "dashboards" : [ "DiVV4UOAgAA", "DiVV42iAcIA" ],
       "description" : "",
       "email" : null,
       "id" : "DiVV4PcAYAA",
@@ -1878,7 +1934,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -16447471,
+  "hashCode" : 956597391,
   "id" : "DiVV4PcAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
