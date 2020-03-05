@@ -780,7 +780,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*'))).sum(by=['aws_region', 'aws_cache_cluster_name']).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*'))).sum(by=['aws_region', 'aws_cache_cluster_name']).publish(label='B', enable=False)\nC = (A/(A+B)*100).publish(label='C')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')),rollup='rate').sum(by=['aws_region', 'aws_cache_cluster_name']).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')),rollup='rate').sum(by=['aws_region', 'aws_cache_cluster_name']).publish(label='B', enable=False)\nC = (A/(A+B)*100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -985,7 +985,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*'))).sum(by=['aws_region', 'aws_cache_cluster_name']).scale(60).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*'))).sum(by=['aws_region', 'aws_cache_cluster_name']).scale(60).publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')),rollup='rate').sum(by=['aws_region', 'aws_cache_cluster_name']).scale(60).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')),rollup='rate').sum(by=['aws_region', 'aws_cache_cluster_name']).scale(60).publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2063,7 +2063,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum().publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum().publish(label='B', enable=False)\nC = (A/(A+B)*100).publish(label='C')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().publish(label='B', enable=False)\nC = (A/(A+B)*100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2249,7 +2249,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['sf_metric']).publish(label='A')\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['sf_metric']).publish(label='B')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['sf_metric']).publish(label='A')\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['sf_metric']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3292,7 +3292,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('CurrItems', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5).sum().publish(label='A')\nB = (A).mean(over='1h').publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C - 1).scale(100).publish(label='D')",
+      "programText" : "A = data('CurrItems', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().publish(label='A')\nB = (A).mean(over='1h').publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C - 1).scale(100).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3533,7 +3533,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*')).sum(by=['sf_metric']).scale(60).publish(label='A')\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*')).sum(by=['sf_metric']).scale(60).publish(label='B')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'),rollup='rate').sum(by=['sf_metric']).scale(60).publish(label='A')\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'),rollup='rate').sum(by=['sf_metric']).scale(60).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4075,7 +4075,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='B', enable=False)\nC = (A/(A+B) * 100).bottom(count=5).publish(label='C')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='B', enable=False)\nC = (A/(A+B) * 100).bottom(count=5).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4513,7 +4513,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('Evictions', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheNodeId', '*') and filter('stat', 'sum') and filter('CacheClusterId', '*') and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "A = data('Evictions', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheNodeId', '*') and filter('stat', 'sum') and filter('CacheClusterId', '*') and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4940,7 +4940,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('Evictions', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and (not filter('CacheNodeId', '*')) and filter('stat', 'sum') and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5).sum().publish(label='A')\nB = (A).mean(over='1h').publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C - 1).scale(100).publish(label='D')",
+      "programText" : "A = data('Evictions', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and (not filter('CacheNodeId', '*')) and filter('stat', 'sum') and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().publish(label='A')\nB = (A).mean(over='1h').publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C - 1).scale(100).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5392,7 +5392,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5).sum().publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5).sum().publish(label='B', enable=False)\nC = (A/(A+B) * 100).publish(label='C')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and (not filter('CacheNodeId', '*')) and filter('aws_region', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().publish(label='B', enable=False)\nC = (A/(A+B) * 100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5526,7 +5526,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='B', enable=False)\nC = (A/(A+B) * 100).publish(label='C', enable=False)\nD = (C).min().publish(label='D')\nE = (C).percentile(pct=10).publish(label='E')\nF = (C).percentile(pct=50).publish(label='F')\nG = (C).percentile(pct=90).publish(label='G')\nH = (C).max().publish(label='H')",
+      "programText" : "A = data('*Hits', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='A', enable=False)\nB = data('*Misses', filter=filter('namespace', 'AWS/ElastiCache') and filter('CacheClusterId', '*') and filter('stat', 'sum') and filter('CacheNodeId', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['CacheNodeId', 'CacheClusterId', 'aws_region']).publish(label='B', enable=False)\nC = (A/(A+B) * 100).publish(label='C', enable=False)\nD = (C).min().publish(label='D')\nE = (C).percentile(pct=10).publish(label='E')\nF = (C).percentile(pct=50).publish(label='F')\nG = (C).percentile(pct=90).publish(label='G')\nH = (C).max().publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6140,7 +6140,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -131623664,
+  "hashCode" : 671777743,
   "id" : "DiVWyO1AgJ0",
   "modelVersion" : 1,
   "packageType" : "GROUP"
