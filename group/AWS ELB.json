@@ -120,7 +120,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('SurgeQueueLength', filter=filter('namespace', 'AWS/ELB') and filter('stat', 'upper'), extrapolation='zero').max().publish(label='A')\nB = data('SpilloverCount', filter=filter('stat', 'sum') and filter('namespace', 'AWS/ELB') and filter('AvailabilityZone', '*')).sum().scale(60).publish(label='B')",
+      "programText" : "A = data('SurgeQueueLength', filter=filter('namespace', 'AWS/ELB') and filter('stat', 'upper'), extrapolation='zero').max().publish(label='A')\nB = data('SpilloverCount', filter=filter('stat', 'sum') and filter('namespace', 'AWS/ELB') and filter('AvailabilityZone', '*'),rollup='rate').sum().scale(60).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -244,7 +244,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('RequestCount', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')",
+      "programText" : "A = data('RequestCount', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -315,7 +315,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('RequestCount', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['AvailabilityZone']).scale(60).publish(label='A')",
+      "programText" : "A = data('RequestCount', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['AvailabilityZone']).scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -521,7 +521,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('HTTPCode_ELB_*', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='zero').sum(by=['sf_metric', 'LoadBalancerName']).scale(60).publish(label='A')",
+      "programText" : "A = data('HTTPCode_ELB_*', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='zero',rollup='rate').sum(by=['sf_metric', 'LoadBalancerName']).scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -593,7 +593,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('HTTPCode_Backend_*', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), rollup='rate', extrapolation='zero').sum(by=['LoadBalancerName']).publish(label='A', enable=False)\nB = data('HTTPCode_Backend_2XX', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='zero').sum(by=['LoadBalancerName']).publish(label='B', enable=False)\nC = data('HTTPCode_Backend_3XX', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='zero').sum(by=['LoadBalancerName']).publish(label='C', enable=False)\nD = (1 - (B+C)/A).scale(100).publish(label='D')",
+      "programText" : "A = data('HTTPCode_Backend_*', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), rollup='rate', extrapolation='zero').sum(by=['LoadBalancerName']).publish(label='A', enable=False)\nB = data('HTTPCode_Backend_2XX', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='zero',rollup='rate').sum(by=['LoadBalancerName']).publish(label='B', enable=False)\nC = data('HTTPCode_Backend_3XX', filter=filter('stat', 'sum') and filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*'), extrapolation='zero',rollup='rate').sum(by=['LoadBalancerName']).publish(label='C', enable=False)\nD = (1 - (B+C)/A).scale(100).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -730,7 +730,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('stat', 'sum') and filter('LoadBalancerName', '*'), extrapolation='last_value', maxExtrapolations=5).sum(by=['LoadBalancerName']).top(count=5).scale(60).publish(label='A')",
+      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('stat', 'sum') and filter('LoadBalancerName', '*'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum(by=['LoadBalancerName']).top(count=5).scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -819,7 +819,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).mean(over='1h').sum(by=['LoadBalancerName']).publish(label='A', enable=False)\nB = (A).timeshift('1w').publish(label='B', enable=False)\nC = (A/B-1).scale(100).publish(label='C')",
+      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').scale(60).mean(over='1h').sum(by=['LoadBalancerName']).publish(label='A', enable=False)\nB = (A).timeshift('1w').publish(label='B', enable=False)\nC = (A/B-1).scale(100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1151,7 +1151,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('BackendConnectionErrors', filter=filter('AvailabilityZone', '*') and filter('stat', 'sum') and filter('LoadBalancerName', '*'), extrapolation='zero').sum(by=['LoadBalancerName']).scale(60).publish(label='A')",
+      "programText" : "A = data('BackendConnectionErrors', filter=filter('AvailabilityZone', '*') and filter('stat', 'sum') and filter('LoadBalancerName', '*'), extrapolation='zero',rollup='rate').sum(by=['LoadBalancerName']).scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1267,7 +1267,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).scale(60).sum(by=['LoadBalancerName']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').scale(60).sum(by=['LoadBalancerName']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1311,7 +1311,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5).sum().scale(60).publish(label='A')",
+      "programText" : "A = data('RequestCount', filter=filter('AvailabilityZone', '*') and filter('LoadBalancerName', '*') and filter('stat', 'sum'), extrapolation='last_value', maxExtrapolations=5,rollup='rate').sum().scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1594,7 +1594,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -1886119068,
+  "hashCode" : 1335981149,
   "id" : "DiVV9-uAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
