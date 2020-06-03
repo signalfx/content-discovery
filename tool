@@ -16,7 +16,7 @@ SYSTEM_USER_ID = "AAAAAAAAAAA"
 
 
 def do_get(url, token):
-    return requests.get(url, headers={"X-SF-TOKEN": token})
+    return requests.get(url, headers={"X-SF-TOKEN": token, "Accept": "application/json"})
 
 
 def fetch_export_by_id(group_id, base_url, token, format="json"):
@@ -80,8 +80,11 @@ def export_command(args, base_url, token):
 
 
 def reexport_command(args, base_url, token):
-    group_id = json.loads(Path(args.group_file[0]).read_bytes())["groupExport"]["group"]["id"]
-    print(fetch_export_by_id(group_id, base_url, token, format="text"))
+    path = Path(args.group_file[0])
+    group_id = json.loads(path.read_bytes())["groupExport"]["group"]["id"]
+    content = fetch_export_by_id(group_id, base_url, token, format="text")
+    print(content)
+    path.write_text(content)
 
 
 def parse_cli():
