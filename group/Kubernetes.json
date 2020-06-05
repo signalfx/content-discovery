@@ -1086,6 +1086,15 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_cpu_cores - Sum - Mean(1m)",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
@@ -1099,7 +1108,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.num_processors').sum().mean(over='1m').publish(label='A')",
+      "programText" : "A = data('cpu.num_processors').sum().mean(over='1m').publish(label='A')\nB = data('machine_cpu_cores').sum().mean(over='1m').publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1177,12 +1186,30 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "D/E - Scale:100",
+          "displayName" : "% Memory Used",
           "label" : "F",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "machine_memory_bytes - Sum by host - Mean(1m)",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% Memory Used",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -1196,7 +1223,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_memory_usage_bytes').sum(by=['host']).mean(over='1m').publish(label='D', enable=False)\nE = data('memory.total').sum(by=['host']).mean(over='1m').publish(label='E', enable=False)\nF = (D/E).scale(100).publish(label='F')",
+      "programText" : "D = data('container_memory_usage_bytes').sum(by=['host']).mean(over='1m').publish(label='D', enable=False)\nE = data('memory.total').sum(by=['host']).mean(over='1m').publish(label='E', enable=False)\nF = (D/E).scale(100).publish(label='F')\nG = data('machine_memory_bytes').sum(by=['host']).mean(over='1m').publish(label='G', enable=False)\nH = (D/G).scale(100).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1367,6 +1394,9 @@
           }, {
             "enabled" : true,
             "property" : "AWSUniqueId"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
           } ]
         },
         "lineChartOptions" : {
@@ -1409,6 +1439,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_cpu_cores - Sum by host",
+          "label" : "M",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU Capacity % Used Per Node",
+          "label" : "N",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -1420,7 +1468,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', rollup='rate').sum(by=['host']).mean(over='1m').publish(label='A', enable=False)\nG = data('cpu.num_processors').sum(by=['host']).mean(over='1m').publish(label='G', enable=False)\nL = (A/G).publish(label='L')",
+      "programText" : "A = data('container_cpu_utilization', rollup='rate').sum(by=['host']).mean(over='1m').publish(label='A', enable=False)\nG = data('cpu.num_processors').sum(by=['host']).mean(over='1m').publish(label='G', enable=False)\nL = (A/G).publish(label='L')\nM = data('machine_cpu_cores').sum(by=['host']).publish(label='M', enable=False)\nN = (A/M).publish(label='N')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1501,6 +1549,15 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_memory_bytes - Sum",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
@@ -1514,7 +1571,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.total').sum().publish(label='A')",
+      "programText" : "A = data('memory.total').sum().publish(label='A')\nB = data('machine_memory_bytes').sum().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1738,7 +1795,7 @@
           "lte" : 20.0,
           "paletteIndex" : 20
         } ],
-        "groupBy" : [ "kubernetes_namespace" ],
+        "groupBy" : [ "kubernetes_namespace", "kubernetes_cluster" ],
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1763,6 +1820,18 @@
           "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null
+        }, {
+          "displayName" : "machine_cpu_cores - Sum by kubernetes_node",
+          "label" : "D",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "pod cpu usage",
+          "label" : "E1",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
         } ],
         "refreshInterval" : null,
         "sortDirection" : "Ascending",
@@ -1776,7 +1845,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['host']).publish(label='E')\nC = (A/B).publish(label='C', enable=False)",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')\nD = data('machine_cpu_cores').sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = (A/D).publish(label='E1')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1954,6 +2023,15 @@
           }, {
             "enabled" : true,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
+          }, {
+            "enabled" : true,
+            "property" : "metric_source"
+          }, {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "lineChartOptions" : {
@@ -1996,6 +2074,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_cpu_cores - Sum by kubernetes_node",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A/D",
+          "label" : "E1",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : true,
         "stacked" : false,
@@ -2007,7 +2103,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')\nD = data('machine_cpu_cores').sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = (A/D).publish(label='E1')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2112,40 +2208,14 @@
       "lastUpdatedBy" : null,
       "name" : "CPU Capacity Used per Node",
       "options" : {
-        "colorBy" : "Scale",
-        "colorRange" : null,
+        "colorBy" : "Range",
+        "colorRange" : {
+          "color" : null,
+          "max" : null,
+          "min" : null
+        },
         "colorScale" : null,
-        "colorScale2" : [ {
-          "gt" : 80.0,
-          "gte" : null,
-          "lt" : null,
-          "lte" : null,
-          "paletteIndex" : 16
-        }, {
-          "gt" : 60.0,
-          "gte" : null,
-          "lt" : null,
-          "lte" : 80.0,
-          "paletteIndex" : 17
-        }, {
-          "gt" : 40.0,
-          "gte" : null,
-          "lt" : null,
-          "lte" : 60.0,
-          "paletteIndex" : 18
-        }, {
-          "gt" : 20.0,
-          "gte" : null,
-          "lt" : null,
-          "lte" : 40.0,
-          "paletteIndex" : 19
-        }, {
-          "gt" : null,
-          "gte" : null,
-          "lt" : null,
-          "lte" : 20.0,
-          "paletteIndex" : 20
-        } ],
+        "colorScale2" : null,
         "groupBy" : [ "kubernetes_cluster" ],
         "programOptions" : {
           "disableSampling" : false,
@@ -2166,10 +2236,22 @@
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
-          "displayName" : "node cpu usage",
+          "displayName" : "num core on host",
+          "label" : "D",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Node CPU Usage",
           "label" : "C",
           "valuePrefix" : "",
           "valueSuffix" : "%",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Node CPU Usage",
+          "label" : "E1",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
@@ -2184,7 +2266,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['host', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['host']).publish(label='E')\nC = (A/B).publish(label='C', enable=False)",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node', 'kubernetes_cluster']).publish(label='E', enable=False)\nD = data('machine_cpu_cores', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*'), extrapolation='last_value').sum(by=['kubernetes_node', 'kubernetes_cluster']).publish(label='D', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).publish(label='E1')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2703,6 +2785,9 @@
           }, {
             "enabled" : true,
             "property" : "container_id"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
           } ]
         },
         "lineChartOptions" : {
@@ -2745,6 +2830,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_cpu_cores - Sum by kubernetes_node",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Node CPU Capacity Usage %",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : true,
         "stacked" : false,
@@ -2756,7 +2859,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nF = (D/E).publish(label='F')",
+      "programText" : "D = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nF = (D/E).publish(label='F')\nG = data('machine_cpu_cores').sum(by=['kubernetes_node']).publish(label='G', enable=False)\nH = (D/G).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3116,6 +3219,9 @@
           }, {
             "enabled" : false,
             "property" : "container_id"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
           } ]
         },
         "lineChartOptions" : {
@@ -3158,6 +3264,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_memory_bytes - Sum by kubernetes_cluster,kubernetes_node",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% memory used by node",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -3169,7 +3293,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_memory_usage_bytes', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['kubernetes_cluster', 'kubernetes_node']).publish(label='D', enable=False)\nE = data('memory.total', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_cluster', 'kubernetes_node']).publish(label='E', enable=False)\nF = (D/E).scale(100).publish(label='F')",
+      "programText" : "D = data('container_memory_usage_bytes', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['kubernetes_cluster', 'kubernetes_node']).publish(label='D', enable=False)\nE = data('memory.total', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_cluster', 'kubernetes_node']).publish(label='E', enable=False)\nF = (D/E).scale(100).publish(label='F')\nG = data('machine_memory_bytes').sum(by=['kubernetes_cluster', 'kubernetes_node']).publish(label='G', enable=False)\nH = (D/G).scale(100).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3182,7 +3306,7 @@
       "id" : "D2SmR8XAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Nodes by Memory",
+      "name" : "Top Nodes by Total Memory",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -3238,6 +3362,15 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_memory_bytes - Mean(1m) - Top 10",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "Sparkline",
@@ -3250,7 +3383,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.total', filter=filter('kubernetes_cluster', '*', match_missing=True)).mean(over='1m').top(count=10).publish(label='A')",
+      "programText" : "A = data('memory.total', filter=filter('kubernetes_cluster', '*', match_missing=True)).mean(over='1m').top(count=10).publish(label='A')\nB = data('machine_memory_bytes', filter=filter('kubernetes_cluster', '*')).mean(over='1m').top(count=10).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3285,8 +3418,17 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A/1024/1024",
+          "displayName" : "(A+C)",
           "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "machine_memory_bytes - Sum",
+          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -3306,7 +3448,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.total', filter=filter('kubernetes_cluster', '*', match_missing=True)).sum().publish(label='A')\nB = (A/1024/1024).publish(label='B', enable=False)",
+      "programText" : "A = data('memory.total', filter=filter('kubernetes_cluster', '*', match_missing=True), rollup='latest', extrapolation='zero').sum().publish(label='A', enable=False)\nB = (A+C).publish(label='B')\nC = data('machine_memory_bytes', filter=filter('kubernetes_cluster', '*'), rollup='latest', extrapolation='zero').sum().publish(label='C', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3696,6 +3838,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_cpu_cores - Sum by kubernetes_node,kubernetes_cluster",
+          "label" : "M",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU Capacity % Used Per Node",
+          "label" : "N",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
@@ -3708,7 +3868,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_node', 'kubernetes_cluster']).mean(over='1m').publish(label='A', enable=False)\nG = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*', match_missing=True)).sum(by=['kubernetes_node', 'kubernetes_cluster']).mean(over='1m').publish(label='G', enable=False)\nL = (A/G).top(count=10).publish(label='L')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_node', 'kubernetes_cluster']).mean(over='1m').publish(label='A', enable=False)\nG = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*', match_missing=True)).sum(by=['kubernetes_node', 'kubernetes_cluster']).mean(over='1m').publish(label='G', enable=False)\nL = (A/G).top(count=10).publish(label='L')\nM = data('machine_cpu_cores').sum(by=['kubernetes_node', 'kubernetes_cluster']).publish(label='M', enable=False)\nN = (A/M).top(count=10).publish(label='N')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3721,7 +3881,7 @@
       "id" : "D2SmUhoAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top 10 Nodes by Memory Capacity Used",
+      "name" : "Top Nodes by Memory Capacity Used",
       "options" : {
         "colorBy" : "Scale",
         "colorScale2" : [ {
@@ -3756,7 +3916,19 @@
           "paletteIndex" : 20
         } ],
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "host"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_cluster"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node"
+          } ]
         },
         "maximumPrecision" : 3,
         "programOptions" : {
@@ -3784,8 +3956,26 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "D/E - Scale:100 - Top 10",
+          "displayName" : "% Memory Used",
           "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "machine_memory_bytes - Sum by kubernetes_cluster,kubernetes_node - Mean(1m)",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% Memory Used",
+          "label" : "H",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -3804,7 +3994,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_memory_usage_bytes', filter=filter('kubernetes_cluster', '*', match_missing=True)).sum(by=['kubernetes_cluster', 'host']).mean(over='1m').publish(label='D', enable=False)\nE = data('memory.total', filter=filter('kubernetes_cluster', '*', match_missing=True)).sum(by=['kubernetes_cluster', 'host']).mean(over='1m').publish(label='E', enable=False)\nF = (D/E).scale(100).top(count=10).publish(label='F')",
+      "programText" : "D = data('container_memory_usage_bytes', filter=filter('kubernetes_cluster', '*', match_missing=True)).sum(by=['kubernetes_cluster', 'kubernetes_node']).mean(over='1m').publish(label='D', enable=False)\nE = data('memory.total', filter=filter('kubernetes_cluster', '*', match_missing=True)).sum(by=['kubernetes_cluster', 'kubernetes_node']).mean(over='1m').publish(label='E', enable=False)\nF = (D/E).scale(100).top(count=10).publish(label='F')\nG = data('machine_memory_bytes', filter=filter('kubernetes_cluster', '*')).sum(by=['kubernetes_cluster', 'kubernetes_node']).mean(over='1m').publish(label='G', enable=False)\nH = (D/G).scale(100).top(count=10).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4333,6 +4523,33 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "container_spec_cpu_quota - Sum by kubernetes_pod_name",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "container_spec_cpu_period - Sum by kubernetes_pod_name",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% of Limit",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -4344,7 +4561,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name']).publish(label='A', enable=False)\nD = (A/(E)).sum(by=['kubernetes_pod_name']).publish(label='D')\nE = data('kubernetes.container_cpu_limit').sum(by=['kubernetes_pod_name']).publish(label='E', enable=False)",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name']).publish(label='A', enable=False)\nD = (A/(E)).sum(by=['kubernetes_pod_name']).publish(label='D')\nE = data('kubernetes.container_cpu_limit').sum(by=['kubernetes_pod_name']).publish(label='E', enable=False)\nF = data('container_spec_cpu_quota').sum(by=['kubernetes_pod_name']).publish(label='F', enable=False)\nG = data('container_spec_cpu_period').sum(by=['kubernetes_pod_name']).publish(label='G', enable=False)\nH = (A/(F/G)).sum(by=['kubernetes_pod_name']).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4453,6 +4670,15 @@
           }, {
             "enabled" : true,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
+          }, {
+            "enabled" : true,
+            "property" : "metric_source"
+          }, {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "lineChartOptions" : {
@@ -4495,6 +4721,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_cpu_cores - Sum by kubernetes_node",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "pod cpu usage",
+          "label" : "E1",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : true,
         "stacked" : false,
@@ -4506,7 +4750,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('kubernetes_node', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')\nD = data('machine_cpu_cores', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_node', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = (A/D).publish(label='E1')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4584,8 +4828,26 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A/B*100",
+          "displayName" : "% Memory Of Limit",
           "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "container_spec_memory_limit_bytes - Sum by kubernetes_pod_name - Exclude x < 0",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% Memory Of Limit",
+          "label" : "E",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -4603,7 +4865,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_memory_usage_bytes', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['kubernetes_pod_name']).publish(label='A', enable=False)\nB = data('kubernetes.container_memory_limit', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['kubernetes_pod_name']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('container_memory_usage_bytes', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['kubernetes_pod_name']).publish(label='A', enable=False)\nB = data('kubernetes.container_memory_limit', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['kubernetes_pod_name']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')\nD = data('container_spec_memory_limit_bytes', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['kubernetes_pod_name']).above(0, inclusive=True).publish(label='D', enable=False)\nE = (A/D*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4802,6 +5064,18 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
+          }, {
+            "enabled" : true,
+            "property" : "metric_source"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "maximumPrecision" : 3,
@@ -4838,6 +5112,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_cpu_cores - Sum by kubernetes_cluster",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU Capacity Usage %",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "Sparkline",
@@ -4850,7 +5142,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_cpu_utilization', rollup='rate').sum(by=['kubernetes_cluster']).publish(label='D', enable=False)\nE = data('cpu.num_processors').sum(by=['kubernetes_cluster']).publish(label='E', enable=False)\nF = (D/E).publish(label='F')",
+      "programText" : "D = data('container_cpu_utilization', rollup='rate').sum(by=['kubernetes_cluster']).publish(label='D', enable=False)\nE = data('cpu.num_processors').sum(by=['kubernetes_cluster']).publish(label='E', enable=False)\nF = (D/E).publish(label='F')\nG = data('machine_cpu_cores').sum(by=['kubernetes_cluster']).publish(label='G', enable=False)\nH = (D/G).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4876,7 +5168,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "",
+          "displayName" : "kubernetes.node_ready - Sum by kubernetes_cluster - Mean(1m) - Count",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
@@ -5089,6 +5381,18 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
+          }, {
+            "enabled" : true,
+            "property" : "metric_source"
+          }, {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "maximumPrecision" : 3,
@@ -5125,6 +5429,24 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "machine_memory_bytes - Sum by kubernetes_cluster",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% used per cluster",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "Sparkline",
@@ -5137,7 +5459,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_memory_usage_bytes').sum(by=['kubernetes_cluster']).publish(label='D', enable=False)\nE = data('memory.total').sum(by=['kubernetes_cluster']).publish(label='E', enable=False)\nF = (D/E).scale(100).publish(label='F')",
+      "programText" : "D = data('container_memory_usage_bytes').sum(by=['kubernetes_cluster']).publish(label='D', enable=False)\nE = data('memory.total').sum(by=['kubernetes_cluster']).publish(label='E', enable=False)\nF = (D/E).scale(100).publish(label='F')\nG = data('machine_memory_bytes').sum(by=['kubernetes_cluster']).publish(label='G', enable=False)\nH = (D/G).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5271,6 +5593,33 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "container_spec_cpu_quota - Sum by container_spec_name",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "container_spec_cpu_period - Sum by container_spec_name",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% of Limit",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -5282,7 +5631,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', rollup='rate').sum(by=['container_spec_name']).publish(label='A', enable=False)\nD = (A/E).sum(by=['container_spec_name']).publish(label='D')\nE = data('kubernetes.container_cpu_limit').sum(by=['container_spec_name']).publish(label='E', enable=False)",
+      "programText" : "A = data('container_cpu_utilization', rollup='rate').sum(by=['container_spec_name']).publish(label='A', enable=False)\nD = (A/E).sum(by=['container_spec_name']).publish(label='D')\nE = data('kubernetes.container_cpu_limit').sum(by=['container_spec_name']).publish(label='E', enable=False)\nF = data('container_spec_cpu_quota').sum(by=['container_spec_name']).publish(label='F', enable=False)\nG = data('container_spec_cpu_period').sum(by=['container_spec_name']).publish(label='G', enable=False)\nH = (A/(F/G)).sum(by=['container_spec_name']).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5407,8 +5756,26 @@
           "valueUnit" : null,
           "yAxis" : 1
         }, {
-          "displayName" : "A/B*100",
+          "displayName" : "% of Memory Limit Used",
           "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "container_spec_memory_limit_bytes - Sum by container_spec_name - Exclude x < 0",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% of Memory Limit Used",
+          "label" : "E",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5426,7 +5793,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_memory_usage_bytes').sum(by=['container_spec_name']).publish(label='A', enable=False)\nB = data('kubernetes.container_memory_limit').sum(by=['container_spec_name']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('container_memory_usage_bytes').sum(by=['container_spec_name']).publish(label='A', enable=False)\nB = data('kubernetes.container_memory_limit').sum(by=['container_spec_name']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')\nD = data('container_spec_memory_limit_bytes').sum(by=['container_spec_name']).above(0, inclusive=True).publish(label='D', enable=False)\nE = (A/D*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5647,13 +6014,13 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "container_memory_usage_bytes - Mean by container_spec_name",
+          "displayName" : "Memory Used",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
         "refreshInterval" : null,
@@ -5667,7 +6034,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_memory_usage_bytes').mean(by=['container_spec_name']).publish(label='A')",
+      "programText" : "A = data('container_memory_usage_bytes', rollup='latest').sum(by=['container_spec_name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6621,6 +6988,15 @@
           "valueSuffix" : null,
           "valueUnit" : "Byte",
           "yAxis" : 0
+        }, {
+          "displayName" : "memory usage",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte",
+          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
@@ -6634,7 +7010,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('kubernetes.container_memory_limit', filter=filter('kubernetes_cluster', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True) and filter('container_spec_name', '*') and filter('container_id', '*') and filter('kubernetes_pod_name', '*') and filter('kubernetes_pod_uid', '*'), rollup='latest').publish(label='A')",
+      "programText" : "A = data('kubernetes.container_memory_limit', filter=filter('kubernetes_cluster', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True) and filter('container_spec_name', '*') and filter('container_id', '*') and filter('kubernetes_pod_name', '*') and filter('kubernetes_pod_uid', '*'), rollup='latest').publish(label='A')\nB = data('container_spec_memory_limit_bytes', filter=filter('kubernetes_cluster', '*') and filter('deployment', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True) and filter('container_spec_name', '*') and filter('container_id', '*') and filter('kubernetes_pod_name', '*') and filter('kubernetes_pod_uid', '*'), rollup='latest').publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8460,23 +8836,6 @@
     }
   }, {
     "crossLink" : {
-      "contextId" : "DkBnHSpAYAA",
-      "created" : 0,
-      "creator" : null,
-      "id" : "EZHM8keAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "propertyName" : "kubernetes_pod_uid",
-      "targets" : [ {
-        "dashboardGroupId" : "DiVWf-iAgAA",
-        "dashboardId" : "D8I_-P3AcAA",
-        "isDefault" : true,
-        "name" : "k8s-node-pod-uid-link",
-        "type" : "INTERNAL_LINK"
-      } ]
-    }
-  }, {
-    "crossLink" : {
       "contextId" : "D2SlSb5AgAA",
       "created" : 0,
       "creator" : null,
@@ -8540,6 +8899,23 @@
         "dashboardId" : "D-KwPVTAcFM",
         "isDefault" : true,
         "name" : "k8s-pod-container-link",
+        "type" : "INTERNAL_LINK"
+      } ]
+    }
+  }, {
+    "crossLink" : {
+      "contextId" : "DkBnHSpAYAA",
+      "created" : 0,
+      "creator" : null,
+      "id" : "EZHM8keAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "propertyName" : "kubernetes_pod_uid",
+      "targets" : [ {
+        "dashboardGroupId" : "DiVWf-iAgAA",
+        "dashboardId" : "D8I_-P3AcAA",
+        "isDefault" : true,
+        "name" : "k8s-node-pod-uid-link",
         "type" : "INTERNAL_LINK"
       } ]
     }
@@ -9751,7 +10127,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 1825036684,
+  "hashCode" : 1695377923,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
