@@ -1,0 +1,168 @@
+{
+  "hashCode" : -1428106610,
+  "id" : "Ea1OhQzAYJM",
+  "modelVersion" : 1,
+  "navigatorExport" : {
+    "navigator" : {
+      "created" : 0,
+      "creator" : null,
+      "description" : "",
+      "id" : "Ea1OhQzAYJM",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "service",
+          "values" : [ "kubernetes" ]
+        } ],
+        "metric" : "container/memory/request_utilization"
+      } ],
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Kubernetes Engine Clusters",
+      "navigatorCategory" : "Google Cloud Platform",
+      "navigatorType" : "elemental",
+      "uiModel" : {
+        "alertQuery" : "_exists_:pod_name",
+        "category" : "Google Cloud Platform",
+        "categoryPriority" : 130,
+        "discoveryQuery" : [ "_exists_:cluster_name", "service:kubernetes", "_exists_:gcp_node_name", "_exists_:pod_name" ],
+        "displayName" : "Kubernetes Engine Pods",
+        "filterProperties" : [ ],
+        "id" : "gke-pods",
+        "idName" : "gke-pods",
+        "idTemplate" : "{{pod_name}} | {{gcp_node_name}} | {{cluster_name}} | {{project_id}}",
+        "listColumns" : [ {
+          "aggregate" : null,
+          "displayName" : "Pod | Node | Cluster | Project",
+          "format" : "id",
+          "metric" : null,
+          "property" : "id",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Value",
+          "format" : "Number",
+          "metric" : null,
+          "property" : "value",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Pod",
+          "format" : null,
+          "metric" : null,
+          "property" : "pod_name",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Node",
+          "format" : null,
+          "metric" : null,
+          "property" : "gcp_node_name",
+          "sortable" : null
+        }, {
+          "aggregate" : null,
+          "displayName" : "Cluster",
+          "format" : null,
+          "metric" : null,
+          "property" : "cluster_name",
+          "sortable" : null
+        } ],
+        "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Usage is based on limits and requests set at pod level",
+          "displayName" : "CPU Utilization",
+          "id" : "gke-pod-cpu-utilization",
+          "job" : {
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "pod_name",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "A = data('container/cpu/request_utilization' {{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['project_id', 'cluster_name', 'gcp_node_name', 'pod_name'])\nB = A*100",
+            "varName" : "B"
+          },
+          "metricSelectors" : [ "container/cpu/request_utilization" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "CPU Utilization",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : 100,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : null
+          },
+          "description" : "Utilization is averaged across all containers in the pod.",
+          "displayName" : "Memory Utilization",
+          "id" : "gke-pod-memory-utilization",
+          "job" : {
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "pod_name",
+              "type" : "property"
+            } ],
+            "resolution" : 60000,
+            "template" : "CLUSTER_MEM_UTIL = data('container/memory/request_utilization' {{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['cluster_name', 'project_id', 'gcp_node_name', 'pod_name'])\nUTILIZATION = CLUSTER_MEM_UTIL * 100",
+            "varName" : "UTILIZATION"
+          },
+          "metricSelectors" : [ "container/memory/request_utilization" ],
+          "type" : "metric",
+          "valueFormat" : "Percentage",
+          "valueLabel" : "Memory Utilization",
+          "valueType" : null
+        } ],
+        "mtsQuery" : "_exists_:pod_name AND _exists_:gcp_node_name AND service:kubernetes",
+        "propertyColumns" : [ [ {
+          "header" : "AWS",
+          "properties" : [ ]
+        } ], [ {
+          "header" : "Tags",
+          "properties" : [ "sf_tags" ]
+        }, {
+          "header" : "Other",
+          "properties" : [ ]
+        } ] ],
+        "proxyProperties" : null,
+        "requiredProperties" : [ "pod_name" ],
+        "singleHostSystemDashboardName" : "GKE Pod",
+        "systemDashboardName" : "GKE Pod",
+        "systemDashboardPrefix" : null,
+        "tooltipKeyList" : [ {
+          "displayName" : "Pod",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "pod_name"
+        }, {
+          "displayName" : "Node",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "gcp_node_name"
+        }, {
+          "displayName" : "Value",
+          "format" : "Number",
+          "isSummaryProperty" : true,
+          "property" : "value"
+        }, {
+          "displayName" : "Cluster",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "cluster_name"
+        } ],
+        "type" : "elemental",
+        "unreleased" : false
+      }
+    }
+  },
+  "packageType" : "NAVIGATOR"
+}
