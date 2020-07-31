@@ -93,8 +93,8 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "A = data('container_cpu_utilization' {{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('machine_cpu_cores', filter=filter('kubernetes_cluster', '*') and filter('host', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')",
-            "varName" : "C"
+            "template" : "A = data('container_cpu_utilization' {{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['kubernetes_pod_name', 'host', 'kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('kubernetes_cluster', '*') and filter('host', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)\nD = data('machine_cpu_cores', filter=filter('kubernetes_cluster', '*') and filter('host', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = (A/D).publish(label='E', enable=False)\nF = union(C, E).publish(label='F')",
+            "varName" : "F"
           },
           "metricSelectors" : [ "container_cpu_utilization" ],
           "type" : "metric",
