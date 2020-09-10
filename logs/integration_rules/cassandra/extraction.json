@@ -1,0 +1,88 @@
+[
+  {
+    "matcher": {
+      "params": {
+        "op": "match-all"
+      }
+    },
+    "extractionParams": {
+      "op": "regexp-parse",
+      "args": {
+        "field": "_raw",
+        "regexp": ".+(?<severity>TRACE|DEBUG|INFO|WARN|ERROR|FATAL) +\\[(?<thread>[^\\]]+)] \\[(?<class>[^\\]]+)\\] \\{\\}: .+"
+      }
+    }
+  },
+  {
+    "matcher": {
+      "params": {
+        "op": "string-contains",
+        "args": {
+          "field": "_raw",
+          "value": "Initializing"
+        }
+      }
+    },
+    "extractionParams": {
+      "op": "regexp-parse",
+      "args": {
+        "field": "_raw",
+        "regexp": ".+ \\{\\}: Initializing (?<keyspace>[^\\.]+)\\.(?<table>.+)"
+      }
+    }
+  },
+  {
+    "matcher": {
+      "params": {
+        "op": "string-contains",
+        "args": {
+          "field": "_raw",
+          "value": "CFS(Keyspace="
+        }
+      }
+    },
+    "extractionParams": {
+      "op": "regexp-parse",
+      "args": {
+        "field": "_raw",
+        "regexp": ".+ CFS\\(Keyspace='(?<keyspace>[^\\']+)', ColumnFamily='(?<table>[^\\']+)'.+"
+      }
+    }
+  },
+  {
+    "matcher": {
+      "params": {
+        "op": "string-contains",
+        "args": {
+          "field": "_raw",
+          "value": "[o.a.cassandra.service.GCInspector   ] {}: ConcurrentMarkSweep"
+        }
+      }
+    },
+    "extractionParams": {
+      "op": "regexp-parse",
+      "args": {
+        "field": "_raw",
+        "regexp": ".+ \\{\\}: ConcurrentMarkSweep GC in (?<cmsTimeMs>[0-9]+)ms.+"
+      }
+    }
+  },
+  {
+    "matcher": {
+      "params": {
+        "op": "string-contains",
+        "args": {
+          "field": "_raw",
+          "value": "[o.a.cassandra.service.GCInspector   ] {}: ParNew"
+        }
+      }
+    },
+    "extractionParams": {
+      "op": "regexp-parse",
+      "args": {
+        "field": "_raw",
+        "regexp": ".+ \\{\\}: ParNew GC in (?<parNewTimeMs>[0-9]+)ms.+"
+      }
+    }
+  }
+]
