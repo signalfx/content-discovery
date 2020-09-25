@@ -1,5 +1,5 @@
 {
-  "hashCode" : 1623845662,
+  "hashCode" : 1918677493,
   "id" : "D85Z_TlAcFE",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -75,7 +75,7 @@
             "minValue" : 0,
             "range" : null
           },
-          "description" : "Percentage of CPU on this node used by this container as reported by metric container_cpu_percent, from under 20% (green) to over 80% (red).",
+          "description" : "Cumulative cpu utilization in percentages. This is equivalent to “centicores”, or hundreths of CPU cores consumed. This metric is NOT normalized by the total # of cores on the system. Under 20% green, over 80% red.",
           "displayName" : "CPU used by container",
           "id" : "container_cpu_percent",
           "job" : {
@@ -84,12 +84,17 @@
               "property" : "_exists_",
               "propertyValue" : "container_id",
               "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "kubernetes_cluster",
+              "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\")",
+            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\")",
             "varName" : "CONTAINER_CPU_PERCENT"
           },
-          "metricSelectors" : [ "container_cpu_percent" ],
+          "metricSelectors" : [ "container_cpu_utilization" ],
           "type" : "metric",
           "valueFormat" : "Percentage",
           "valueLabel" : "CPU Use",
@@ -97,23 +102,33 @@
         }, {
           "coloring" : {
             "limits" : null,
-            "maxValue" : 100,
+            "maxValue" : null,
             "method" : "quantile",
             "minValue" : 0,
-            "range" : null
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
           "description" : "Percentage of memory on this node used by this container given by metric container_memory_usage_bytes divide by machine_memory_bytes, from under 20% (green) to over 80% (red).",
           "displayName" : "Memory used by container",
           "id" : "container_memory_usage_bytes",
           "job" : {
-            "filters" : [ ],
+            "filters" : [ {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "container_id",
+              "type" : "property"
+            }, {
+              "not" : false,
+              "property" : "_exists_",
+              "propertyValue" : "kubernetes_cluster",
+              "type" : "property"
+            } ],
             "resolution" : 60000,
-            "template" : "CONTAINERS_MEM = data(\"container_memory_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\")\nNODE_TOTAL = data(\"machine_memory_bytes\").sum(by=[\"kubernetes_cluster\", \"kubernetes_node\"])\nUTILIZATION = (CONTAINERS_MEM / NODE_TOTAL) * 100",
-            "varName" : "UTILIZATION"
+            "template" : "CONTAINER_MEM_USAGE = data(\"container_memory_usage_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2)",
+            "varName" : "CONTAINER_MEM_USAGE"
           },
           "metricSelectors" : [ "machine_memory_bytes" ],
           "type" : "metric",
-          "valueFormat" : "Percentage",
+          "valueFormat" : "Bytes",
           "valueLabel" : "Memory Use",
           "valueType" : null
         }, {
@@ -164,7 +179,7 @@
               "type" : "property"
             } ],
             "resolution" : 60000,
-            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\")",
+            "template" : "CONTAINER_CPU_PERCENT = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\")",
             "varName" : "CONTAINER_CPU_PERCENT"
           },
           "metricSelectors" : [ ],
