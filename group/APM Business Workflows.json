@@ -5,11 +5,11 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Number of traces processed in each workflow",
+        "description": "Number of traces processed in the 100 most active workflows",
         "id": "Em-XVZjAYC8",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Requests by Workflow",
+        "name": "Requests from Top Workflows",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -45,20 +45,20 @@
           "legendOptions": {
             "fields": [
               {
-                "enabled": true,
+                "enabled": false,
                 "property": "sf_originatingMetric"
               },
               {
-                "enabled": true,
+                "enabled": false,
                 "property": "sf_metric"
               },
               {
                 "enabled": true,
-                "property": "sf_environment"
+                "property": "sf_workflow"
               },
               {
                 "enabled": true,
-                "property": "sf_workflow"
+                "property": "sf_environment"
               }
             ]
           },
@@ -81,8 +81,8 @@
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "requests/s",
+              "valuePrefix": "",
+              "valueSuffix": "",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -97,7 +97,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*'), rollup='sum').sum(by=['sf_workflow', 'sf_environment']).publish(label='A')",
+        "programText": "A = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*')), rollup='sum').sum(by=['sf_workflow', 'sf_environment']).top(count=100).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -107,7 +107,7 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Longest running workflows  (1-minute error rate average)",
+        "description": "Longest running workflows",
         "id": "Em-XVZjAYDA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
@@ -145,8 +145,8 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "A",
-              "label": "A",
+              "displayName": "Workflow Duration",
+              "label": "p90",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -157,7 +157,7 @@
           ],
           "refreshInterval": null,
           "secondaryVisualization": "None",
-          "sortBy": "",
+          "sortBy": "-value",
           "time": {
             "range": 3600000,
             "type": "relative"
@@ -166,7 +166,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('workflows.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_workflow', '*'), rollup='max').sum(by=['sf_workflow', 'sf_environment']).mean(over='1m').top(count=100).publish(label='A')",
+        "programText": "error_durations     = data('workflows.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='max').mean(by=['sf_workflow', 'sf_environment'])\nnon_error_durations = data('workflows.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='max').mean(by=['sf_workflow', 'sf_environment'])\n\nerror_counts     = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='sum').sum(by=['sf_workflow', 'sf_environment'])\nnon_error_counts = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='sum').sum(by=['sf_workflow', 'sf_environment'])\n\nerror_weight = (error_durations * error_counts).sum(over='1m')\nnon_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\ntotal_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\ntotal = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\np90_duration = (total_weight / total).top(100).publish(label='p90')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -176,11 +176,11 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "90th percentile duration for traces of each workflow",
+        "description": "90th percentile duration of traces from the longest workflows",
         "id": "Em-XVZjAYDE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Duration by Workflow (P90)",
+        "name": "P90 Duration of Top Workflows",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -207,14 +207,31 @@
           ],
           "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
+          "defaultPlotType": "LineChart",
           "eventPublishLabelOptions": [],
           "histogramChartOptions": {
             "colorThemeIndex": 16
           },
           "includeZero": false,
           "legendOptions": {
-            "fields": null
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "sf_workflow"
+              },
+              {
+                "enabled": true,
+                "property": "sf_environment"
+              }
+            ]
           },
           "lineChartOptions": {
             "showDataMarkers": false
@@ -231,10 +248,10 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "p90 duration",
-              "label": "A",
+              "displayName": "Workflow Duration",
+              "label": "p90",
               "paletteIndex": null,
-              "plotType": "AreaChart",
+              "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": "Nanosecond",
@@ -242,7 +259,7 @@
             }
           ],
           "showEventLines": false,
-          "stacked": true,
+          "stacked": false,
           "time": {
             "range": 3600000,
             "type": "relative"
@@ -251,7 +268,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('workflows.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_workflow', '*'), rollup='max').sum(by=['sf_workflow', 'sf_environment']).publish(label='A')",
+        "programText": "error_durations     = data('workflows.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='max').mean(by=['sf_workflow', 'sf_environment'])\nnon_error_durations = data('workflows.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='max').mean(by=['sf_workflow', 'sf_environment'])\n\nerror_counts     = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='sum').sum(by=['sf_workflow', 'sf_environment'])\nnon_error_counts = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='sum').sum(by=['sf_workflow', 'sf_environment'])\n\nerror_weight     = (error_durations * error_counts).sum(over='1m')\nnon_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\ntotal_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\ntotal = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\np90_duration = (total_weight / total).top(100).publish(label='p90')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -261,7 +278,7 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Most active workflows by number of traces",
+        "description": "Most active workflows by number of traces in the last minute",
         "id": "Em-XVZjAYDI",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
@@ -320,7 +337,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*'), rollup='sum').sum(by=['sf_workflow', 'sf_environment']).mean(over='1m').top(count=100).publish(label='A')",
+        "programText": "A = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*')), rollup='sum').sum(by=['sf_workflow', 'sf_environment']).sum(over='1m').top(count=100).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1293,7 +1310,7 @@
       "teams": null
     }
   },
-  "hashCode": -1893493426,
+  "hashCode": 418380049,
   "id": "Em-XVZjAYCs",
   "modelVersion": 1,
   "packageType": "GROUP"
