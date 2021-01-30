@@ -356,9 +356,9 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Median latency",
-              "label": "A",
-              "paletteIndex": 14,
+              "displayName": "p99 latency",
+              "label": "p99",
+              "paletteIndex": 5,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -367,7 +367,7 @@
             },
             {
               "displayName": "p90 latency",
-              "label": "B",
+              "label": "p90",
               "paletteIndex": 1,
               "plotType": null,
               "valuePrefix": null,
@@ -376,9 +376,9 @@
               "yAxis": 0
             },
             {
-              "displayName": "p99 latency",
-              "label": "C",
-              "paletteIndex": 5,
+              "displayName": "Median latency",
+              "label": "median",
+              "paletteIndex": 14,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -396,7 +396,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('service.request.duration.ns.median', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))).max(by=['sf_service']).publish(label='A')\nB = data('service.request.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))).max(by=['sf_service']).publish(label='B')\nC = data('service.request.duration.ns.p99', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))).max(by=['sf_service']).publish(label='C')",
+        "programText": "def weighted_duration(p):\n    error_durations     = data('service.request.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='max').mean(by=['sf_service', 'sf_environment'])\n    non_error_durations = data('service.request.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='max').mean(by=['sf_service', 'sf_environment'])\n\n    error_counts     = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='sum').sum(by=['sf_service', 'sf_environment'])\n    non_error_counts = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='sum').sum(by=['sf_service', 'sf_environment'])\n\n    error_weight = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total).top(100).publish(label=p)\n    \nweighted_duration('median')\nweighted_duration('p90')\nweighted_duration('p99')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -462,8 +462,8 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "p90 latency",
-              "label": "C",
+              "displayName": "p90",
+              "label": "p90",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -482,7 +482,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "C = data('spans.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))).max(by=['sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='C')",
+        "programText": "def weighted_duration(p):\n    error_durations     = data('spans.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='max').mean(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n    non_error_durations = data('spans.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='max').mean(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n\n    error_counts     = data('spans.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='sum').sum(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n    non_error_counts = data('spans.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='sum').sum(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n\n    error_weight = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total).top(100).publish(label=p)\n    \nweighted_duration('p90')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -809,8 +809,8 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "p90 latency",
-              "label": "A",
+              "displayName": "p90 Response Time",
+              "label": "p90",
               "paletteIndex": 1,
               "plotType": null,
               "valuePrefix": null,
@@ -831,7 +831,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*')) and filter('sf_operation', '*')).max().publish(label='A')",
+        "programText": "def weighted_duration(p):\n    error_durations     = data('spans.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='max').mean(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n    non_error_durations = data('spans.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='max').mean(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n\n    error_counts     = data('spans.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='sum').sum(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n    non_error_counts = data('spans.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='sum').sum(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n\n    error_weight = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total).top(100).publish(label=p)\n    \nweighted_duration('p90')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1090,7 +1090,7 @@
           "publishLabelOptions": [
             {
               "displayName": "Median latency",
-              "label": "A",
+              "label": "median",
               "paletteIndex": 14,
               "plotType": null,
               "valuePrefix": null,
@@ -1100,7 +1100,7 @@
             },
             {
               "displayName": "p90 latency",
-              "label": "B",
+              "label": "p90",
               "paletteIndex": 1,
               "plotType": null,
               "valuePrefix": null,
@@ -1110,7 +1110,7 @@
             },
             {
               "displayName": "p99 latency",
-              "label": "C",
+              "label": "p99",
               "paletteIndex": 5,
               "plotType": null,
               "valuePrefix": null,
@@ -1129,7 +1129,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('spans.duration.ns.median', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*')) and filter('sf_operation', '*')).max(by=['sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='A')\nB = data('spans.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*')) and filter('sf_operation', '*')).max(by=['sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='B')\nC = data('spans.duration.ns.p99', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*')) and filter('sf_operation', '*')).max(by=['sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='C')",
+        "programText": "def weighted_duration(p):\n    error_durations     = data('spans.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='max').mean(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n    non_error_durations = data('spans.duration.ns.' + p, filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='max').mean(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n\n    error_counts     = data('spans.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='sum').sum(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n    non_error_counts = data('spans.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='sum').sum(by=['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod'])\n\n    error_weight = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total).top(100).publish(label=p)\n    \nweighted_duration('median')\nweighted_duration('p90')\nweighted_duration('p99')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1441,9 +1441,9 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "p99 latency",
-              "label": "A",
-              "paletteIndex": 1,
+              "displayName": "p90 Response Time",
+              "label": "p90",
+              "paletteIndex": 14,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -1463,7 +1463,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('service.request.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))).max().publish(label='A')",
+        "programText": "error_durations     = data('service.request.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='max').mean(by=['sf_service', 'sf_environment'])\nnon_error_durations = data('service.request.duration.ns.p90', filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='max').mean(by=['sf_service', 'sf_environment'])\n\nerror_counts     = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'true'),  rollup='sum').sum(by=['sf_service', 'sf_environment'])\nnon_error_counts = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*') and filter('sf_error', 'false'), rollup='sum').sum(by=['sf_service', 'sf_environment'])\n\nerror_weight = (error_durations * error_counts).sum(over='1m')\nnon_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\ntotal_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\ntotal = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\np90_duration = (total_weight / total).top(100).publish(label='p90')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -3873,7 +3873,7 @@
       "teams": null
     }
   },
-  "hashCode": 823983857,
+  "hashCode": 35875711,
   "id": "EPK1YluAgAA",
   "modelVersion": 1,
   "packageType": "GROUP"
