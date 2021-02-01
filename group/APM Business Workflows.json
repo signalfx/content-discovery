@@ -107,7 +107,7 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Longest running workflows",
+        "description": "Longest running workflows, based on last minute 90th percentile",
         "id": "Em-XVZjAYDA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
@@ -176,7 +176,7 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "90th percentile duration of traces from the longest workflows",
+        "description": "90th percentile duration of traces from the 100 longest workflows",
         "id": "Em-XVZjAYDE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
@@ -436,7 +436,7 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Error rate on traces for each workflow",
+        "description": "Top 100 workflows with the highest proportion of error traces",
         "id": "Em-XVZjAYDQ",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
@@ -531,7 +531,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('workflows.count', filter=filter('sf_environment', '*') and (not filter('sf_dimensionalized', '*')) and filter('sf_workflow', '*') and filter('sf_error', 'true'), rollup='rate').sum(by=['sf_workflow', 'sf_environment']).publish(label='A', enable=False)\nB = data('workflows.count', filter=filter('sf_environment', '*') and (not filter('sf_dimensionalized', '*')) and filter('sf_workflow', '*'), rollup='rate').sum(by=['sf_workflow', 'sf_environment']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).publish(label='C')",
+        "programText": "A = data('workflows.count', filter=filter('sf_environment', '*') and (not filter('sf_dimensionalized', '*')) and filter('sf_workflow', '*') and filter('sf_error', 'true'), rollup='rate').sum(by=['sf_workflow', 'sf_environment']).publish(label='A', enable=False)\nB = data('workflows.count', filter=filter('sf_environment', '*') and (not filter('sf_dimensionalized', '*')) and filter('sf_workflow', '*'), rollup='rate').sum(by=['sf_workflow', 'sf_environment']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).top(100).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -1310,7 +1310,7 @@
       "teams": null
     }
   },
-  "hashCode": 418380049,
+  "hashCode": 1292190260,
   "id": "Em-XVZjAYCs",
   "modelVersion": 1,
   "packageType": "GROUP"
