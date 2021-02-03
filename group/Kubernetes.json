@@ -6379,7 +6379,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('sf_tags', '*', match_missing=True) and filter('deployment', '*', match_missing=True)).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('sf_tags', '*', match_missing=True) and filter('deployment', '*', match_missing=True), rollup='rate').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6640,6 +6640,9 @@
           }, {
             "enabled" : false,
             "property" : "container_id"
+          }, {
+            "enabled" : true,
+            "property" : "kubernetes_node_uid"
           } ]
         },
         "maximumPrecision" : 2,
@@ -6670,7 +6673,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('sf_tags', '*', match_missing=True) and filter('deployment', '*', match_missing=True)).mean(over='1m').top(count=10).publish(label='A')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('kubernetes_cluster', '*') and filter('kubernetes_namespace', '*') and filter('sf_tags', '*', match_missing=True) and filter('deployment', '*', match_missing=True), rollup='rate').mean(over='1m').top(count=10).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7142,7 +7145,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_cpu_utilization').publish(label='D')",
+      "programText" : "D = data('container_cpu_utilization', rollup='rate').publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -10248,7 +10251,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -308857961,
+  "hashCode" : -1758224944,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
