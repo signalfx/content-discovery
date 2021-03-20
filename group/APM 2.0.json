@@ -1767,7 +1767,7 @@
         "lastUpdatedBy": null,
         "name": ".",
         "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Kubernetes Pod Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\" ><br />\nKey metrics from the Kubernetes pod(s) that power this service.<br />\n<i>Metrics will only populate these charts if your service is running in Kubernetes and your <a href=\"https://docs.signalfx.com/en/latest/integrations/kubernetes/index.html\">SignalFx Smart Agent is configured to monitor your Kubernetes environment</a>.</i>\n</p>",
+          "markdown": "<table width=\"100%\" height=\"40%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Kubernetes Pod Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\"><br />\nKey metrics from the Kubernetes pod(s) that power this service.\n</p>\n<p align=\"center\">\n<i>Metrics will only populate these charts if your service is running in Kubernetes and you have configured the <a href=\"https://github.com/signalfx/splunk-otel-collector\">OpenTelemetry Collector</a> or the <a href=\"https://docs.signalfx.com/en/latest/integrations/kubernetes/index.html\">SignalFx Smart Agent</a> to monitor your Kubernetes environment.</i>\n</p>",
           "type": "Text"
         },
         "packageSpecifications": "",
@@ -1867,7 +1867,7 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "CPU utilization of the containers in the Kubernetes pods of this service",
+        "description": "CPU utilization of the Kubernetes pods of this service",
         "id": "EUIvz2FAYAA",
         "importOf": "EKWt8CmAYAA",
         "lastUpdated": 0,
@@ -1964,12 +1964,42 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Container CPU utilization",
+              "displayName": "A",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": "",
               "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Pod CPU Utilization",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Pod CPU Utilization",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "D",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
             }
@@ -1984,7 +2014,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('container_cpu_percent', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')",
+        "programText": "A = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = (A/D).publish(label='E')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2001,7 +2031,7 @@
         "lastUpdatedBy": null,
         "name": ".",
         "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Host Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\" ><br />\nKey system-level metrics for the host(s) that power this service\n</p>",
+          "markdown": "<table width=\"100%\" height=\"40%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Host Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\"><br />\nKey system-level metrics for the host(s) that power this service\n</p>\n<p align=\"center\">\n<i>Metrics will only populate those charts if you are forwarding your application trace spans through a local <a href=\"https://github.com/signalfx/splunk-otel-collector\">OpenTelemetry Collector</a> (running as an agent) or through the <a href=\"https://docs.signalfx.com/en/latest/apm/apm-getting-started/apm-smart-agent.html#apm-smart-agent\">SignalFx Smart Agent</a> to establish the correlation between your application and your infrastructure.</i>\n</p>",
           "type": "Text"
         },
         "packageSpecifications": "",
@@ -2125,7 +2155,7 @@
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": null,
+              "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 1
             }
@@ -2421,7 +2451,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('pod_network_receive_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')\nB = data('pod_network_transmit_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B')",
+        "programText": "A = data('pod_network_receive_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A')\nB = data('pod_network_transmit_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2438,7 +2468,7 @@
         "lastUpdatedBy": null,
         "name": ".",
         "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Host Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\" ><br />\nKey system-level metrics for the host(s) that power this service\n</p>",
+          "markdown": "<table width=\"100%\" height=\"40%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Host Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\"><br />\nKey system-level metrics for the host(s) that power this service\n</p>\n<p align=\"center\">\n<i>Metrics will only populate those charts if you are forwarding your application trace spans through a local <a href=\"https://github.com/signalfx/splunk-otel-collector\">OpenTelemetry Collector</a> (running as an agent) or through the <a href=\"https://docs.signalfx.com/en/latest/apm/apm-getting-started/apm-smart-agent.html#apm-smart-agent\">SignalFx Smart Agent</a> to establish the correlation between your application and your infrastructure.</i>\n</p>",
           "type": "Text"
         },
         "packageSpecifications": "",
@@ -2538,7 +2568,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('pod_network_receive_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')\nB = data('pod_network_transmit_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B')",
+        "programText": "A = data('pod_network_receive_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A')\nB = data('pod_network_transmit_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2641,7 +2671,7 @@
         "lastUpdatedBy": null,
         "name": ".",
         "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Kubernetes Pod Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\" ><br />\nKey metrics from the Kubernetes pod(s) that power this service.<br />\n<i>Metrics will only populate these charts if your service is running in Kubernetes and your <a href=\"https://docs.signalfx.com/en/latest/integrations/kubernetes/index.html\">SignalFx Smart Agent is configured to monitor your Kubernetes environment</a>.</i>\n</p>",
+          "markdown": "<table width=\"100%\" height=\"40%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Kubernetes Pod Metrics</font>\n</td></tr>\n</table>\n<p align=\"center\"><br />\nKey metrics from the Kubernetes pod(s) that power this service.\n</p>\n<p align=\"center\">\n<i>Metrics will only populate these charts if your service is running in Kubernetes and you have configured the <a href=\"https://github.com/signalfx/splunk-otel-collector\">OpenTelemetry Collector</a> or the <a href=\"https://docs.signalfx.com/en/latest/integrations/kubernetes/index.html\">SignalFx Smart Agent</a> to monitor your Kubernetes environment.</i>\n</p>",
           "type": "Text"
         },
         "packageSpecifications": "",
@@ -3122,7 +3152,7 @@
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": null,
+              "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 1
             }
@@ -3244,12 +3274,42 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Container CPU utilization",
+              "displayName": "A",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": "",
               "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Pod CPU Utilization",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Pod CPU Utilization",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "D",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
             }
@@ -3264,7 +3324,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('container_cpu_percent', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')",
+        "programText": "A = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='E', enable=False)\nC = (A/B).publish(label='C')\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nE = (A/D).publish(label='E')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -3696,13 +3756,6 @@
             "width": 12
           },
           {
-            "chartId": "EUIw21kAcAA",
-            "column": 0,
-            "height": 1,
-            "row": 4,
-            "width": 6
-          },
-          {
             "chartId": "EUIwzcqAcAA",
             "column": 6,
             "height": 1,
@@ -3710,15 +3763,22 @@
             "width": 6
           },
           {
-            "chartId": "EUIwyZYAYAA",
+            "chartId": "EUIw21kAcAA",
             "column": 0,
             "height": 1,
-            "row": 5,
+            "row": 4,
             "width": 6
           },
           {
             "chartId": "EUIwzcvAgAA",
             "column": 6,
+            "height": 1,
+            "row": 5,
+            "width": 6
+          },
+          {
+            "chartId": "EUIwyZYAYAA",
+            "column": 0,
             "height": 1,
             "row": 5,
             "width": 6
@@ -3873,7 +3933,7 @@
       "teams": null
     }
   },
-  "hashCode": 1105307908,
+  "hashCode": 1275100156,
   "id": "EPK1YluAgAA",
   "modelVersion": 1,
   "packageType": "GROUP"
