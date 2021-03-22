@@ -6,11 +6,11 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "Ew-1cgRAYAA",
-        "importOf": "EwFtH0pAICc",
+        "id": "ExDwVcAAcAA",
+        "importOf": "ExDad6XAIAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top Instances by CPU %",
+        "name": "Active Virtual Machines by Region",
         "options": {
           "colorBy": "Dimension",
           "colorScale2": null,
@@ -18,17 +18,71 @@
           "legendOptions": {
             "fields": [
               {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
-              {
                 "enabled": true,
-                "property": "instance_name"
+                "property": "azure_region"
               },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "^azure.vm.cpu.utilization - Count by azure_region",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.cpu.utilization', extrapolation='last_value', maxExtrapolations=5).count(by=['azure_region']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwVe2AYAA",
+        "importOf": "ExDSoxrAIAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Virtual Machines by CPU%",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
               {
                 "enabled": false,
                 "property": "sf_originatingMetric"
@@ -39,23 +93,47 @@
               },
               {
                 "enabled": false,
-                "property": "project_id"
+                "property": "azure_resource_id"
               },
               {
                 "enabled": false,
-                "property": "service"
+                "property": "resource_group_id"
               },
               {
                 "enabled": false,
-                "property": "zone"
+                "property": "resource_type"
               },
               {
                 "enabled": false,
-                "property": "monitored_resource"
+                "property": "aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": false,
+                "property": "unit"
+              },
+              {
+                "enabled": false,
+                "property": "azure_region"
               },
               {
                 "enabled": true,
-                "property": "host_type"
+                "property": "azure_resource_name"
+              },
+              {
+                "enabled": false,
+                "property": "primary_aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_name"
               }
             ]
           },
@@ -68,18 +146,18 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "^gcp.gce.cpu.utilization - Scale:100 - Top 5",
+              "displayName": "^azure.vm.cpu.utilization - Mean by azure_resource_id,azure_resource_name - Top 5",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": null,
+              "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
-          "secondaryVisualization": "Sparkline",
+          "secondaryVisualization": "None",
           "sortBy": "-value",
           "time": {
             "range": 900000,
@@ -89,7 +167,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.cpu.utilization').scale(100).top(count=5).publish(label='A')",
+        "programText": "A = data('^azure.vm.cpu.utilization', filter=filter('resource_type', 'Microsoft.Compute/virtualMachines', 'Microsoft.ClassicCompute/virtualMachines')).mean(by=['azure_resource_id', 'azure_resource_name']).top(count=5).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -99,9 +177,385 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Value can be greater than 100% on machine types that allow bursting",
-        "id": "Ew-1c4nAgAA",
-        "importOf": "EwFsxKHAIbE",
+        "description": "",
+        "id": "ExDwVoJAgAA",
+        "importOf": "ExDaYmGAEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "CPU % Trend",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "cpu %",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": 110,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "primary_aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "resource_group_id"
+              },
+              {
+                "enabled": false,
+                "property": "resource_type"
+              },
+              {
+                "enabled": false,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": true,
+                "property": "unit"
+              },
+              {
+                "enabled": true,
+                "property": "azure_resource_name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 60000,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "cpu %",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.cpu.utilization', extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwV43AcAA",
+        "importOf": "ExDSnHeAIAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk I/O",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "^azure.vm.disk.ops.read.total - Mean by sf_metric",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "^azure.vm.disk.ops.write.total - Mean by sf_metric",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "^azure.vm.disk.io.write.total - Mean by sf_metric",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "^azure.vm.disk.io.read.total - Mean by sf_metric",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "sortBy": "+sf_originatingMetric",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.disk.ops.read.total').mean(by=['sf_metric']).publish(label='A')\nB = data('^azure.vm.disk.ops.write.total').mean(by=['sf_metric']).publish(label='B')\nC = data('^azure.vm.disk.io.write.total', rollup='average').mean(by=['sf_metric']).publish(label='C')\nD = data('^azure.vm.disk.io.read.total', rollup='average').mean(by=['sf_metric']).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwV65AYAA",
+        "importOf": "ExDSnPYAAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network Bytes In vs 24hr Change %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes in - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "change % - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "primary_aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "resource_group_id"
+              },
+              {
+                "enabled": false,
+                "property": "resource_type"
+              },
+              {
+                "enabled": false,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": false,
+                "property": "unit"
+              },
+              {
+                "enabled": true,
+                "property": "azure_resource_name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 60000,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "^azure.vm.network.io.receive.total - Mean by azure_resource_id,azure_resource_name",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "A - Mean",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "B - Timeshift 1d",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "24hr change %",
+              "label": "D",
+              "paletteIndex": 4,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.network.io.receive.total', rollup='average').mean(by=['azure_resource_id', 'azure_resource_name']).publish(label='A')\nB = (A).mean().publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C-1).scale(100).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwV7eAgAE",
+        "importOf": "ExDVVUXAAAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "CPU %",
@@ -123,6 +577,57 @@
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.cpu.utilization', extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwWAbAcAA",
+        "importOf": "ExDVwSKAEAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Active Virtual Machines",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "active vms",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
@@ -140,7 +645,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.cpu.utilization').scale(100).publish(label='A')",
+        "programText": "A = data('^azure.vm.cpu.utilization', extrapolation='last_value', maxExtrapolations=5).count().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -151,11 +656,89 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "Ew-1c8GAcAA",
-        "importOf": "EwFsxKHAIbI",
+        "id": "ExDwWDiAYAA",
+        "importOf": "ExDadzLAEAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Disk I/O Bytes / min",
+        "name": "Top Virtual Machines by Bytes In",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": true,
+                "property": "azure_resource_name"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_name"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Network In",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Byte",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.network.io.receive.total', rollup='average', extrapolation='last_value', maxExtrapolations=5).mean(by=['azure_resource_name', 'azure_resource_id']).top(count=5).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwWLzAgAA",
+        "importOf": "ExDaeCNAAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk I/O Bytes",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -168,7 +751,7 @@
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
-              "min": null
+              "min": 0
             },
             {
               "highWatermark": null,
@@ -177,7 +760,7 @@
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
-              "min": null
+              "min": 0
             }
           ],
           "axisPrecision": null,
@@ -191,27 +774,7 @@
           "legendOptions": {
             "fields": [
               {
-                "enabled": false,
-                "property": "device_name"
-              },
-              {
-                "enabled": false,
-                "property": "device_type"
-              },
-              {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
-              {
                 "enabled": true,
-                "property": "instance_name"
-              },
-              {
-                "enabled": false,
                 "property": "sf_originatingMetric"
               },
               {
@@ -219,24 +782,32 @@
                 "property": "sf_metric"
               },
               {
-                "enabled": false,
-                "property": "project_id"
-              },
-              {
-                "enabled": false,
-                "property": "service"
-              },
-              {
-                "enabled": false,
-                "property": "storage_type"
-              },
-              {
-                "enabled": false,
-                "property": "zone"
+                "enabled": true,
+                "property": "primary_aggregation_type"
               },
               {
                 "enabled": true,
-                "property": "monitored_resource"
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": true,
+                "property": "resource_group_id"
+              },
+              {
+                "enabled": true,
+                "property": "resource_type"
+              },
+              {
+                "enabled": true,
+                "property": "aggregation_type"
+              },
+              {
+                "enabled": true,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": true,
+                "property": "unit"
               }
             ]
           },
@@ -255,7 +826,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "read bytes",
+              "displayName": "bytes read",
               "label": "A",
               "paletteIndex": 4,
               "plotType": null,
@@ -265,9 +836,9 @@
               "yAxis": 1
             },
             {
-              "displayName": "write bytes",
+              "displayName": "bytes written",
               "label": "B",
-              "paletteIndex": 2,
+              "paletteIndex": 1,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -285,7 +856,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.disk.io.read.total', rollup='latest').publish(label='A')\nB = data('^gcp.gce.disk.io.write.total', rollup='latest').publish(label='B')",
+        "programText": "A = data('^azure.vm.disk.io.read.total', rollup='average').sum().publish(label='A')\nB = data('^azure.vm.disk.io.write.total', rollup='average').sum().publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -295,12 +866,12 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "disk write/read IO operations.",
-        "id": "Ew-1dg7AYAA",
-        "importOf": "EwFtfBsAETI",
+        "description": "",
+        "id": "ExDwWQjAcAA",
+        "importOf": "ExDSo9OAEAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Disk I/O Operations",
+        "name": "Network Bytes Out vs. 24h Change %",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -309,7 +880,7 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "write ops - BLUE",
+              "label": "bytes - BLUE",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
@@ -318,7 +889,7 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "",
+              "label": "% change - RED",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
@@ -336,24 +907,133 @@
           "legendOptions": {
             "fields": [
               {
-                "enabled": false,
-                "property": "device_name"
+                "enabled": true,
+                "property": "sf_originatingMetric"
               },
               {
                 "enabled": false,
-                "property": "device_type"
-              },
-              {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 60000,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Network Out",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "A - Mean",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "B - Timeshift 1d",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "24 Growth %",
+              "label": "D",
+              "paletteIndex": 4,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.network.io.transmit.total', rollup='average').sum().publish(label='A')\nB = (A).mean().publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C-1).scale(100).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwWeOAYAA",
+        "importOf": "ExDVWq1AEAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Network Bytes Out vs 24hr Change %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes out - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "change % - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
               {
                 "enabled": true,
-                "property": "instance_name"
+                "property": "aggregation_type"
               },
               {
                 "enabled": false,
@@ -365,19 +1045,164 @@
               },
               {
                 "enabled": false,
-                "property": "project_id"
+                "property": "primary_aggregation_type"
               },
               {
                 "enabled": false,
-                "property": "service"
+                "property": "azure_region"
               },
               {
                 "enabled": false,
-                "property": "storage_type"
+                "property": "resource_group_id"
               },
               {
                 "enabled": false,
-                "property": "zone"
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_name"
+              },
+              {
+                "enabled": false,
+                "property": "resource_type"
+              },
+              {
+                "enabled": false,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": true,
+                "property": "unit"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 60000,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "^azure.vm.network.io.transmit.total",
+              "label": "B",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "mean",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "timeshift 1d",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "24hr change %",
+              "label": "E",
+              "paletteIndex": 4,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('^azure.vm.network.io.transmit.total', filter=filter('primary_aggregation_type', 'true'), rollup='average').publish(label='B')\nC = (B).mean().publish(label='C', enable=False)\nD = (C).timeshift('1d').publish(label='D', enable=False)\nE = (C/D-1).scale(100).publish(label='E')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwWgkAgAM",
+        "importOf": "ExDVw-OAAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk Ops",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "writes - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "reads - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
               }
             ]
           },
@@ -403,12 +1228,12 @@
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
-              "yAxis": 0
+              "yAxis": 1
             },
             {
               "displayName": "write ops",
               "label": "B",
-              "paletteIndex": 2,
+              "paletteIndex": 1,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -426,7 +1251,144 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.disk.ops.read.total').sum().publish(label='A')\nB = data('^gcp.gce.disk.ops.write.total').sum().publish(label='B')",
+        "programText": "A = data('^azure.vm.disk.ops.read.total', maxExtrapolations=5).sum().publish(label='A')\nB = data('^azure.vm.disk.ops.write.total', maxExtrapolations=5).sum().publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwWg8AcAA",
+        "importOf": "ExDaYyRAAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Disk IOPs Trend",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "write ops - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "read ops - RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": 0
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "primary_aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "resource_group_id"
+              },
+              {
+                "enabled": false,
+                "property": "resource_type"
+              },
+              {
+                "enabled": false,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": true,
+                "property": "unit"
+              },
+              {
+                "enabled": true,
+                "property": "azure_resource_name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 60000,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "^azure.vm.disk.ops.readd.total",
+              "label": "A",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": "^azure.vm.disk.ops.write.total",
+              "label": "B",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.disk.ops.readd.total', extrapolation='zero').publish(label='A')\nB = data('^azure.vm.disk.ops.write.total').publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -437,8 +1399,8 @@
         "creator": null,
         "customProperties": {},
         "description": "percentile distribution",
-        "id": "Ew-1dsCAgAA",
-        "importOf": "EwFsxKHAIbo",
+        "id": "ExDwWpVAYAA",
+        "importOf": "ExDVwKQAAAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Network Bytes Out",
@@ -450,11 +1412,11 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "bytes/interval",
+              "label": "bytes",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
-              "min": null
+              "min": 0
             },
             {
               "highWatermark": null,
@@ -475,36 +1437,35 @@
           },
           "includeZero": false,
           "legendOptions": {
-            "fields": null
+            "fields": [
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
           },
           "lineChartOptions": {
             "showDataMarkers": false
           },
           "onChartLegendOptions": {
-            "dimensionInLegend": "sf_metric",
+            "dimensionInLegend": null,
             "showLegend": false
           },
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
-            "minimumResolution": null,
+            "minimumResolution": 60000,
             "timezone": null
           },
           "publishLabelOptions": [
             {
-              "displayName": "bytes out",
+              "displayName": "^azure.vm.network.io.transmit.total",
               "label": "A",
               "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "p10",
-              "label": "C",
-              "paletteIndex": 15,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -515,6 +1476,16 @@
               "displayName": "min",
               "label": "B",
               "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "p10",
+              "label": "C",
+              "paletteIndex": 15,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -562,7 +1533,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.transmit.total', filter=filter('instance_id', '*')).scale(60).publish(label='A', enable=False)\nC = (A).percentile(pct=10).publish(label='C')\nB = (A).min().publish(label='B')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+        "programText": "A = data('^azure.vm.network.io.transmit.total', rollup='average').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -573,1383 +1544,11 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "Ew-1eULAcAA",
-        "importOf": "EwFtfBsAETY",
+        "id": "ExDwWsBAgAE",
+        "importOf": "ExDVXY2AIAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top Network Bytes Out",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 4,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "^gcp.gce.network.io.transmit.total - Mean by instance_name - Top 5",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": 60000,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.transmit.total', filter=filter('instance_id', '*'), rollup='latest', extrapolation='last_value', maxExtrapolations=5).mean(by=['instance_name']).top(count=5).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1ea9AYAA",
-        "importOf": "EwFsxKHAIbk",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top Network Bytes In",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": true,
-                "property": "instance_name"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              }
-            ]
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "recieved bytes",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": 60000,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.receive.total', filter=filter('instance_id', '*'), rollup='latest').mean(by=['instance_name']).top(count=5).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1e1QAgAA",
-        "importOf": "EwFtfBsAETE",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Network I/O Bytes / min",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "sent bytes - BLUE",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "ColumnChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
-              {
-                "enabled": true,
-                "property": "instance_name"
-              },
-              {
-                "enabled": false,
-                "property": "loadbalanced"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "project_id"
-              },
-              {
-                "enabled": false,
-                "property": "service"
-              },
-              {
-                "enabled": false,
-                "property": "zone"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": null,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "bytes in",
-              "label": "A",
-              "paletteIndex": 4,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "bytes out",
-              "label": "B",
-              "paletteIndex": 2,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.receive.total').sum().scale(60).publish(label='A')\nB = data('^gcp.gce.network.io.transmit.total').sum().scale(60).publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1f20AcAA",
-        "importOf": "EwFtH0pAICQ",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Network I/O Packets",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "sent - BLUE",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "received - RED",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "ColumnChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
-              {
-                "enabled": true,
-                "property": "instance_name"
-              },
-              {
-                "enabled": false,
-                "property": "loadbalanced"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "project_id"
-              },
-              {
-                "enabled": false,
-                "property": "service"
-              },
-              {
-                "enabled": false,
-                "property": "zone"
-              },
-              {
-                "enabled": true,
-                "property": "monitored_resource"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 60000,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "received packets",
-              "label": "A",
-              "paletteIndex": 4,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 1
-            },
-            {
-              "displayName": "sent packets",
-              "label": "B",
-              "paletteIndex": 2,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.receive.total', rollup='latest').publish(label='A')\nB = data('^gcp.gce.network.io.transmit.total', rollup='latest').publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1gETAYAA",
-        "importOf": "EwFsxKHAIbM",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Network I/O Bytes / min",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": 3,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "bytes out",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "bytes in",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": 60000,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "+sf_metric",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.transmit.total', rollup='latest').mean().publish(label='A')\nB = data('^gcp.gce.network.io.receive.total', rollup='latest').mean().publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1gG9AgAA",
-        "importOf": "EwFtH0pAICM",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "CPU % Trend",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": 110,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
-              {
-                "enabled": true,
-                "property": "instance_name"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "project_id"
-              },
-              {
-                "enabled": false,
-                "property": "service"
-              },
-              {
-                "enabled": false,
-                "property": "zone"
-              },
-              {
-                "enabled": true,
-                "property": "monitored_resource"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 60000,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "cpu %",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.cpu.utilization').scale(100).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1gSRAcAA",
-        "importOf": "EwFtH0pAICk",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Network Bytes In  vs. 24h Change %",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "bytes/min - BLUE",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "% change - RED",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "ColumnChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": null,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Bytes In",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "A - Timeshift 1d",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "24h growth %",
-              "label": "D",
-              "paletteIndex": 4,
-              "plotType": "LineChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 1
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.receive.total').sum().scale(60).mean(over='1h').publish(label='A')\nC = (A).timeshift('1d').publish(label='C', enable=False)\nD = (A/C-1).scale(100).publish(label='D')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1gfqAYAE",
-        "importOf": "EwFtfBsAETU",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "CPU % Trend",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "cpu %",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
-              {
-                "enabled": true,
-                "property": "instance_name"
-              },
-              {
-                "enabled": false,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "project_id"
-              },
-              {
-                "enabled": false,
-                "property": "service"
-              },
-              {
-                "enabled": false,
-                "property": "zone"
-              },
-              {
-                "enabled": true,
-                "property": "monitored_resource"
-              },
-              {
-                "enabled": true,
-                "property": "database"
-              },
-              {
-                "enabled": true,
-                "property": "location"
-              }
-            ]
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 60000,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "A",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "min",
-              "label": "B",
-              "paletteIndex": 14,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "p10",
-              "label": "C",
-              "paletteIndex": 15,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "median",
-              "label": "D",
-              "paletteIndex": 2,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "p90",
-              "label": "E",
-              "paletteIndex": 9,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "max",
-              "label": "F",
-              "paletteIndex": 7,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.cpu.utilization').scale(100).publish(label='A')\nB = (A).min().publish(label='B', enable=False)\nC = (A).percentile(pct=10).publish(label='C', enable=False)\nD = (A).percentile(pct=50).publish(label='D', enable=False)\nE = (A).percentile(pct=90).publish(label='E', enable=False)\nF = (A).max().publish(label='F', enable=False)",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1ggsAgAA",
-        "importOf": "EwFtH0pAICo",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Network Bytes Out vs. 24h Change %",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "bytes/min - BLUE",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "% change - RED",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "ColumnChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": null,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "bytes out",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "A - Timeshift 1d",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "24h growth %",
-              "label": "C",
-              "paletteIndex": 4,
-              "plotType": "LineChart",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 1
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Binary"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.transmit.total').scale(60).sum().mean(over='1h').publish(label='A')\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B-1).scale(100).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1goQAcAA",
-        "importOf": "EwFtH0pAICg",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Disk Metrics 24h Growth %",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": true,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              }
-            ]
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "^gcp.gce.disk.io.read.total - Sum by sf_metric - Scale:60 - Mean(1h)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "A - Timeshift 1d",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "A/B-1 - Scale:100 - Mean",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "D",
-              "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "E",
-              "label": "E",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "F",
-              "label": "F",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "G",
-              "label": "G",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "H",
-              "label": "H",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "I",
-              "label": "I",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "J",
-              "label": "J",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "K",
-              "label": "K",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "L",
-              "label": "L",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": 60000,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.disk.io.read.total').sum(by=['sf_metric']).scale(60).mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B-1).scale(100).mean(by=['sf_metric']).publish(label='C')\nD = data('^gcp.gce.disk.io.write.total').sum(by=['sf_metric']).scale(60).mean(over='1h').publish(label='D', enable=False)\nE = (D).timeshift('1d').publish(label='E', enable=False)\nF = (D/E-1).scale(100).mean(by=['sf_metric']).publish(label='F')\nG = data('^gcp.gce.disk.ops.read.total').sum(by=['sf_metric']).scale(60).mean(over='1h').publish(label='G', enable=False)\nH = (G).timeshift('1d').publish(label='H', enable=False)\nI = (G/H-1).scale(100).mean(by=['sf_metric']).publish(label='I')\nJ = data('^gcp.gce.disk.ops.write.total').sum(by=['sf_metric']).scale(60).mean(over='1h').publish(label='J', enable=False)\nK = (J).timeshift('1d').publish(label='K', enable=False)\nL = (J/K-1).scale(100).mean(by=['sf_metric']).publish(label='L')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1g5fAYAA",
-        "importOf": "EwFtfBsAETA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Disk I/O",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": [
-              {
-                "enabled": false,
-                "property": "device_name"
-              },
-              {
-                "enabled": false,
-                "property": "device_type"
-              },
-              {
-                "enabled": false,
-                "property": "gcp_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_id"
-              },
-              {
-                "enabled": false,
-                "property": "instance_name"
-              },
-              {
-                "enabled": true,
-                "property": "sf_originatingMetric"
-              },
-              {
-                "enabled": false,
-                "property": "sf_metric"
-              },
-              {
-                "enabled": false,
-                "property": "project_id"
-              },
-              {
-                "enabled": false,
-                "property": "service"
-              },
-              {
-                "enabled": false,
-                "property": "storage_type"
-              },
-              {
-                "enabled": false,
-                "property": "throttle_reason"
-              },
-              {
-                "enabled": false,
-                "property": "zone"
-              },
-              {
-                "enabled": true,
-                "property": "monitored_resource"
-              }
-            ]
-          },
-          "maximumPrecision": 4,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "^gcp.gce.disk.ops.read.total - Mean",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "^gcp.gce.disk.ops.write.total - Mean",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "^gcp.gce.disk.io.write.total - Mean",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "^gcp.gce.disk.io.read.total - Mean",
-              "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": 60000,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
-          "time": {
-            "range": 900000,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.disk.ops.read.total', filter=filter('instance_id', '*')).mean(by=['sf_metric']).publish(label='A')\nB = data('^gcp.gce.disk.ops.write.total', filter=filter('instance_id', '*')).mean(by=['sf_metric']).publish(label='B')\nC = data('^gcp.gce.disk.io.write.total', filter=filter('instance_id', '*')).mean(by=['sf_metric']).publish(label='C')\nD = data('^gcp.gce.disk.io.read.total', filter=filter('instance_id', '*')).mean(by=['sf_metric']).publish(label='D')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "Ew-1hU4AgAE",
-        "importOf": "EwFsxKHAIbg",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "# Disk Operations",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "writes - BLUE",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "reads - RED",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": 0
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "ColumnChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": null,
-            "showLegend": false
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": null,
-            "minimumResolution": 60000,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "read ops/min",
-              "label": "A",
-              "paletteIndex": 4,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 1
-            },
-            {
-              "displayName": "write ops/min",
-              "label": "B",
-              "paletteIndex": 1,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 3600000,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.disk.ops.read.total', rollup='latest').sum().publish(label='A')\nB = data('^gcp.gce.disk.ops.write.total', rollup='latest').sum().publish(label='B')",
-        "relatedDetectorIds": [],
-        "tags": null
-      }
-    },
-    {
-      "chart": {
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Delta of bytes written/read to disk",
-        "id": "Ew-1h9qAYAA",
-        "importOf": "EwFtfBsAETM",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Disk I/O",
+        "name": "Disk I/O Trend",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1983,7 +1582,48 @@
           },
           "includeZero": false,
           "legendOptions": {
-            "fields": null
+            "fields": [
+              {
+                "enabled": true,
+                "property": "aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "primary_aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "resource_group_id"
+              },
+              {
+                "enabled": false,
+                "property": "resource_type"
+              },
+              {
+                "enabled": false,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": true,
+                "property": "unit"
+              },
+              {
+                "enabled": true,
+                "property": "azure_resource_name"
+              }
+            ]
           },
           "lineChartOptions": {
             "showDataMarkers": false
@@ -2000,24 +1640,24 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "bytes written/min",
+              "displayName": "^azure.vm.disk.io.read.total - Sum",
               "label": "A",
-              "paletteIndex": 1,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "bytes read/min",
-              "label": "B",
               "paletteIndex": 4,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 1
+            },
+            {
+              "displayName": "^azure.vm.disk.io.write.total - Sum",
+              "label": "B",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -2030,7 +1670,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.disk.io.write.total', rollup='latest').sum().publish(label='A')\nB = data('^gcp.gce.disk.io.read.total', rollup='latest').sum().publish(label='B')",
+        "programText": "A = data('^azure.vm.disk.io.read.total', rollup='average').sum().publish(label='A')\nB = data('^azure.vm.disk.io.write.total', rollup='average', extrapolation='last_value').sum().publish(label='B')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2041,8 +1681,8 @@
         "creator": null,
         "customProperties": {},
         "description": "percentile distribution",
-        "id": "Ew-1iEIAgAA",
-        "importOf": "EwFtfBsAETQ",
+        "id": "ExDwW0pAcAA",
+        "importOf": "ExDVwaFAIAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Network Bytes In",
@@ -2054,11 +1694,11 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "bytes/interval",
+              "label": "bytes",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
-              "min": null
+              "min": 0
             },
             {
               "highWatermark": null,
@@ -2079,7 +1719,16 @@
           },
           "includeZero": false,
           "legendOptions": {
-            "fields": null
+            "fields": [
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
           },
           "lineChartOptions": {
             "showDataMarkers": false
@@ -2091,12 +1740,12 @@
           "programOptions": {
             "disableSampling": false,
             "maxDelay": null,
-            "minimumResolution": null,
+            "minimumResolution": 0,
             "timezone": null
           },
           "publishLabelOptions": [
             {
-              "displayName": "bytes in",
+              "displayName": "^azure.vm.network.io.receive.total",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -2107,7 +1756,7 @@
             },
             {
               "displayName": "min",
-              "label": "B",
+              "label": "C",
               "paletteIndex": 14,
               "plotType": null,
               "valuePrefix": null,
@@ -2117,7 +1766,7 @@
             },
             {
               "displayName": "p10",
-              "label": "C",
+              "label": "D",
               "paletteIndex": 15,
               "plotType": null,
               "valuePrefix": null,
@@ -2127,7 +1776,7 @@
             },
             {
               "displayName": "median",
-              "label": "D",
+              "label": "E",
               "paletteIndex": 2,
               "plotType": null,
               "valuePrefix": null,
@@ -2137,7 +1786,7 @@
             },
             {
               "displayName": "p90",
-              "label": "E",
+              "label": "F",
               "paletteIndex": 9,
               "plotType": null,
               "valuePrefix": null,
@@ -2147,8 +1796,8 @@
             },
             {
               "displayName": "max",
-              "label": "F",
-              "paletteIndex": 7,
+              "label": "G",
+              "paletteIndex": 8,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
@@ -2166,7 +1815,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.network.io.receive.total', filter=filter('instance_id', '*')).scale(60).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+        "programText": "A = data('^azure.vm.network.io.receive.total', rollup='average').publish(label='A', enable=False)\nC = (A).min().publish(label='C')\nD = (A).percentile(pct=10).publish(label='D')\nE = (A).percentile(pct=50).publish(label='E')\nF = (A).percentile(pct=90).publish(label='F')\nG = (A).max().publish(label='G')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2177,15 +1826,184 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "Ew-1iU-AcAA",
-        "importOf": "EwFsxKHAIbc",
+        "id": "ExDwW2EAYAA",
+        "importOf": "ExDSo1UAAAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Active Instances",
+        "name": "Network Bytes In vs. 24h Change %",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "bytes - BLUE",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "% change -RED",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": null,
+            "minimumResolution": 60000,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Network In",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "A - Mean",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "B - Timeshift 1d",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "24h growth %",
+              "label": "D",
+              "paletteIndex": 4,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Binary"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('^azure.vm.network.io.receive.total', rollup='average').sum().publish(label='A')\nB = (A).mean().publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C-1).scale(100).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": null
+      }
+    },
+    {
+      "chart": {
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "ExDwW8FAgAA",
+        "importOf": "ExDaZJeAAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top Virtual Machines by Bytes Out",
         "options": {
           "colorBy": "Dimension",
-          "colorScale": null,
           "colorScale2": null,
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "azure_resource_id"
+              },
+              {
+                "enabled": true,
+                "property": "azure_resource_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "primary_aggregation_type"
+              },
+              {
+                "enabled": false,
+                "property": "resource_group_id"
+              },
+              {
+                "enabled": false,
+                "property": "resource_type"
+              },
+              {
+                "enabled": false,
+                "property": "subscription_id"
+              },
+              {
+                "enabled": false,
+                "property": "unit"
+              }
+            ]
+          },
           "maximumPrecision": null,
           "programOptions": {
             "disableSampling": false,
@@ -2195,29 +2013,28 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "^gcp.gce.cpu.utilization - Count",
+              "displayName": "^azure.vm.network.io.transmit.total - Top 5 - Mean by azure_resource_name,azure_resource_id",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": null,
+              "valueUnit": "Byte",
               "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
           "secondaryVisualization": "None",
-          "showSparkLine": false,
+          "sortBy": "-value",
           "time": {
             "range": 900000,
             "type": "relative"
           },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
+          "type": "List",
+          "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('^gcp.gce.cpu.utilization').count().publish(label='A')",
+        "programText": "A = data('^azure.vm.network.io.transmit.total', rollup='average').top(count=5).mean(by=['azure_resource_name', 'azure_resource_id']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -2230,116 +2047,130 @@
         "chartDensity": "DEFAULT",
         "charts": [
           {
-            "chartId": "Ew-1iU-AcAA",
+            "chartId": "ExDwWAbAcAA",
             "column": 0,
             "height": 1,
             "row": 0,
             "width": 4
           },
           {
-            "chartId": "Ew-1gfqAYAE",
+            "chartId": "ExDwVcAAcAA",
             "column": 8,
             "height": 1,
             "row": 0,
             "width": 4
           },
           {
-            "chartId": "Ew-1cgRAYAA",
+            "chartId": "ExDwVe2AYAA",
             "column": 4,
             "height": 1,
             "row": 0,
             "width": 4
           },
           {
-            "chartId": "Ew-1hU4AgAE",
+            "chartId": "ExDwW0pAcAA",
             "column": 0,
             "height": 1,
             "row": 1,
             "width": 4
           },
           {
-            "chartId": "Ew-1h9qAYAA",
+            "chartId": "ExDwWDiAYAA",
             "column": 4,
             "height": 1,
             "row": 1,
             "width": 4
           },
           {
-            "chartId": "Ew-1goQAcAA",
+            "chartId": "ExDwW2EAYAA",
             "column": 8,
             "height": 1,
             "row": 1,
             "width": 4
           },
           {
-            "chartId": "Ew-1ea9AYAA",
-            "column": 4,
-            "height": 1,
-            "row": 2,
-            "width": 4
-          },
-          {
-            "chartId": "Ew-1iEIAgAA",
+            "chartId": "ExDwWpVAYAA",
             "column": 0,
             "height": 1,
             "row": 2,
             "width": 4
           },
           {
-            "chartId": "Ew-1gSRAcAA",
+            "chartId": "ExDwW8FAgAA",
+            "column": 4,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "ExDwWQjAcAA",
             "column": 8,
             "height": 1,
             "row": 2,
             "width": 4
           },
           {
-            "chartId": "Ew-1dsCAgAA",
+            "chartId": "ExDwWgkAgAM",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "ExDwWLzAgAA",
             "column": 0,
             "height": 1,
             "row": 3,
-            "width": 4
-          },
-          {
-            "chartId": "Ew-1eULAcAA",
-            "column": 4,
-            "height": 1,
-            "row": 3,
-            "width": 4
-          },
-          {
-            "chartId": "Ew-1ggsAgAA",
-            "column": 8,
-            "height": 1,
-            "row": 3,
-            "width": 4
+            "width": 6
           }
         ],
         "created": 0,
         "creator": null,
         "customProperties": null,
-        "description": "Overview of GCP Compute Engine metrics",
+        "description": "An overview of multiple Microsoft Azure Virtual Machines",
         "discoveryOptions": {
-          "query": "_exists_:gcp_id OR (_exists_:host.id AND cloud.provider:gcp AND cloud.infrastructure_service:GCE)",
+          "query": "(_exists_:resource_type AND resource_type:\"Microsoft.Compute/virtualMachines\") OR (cloud.provider:azure AND cloud.infrastructure_service:VM AND _exists_:host.id)",
           "selectors": [
-            "sf_key:host.id",
-            "service:compute",
-            "sf_key:gcp_id",
-            "sf_key:instance_id"
+            "resource_type:Microsoft.Compute/virtualMachines",
+            "sf_key:host.id"
           ]
         },
         "eventOverlays": null,
         "filters": {
           "sources": null,
           "time": null,
-          "variables": null
+          "variables": [
+            {
+              "alias": "resource_type",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.ClassicCompute/virtualMachines",
+                "Microsoft.Compute/virtualMachineScaleSets/virtualMachines"
+              ],
+              "property": "resource_type",
+              "propertyMappings": [
+                "resource_type"
+              ],
+              "replaceOnly": false,
+              "required": false,
+              "restricted": true,
+              "value": [
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.ClassicCompute/virtualMachines",
+                "Microsoft.Compute/virtualMachineScaleSets/virtualMachines"
+              ]
+            }
+          ]
         },
-        "groupId": "Ew-1b4qAcAA",
-        "id": "Ew-1iZcAYAA",
-        "importOf": "EwFsxKHAIbs",
+        "groupId": "ExDwVYAAgAA",
+        "id": "ExDwW-ZAcAA",
+        "importOf": "ExDSpFGAIAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "maxDelayOverride": null,
-        "name": "Compute Engine Instances",
+        "name": "Azure Virtual Machines",
         "selectedEventOverlays": [],
         "tags": null
       }
@@ -2349,73 +2180,64 @@
         "chartDensity": "DEFAULT",
         "charts": [
           {
-            "chartId": "Ew-1c4nAgAA",
+            "chartId": "ExDwV7eAgAE",
             "column": 0,
             "height": 1,
             "row": 0,
             "width": 4
           },
           {
-            "chartId": "Ew-1dg7AYAA",
-            "column": 8,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "Ew-1gG9AgAA",
+            "chartId": "ExDwVoJAgAA",
             "column": 4,
             "height": 1,
             "row": 0,
-            "width": 4
+            "width": 8
           },
           {
-            "chartId": "Ew-1c8GAcAA",
-            "column": 4,
-            "height": 1,
-            "row": 1,
-            "width": 4
-          },
-          {
-            "chartId": "Ew-1g5fAYAA",
+            "chartId": "ExDwV43AcAA",
             "column": 0,
             "height": 1,
             "row": 1,
             "width": 4
           },
           {
-            "chartId": "Ew-1f20AcAA",
+            "chartId": "ExDwWsBAgAE",
+            "column": 4,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "ExDwWg8AcAA",
             "column": 8,
             "height": 1,
             "row": 1,
             "width": 4
           },
           {
-            "chartId": "Ew-1gETAYAA",
+            "chartId": "ExDwV65AYAA",
             "column": 0,
             "height": 1,
             "row": 2,
-            "width": 4
+            "width": 6
           },
           {
-            "chartId": "Ew-1e1QAgAA",
-            "column": 4,
+            "chartId": "ExDwWeOAYAA",
+            "column": 6,
             "height": 1,
             "row": 2,
-            "width": 4
+            "width": 6
           }
         ],
         "created": 0,
         "creator": null,
         "customProperties": null,
-        "description": "Metrics for a single compute engine instance",
+        "description": "Microsoft Azure Virtual Machine dashboard for an individual instance",
         "discoveryOptions": {
-          "query": "_exists_:gcp_id OR (cloud.provider:gcp AND cloud.infrastructure_service:GCE AND _exists_:host.id)",
+          "query": "(_exists_:azure_resource_name AND resource_type:\"Microsoft.Compute/virtualMachines\") OR (cloud.provider:azure AND cloud.infrastructure_service:VM AND _exists_:host.id)",
           "selectors": [
-            "sf_key:host.id",
-            "service:compute",
-            "sf_key:gcp_id",
-            "_exists_:instance_name"
+            "_exists_:azure_resource_name",
+            "_exists_:host.id"
           ]
         },
         "eventOverlays": null,
@@ -2424,30 +2246,62 @@
           "time": null,
           "variables": [
             {
-              "alias": "instance name",
+              "alias": "resource_type",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.Compute/virtualMachineScaleSets/virtualMachines"
+              ],
+              "property": "resource_type",
+              "propertyMappings": [
+                "resource_type"
+              ],
+              "replaceOnly": false,
+              "required": false,
+              "restricted": true,
+              "value": [
+                "Microsoft.Compute/virtualMachines",
+                "Microsoft.Compute/virtualMachineScaleSets/virtualMachines"
+              ]
+            },
+            {
+              "alias": "azure_resource_name",
               "applyIfExists": false,
               "description": "",
               "preferredSuggestions": [],
-              "property": "instance_name",
+              "property": "azure_resource_name",
               "propertyMappings": [
-                "instance_name"
+                "azure_resource_name"
               ],
               "replaceOnly": false,
               "required": true,
               "restricted": false,
-              "value": [
-                "instance_name"
-              ]
+              "value": ""
+            },
+            {
+              "alias": "azure_resource_id",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [],
+              "property": "azure_resource_id",
+              "propertyMappings": [
+                "azure_resource_id"
+              ],
+              "replaceOnly": false,
+              "required": false,
+              "restricted": false,
+              "value": ""
             }
           ]
         },
-        "groupId": "Ew-1b4qAcAA",
-        "id": "Ew-1ihOAgAA",
-        "importOf": "EwFsxKHAIbQ",
+        "groupId": "ExDwVYAAgAA",
+        "id": "ExDwXB-AYAA",
+        "importOf": "ExDaY5tAEAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "maxDelayOverride": null,
-        "name": "Compute Engine Instance",
+        "name": "Azure Virtual Machine",
         "selectedEventOverlays": [],
         "tags": null
       }
@@ -2458,30 +2312,38 @@
       "created": 0,
       "creator": null,
       "dashboards": [
-        "Ew-1iZcAYAA",
-        "Ew-1ihOAgAA"
+        "ExDwW-ZAcAA",
+        "ExDwXB-AYAA"
       ],
-      "description": "Google Compute Engine lets you create and run virtual machines on Google infrastructure.\n\nThis dashboard provides a unified view across both OpenTelemety and cloud connect data for virtual machines running on GCE.",
+      "description": "",
       "email": null,
-      "id": "Ew-1b4qAcAA",
+      "id": "ExDwVYAAgAA",
       "importDetails": {
-        "hashCode": -2074977720,
-        "importOf": "EwFsxKHAIa4",
-        "importTime": 1616308264600
+        "hashCode": -1904126233,
+        "importOf": "ExDaHzUAAAE",
+        "importTime": 1616390576387
       },
-      "importOf": "EwFsxKHAIa4",
+      "importOf": "ExDaHzUAAAE",
       "importQualifiers": [
         {
           "filters": [
             {
               "not": false,
-              "property": "service",
+              "property": "resource_type",
               "values": [
-                "compute"
+                "Microsoft.Compute/virtualMachineScaleSets/virtualMachines",
+                "Microsoft.Compute/virtualMachines"
+              ]
+            },
+            {
+              "not": false,
+              "property": "primary_aggregation_type",
+              "values": [
+                "true"
               ]
             }
           ],
-          "metric": "instance/cpu/utilization"
+          "metric": "Percentage CPU"
         },
         {
           "filters": [
@@ -2489,14 +2351,14 @@
               "not": false,
               "property": "cloud.provider",
               "values": [
-                "gcp"
+                "azure"
               ]
             },
             {
               "not": false,
               "property": "cloud.infrastructure_service",
               "values": [
-                "GCE"
+                "VM"
               ]
             }
           ],
@@ -2505,12 +2367,12 @@
       ],
       "lastUpdated": 0,
       "lastUpdatedBy": null,
-      "name": "Google Compute Engine (Unified)",
+      "name": "Azure Virtual Machines (Unified)",
       "teams": null
     }
   },
-  "hashCode": 2063016395,
-  "id": "Ew-1b4qAcAA",
+  "hashCode": -1268218453,
+  "id": "ExDwVYAAgAA",
   "modelVersion": 1,
   "packageType": "GROUP"
 }
