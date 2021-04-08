@@ -1,5 +1,5 @@
 {
-    "hashCode": 1002712558,
+    "hashCode": -1423026561,
     "id": "Exbw-f4AgDI",
     "modelVersion": 1,
     "navigatorExport": {
@@ -25,7 +25,441 @@
                     "filters": [
                         {
                             "not": false,
-                            "property": "cloud_provider",
+                            "property": "cloud.provider",
+                            "values": [
+                                "aws"
+                            ]
+                        }
+                    ],
+                    "metric": "cpu.utilization"
+                }
+            ],
+            "lastUpdated": 0,
+            "lastUpdatedBy": null,
+            "name": "EC2 Instances",
+            "navigatorCategory": "AWS",
+            "navigatorType": "elemental",
+            "sites": "o11y",
+            "uiModel": {
+                "alertQuery": "_exists_:AWSUniqueId",
+                "category": "AWS",
+                "categoryPriority": 50,
+                "discoveryQuery": [
+                    "sf_key:AWSUniqueId"
+                ],
+                "displayName": "EC2 Instances",
+                "filterProperties": null,
+                "id": "AWS instances",
+                "idName": "Instance",
+                "idTemplate": "{{AWSUniqueId}}",
+                "listColumns": [],
+                "metrics": [
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": 100,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": null
+                        },
+                        "description": "Color hosts based on percentage of CPU being used: under 20% (green) to over 80% (red)",
+                        "displayName": "CPU Utilization",
+                        "id": "aws.ec2.cpu.utilization",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "CPU_UTILIZATION = data(\"^aws.ec2.cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"AWSUniqueId\"])",
+                            "varName": "CPU_UTILIZATION"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.cpu.utilization"
+                        ],
+                        "type": "metric",
+                        "valueFormat": "Percentage",
+                        "valueLabel": "CPU Use",
+                        "valueType": null
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": [
+                                "#bfd3e6",
+                                "#9ebcda",
+                                "#8c96c6",
+                                "#8856a7",
+                                "#810f7c"
+                            ]
+                        },
+                        "description": "Color Hosts based on Disk Operations per minute",
+                        "displayName": "Disk Ops",
+                        "id": "aws.ec2.disk.ops",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "DISK_WRITE_IOPS_A = data(\"^aws.ec2.disk.ops.write.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nDISK_WRITE_IOPS = (DISK_WRITE_IOPS_A)\nDISK_READ_IOPS_A = data(\"^aws.ec2.disk.ops.read.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nDISK_READ_IOPS = (DISK_READ_IOPS_A)\nSUMOPS = (DISK_WRITE_IOPS + DISK_READ_IOPS)",
+                            "varName": "SUMOPS"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.disk.ops"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": null,
+                        "valueType": null
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": [
+                                "#bfd3e6",
+                                "#9ebcda",
+                                "#8c96c6",
+                                "#8856a7",
+                                "#810f7c"
+                            ]
+                        },
+                        "description": "Color hosts based on network bytes in per minute",
+                        "displayName": "Network in",
+                        "id": "aws.ec2.network.io.receive.total",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "NETWORK_IN_A = data(\"^aws.ec2.network.io.receive.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nNETWORK_IN = (NETWORK_IN_A)",
+                            "varName": "NETWORK_IN"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.network.io.receive.total"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": null,
+                        "valueType": null
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": [
+                                "#bfd3e6",
+                                "#9ebcda",
+                                "#8c96c6",
+                                "#8856a7",
+                                "#810f7c"
+                            ]
+                        },
+                        "description": "Color hosts based on network bytes out per minute",
+                        "displayName": "Network out",
+                        "id": "aws.ec2.network.io.transmit.total",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "NETWORK_OUT_A = data(\"^aws.ec2.network.io.transmit.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nNETWORK_OUT = (NETWORK_OUT_A)",
+                            "varName": "NETWORK_OUT"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.network.io.transmit.total"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": null,
+                        "valueType": null
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": [
+                                "#bfd3e6",
+                                "#9ebcda",
+                                "#8c96c6",
+                                "#8856a7",
+                                "#810f7c"
+                            ]
+                        },
+                        "description": "Color hosts based on disk write operations per minute",
+                        "displayName": "Disk Write Ops",
+                        "id": "aws.ec2.disk.ops.write.total",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "DISK_WRITE_OPS_A = data(\"^aws.ec2.disk.ops.write.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nDISK_WRITE_OPS = (DISK_WRITE_OPS_A)",
+                            "varName": "DISK_WRITE_OPS"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.disk.ops.write.total"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": null,
+                        "valueType": null
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": [
+                                "#bfd3e6",
+                                "#9ebcda",
+                                "#8c96c6",
+                                "#8856a7",
+                                "#810f7c"
+                            ]
+                        },
+                        "description": "Color hosts based on disk read operations per minute",
+                        "displayName": "Disk Read Ops",
+                        "id": "aws.ec2.disk.ops.write.total",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "DISK_READ_OPS_A = data(\"^aws.ec2.disk.ops.read.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nDISK_READ_OPS = (DISK_READ_OPS_A)",
+                            "varName": "DISK_READ_OPS"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.disk.ops.write.total"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": null,
+                        "valueType": null
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": [
+                                "#bfd3e6",
+                                "#9ebcda",
+                                "#8c96c6",
+                                "#8856a7",
+                                "#810f7c"
+                            ]
+                        },
+                        "description": "Color hosts based on bytes written to disk per minute",
+                        "displayName": "Disk Write Bytes",
+                        "id": "aws.ec2.disk.io.write.total",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "DISK_WRITE_BYTES_A = data(\"^aws.ec2.disk.io.write.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nDISK_WRITE_BYTES = (DISK_WRITE_BYTES_A)",
+                            "varName": "DISK_WRITE_BYTES"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.disk.io.write.total"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": null,
+                        "valueType": null
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": [
+                                "#bfd3e6",
+                                "#9ebcda",
+                                "#8c96c6",
+                                "#8856a7",
+                                "#810f7c"
+                            ]
+                        },
+                        "description": "Color hosts based on bytes read from disk",
+                        "displayName": "Disk Read Bytes",
+                        "id": "aws.ec2.disk.io.write.total",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "AWSUniqueId",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 300000,
+                            "template": "DISK_READ_BYTES_A = data(\"^aws.ec2.disk.io.read.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AWSUniqueId\"])\nDISK_READ_BYTES = (DISK_READ_BYTES_A)",
+                            "varName": "DISK_READ_BYTES"
+                        },
+                        "metricSelectors": [
+                            "aws.ec2.disk.io.write.total"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": null,
+                        "valueType": null
+                    }
+                ],
+                "mtsQuery": "(sf_metric:cpu.utilization OR sf_metric:CPUUtilization) AND _exists_:AWSUniqueId",
+                "o11yMetricName": "Running Instances",
+                "o11yMetricUnit": null,
+                "o11yProductName": "EC2",
+                "o11ySignalflowTemplate": "A = data('^aws.ec2.cpu.utilization', extrapolation='last_value', maxExtrapolations=5).max(over='1h').count().publish(label='A')",
+                "o11yTrendDisplayMode": "absolute",
+                "propertyColumns": [
+                    [
+                        {
+                            "header": "AWS",
+                            "properties": []
+                        }
+                    ],
+                    [
+                        {
+                            "header": "Tags",
+                            "properties": [
+                                "sf_tags"
+                            ]
+                        },
+                        {
+                            "header": "Other",
+                            "properties": []
+                        }
+                    ]
+                ],
+                "proxyProperties": [
+                    "aws_instance_id"
+                ],
+                "requiredProperties": [
+                    "AWSUniqueId"
+                ],
+                "singleHostSystemDashboardName": "EC2 Instance",
+                "systemDashboardName": "EC2 Instances",
+                "systemDashboardPrefix": "EC2",
+                "tooltipKeyList": [
+                    {
+                        "displayName": "Name",
+                        "format": null,
+                        "isSummaryProperty": true,
+                        "property": "aws_tag_Name"
+                    },
+                    {
+                        "displayName": "Value",
+                        "format": "Number",
+                        "isSummaryProperty": true,
+                        "property": "value"
+                    },
+                    {
+                        "displayName": "collectd version",
+                        "format": null,
+                        "isSummaryProperty": false,
+                        "property": "host_collect_version"
+                    },
+                    {
+                        "displayName": "OS",
+                        "format": null,
+                        "isSummaryProperty": false,
+                        "property": "host_kernel_name"
+                    },
+                    {
+                        "displayName": "Memory",
+                        "format": "Kilobytes",
+                        "isSummaryProperty": false,
+                        "property": "host_mem_total"
+                    },
+                    {
+                        "displayName": "vCPU",
+                        "format": null,
+                        "isSummaryProperty": false,
+                        "property": "host_logical_cpus"
+                    }
+                ],
+                "type": "elemental",
+                "unreleased": false
+            }
+        }
+    },
+    "packageType": "NAVIGATOR"
+}{
+    "hashCode": -1423026561,
+    "id": "Exbw-f4AgDI",
+    "modelVersion": 1,
+    "navigatorExport": {
+        "navigator": {
+            "created": 0,
+            "creator": null,
+            "description": "",
+            "id": "Exbw-f4AgDI",
+            "importQualifiers": [
+                {
+                    "filters": [
+                        {
+                            "not": false,
+                            "property": "sf_key",
+                            "values": [
+                                "InstanceId"
+                            ]
+                        }
+                    ],
+                    "metric": "CPUUtilization"
+                },
+                {
+                    "filters": [
+                        {
+                            "not": false,
+                            "property": "cloud.provider",
                             "values": [
                                 "aws"
                             ]
