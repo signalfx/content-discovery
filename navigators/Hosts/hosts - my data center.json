@@ -1,13 +1,13 @@
 {
-    "hashCode": 664996135,
-    "id": "DiVVQHAAcAA",
+    "hashCode": -103703615,
+    "id": "ExtGXIGAgDI",
     "modelVersion": 1,
     "navigatorExport": {
         "navigator": {
             "created": 0,
             "creator": null,
             "description": "",
-            "id": "DiVVQHAAcAA",
+            "id": "ExtGXIGAgDI",
             "importQualifiers": [
                 {
                     "filters": [
@@ -24,10 +24,10 @@
             ],
             "lastUpdated": 0,
             "lastUpdatedBy": null,
-            "name": "Hosts (Smart Agent / collectd)",
+            "name": "Data Center Hosts",
             "navigatorCategory": "Hosts",
             "navigatorType": "elemental",
-            "sites": "signalview",
+            "sites": "o11y",
             "uiModel": {
                 "alertQuery": "_exists_:host",
                 "category": "Hosts",
@@ -35,53 +35,12 @@
                 "discoveryQuery": [
                     "sf_key:host"
                 ],
-                "displayName": "Hosts (Smart Agent / collectd)",
+                "displayName": "Hosts",
                 "filterProperties": null,
-                "id": "collectd hosts",
+                "id": "datacenter hosts",
                 "idName": "Host",
                 "idTemplate": "{{host}}",
-                "listColumns": [
-                    {
-                        "aggregate": null,
-                        "displayName": "Host",
-                        "format": "id",
-                        "metric": null,
-                        "property": "id",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "Value",
-                        "format": "Number",
-                        "metric": null,
-                        "property": "value",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "OS",
-                        "format": null,
-                        "metric": null,
-                        "property": "host_kernel_name",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "Memory",
-                        "format": "Kilobytes",
-                        "metric": null,
-                        "property": "host_mem_total",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "vCPU",
-                        "format": null,
-                        "metric": null,
-                        "property": "host_logical_cpus",
-                        "sortable": null
-                    }
-                ],
+                "listColumns": [],
                 "metrics": [
                     {
                         "coloring": {
@@ -93,7 +52,7 @@
                         },
                         "description": "Color hosts based on percentage of CPU utilized: under 20% (green) to over 80% (red)",
                         "displayName": "cpu.utilization",
-                        "id": "collectd.cpu.utilization",
+                        "id": "agent.cpu.utilization",
                         "job": {
                             "filters": [
                                 {
@@ -104,7 +63,7 @@
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "CPU_UTILIZATION = data(\"cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+                            "template": "CPU_UTILIZATION = data(\"cpu.utilization\"{{#filter}}, filter=(not filter('cloud.provider', '*')) and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
                             "varName": "CPU_UTILIZATION"
                         },
                         "metricSelectors": [
@@ -125,7 +84,7 @@
                         },
                         "description": "Color hosts based on percentage of available memory being used: under 20% (green) to over 80% (red)",
                         "displayName": "memory.utilization",
-                        "id": "collectd.memory.utilization",
+                        "id": "agent.memory.utilization",
                         "job": {
                             "filters": [
                                 {
@@ -136,7 +95,7 @@
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "MEMORY_UTILIZATION = data(\"memory.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+                            "template": "MEMORY_UTILIZATION = data(\"memory.utilization\"{{#filter}}, filter=(not filter('cloud.provider', '*')) and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
                             "varName": "MEMORY_UTILIZATION"
                         },
                         "metricSelectors": [
@@ -157,7 +116,7 @@
                         },
                         "description": "Color hosts based on percentage of available disk space being used: under 20% (green) to over 80% (red)",
                         "displayName": "disk.summary_utilization",
-                        "id": "collectd.disk.summary_utilization",
+                        "id": "agent.disk.summary_utilization",
                         "job": {
                             "filters": [
                                 {
@@ -168,7 +127,7 @@
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "DISK_UTILIZATION = data(\"disk.summary_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+                            "template": "DISK_UTILIZATION = data(\"disk.summary_utilization\"{{#filter}}, filter=(not filter('cloud.provider', '*')) and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
                             "varName": "DISK_UTILIZATION"
                         },
                         "metricSelectors": [
@@ -189,7 +148,7 @@
                         },
                         "description": "Color hosts by relative amount of network traffic in bits per second: lowest 20% of traffic (green) to highest 20% of traffic (red)",
                         "displayName": "network.total",
-                        "id": "collectd.network.total",
+                        "id": "agent.network.total",
                         "job": {
                             "filters": [
                                 {
@@ -200,7 +159,7 @@
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "NETWORK_TOTAL = data(\"network.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+                            "template": "NETWORK_TOTAL = data(\"network.total\"{{#filter}}, filter=(not filter('cloud.provider', '*')) and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
                             "varName": "NETWORK_TOTAL"
                         },
                         "metricSelectors": [
@@ -221,7 +180,7 @@
                         },
                         "description": "Color hosts by the relative number of disk operations per second: lowest 20% of disk operations (green) to highest 20% of disk operations (red)",
                         "displayName": "disk_ops.total",
-                        "id": "collectd.disk_ops.total",
+                        "id": "agent.disk_ops.total",
                         "job": {
                             "filters": [
                                 {
@@ -232,7 +191,7 @@
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "DISK_OPS_TOTAL = data(\"disk_ops.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+                            "template": "DISK_OPS_TOTAL = data(\"disk_ops.total\"{{#filter}}, filter=(not filter('cloud.provider', '*')) and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
                             "varName": "DISK_OPS_TOTAL"
                         },
                         "metricSelectors": [
@@ -263,10 +222,16 @@
                                     "property": "_exists_",
                                     "propertyValue": "host",
                                     "type": "property"
+                                },
+                                {
+                                    "not": true,
+                                    "property": "_exists_",
+                                    "propertyValue": "cloud.provider",
+                                    "type": "property"
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "CPU_UTILIZATION = data(\"cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+                            "template": "CPU_UTILIZATION = data(\"cpu.utilization\"{{#filter}}, filter=(not filter('cloud.provider', '*')) and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
                             "varName": "CPU_UTILIZATION"
                         },
                         "metricSelectors": [],
@@ -275,11 +240,11 @@
                         "valueLabel": "Most severe alert"
                     }
                 ],
-                "mtsQuery": "_exists_:host",
+                "mtsQuery": "_exists_:host AND NOT _exists_:cloud.provider",
                 "o11yMetricName": "Running Hosts",
                 "o11yMetricUnit": null,
                 "o11yProductName": "Hosts",
-                "o11ySignalflowTemplate": "A = data('cpu.utilization', filter=filter('host', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['host']).count().publish(label='A')",
+                "o11ySignalflowTemplate": "A = data('cpu.utilization', filter=filter('host', '*') and not filter('cloud.provider', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['host']).count().publish(label='A')",
                 "o11yTrendDisplayMode": "absolute",
                 "propertyColumns": [
                     [
@@ -305,13 +270,6 @@
                                 "host_kernel_release",
                                 "host_kernel_version"
                             ]
-                        },
-                        {
-                            "header": "Agent",
-                            "properties": [
-                                "host_collectd_version",
-                                "host_metadata_version"
-                            ]
                         }
                     ],
                     [
@@ -335,9 +293,9 @@
                 "requiredProperties": [
                     "host"
                 ],
-                "singleHostSystemDashboardName": "Host with agent installed",
-                "systemDashboardName": "Hosts with agent installed",
-                "systemDashboardPrefix": "Infrastructure",
+                "singleHostSystemDashboardName": "Host",
+                "systemDashboardName": "Hosts",
+                "systemDashboardPrefix": "Host",
                 "tooltipKeyList": [
                     {
                         "displayName": "Name",
@@ -350,12 +308,6 @@
                         "format": "Number",
                         "isSummaryProperty": true,
                         "property": "value"
-                    },
-                    {
-                        "displayName": "collectd version",
-                        "format": null,
-                        "isSummaryProperty": false,
-                        "property": "host_collect_version"
                     },
                     {
                         "displayName": "OS",
