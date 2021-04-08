@@ -1,32 +1,44 @@
 {
-    "hashCode": -1223925963,
-    "id": "DiVVQlDAgAA",
+    "hashCode": 1642051396,
+    "id": "ExQi2rIAgDI",
     "modelVersion": 1,
     "navigatorExport": {
         "navigator": {
             "created": 0,
             "creator": null,
             "description": "",
-            "id": "DiVVQlDAgAA",
+            "id": "ExQi2rIAgDI",
             "importQualifiers": [
                 {
                     "filters": [
-                        {
-                            "not": false,
-                            "property": "sf_key",
-                            "values": [
-                                "gcp_id"
-                            ]
-                        },
                         {
                             "not": false,
                             "property": "service",
                             "values": [
                                 "compute"
                             ]
+                        },
+                        {
+                            "not": false,
+                            "property": "sf_key",
+                            "values": [
+                                "gcp_id"
+                            ]
                         }
                     ],
                     "metric": "instance/cpu/utilization"
+                },
+                {
+                    "filters": [
+                        {
+                            "not": false,
+                            "property": "cloud.provider",
+                            "values": [
+                                "gcp"
+                            ]
+                        }
+                    ],
+                    "metric": "cpu.utilization"
                 }
             ],
             "lastUpdated": 0,
@@ -34,9 +46,9 @@
             "name": "Compute Engine",
             "navigatorCategory": "Google Cloud Platform",
             "navigatorType": "elemental",
-            "sites": "signalview",
+            "sites": "o11y",
             "uiModel": {
-                "alertQuery": "_exists_:instance_name",
+                "alertQuery": "_exists_:gcp_id",
                 "category": "Google Cloud Platform",
                 "categoryPriority": 20,
                 "discoveryQuery": [
@@ -48,40 +60,7 @@
                 "id": "gcp compute",
                 "idName": "Compute Engine",
                 "idTemplate": "{{instance_name}}",
-                "listColumns": [
-                    {
-                        "aggregate": null,
-                        "displayName": "Instance Name",
-                        "format": "id",
-                        "metric": null,
-                        "property": "id",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "Value",
-                        "format": "Number",
-                        "metric": null,
-                        "property": "value",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "Instance ID",
-                        "format": null,
-                        "metric": null,
-                        "property": "instance_id",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "Project ID",
-                        "format": null,
-                        "metric": null,
-                        "property": "project_id",
-                        "sortable": null
-                    }
-                ],
+                "listColumns": [],
                 "metrics": [
                     {
                         "coloring": {
@@ -93,21 +72,9 @@
                         },
                         "description": "Color hosts based on percentage of CPU being used: under 20% (green) to over 80% (red)",
                         "displayName": "CPU Utilization",
-                        "id": "gcp.instance/cpu/utilization",
+                        "id": "^gcp.gce.cpu.utilization",
                         "job": {
                             "filters": [
-                                {
-                                    "not": false,
-                                    "property": "_exists_",
-                                    "propertyValue": "instance_id",
-                                    "type": "property"
-                                },
-                                {
-                                    "not": false,
-                                    "property": "monitored_resource",
-                                    "propertyValue": "gce_instance",
-                                    "type": "property"
-                                },
                                 {
                                     "not": false,
                                     "property": "_exists_",
@@ -116,11 +83,11 @@
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "CPU_UTILIZATION = data(\"instance/cpu/utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(100).mean(by=[\"instance_name\"])",
+                            "template": "CPU_UTILIZATION = data(\"^gcp.gce.cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"gcp_id\"])",
                             "varName": "CPU_UTILIZATION"
                         },
                         "metricSelectors": [
-                            "instance/cpu/utilization"
+                            "gcp.gce.cpu.utilization"
                         ],
                         "type": "metric",
                         "valueFormat": "Percentage",
@@ -137,22 +104,22 @@
                         },
                         "description": "Color hosts based on network bytes in per second",
                         "displayName": "Network Received Bytes",
-                        "id": "gcp.instance/network/received_bytes_count",
+                        "id": "gcp.gce.network.io.receive.total",
                         "job": {
                             "filters": [
                                 {
                                     "not": false,
                                     "property": "_exists_",
-                                    "propertyValue": "instance_id",
+                                    "propertyValue": "gcp_id",
                                     "type": "property"
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "NETWORK_IN = data(\"instance/network/received_bytes_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_name\"])",
+                            "template": "NETWORK_IN = data(\"^gcp.gce.network.io.receive.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"gcp_id\"])",
                             "varName": "NETWORK_IN"
                         },
                         "metricSelectors": [
-                            "instance/network/received_bytes_count"
+                            "gcp.gce.network.io.receive.total"
                         ],
                         "type": "metric",
                         "valueFormat": null,
@@ -169,22 +136,22 @@
                         },
                         "description": "Color hosts based on network bytes in per second",
                         "displayName": "Network Sent Bytes",
-                        "id": "gcp.instance/network/sent_bytes_count",
+                        "id": "gcp.gce.network.io.transmit.total",
                         "job": {
                             "filters": [
                                 {
                                     "not": false,
                                     "property": "_exists_",
-                                    "propertyValue": "instance_id",
+                                    "propertyValue": "gcp_id",
                                     "type": "property"
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "NETWORK_OUT = data(\"instance/network/sent_bytes_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_name\"])",
+                            "template": "NETWORK_OUT = data(\"^gcp.gce.network.io.transmit.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"gcp_id\"])",
                             "varName": "NETWORK_OUT"
                         },
                         "metricSelectors": [
-                            "instance/network/sent_bytes_count"
+                            "gcp.gce.network.io.transmit.total"
                         ],
                         "type": "metric",
                         "valueFormat": null,
@@ -201,28 +168,22 @@
                         },
                         "description": "Color hosts based on bytes written to disk per second",
                         "displayName": "Disk Write Bytes",
-                        "id": "gcp.instance/disk/write_bytes_count",
+                        "id": "gcp.gce.disk.io.write.total",
                         "job": {
                             "filters": [
                                 {
                                     "not": false,
                                     "property": "_exists_",
-                                    "propertyValue": "instance_id",
-                                    "type": "property"
-                                },
-                                {
-                                    "not": false,
-                                    "property": "_exists_",
-                                    "propertyValue": "instance_name",
+                                    "propertyValue": "gcp_id",
                                     "type": "property"
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "DISK_WRITE_BYTES = data(\"instance/disk/write_bytes_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_name\"])",
+                            "template": "DISK_WRITE_BYTES = data(\"^gcp.gce.disk.io.write.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"gcp_id\"])",
                             "varName": "DISK_WRITE_BYTES"
                         },
                         "metricSelectors": [
-                            "instance/disk/write_bytes_count"
+                            "gcp.gce.disk.io.write.total"
                         ],
                         "type": "metric",
                         "valueFormat": null,
@@ -239,7 +200,7 @@
                         },
                         "description": "Color hosts based on bytes read from disk per second",
                         "displayName": "Disk Read Bytes",
-                        "id": "gcp.instance/disk/read_bytes_count",
+                        "id": "gcp.gce.disk.io.read.total",
                         "job": {
                             "filters": [
                                 {
@@ -250,11 +211,11 @@
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "DISK_READ_BYTES = data(\"instance/disk/read_bytes_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_name\"])",
+                            "template": "DISK_READ_BYTES = data(\"^gcp.gce.disk.io.write.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"gcp_id\"])",
                             "varName": "DISK_READ_BYTES"
                         },
                         "metricSelectors": [
-                            "instance/disk/read_bytes_count"
+                            "gcp.gce.disk.io.write.total"
                         ],
                         "type": "metric",
                         "valueFormat": null,
@@ -271,22 +232,22 @@
                         },
                         "description": "Color hosts based on disk write operations per second",
                         "displayName": "Disk Write Ops",
-                        "id": "gcp.instance/disk/write_ops_count",
+                        "id": "gcp.gce.disk.ops.write.total",
                         "job": {
                             "filters": [
                                 {
                                     "not": false,
                                     "property": "_exists_",
-                                    "propertyValue": "instance_id",
+                                    "propertyValue": "gcp_id",
                                     "type": "property"
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "DISK_WRITE_OPS = data(\"instance/disk/write_ops_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_name\"])",
+                            "template": "DISK_WRITE_OPS = data(\"^gcp.gce.disk.ops.write.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"gcp_id\"])",
                             "varName": "DISK_WRITE_OPS"
                         },
                         "metricSelectors": [
-                            "instance/disk/write_ops_count"
+                            "gcp.gce.disk.ops.write.total"
                         ],
                         "type": "metric",
                         "valueFormat": null,
@@ -303,22 +264,22 @@
                         },
                         "description": "Color hosts based on disk read operations per second",
                         "displayName": "Disk Read Ops",
-                        "id": "gcp.instance/disk/read_ops_count",
+                        "id": "^gcp.gce.disk.ops.read.total",
                         "job": {
                             "filters": [
                                 {
                                     "not": false,
                                     "property": "_exists_",
-                                    "propertyValue": "instance_id",
+                                    "propertyValue": "gcp_id",
                                     "type": "property"
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "DISK_READ_OPS = data(\"instance/disk/read_ops_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"instance_name\"])",
+                            "template": "DISK_READ_OPS = data(\"^gcp.gce.disk.ops.write.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"gcp_id\"])",
                             "varName": "DISK_READ_OPS"
                         },
                         "metricSelectors": [
-                            "instance/disk/read_ops_count"
+                            "gcp.gce.disk.ops.write.total"
                         ],
                         "type": "metric",
                         "valueFormat": null,
@@ -326,11 +287,11 @@
                         "valueType": null
                     }
                 ],
-                "mtsQuery": "sf_metric:instance\\/cpu\\/utilization AND _exists_:gcp_id AND service:compute",
+                "mtsQuery": "(sf_metric:cpu.utilization OR sf_metric:\"instance/cpu/utilization\") AND _exists_:gcp_id",
                 "o11yMetricName": "Running Instances",
                 "o11yMetricUnit": null,
                 "o11yProductName": "Compute Engine",
-                "o11ySignalflowTemplate": "A = data('instance/cpu/utilization', filter=filter('instance_id', '*') and filter('monitored_resource', 'gce_instance') and filter('gcp_id', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['instance_name']).count().publish(label='A')",
+                "o11ySignalflowTemplate": "A = data('^gcp.gce.cpu.utilization', filter=filter('gcp_id', '*')).count().publish(label='A')",
                 "o11yTrendDisplayMode": "absolute",
                 "propertyColumns": [
                     [
@@ -342,10 +303,10 @@
                 ],
                 "proxyProperties": null,
                 "requiredProperties": [
-                    "instance_name"
+                    "gcp_id"
                 ],
-                "singleHostSystemDashboardName": "Compute Engine Instance (StackDriver)",
-                "systemDashboardName": "Compute Engine Instances (StackDriver)",
+                "singleHostSystemDashboardName": "Compute Engine Instance",
+                "systemDashboardName": "Compute Engine Instances",
                 "systemDashboardPrefix": "Compute Engine Instances",
                 "tooltipKeyList": [
                     {
