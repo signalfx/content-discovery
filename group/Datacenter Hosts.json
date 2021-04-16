@@ -411,14 +411,26 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "plugin"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
         "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -448,14 +460,14 @@
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
-          "range" : 7200000,
+          "range" : 3600000,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('vmpage_io.swap.in', filter=filter('host', '*'), rollup='delta').publish(label='A')\nB = data('vmpage_io.swap.out', filter=filter('host', '*'), rollup='delta').publish(label='B')",
+      "programText" : "A = data('vmpage_io.swap.in', rollup='delta').publish(label='A')\nB = data('vmpage_io.swap.out', rollup='delta').publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1629,7 +1641,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('vmpage_io.swap.in', filter=filter('host', '*') and (not filter('cloud.provider', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('gcp_id', '*')) and (not filter('azure_resource_id', '*')) and (not filter('kubernetes_node', '*'))).mean(by=['host']).publish(label='A')\nB = data('vmpage_io.swap.out', filter=filter('host', '*') and (not filter('cloud.provider', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('gcp_id', '*')) and (not filter('azure_resource_id', '*')) and (not filter('kubernetes_node', '*')), rollup='delta').mean(by=['host']).publish(label='B')",
+      "programText" : "A = data('vmpage_io.swap.in', filter=filter('host', '*') and (not filter('cloud.provider', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('gcp_id', '*')) and (not filter('azure_resource_id', '*')) and (not filter('kubernetes_node', '*'))).mean(by=['host']).top(count=5).publish(label='A')\nB = data('vmpage_io.swap.out', filter=filter('host', '*') and (not filter('cloud.provider', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('gcp_id', '*')) and (not filter('azure_resource_id', '*')) and (not filter('kubernetes_node', '*')), rollup='delta').mean(by=['host']).top(count=5).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3344,7 +3356,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -773060129,
+  "hashCode" : 931136972,
   "id" : "ExyV0UQAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
