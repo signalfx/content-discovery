@@ -3429,7 +3429,12 @@
           "colorScale": null,
           "colorScale2": null,
           "maximumPrecision": null,
-          "programOptions": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
           "publishLabelOptions": [
             {
               "displayName": "Active Function Count",
@@ -3445,7 +3450,10 @@
           "refreshInterval": 300000,
           "secondaryVisualization": "None",
           "showSparkLine": false,
-          "time": null,
+          "time": {
+            "range": 900000,
+            "type": "relative"
+          },
           "timestampHidden": false,
           "type": "SingleValue",
           "unitPrefix": "Metric"
@@ -5085,6 +5093,10 @@
               {
                 "enabled": true,
                 "property": "aws_function_version"
+              },
+              {
+                "enabled": true,
+                "property": "aws_function_shutdown_cause"
               }
             ]
           },
@@ -5118,7 +5130,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('lambda.function.shutdown', filter=filter('cause', 'timeout'), rollup='sum', extrapolation='zero').sum(by=['cause', 'aws_function_name', 'aws_function_version']).sum(over='1d').publish(label='A')",
+        "programText": "A = data(\"lambda.function.shutdown\", filter=filter(\"aws_function_shutdown_cause\", \"timeout\"), rollup=\"sum\", extrapolation=\"zero\").sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_function_shutdown_cause\"]).sum(over=\"1d\").publish(label=\"A\")",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -5420,7 +5432,7 @@
           "legendOptions": {
             "fields": [
               {
-                "enabled": true,
+                "enabled": false,
                 "property": "cause"
               },
               {
@@ -5430,6 +5442,10 @@
               {
                 "enabled": false,
                 "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "aws_function_shutdown_cause"
               }
             ]
           },
@@ -5468,7 +5484,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('lambda.function.shutdown', rollup='sum', extrapolation='zero').sum(by=['cause']).sum(over='1d').publish(label='A')",
+        "programText": "A = data(\"lambda.function.shutdown\", rollup=\"sum\", extrapolation=\"zero\").sum(by=[\"aws_function_shutdown_cause\"]).sum(over=\"1d\").publish(label=\"A\")",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -6334,6 +6350,10 @@
               {
                 "enabled": true,
                 "property": "aws_function_version"
+              },
+              {
+                "enabled": true,
+                "property": "aws_function_shutdown_cause"
               }
             ]
           },
@@ -6367,7 +6387,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('lambda.function.shutdown', filter=(not filter('cause', 'spindown')) and (not filter('cause', 'timeout')), rollup='sum', extrapolation='zero').sum(by=['cause', 'aws_function_name', 'aws_function_version']).sum(over='1d').publish(label='A')",
+        "programText": "A = data(\"lambda.function.shutdown\", filter=(not filter(\"aws_function_shutdown_cause\", \"spindown\")) and (not filter(\"aws_function_shutdown_cause\", \"timeout\")), rollup=\"sum\", extrapolation=\"zero\").sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_function_shutdown_cause\"]).sum(over=\"1d\").publish(label=\"A\")",
         "relatedDetectorIds": [],
         "tags": null
       }
@@ -7341,7 +7361,7 @@
       "teams": null
     }
   },
-  "hashCode": -2086351488,
+  "hashCode": -789507839,
   "id": "DiVWRnGAYAA",
   "modelVersion": 1,
   "packageType": "GROUP"
