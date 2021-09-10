@@ -1,5 +1,5 @@
 {
-  "hashCode" : 1005384771,
+  "hashCode" : -324364744,
   "id" : "DiVVN4WAgAA",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -160,7 +160,7 @@
           "job" : {
             "filters" : [ ],
             "resolution" : 300000,
-            "template" : "cw_duration_sum = data(\"Duration\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\ncw_duration_count = data(\"Duration\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nduration_from_cw = cw_duration_sum / cw_duration_count\nduration_from_wrapper = data(\"function.duration\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nDURATION = union(duration_from_cw, duration_from_wrapper)",
+            "template" : "duration_from_cw = data(\"Duration\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).mean(over=\"{{{timeRange}}}\")\nduration_from_wrapper = data(\"function.duration\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nDURATION = union(duration_from_cw, duration_from_wrapper)",
             "varName" : "DURATION"
           },
           "metricSelectors" : null,
