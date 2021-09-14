@@ -1639,7 +1639,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "container_cpu_utilization",
+          "displayName" : "centicores usage per container",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1648,12 +1648,30 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A - Sum by kubernetes_pod_name - Mean(1m) - Top 10",
+          "displayName" : "centicores usage per pod per node",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "num CPUs per node",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "cpu usage per pod",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -1669,7 +1687,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', rollup='rate').publish(label='A', enable=False)\nB = (A).sum(by=['kubernetes_pod_name']).mean(over='1m').top(count=10).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization', rollup='rate').publish(label='A', enable=False)\nB = (A).sum(by=['kubernetes_pod_name', 'kubernetes_node']).publish(label='B', enable=False)\nC = data('cpu.num_processors').sum(by=['kubernetes_node']).publish(label='C', enable=False)\nE = (B/C).mean(over='1m').top(count=10).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5906,11 +5924,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Cumulative cpu usage, equivalent to centicores of CPU cores consumed. Not normalized by # of cores on node.",
       "id" : "D8I_-n1AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "% CPU Used per Container",
+      "name" : "CPU Used per Container",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -9175,6 +9193,7 @@
   } ],
   "dashboardExports" : [ {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "D2SlUMWAYAA",
@@ -9365,6 +9384,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "D8I6ZUjAcAA",
@@ -9440,6 +9460,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "DkBnJQ3AYAA",
@@ -9538,6 +9559,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "D2SmSX4AgAA",
@@ -9630,6 +9652,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "DkBnAvVAYAA",
@@ -9734,6 +9757,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "D4rhYBRAYAA",
@@ -9871,6 +9895,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "D8I_-tTAcAA",
@@ -9951,6 +9976,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "D-KtoVmAgAA",
@@ -10076,6 +10102,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "D-KwPVTAcFc",
@@ -10138,6 +10165,7 @@
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "EIT84RcAgAE",
@@ -10329,6 +10357,7 @@
   } ],
   "groupExport" : {
     "group" : {
+      "authorizedWriters" : null,
       "created" : 0,
       "creator" : null,
       "dashboards" : [ "D2SlSb5AgAA", "D8I6X2QAcAA", "DkBnHSpAYAA", "D2SmRRbAcAA", "DkBm_nVAcAA", "D4rhV71AcAA", "D8I_-P3AcAA", "D-KtoUmAcAA", "D-KwPVTAcFM", "EIT81NcAcAA" ],
@@ -10356,7 +10385,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 639948564,
+  "hashCode" : -1002837961,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
