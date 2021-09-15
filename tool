@@ -19,7 +19,7 @@ def do_get(url, token):
     return requests.get(url, headers={"X-SF-TOKEN": token, "Accept": "application/json"})
 
 
-def fetch_export_by_id(group_id, base_url, token, format="json"):
+def fetch_group_export_by_id(group_id, base_url, token, format="json"):
     resp = do_get(f"{base_url}/v2/dashboardgroup/{group_id}/export", token)
     if resp.status_code != 200:
         raise RuntimeError(f"Failed to fetch dashboard group {group_id}: {resp.text}")
@@ -27,6 +27,13 @@ def fetch_export_by_id(group_id, base_url, token, format="json"):
         return resp.json()
     return resp.text
 
+def fetch_detector_export_by_id(detector_id, base_url, token, format="json"):
+    resp = do_get(f"{base_url}/v2/detector/{detector_id}/export", token)
+    if resp.status_code != 200:
+        raise RuntimeError(f"Failed to fetch detector {detector_id}: {resp.text}")
+    if format == "json":
+        return resp.json()
+    return resp.text
 
 def fetch_all_dashboard_groups(base_url, token):
     resp = do_get(f"{base_url}/v2/dashboardgroup?limit=1000", token)
@@ -63,29 +70,32 @@ def all_metrics_from_charts(group_export) -> List[str]:
     return sorted(set([g for p in programs for g in DATA_RE.findall(p)]))
 
 
-def metrics_command(args, base_url, token):
+def group_metrics_command(args, base_url, token):
     group = fetch_dashboard_group_by_name(args.group_name[0], base_url, token)
     if group is None:
         print(f"Could not find built-in dashboard group '{args.group_name[0]}'", file=sys.stderr)
         return
 
-    exported_group = fetch_export_by_id(group["id"], base_url, token)
+    exported_group = fetch_group_export_by_id(group["id"], base_url, token)
     for metric in all_metrics_from_charts(exported_group):
         print(metric)
 
 
-def export_command(args, base_url, token):
+def group_export_command(args, base_url, token):
     group_id = args.group_id[0]
-    print(fetch_export_by_id(group_id, base_url, token, format="text"))
+    print(fetch_group_export_by_id(group_id, base_url, token, format="text"))
 
 
-def reexport_command(args, base_url, token):
+def group_reexport_command(args, base_url, token):
     path = Path(args.group_file[0])
     group_id = json.loads(path.read_bytes())["groupExport"]["group"]["id"]
-    content = fetch_export_by_id(group_id, base_url, token, format="text")
+    content = fetch_group_export_by_id(group_id, base_url, token, format="text")
     print(content)
     path.write_text(content)
 
+def detector_export_command(args, base_url, token):
+    detector_id = args.detector_id[0]
+    print(fetch_detector_export_by_id(detector_id, base_url, token, format="text"))
 
 def parse_cli():
     parser = argparse.ArgumentParser(description="Built-in Dashboard Group Swiss Army Knife")
@@ -101,25 +111,23 @@ def parse_cli():
 
     parser.add_argument("--env", "-e", type=str, default="us0", help="The SignalFx environment/realm (e.g. us0, lab0)")
 
-    subparsers = parser.add_subparsers(help="What to do with the dashboard group", dest="subcommand")
+    subparsers = parser.add_subparsers(help="Choose an action", dest="subcommand")
 
-    metrics_parser = subparsers.add_parser("metrics", help="Show all of the metrics used in a dashboard group")
-    metrics_parser.add_argument(
-        "group_name", metavar="group-name", type=str, nargs=1, help="The name of the dashboard group"
-    )
-    metrics_parser.set_defaults(func=metrics_command)
+    group_metrics_parser = subparsers.add_parser("group-metrics", help="Show all of the metrics used in a dashboard group")
+    group_metrics_parser.add_argument("group_name", metavar="group-name", type=str, nargs=1, help="The name of the dashboard group")
+    group_metrics_parser.set_defaults(func=group_metrics_command)
 
-    export_parser = subparsers.add_parser("export", help="Export a dashboard group")
-    export_parser.add_argument("group_id", metavar="group-id", nargs=1, type=str, help="The id of the dashboard group")
-    export_parser.set_defaults(func=export_command)
+    group_export_parser = subparsers.add_parser("group-export", help="Export a dashboard group")
+    group_export_parser.add_argument("group_id", metavar="group-id", nargs=1, type=str, help="The id of the dashboard group")
+    group_export_parser.set_defaults(func=group_export_command)
 
-    reexport_parser = subparsers.add_parser(
-        "reexport", help="Export a dashboard group based on an existing group export file"
-    )
-    reexport_parser.add_argument(
-        "group_file", metavar="group-file", nargs=1, type=str, help="Path to an already exported dashboard group"
-    )
-    reexport_parser.set_defaults(func=reexport_command)
+    group_reexport_parser = subparsers.add_parser("group-reexport", help="Export a dashboard group based on an existing group export file")
+    group_reexport_parser.add_argument("group_file", metavar="group-file", nargs=1, type=str, help="Path to an already exported dashboard group")
+    group_reexport_parser.set_defaults(func=group_reexport_command)
+
+    detector_export_parser = subparsers.add_parser("detector-export", help="Export a detector")
+    detector_export_parser.add_argument("detector_id", metavar="detector-id", nargs=1, type=str, help="ID of the detector")
+    detector_export_parser.set_defaults(func=detector_export_command)
 
     args = parser.parse_args()
 
@@ -134,10 +142,7 @@ def parse_cli():
 
 
 def base_api_url_from_env(env: str) -> str:
-    if env == "lab0":
-        return "http://lab.corp.signalfx.com"
     return f"https://api.{env}.signalfx.com"
-
 
 if __name__ == "__main__":
     parse_cli()
