@@ -55,7 +55,7 @@
           "sf_key:host",
           "sf_key:host.name"
         ],
-        "displayName": "New Hosts",
+        "displayName": "Old Hosts",
         "filterProperties": null,
         "id": "new datacenter hosts",
         "idName": "NewHost",
@@ -88,7 +88,7 @@
           {
             "aggregate": null,
             "displayName": "Memory",
-            "format": "Kilobytes",
+            "format": "Megabytes",
             "metric": null,
             "property": "host_mem_total",
             "sortable": null
@@ -103,7 +103,7 @@
           },
           {
             "aggregate": null,
-            "displayName": "newCPU",
+            "displayName": "oldCPU",
             "format": null,
             "metric": null,
             "property": "host_logical_cpus",
@@ -119,7 +119,7 @@
               "minValue": 0,
               "range": null
             },
-            "description": "Color new hosts based on percentage of CPU utilized: under 20% (green) to over 80% (red)",
+            "description": "Color old hosts based on percentage of CPU utilized: under 20% (green) to over 80% (red)",
             "displayName": "cpu.utilization",
             "id": "agent.cpu.utilization",
             "job": {
@@ -151,7 +151,7 @@
               "minValue": 0,
               "range": null
             },
-            "description": "Color new hosts based on percentage of available memory being used: under 20% (green) to over 80% (red)",
+            "description": "Color old hosts based on percentage of available memory being used: under 20% (green) to over 80% (red)",
             "displayName": "memory.utilization",
             "id": "agent.memory.utilization",
             "job": {
@@ -183,7 +183,7 @@
               "minValue": 0,
               "range": null
             },
-            "description": "Color new hosts based on percentage of available disk space being used: under 20% (green) to over 80% (red)",
+            "description": "Color old hosts based on percentage of available disk space being used: under 20% (green) to over 80% (red)",
             "displayName": "disk.summary_utilization",
             "id": "agent.disk.summary_utilization",
             "job": {
@@ -215,7 +215,7 @@
               "minValue": 0,
               "range": null
             },
-            "description": "Color new hosts by relative amount of network traffic in bits per second: lowest 20% of traffic (green) to highest 20% of traffic (red)",
+            "description": "Color old hosts by relative amount of network traffic in bits per second: lowest 20% of traffic (green) to highest 20% of traffic (red)",
             "displayName": "network.total",
             "id": "agent.network.total",
             "job": {
@@ -238,42 +238,10 @@
             "valueFormat": null,
             "valueLabel": null,
             "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": null
-            },
-            "description": "Color new hosts by the relative number of disk operations per second: lowest 20% of disk operations (green) to highest 20% of disk operations (red)",
-            "displayName": "disk_ops.total",
-            "id": "agent.disk_ops.total",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "_exists_",
-                  "propertyValue": "host",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "DISK_OPS_TOTAL = data(\"disk_ops.total\"{{#filter}}, filter=(not filter('cloud.provider', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('azure_resource_id', '*')) and (not filter('gcp_id', '*')) and (not filter('kubernetes_node', '*')) and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
-              "varName": "DISK_OPS_TOTAL"
-            },
-            "metricSelectors": [
-              "disk_ops.total"
-            ],
-            "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
-            "valueType": null
           }
         ],
         "mtsQuery": "(sf_key:host OR sf_key:host.name) AND NOT _exists_:AWSUniqueId AND NOT _exists_:azure_resource_id AND NOT _exists_:gcp_id AND NOT _exists_:kubernetes_node AND NOT _exists_:k8s.node.name AND NOT _exists_:cloud.provider",
-        "o11yMetricName": "Running New Hosts",
+        "o11yMetricName": "Running Old Hosts",
         "o11yMetricUnit": null,
         "o11yProductName": "New Hosts",
         "o11ySignalflowTemplate": "A = data('cpu.utilization', filter=filter('host', '*') and not filter('cloud.provider', '*') and (not filter('AWSUniqueId', '*')) and (not filter('azure_resource_id', '*')) and (not filter('gcp_id', '*')) and (not filter('kubernetes_node', '*')), extrapolation='last_value', maxExtrapolations=2).mean(by=['host']).count().publish(label='A')",
