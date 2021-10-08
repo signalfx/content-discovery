@@ -1,0 +1,111 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "",
+      "detectorOrigin": "AutoDetect",
+      "id": "FAUcoK8AcAA",
+      "labelResolutions": {
+        "K8S Cluster DaemonSet ready vs scheduled": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "K8S Cluster DaemonSet ready vs scheduled",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "A = data('kubernetes.daemon_set.ready').sum(by=['k8s.cluster.name', 'k8s.daemonset.name']).publish(label='A')\nB = data('kubernetes.daemon_set.desired_scheduled').sum(by=['k8s.cluster.name', 'k8s.daemonset.name']).publish(label='B')\nC = (A-B).publish(label='C', enable=False)\ndetect(when((C > threshold(0)) or (C < threshold(0)), lasting='5m', at_least=0.95), auto_resolve_after='5h').publish('K8S Cluster DaemonSet ready vs scheduled')",
+      "rules": [
+        {
+          "description": "The value of Ready-Scheduled is outside of 0 and 0 for 95% of 5m.",
+          "detectLabel": "K8S Cluster DaemonSet ready vs scheduled",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for A-B: {{inputs.C.value}}\n{{else}}Current signal value for A-B: {{inputs.C.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": null,
+          "runbookUrl": null,
+          "severity": "Critical",
+          "tip": null
+        }
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "A",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "B",
+            "label": "B",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Ready-Scheduled",
+            "label": "C",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": false,
+        "showEventLines": false,
+        "time": {
+          "range": 900000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.daemonset.name",
+              "values": []
+            }
+          ],
+          "metric": "kubernetes.daemon_set.ready"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.daemonset.name",
+              "values": []
+            }
+          ],
+          "metric": "kubernetes.daemon_set.desired_scheduled"
+        }
+      ]
+    }
+  },
+  "hashCode": -1066217011,
+  "id": "FAUcoK8AcAA",
+  "packageType": "DETECTOR"
+}
