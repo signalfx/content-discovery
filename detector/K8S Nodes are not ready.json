@@ -1,0 +1,80 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "",
+      "detectorOrigin": "AutoDetect",
+      "id": "FAdUyNbAYAA",
+      "labelResolutions": {
+        "K8S Nodes are not ready": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "K8S Nodes are not ready",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "A = data('k8s.node.condition_ready').sum(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='A')\ndetect(when(A < threshold(1), lasting='30s'), auto_resolve_after='1d').publish('K8S Nodes are not ready')",
+      "rules": [
+        {
+          "description": "K8S Node is not in a ready state",
+          "detectLabel": "K8S Nodes are not ready",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for k8s.node.condition_ready - Sum by k8s.cluster.name,k8s.node.name: {{inputs.A.value}}\n{{else}}Current signal value for k8s.node.condition_ready - Sum by k8s.cluster.name,k8s.node.name: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": null,
+          "runbookUrl": "",
+          "severity": "Critical",
+          "tip": ""
+        }
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "A",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": false,
+        "showEventLines": false,
+        "time": {
+          "range": 900000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.node.name",
+              "values": []
+            }
+          ],
+          "metric": "k8s.node.condition_ready"
+        }
+      ]
+    }
+  },
+  "hashCode": -1122746679,
+  "id": "FAdUyNbAYAA",
+  "packageType": "DETECTOR"
+}
