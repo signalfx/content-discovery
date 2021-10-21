@@ -1,0 +1,63 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when a consumer group is lagging behind the latest offset by a 100",
+      "detectorOrigin": "Standard",
+      "id": "FBqJ9_IAYAA",
+      "labelResolutions": {
+        "Consumer group is lagging for partition of the topic": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "Kafka - Consumer Lag > 100 for 1m",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "A = data('kafka.consumer_group.lag').sum(by=['topic', 'partition', 'group']).publish(label='A')\ndetect(when(A > threshold(100), lasting='1m')).publish('Consumer group is lagging for partition of the topic')",
+      "rules": [
+        {
+          "description": "The value of kafka.consumer_group.lag - Sum is above 100.",
+          "detectLabel": "Consumer group is lagging for partition of the topic",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for kafka.consumer_group.lag - Sum: {{inputs.A.value}}\n{{else}}Current signal value for kafka.consumer_group.lag - Sum: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": null,
+          "runbookUrl": null,
+          "severity": "Critical",
+          "tip": null
+        }
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "kafka.consumer_group.lag - Sum",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      }
+    }
+  },
+  "hashCode": 1588246581,
+  "id": "FBqJ9_IAYAA",
+  "packageType": "DETECTOR"
+}

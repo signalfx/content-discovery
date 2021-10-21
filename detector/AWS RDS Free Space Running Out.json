@@ -1,0 +1,89 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when RDS free disk space is expected to be below 20% in 12 hours",
+      "detectorOrigin": "Standard",
+      "id": "FB-pRUhAYAA",
+      "labelResolutions": {
+        "AWS/RDS free disk space is expected to be below 20% in 12 hours": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "AWS/RDS Free Space Running Out",
+      "overMTSLimit": false,
+      "packageSpecifications": "signalfx==0.1.26",
+      "programText": "from signalfx.detectors.countdown import countdown\nA = data('FreeStorageSpace', filter=filter('namespace', 'AWS/RDS') and filter('DBInstanceIdentifier', '*') and filter('stat', 'mean')).publish(label='A', enable=False)\ncountdown.hours_left_stream_detector(stream=A, minimum_value=20, lower_threshold=12, fire_lasting=lasting('6m', 0.9), clear_threshold=84, clear_lasting=lasting('6m', 0.9), use_double_ewma=False).publish('AWS/RDS free disk space is expected to be below 20% in 12 hours')",
+      "rules": [
+        {
+          "description": "The resource free (assumed to be decreasing) is projected to decrease to 20 in 12 hour(s).",
+          "detectLabel": "AWS/RDS free disk space is expected to be below 20% in 12 hours",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": null,
+          "parameterizedSubject": null,
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": null
+        }
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "free",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "namespace",
+              "values": [
+                "AWS/RDS"
+              ]
+            },
+            {
+              "not": false,
+              "property": "DBInstanceIdentifier",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "stat",
+              "values": [
+                "mean"
+              ]
+            }
+          ],
+          "metric": "FreeStorageSpace"
+        }
+      ]
+    }
+  },
+  "hashCode": -1262015763,
+  "id": "FB-pRUhAYAA",
+  "packageType": "DETECTOR"
+}

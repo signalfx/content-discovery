@@ -1,0 +1,79 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when number of detectors is projected to reach the limit in next 48 hours",
+      "detectorOrigin": "Standard",
+      "id": "FB-uDuVAcAA",
+      "labelResolutions": {
+        "Number of detectors is expected to reach the limit": 3780000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "Splunk Operational - Detectors limit warning",
+      "overMTSLimit": false,
+      "packageSpecifications": "signalfx==0.1.26",
+      "programText": "from signalfx.detectors.countdown import countdown\nA = data('sf.org.limit.detector', rollup='latest').max().max(over='1d').publish(label='A', enable=False)\nB = data('sf.org.num.detector', filter=filter('purpose', 'CUSTOM'), rollup='latest').max().max(over='1d').publish(label='B', enable=False)\nF = (B/A*100).publish(label='F')\ncountdown.hours_left_stream_incr_detector(stream=F, maximum_capacity=100, lower_threshold=48, fire_lasting=lasting('12h', 0.8), clear_threshold=96, clear_lasting=lasting('12h', 0.8), use_double_ewma=False, auto_resolve_after='4h').publish('Number of detectors is expected to reach the limit')",
+      "rules": [
+        {
+          "description": "The signal % Detectors Used (assumed to be increasing) is projected to increase to 100 in 48 hour(s).",
+          "detectLabel": "Number of detectors is expected to reach the limit",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\nHours left: {{inputs.hours_left.value}}\n\n{{#notEmpty dimensions}}Signal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": null,
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": null
+        }
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "Detector Limit",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "B",
+            "label": "B",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "% Detectors Used",
+            "label": "F",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      }
+    }
+  },
+  "hashCode": -1695803998,
+  "id": "FB-uDuVAcAA",
+  "packageType": "DETECTOR"
+}
