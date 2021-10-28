@@ -5,7 +5,7 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "",
+      "description": "Alerts when number of ready and available pods in Deployments have diverged",
       "detectorOrigin": "AutoDetect",
       "id": "FAUPIFYAYAE",
       "labelResolutions": {
@@ -14,22 +14,22 @@
       "lastUpdated": 0,
       "lastUpdatedBy": null,
       "maxDelay": 0,
-      "minDelay": null,
+      "minDelay": 0,
       "name": "K8S Cluster Deployment is not at spec",
       "overMTSLimit": false,
       "packageSpecifications": "",
-      "programText": "A = data('k8s.deployment.desired').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'deployment']).publish(label='A', enable=False)\nB = data('k8s.deployment.available').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'deployment']).publish(label='B', enable=False)\nC = (B-A).publish(label='C')\ndetect((when((C > threshold(0)) or (C < threshold(0)), lasting='5m', at_least=0.8))).publish('K8S Cluster Deployment is not at spec')",
+      "programText": "A = data('k8s.deployment.desired').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'deployment']).publish(label='A', enable=False)\nB = data('k8s.deployment.available').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'deployment']).publish(label='B', enable=False)\nC = (B-A).publish(label='C', enable=False)\ndetect(when((C > threshold(0)) or (C < threshold(0)), lasting='5m', at_least=0.8)).publish('K8S Cluster Deployment is not at spec')",
       "rules": [
         {
-          "description": "K8S Cluster Deployment is not at spec",
+          "description": "The value of Available - Desired is outside of 0 and 0 for 80% of 5m.",
           "detectLabel": "K8S Cluster Deployment is not at spec",
           "disabled": false,
           "notifications": null,
           "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for B-A - Exclude x <= 0 - Count: {{inputs.C.value}}\n{{else}}Current signal value for B-A - Exclude x <= 0 - Count: {{inputs.C.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": null,
-          "runbookUrl": "",
+          "runbookUrl": null,
           "severity": "Major",
-          "tip": ""
+          "tip": null
         }
       ],
       "tags": null,
@@ -55,7 +55,7 @@
             "valueUnit": null
           },
           {
-            "displayName": "Difference",
+            "displayName": "Available - Desired",
             "label": "C",
             "paletteIndex": null,
             "valuePrefix": null,
@@ -71,6 +71,7 @@
           "type": "relative"
         }
       },
+      ,
       "importQualifiers": [
         {
           "filters": [
@@ -115,7 +116,7 @@
       ]
     }
   },
-  "hashCode": -399547740,
+  "hashCode": 627129738,
   "id": "FAUPIFYAYAE",
   "packageType": "DETECTOR"
 }

@@ -1,0 +1,80 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when there is no active leader for a partition, the partition cannot be read from or written to",
+      "detectorOrigin": "AutoDetect",
+      "id": "FBqH_ZTAYAA",
+      "labelResolutions": {
+        "Offline partitions > 0 on a broker": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "Kafka - Offline partitions",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "A = data('gauge.kafka-offline-partitions-count').max(by=['cluster', 'host']).publish(label='A')\ndetect(when(A > threshold(0))).publish('Offline partitions > 0 on a broker')",
+      "rules": [
+        {
+          "description": "The value of Offline Partitions - Max is above 0.",
+          "detectLabel": "Offline partitions > 0 on a broker",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.kafka-offline-partitions-count - Maximum: {{inputs.A.value}}\n{{else}}Current signal value for gauge.kafka-offline-partitions-count - Maximum: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": null,
+          "runbookUrl": null,
+          "severity": "Critical",
+          "tip": null
+        }
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "Offline Partitions - Max",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "cluster",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "host",
+              "values": []
+            }
+          ],
+          "metric": "gauge.kafka-offline-partitions-count"
+        }
+      ]
+    }
+  },
+  "hashCode": 1938873448,
+  "id": "FBqH_ZTAYAA",
+  "packageType": "DETECTOR"
+}
