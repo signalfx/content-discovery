@@ -9,38 +9,28 @@
       "detectorOrigin": "Standard",
       "id": "FET_zRYAIAM",
       "labelResolutions": {
-        "Corn metric is > 84": 1000,
-        "Corn metric is not reporting": 1000
+        "Corn metric is > 84": 10000
       },
       "lastUpdated": 0,
       "lastUpdatedBy": null,
+      "locked": false,
       "maxDelay": 0,
       "minDelay": 0,
       "name": "Corn metrics",
       "overMTSLimit": false,
-      "packageSpecifications": "",
-      "programText": "from signalfx.detectors.not_reporting import not_reporting\nA = data('corn.test', filter=filter('corn.pod.name', 'pod')).sum(by=['corn.namespace.name', 'corn.cluster.name']).publish(label='A')\ndetect(when(A > threshold(84)), auto_resolve_after='1d').publish('Corn metric is > 84')\nnot_reporting.detector(stream=A, resource_identifier=None, duration='5m', auto_resolve_after='1d').publish('Corn metric is not reporting')",
+      "packageSpecifications": "signalfx==0.1.26",
+      "programText": "A = data('corn.test', extrapolation='last_value').publish(label='Corn Metric')\ndetect(when(A > threshold(84))).publish(label='Corn Metric')",
       "rules": [
         {
-          "description": "The value of plotName is above 84.",
+          "description": "The value of Corn Metric is above 84.",
           "detectLabel": "Corn metric is > 84",
           "disabled": false,
           "notifications": null,
           "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for plotName: {{inputs.A.value}}\n{{else}}Current signal value for plotName: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": null,
-          "runbookUrl": null,
-          "severity": "Critical",
+          "runbookUrl": "http://www.google.pl",
+          "severity": "Minor",
           "tip": null
-        }, {
-          "description" : "The signal plotName has not reported for 5m.",
-          "detectLabel" : "Corn metric is not reporting",
-          "disabled" : false,
-          "notifications" : [ ],
-          "parameterizedBody" : null,
-          "parameterizedSubject" : null,
-          "runbookUrl" : null,
-          "severity" : "Critical",
-          "tip" : null
         }
       ],
       "tags": null,
@@ -51,17 +41,17 @@
         "publishLabelOptions": [
           {
             "displayName": "Corn Metrics",
-            "label": "A",
-            "paletteIndex": null,
+            "label": "Corn Metrics",
+            "paletteIndex": 6,
             "valuePrefix": null,
-            "valueSuffix": null,
+            "valueSuffix": "PLN",
             "valueUnit": null
           }
         ],
         "showDataMarkers": true,
         "showEventLines": true,
         "time": {
-          "range": 900000,
+          "range": 604800000,
           "rangeEnd": 0,
           "type": "relative"
         }
@@ -70,7 +60,7 @@
         {
           "filters": [
             {
-              "not": false,
+              "not": true,
               "property": "corn.container.name",
               "values": []
             }
@@ -80,7 +70,7 @@
       ]
     }
   },
-  "hashCode": -878442013,
+  "hashCode": -181776140,
   "id": "FET_zRYAIAM",
   "packageType": "DETECTOR"
 }
