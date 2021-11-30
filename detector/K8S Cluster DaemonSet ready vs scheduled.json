@@ -18,7 +18,7 @@
       "name": "K8S Cluster DaemonSet ready vs scheduled",
       "overMTSLimit": false,
       "packageSpecifications": "",
-      "programText": "A = data('kubernetes.daemon_set.ready').sum(by=['k8s.cluster.name', 'k8s.daemonset.name']).publish(label='A')\nB = data('kubernetes.daemon_set.desired_scheduled').sum(by=['k8s.cluster.name', 'k8s.daemonset.name']).publish(label='B')\nC = (A-B).publish(label='C', enable=False)\ndetect(when((C > threshold(0)) or (C < threshold(0)), lasting='5m', at_least=0.95), auto_resolve_after='5h').publish('K8S Cluster DaemonSet ready vs scheduled')",
+      "programText": "A = data('k8s.daemonset.ready_nodes').sum(by=['k8s.cluster.name', 'k8s.daemonset.name']).publish(label='A')\nB = data('k8s.daemonset.desired_scheduled_nodes').sum(by=['k8s.cluster.name', 'k8s.daemonset.name']).publish(label='B')\nC = (A-B).publish(label='C', enable=False)\ndetect(when((C > threshold(0)) or (C < threshold(0)), lasting='5m', at_least=0.95), auto_resolve_after='5h').publish('K8S Cluster DaemonSet ready vs scheduled')",
       "rules": [
         {
           "description": "The value of Ready-Scheduled is outside of 0 and 0 for 95% of 5m.",
@@ -85,7 +85,7 @@
               "values": []
             }
           ],
-          "metric": "kubernetes.daemon_set.ready"
+          "metric": "k8s.daemonset.ready_nodes"
         },
         {
           "filters": [
@@ -100,12 +100,12 @@
               "values": []
             }
           ],
-          "metric": "kubernetes.daemon_set.desired_scheduled"
+          "metric": "k8s.daemonset.desired_scheduled_nodes"
         }
       ]
     }
   },
-  "hashCode": 1865258254,
+  "hashCode": -445828818,
   "id": "FAUcoK8AcAA",
   "packageType": "DETECTOR"
 }
