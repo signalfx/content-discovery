@@ -1,5 +1,5 @@
 {
-  "hashCode": 178312755,
+  "hashCode": 1537662762,
   "id": "FIVD_EwAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -75,7 +75,7 @@
               ]
             },
             "description": "This metric shows the number of client connections (excluding connections from followers). Darker colors indicate higher relative values.",
-            "displayName": "# Connection",
+            "displayName": "# Connections",
             "id": "redis_connections",
             "job": {
               "filters": [],
@@ -88,7 +88,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Connection",
+            "valueLabel": "Connections",
             "valueType": null
           },
           {
@@ -105,8 +105,8 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of instances that acts as a follower. Darker colors indicate higher relative values.",
-            "displayName": "# Follower",
+            "description": "This metric shows the number of instances that are acting as followers. Darker colors indicate higher relative values.",
+            "displayName": "# Followers",
             "id": "redis_followers",
             "job": {
               "filters": [],
@@ -119,7 +119,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Follower",
+            "valueLabel": "Followers",
             "valueType": null
           },
           {
@@ -137,12 +137,12 @@
               ]
             },
             "description": "This metric shows the number of leader instances. Darker colors indicate higher relative values.",
-            "displayName": "# Leader",
+            "displayName": "# Leaders",
             "id": "redis_leaders",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "MASTER_REPL_OFFSET = data(\"gauge.master_repl_offset\",filter=filter(\"plugin\", \"redis_info\") and filter(\"host.name\", \"*\"){{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"host.name\"])\nSLAVE_REPL_OFFSET = data(\"gauge.slave_repl_offset\",filter=filter(\"plugin\", \"redis_info\") and filter(\"host.name\", \"*\"){{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"host.name\"])\nTOTAL_OFFSET = (SLAVE_REPL_OFFSET+MASTER_REPL_OFFSET)\nLEADER = union(TOTAL_OFFSET ,MASTER_REPL_OFFSET).max(by=[\"host.name\"]).between(0.5, 1.5, clamp=False)",
+              "template": "MASTER_REPL_OFFSET = data(\"gauge.master_repl_offset\",filter=filter(\"plugin\", \"redis_info\"){{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nSLAVE_REPL_OFFSET = data(\"gauge.slave_repl_offset\",filter=filter(\"plugin\", \"redis_info\"){{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nTOTAL_OFFSET = (SLAVE_REPL_OFFSET+MASTER_REPL_OFFSET)\nLEADER = union(TOTAL_OFFSET ,MASTER_REPL_OFFSET).max(by=[\"plugin_instance\"]).between(0.5, 1.5, clamp=False)",
               "varName": "LEADER"
             },
             "metricSelectors": [
@@ -151,7 +151,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Leader",
+            "valueLabel": "Leaders",
             "valueType": null
           },
           {
@@ -300,9 +300,9 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the slave replication offset. Darker colors indicate higher relative values.",
+            "description": "This metric shows the follower replication offset. Darker colors indicate higher relative values.",
             "displayName": "Follower Replication Offsets",
-            "id": "redis_slave_repl_offset",
+            "id": "redis_follower_repl_offset",
             "job": {
               "filters": [],
               "resolution": 60000,
@@ -331,9 +331,9 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the master replication offset. Darker colors indicate higher relative values.",
+            "description": "This metric shows the leader replication offset. Darker colors indicate higher relative values.",
             "displayName": "Leader Replication Offsets",
-            "id": "redis_master_repl_offset",
+            "id": "redis_leader_repl_offset",
             "job": {
               "filters": [],
               "resolution": 60000,
@@ -451,7 +451,9 @@
         "o11yTrendDisplayMode": "absolute",
         "propertyColumns": null,
         "proxyProperties": null,
-        "requiredProperties": null,
+        "requiredProperties": [
+          "plugin_instance"
+        ],
         "singleHostSystemDashboardName": "Redis Instance",
         "systemDashboardName": "Redis Instances",
         "systemDashboardPrefix": null,
