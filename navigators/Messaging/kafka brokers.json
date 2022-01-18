@@ -1,5 +1,5 @@
 {
-  "hashCode" : 43899799,
+  "hashCode" : 83868873,
   "id" : "FGvzntgAYAA",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -57,84 +57,26 @@
           "sortable" : null
         } ],
         "metrics" : [ {
-          "coloring" : null,
-          "description" : "Under-replicated Partitions",
-          "displayName" : "Under-replicated Partitions",
-          "id" : "gauge.kafka-underreplicated-partitions",
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "Active Controllers",
+          "displayName" : "# Active Controllers",
+          "id" : "gauge.kafka-active-controllers",
           "job" : {
             "filters" : [ ],
             "resolution" : 300000,
-            "template" : "UNDER_REPLICATED_PARTITIONS = data(\"gauge.kafka-underreplicated-partitions\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
-            "varName" : "UNDER_REPLICATED_PARTITIONS"
+            "template" : "CONTROLLERS = data(\"gauge.kafka-active-controllers\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
+            "varName" : "CONTROLLERS"
           },
-          "metricSelectors" : [ "gauge.kafka-underreplicated-partitions" ],
+          "metricSelectors" : [ "gauge.kafka-active-controllers" ],
           "type" : "metric",
           "valueFormat" : null,
-          "valueLabel" : "under-replicated partitions",
-          "valueType" : null
-        }, {
-          "coloring" : null,
-          "description" : "Offline Partitions",
-          "displayName" : "Offline Partitions",
-          "id" : "gauge.kafka-offline-partitions-count",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "OFFLINE_PARTITIONS = data(\"gauge.kafka-offline-partitions-count\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
-            "varName" : "OFFLINE_PARTITIONS"
-          },
-          "metricSelectors" : [ "gauge.kafka-offline-partitions-count" ],
-          "type" : "metric",
-          "valueFormat" : null,
-          "valueLabel" : "offline partitions",
-          "valueType" : null
-        }, {
-          "coloring" : null,
-          "description" : "ISR Shrink",
-          "displayName" : "ISR Shrink",
-          "id" : "counter.kafka-isr-shrinks",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "ISR_SHRINK = data(\"counter.kafka-isr-shrinks\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"host\"])",
-            "varName" : "ISR_SHRINK"
-          },
-          "metricSelectors" : [ "counter.kafka-isr-shrinks" ],
-          "type" : "metric",
-          "valueFormat" : null,
-          "valueLabel" : "ISR shrink",
-          "valueType" : null
-        }, {
-          "coloring" : null,
-          "description" : "ISR Expand",
-          "displayName" : "ISR Expand",
-          "id" : "counter.kafka-isr-expands",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "ISR_EXPAND = data(\"counter.kafka-isr-expands\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"host\"])",
-            "varName" : "ISR_EXPAND"
-          },
-          "metricSelectors" : [ "counter.kafka-isr-expands" ],
-          "type" : "metric",
-          "valueFormat" : null,
-          "valueLabel" : "ISR expand",
-          "valueType" : null
-        }, {
-          "coloring" : null,
-          "description" : "Replication Lag between Broker & Leader",
-          "displayName" : "Replication Lag",
-          "id" : "gauge.kafka-max-lag",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "REPLICATION_LAG = data(\"gauge.kafka-max-lag\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
-            "varName" : "REPLICATION_LAG"
-          },
-          "metricSelectors" : [ "gauge.kafka-max-lag" ],
-          "type" : "metric",
-          "valueFormat" : null,
-          "valueLabel" : "replication lag",
+          "valueLabel" : "active controllers",
           "valueType" : null
         }, {
           "coloring" : {
@@ -144,7 +86,29 @@
             "minValue" : 0,
             "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
-          "description" : "Bytes In",
+          "description" : "This metric is the number of bytes received per second across all topics/Number of messages received per second across all topics. Darker color indicate higher relative values.",
+          "displayName" : "Average Incoming Message Size (bytes)",
+          "id" : "counter.kafka-bytes-in/counter.kafka-messages-in",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "BYTES = data(\"counter.kafka-bytes-in\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"delta\").sum(by=[\"host\"])\nMESSAGES = data(\"counter.kafka-messages-in\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"delta\").sum(by=[\"host\"])\nMESSAGE_SIZE = (BYTES/MESSAGES)",
+            "varName" : "MESSAGE_SIZE"
+          },
+          "metricSelectors" : [ "counter.kafka-bytes-in", "counter.kafka-messages-in" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "average incoming message size",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric is the number of bytes received per second across all topics. Darker color indicate higher relative values.",
           "displayName" : "Bytes In",
           "id" : "counter.kafka-bytes-in",
           "job" : {
@@ -166,7 +130,7 @@
             "minValue" : 0,
             "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
-          "description" : "Bytes Out",
+          "description" : "This metric is the number of bytes transmitted per second across all topics. Darker color indicate higher relative values.",
           "displayName" : "Bytes Out",
           "id" : "counter.kafka-bytes-out",
           "job" : {
@@ -181,9 +145,15 @@
           "valueLabel" : "bytes out",
           "valueType" : null
         }, {
-          "coloring" : null,
-          "description" : "Time taken (in milliseconds) by consumers to get data, median and 99th percentile",
-          "displayName" : "FetchConsumer Total Time",
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric is the median time in milliseconds it takes to process a fetch request from consumers. Darker color indicate higher relative values.",
+          "displayName" : "FetchConsumer Total Time (ms)",
           "id" : "gauge.kafka.fetch-consumer.total-time.median",
           "job" : {
             "filters" : [ ],
@@ -197,9 +167,15 @@
           "valueLabel" : "fetchConsumer total time",
           "valueType" : null
         }, {
-          "coloring" : null,
-          "description" : "Time taken by followers of a partition to get data from the leader, median and 99th percentile",
-          "displayName" : "FetchFollower Total time",
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric is the median time in milliseconds it takes to process a fetch request from follower. Darker color indicate higher relative values.",
+          "displayName" : "FetchFollower Total time (ms)",
           "id" : "gauge.kafka.fetch-follower.total-time.median",
           "job" : {
             "filters" : [ ],
@@ -214,8 +190,84 @@
           "valueType" : null
         }, {
           "coloring" : null,
-          "description" : "Time taken to send data by producers",
-          "displayName" : "ProduceRequest Total Time",
+          "description" : "ISR Expand",
+          "displayName" : "ISR Expand",
+          "id" : "counter.kafka-isr-expands",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "ISR_EXPAND = data(\"counter.kafka-isr-expands\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"host\"])",
+            "varName" : "ISR_EXPAND"
+          },
+          "metricSelectors" : [ "counter.kafka-isr-expands" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "ISR expand",
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : "ISR Shrink",
+          "displayName" : "ISR Shrink",
+          "id" : "counter.kafka-isr-shrinks",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "ISR_SHRINK = data(\"counter.kafka-isr-shrinks\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"host\"])",
+            "varName" : "ISR_SHRINK"
+          },
+          "metricSelectors" : [ "counter.kafka-isr-shrinks" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "ISR shrink",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric is the number of messages received per second across all topics. Darker color indicate higher relative values.",
+          "displayName" : "Messages Received/Sec",
+          "id" : "counter.kafka-messages-in",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "RECEIVED_MESSAGES = data(\"counter.kafka-messages-in\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").ㅡㄷ무(by=[\"host\"])",
+            "varName" : "RECEIVED_MESSAGES"
+          },
+          "metricSelectors" : [ "counter.kafka-messages-in" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "messages received/sec",
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : "Offline Partitions",
+          "displayName" : "# Offline Partitions",
+          "id" : "gauge.kafka-offline-partitions-count",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "OFFLINE_PARTITIONS = data(\"gauge.kafka-offline-partitions-count\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
+            "varName" : "OFFLINE_PARTITIONS"
+          },
+          "metricSelectors" : [ "gauge.kafka-offline-partitions-count" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "offline partitions",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric is the median time in milliseconds it takes to process a produce request. Darker color indicate higher relative values.",
+          "displayName" : "ProduceRequest Total Time (ms)",
           "id" : "gauge.kafka.produce.total-time.median",
           "job" : {
             "filters" : [ ],
@@ -230,7 +282,29 @@
           "valueType" : null
         }, {
           "coloring" : null,
-          "description" : "Size of the request queue. A congested request queue will not be able to process incoming or outgoing requests",
+          "description" : "Replication Lag in milliseconds between Broker & Leader. Darker color indicate higher relative values.",
+          "displayName" : "Replication Lag (ms)",
+          "id" : "gauge.kafka-max-lag",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "REPLICATION_LAG = data(\"gauge.kafka-max-lag\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
+            "varName" : "REPLICATION_LAG"
+          },
+          "metricSelectors" : [ "gauge.kafka-max-lag" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "replication lag",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric is the number of requests in the request queue across all partitions on the broker. Darker color indicate higher relative values.",
           "displayName" : "Request Queue Size",
           "id" : "gauge.kafka-request-queue",
           "job" : {
@@ -245,53 +319,9 @@
           "valueLabel" : "request queue size",
           "valueType" : null
         }, {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
-          },
-          "description" : "Average Incoming Message Size",
-          "displayName" : "Average Incoming Message Size",
-          "id" : "counter.kafka-bytes-in/counter.kafka-messages-in",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "BYTES = data(\"counter.kafka-bytes-in\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"delta\").sum(by=[\"host\"])\nMESSAGES = data(\"counter.kafka-messages-in\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"delta\").sum(by=[\"host\"])\nMESSAGE_SIZE = (BYTES/MESSAGES)",
-            "varName" : "MESSAGE_SIZE"
-          },
-          "metricSelectors" : [ "counter.kafka-bytes-in", "counter.kafka-messages-in" ],
-          "type" : "metric",
-          "valueFormat" : null,
-          "valueLabel" : "average incoming message size",
-          "valueType" : null
-        }, {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
-          },
-          "description" : "Active Controllers",
-          "displayName" : "Active Controllers",
-          "id" : "gauge.kafka-active-controllers",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "CONTROLLERS = data(\"gauge.kafka-active-controllers\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
-            "varName" : "CONTROLLERS"
-          },
-          "metricSelectors" : [ "gauge.kafka-active-controllers" ],
-          "type" : "metric",
-          "valueFormat" : null,
-          "valueLabel" : "active controllers",
-          "valueType" : null
-        }, {
           "coloring" : null,
           "description" : "Unclean Leader Elections",
-          "displayName" : "Unclean Leader Elections",
+          "displayName" : "# Unclean Leader Elections",
           "id" : "counter.kafka-unclean-elections-rate",
           "job" : {
             "filters" : [ ],
@@ -312,19 +342,35 @@
             "minValue" : 0,
             "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
-          "description" : "Messages Received/Sec",
-          "displayName" : "Messages Received/Sec",
-          "id" : "counter.kafka-messages-in",
+          "description" : "This metric is the number of underreplicated partitions across all topics on the broker. Darker color indicate higher relative values.",
+          "displayName" : "# Under-replicated Partitions",
+          "id" : "gauge.kafka-underreplicated-partitions",
           "job" : {
             "filters" : [ ],
             "resolution" : 300000,
-            "template" : "RECEIVED_MESSAGES = data(\"counter.kafka-messages-in\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").ㅡㄷ무(by=[\"host\"])",
-            "varName" : "RECEIVED_MESSAGES"
+            "template" : "UNDER_REPLICATED_PARTITIONS = data(\"gauge.kafka-underreplicated-partitions\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"host\"])",
+            "varName" : "UNDER_REPLICATED_PARTITIONS"
           },
-          "metricSelectors" : [ "counter.kafka-messages-in" ],
+          "metricSelectors" : [ "gauge.kafka-underreplicated-partitions" ],
           "type" : "metric",
           "valueFormat" : null,
-          "valueLabel" : "messages received/sec",
+          "valueLabel" : "under-replicated partitions",
+          "valueType" : null
+        }, {
+          "coloring" : null,
+          "description" : "Zookeeper Request Latency",
+          "displayName" : "Zookeeper Request Latency (milliseconds)",
+          "id" : "gauge.kafka.zk.request-latency.median",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "ZOOKEEPER_LATENCY = data(\"gauge.kafka.zk.request-latency.median\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"host\"])",
+            "varName" : "ZOOKEEPER_LATENCY"
+          },
+          "metricSelectors" : [ "gauge.kafka.zk.request-latency.median" ],
+          "type" : "metric",
+          "valueFormat" : null,
+          "valueLabel" : "zookeeper request latency",
           "valueType" : null
         }, {
           "coloring" : {
@@ -334,7 +380,7 @@
             "minValue" : 0,
             "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
-          "description" : "Zookeeper Requests/Sec",
+          "description" : "Zookeeper Requests/Sec. Darker color indicate higher relative values.",
           "displayName" : "Zookeeper Requests/Sec",
           "id" : "counter.kafka.zk.request-latency.count",
           "job" : {
@@ -347,22 +393,6 @@
           "type" : "metric",
           "valueFormat" : null,
           "valueLabel" : "zookeeper requests/sec",
-          "valueType" : null
-        }, {
-          "coloring" : null,
-          "description" : "Zookeeper Request Latency",
-          "displayName" : "Zookeeper Request Latency",
-          "id" : "gauge.kafka.zk.request-latency.median",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "ZOOKEEPER_LATENCY = data(\"gauge.kafka.zk.request-latency.median\", filter=filter(\"host\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"host\"])",
-            "varName" : "ZOOKEEPER_LATENCY"
-          },
-          "metricSelectors" : [ "gauge.kafka.zk.request-latency.median" ],
-          "type" : "metric",
-          "valueFormat" : null,
-          "valueLabel" : "zookeeper request latency",
           "valueType" : null
         } ],
         "mtsQuery" : "sf_metric:counter.kafka-bytes-out AND sf_key:host",
@@ -378,11 +408,6 @@
         "systemDashboardName" : "Brokers",
         "systemDashboardPrefix" : null,
         "tooltipKeyList" : [ {
-          "displayName" : "ID",
-          "format" : null,
-          "isSummaryProperty" : true,
-          "property" : "id"
-        }, {
           "displayName" : "Region",
           "format" : null,
           "isSummaryProperty" : true,
