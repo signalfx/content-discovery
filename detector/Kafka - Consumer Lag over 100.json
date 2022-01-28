@@ -5,7 +5,7 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "Alerts when a consumer group is lagging behind the latest offset by a 100",
+      "description": "Alerts when a consumer group is lagging behind the latest offset by a 100 for 2m",
       "detectorOrigin": "AutoDetect",
       "id": "FBqJ9_IAYAA",
       "labelResolutions": {
@@ -15,18 +15,18 @@
       "lastUpdatedBy": null,
       "maxDelay": 0,
       "minDelay": 0,
-      "name": "Kafka - Consumer Group lag > 100 in average for last 10m",
+      "name": "Kafka - Consumer Group lag > 100 for last 2m",
       "overMTSLimit": false,
       "packageSpecifications": "",
       "parentDetectorId": null,
-      "programText": "A = data('kafka.consumer_group.lag').fill(duration='1m').sum(by=['topic', 'partition', 'group']).mean(over='10m').publish(label='A')\ndetect(when(A > threshold(100), lasting='1m'), auto_resolve_after='1d').publish('Kafka - Consumer Group lag > 100')",
+      "programText": "A = data('kafka.consumer_group.lag').fill(duration='1m').sum(by=['topic', 'partition', 'group'])\n\nB = (A).min(over='2m').above(100, inclusive=True).count(by=['topic', 'partition', 'group'])\n\nC = (A).max(over='5m').above(100, inclusive=True).count(by=['topic', 'partition', 'group'])\n\nD = (B+C).not_between(0.5, 1.5, low_inclusive=True, high_inclusive=True).map(lambda x: ceil((x + 1)/3))\n\nE = combine(A * D).publish('E')\n\ndetect(when(E > threshold(100)), auto_resolve_after='1d').publish('Kafka - Consumer Group lag > 100')",
       "rules": [
         {
           "description": "The value of Consumer Group Lag is above 100.",
           "detectLabel": "Kafka - Consumer Group lag > 100",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for kafka.consumer_group.lag - Sum: {{inputs.A.value}}\n{{else}}Current signal value for kafka.consumer_group.lag - Sum: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for kafka.consumer_group.lag: {{inputs.E.value}}\n{{else}}Current signal value for kafka.consumer_group.lag : {{inputs.E.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{detectorName}}}",
           "runbookUrl": "",
           "severity": "Critical",
@@ -41,7 +41,7 @@
         "publishLabelOptions": [
           {
             "displayName": "Consumer Group Lag",
-            "label": "A",
+            "label": "E",
             "paletteIndex": null,
             "valuePrefix": null,
             "valueSuffix": null,
@@ -80,7 +80,7 @@
       ]
     }
   },
-  "hashCode": -1435757152,
+  "hashCode": -312877322,
   "id": "FBqJ9_IAYAA",
   "packageType": "DETECTOR"
 }
