@@ -18,7 +18,8 @@
       "name": "K8S Cluster Deployment is not at spec",
       "overMTSLimit": false,
       "packageSpecifications": "",
-      "programText": "A = data('k8s.deployment.desired').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'deployment']).publish(label='A', enable=False)\nB = data('k8s.deployment.available').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'deployment']).publish(label='B', enable=False)\nC = (B-A).publish(label='C', enable=False)\ndetect(when((C > threshold(0)) or (C < threshold(0)), lasting='5m', at_least=0.8), auto_resolve_after='1d').publish('K8S Cluster Deployment is not at spec')",
+      "parentDetectorId": null,
+      "programText": "A = data('k8s.deployment.desired').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.deployment.name']).publish(label='A', enable=False)\nB = data('k8s.deployment.available').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.deployment.name']).publish(label='B', enable=False)\nC = (B-A).publish(label='C', enable=False)\ndetect(when((C > threshold(0)) or (C < threshold(0)), lasting='5m', at_least=0.8), auto_resolve_after='1d').publish('K8S Cluster Deployment is not at spec')",
       "rules": [
         {
           "description": "The value of Available - Desired is outside of 0 and 0 for 80% of 5m.",
@@ -86,7 +87,7 @@
             },
             {
               "not": false,
-              "property": "deployment",
+              "property": "k8s.deployment.name",
               "values": []
             }
           ],
@@ -106,7 +107,7 @@
             },
             {
               "not": false,
-              "property": "deployment",
+              "property": "k8s.deployment.name",
               "values": []
             }
           ],
@@ -115,7 +116,7 @@
       ]
     }
   },
-  "hashCode": -1954766373,
+  "hashCode": -431033567,
   "id": "FAUPIFYAYAE",
   "packageType": "DETECTOR"
 }
