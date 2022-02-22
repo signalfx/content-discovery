@@ -1,5 +1,5 @@
 {
-  "hashCode": 1394189151,
+  "hashCode": -2028429147,
   "id": "FMG__sOAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -74,21 +74,21 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of hosts in vCenter. Darker colors indicate higher relative values.",
-            "displayName": "# Hosts",
-            "id": "vsphere_vcenter_hosts",
+            "description": "This metric shows the number of clusters in vCenter. Darker colors indicate higher relative values.",
+            "displayName": "# Clusters",
+            "id": "vsphere_vcenter_cluster",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "HOSTS = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['esx_ip', 'datacenter'])\nHOST_BY_VCENTER = (HOSTS).count(by=['datacenter'])",
-              "varName": "HOST_BY_VCENTER"
+              "template": "CLUSTER = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('cluster', '*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['cluster', 'datacenter'])\nCLUSTER_BY_VCENTER = (CLUSTER).count(by=['datacenter'])",
+              "varName": "CLUSTER_BY_VCENTER"
             },
             "metricSelectors": [
               "vsphere.cpu_usage_percent"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": "Hosts",
+            "valueFormat": "Number",
+            "valueLabel": "Clusters",
             "valueType": null
           },
           {
@@ -105,21 +105,21 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of clusters in vCenter. Darker colors indicate higher relative values.",
-            "displayName": "# Clusters",
-            "id": "vsphere_vcenter_cluster",
+            "description": "This metric shows the number of hosts in vCenter. Darker colors indicate higher relative values.",
+            "displayName": "# Hosts",
+            "id": "vsphere_vcenter_hosts",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CLUSTER = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('cluster', '*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['cluster', 'datacenter'])\nCLUSTER_BY_VCENTER = (CLUSTER).count(by=['datacenter'])",
-              "varName": "CLUSTER_BY_VCENTER"
+              "template": "HOSTS = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['esx_ip', 'datacenter'])\nHOST_BY_VCENTER = (HOSTS).count(by=['datacenter'])",
+              "varName": "HOST_BY_VCENTER"
             },
             "metricSelectors": [
               "vsphere.cpu_usage_percent"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": "Clusters",
+            "valueFormat": "Number",
+            "valueLabel": "Hosts",
             "valueType": null
           },
           {
@@ -149,33 +149,8 @@
               "vsphere.cpu_usage_percent"
             ],
             "type": "metric",
-            "valueFormat": null,
+            "valueFormat": "Number",
             "valueLabel": "VMs",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": null
-            },
-            "description": "This metric shows the CPU usage (%). Darker colors indicate higher relative values.",
-            "displayName": "CPU (%)",
-            "id": "vsphere_vcenter_cpu_usage",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"datacenter\"])",
-              "varName": "CPU_PCT"
-            },
-            "metricSelectors": [
-              "vsphere.cpu_usage_percent"
-            ],
-            "type": "metric",
-            "valueFormat": null,
-            "valueLabel": "CPU",
             "valueType": null
           },
           {
@@ -217,6 +192,31 @@
               "minValue": 0,
               "range": null
             },
+            "description": "This metric shows the CPU usage (%). Darker colors indicate higher relative values.",
+            "displayName": "CPU (%)",
+            "id": "vsphere_vcenter_cpu_usage",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"datacenter\"])",
+              "varName": "CPU_PCT"
+            },
+            "metricSelectors": [
+              "vsphere.cpu_usage_percent"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "CPU",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": null
+            },
             "description": "This metric shows the percentage of host physical memory that has been consumed. Darker colors indicate higher relative values.",
             "displayName": "Memory (%)",
             "id": "vsphere_vcenter_memory_usage",
@@ -230,7 +230,7 @@
               "vsphere.mem_usage_percent"
             ],
             "type": "metric",
-            "valueFormat": null,
+            "valueFormat": "Percentage",
             "valueLabel": "Memory",
             "valueType": null
           }
