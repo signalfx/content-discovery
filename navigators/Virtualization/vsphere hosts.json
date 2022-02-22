@@ -1,0 +1,310 @@
+{
+  "hashCode": -1308541549,
+  "id": "FMHAeo5AcAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": true,
+      "created": 0,
+      "creator": null,
+      "description": "",
+      "id": "FMHAeo5AcAA",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "sf_key",
+          "values": [
+            "esx_ip"
+          ]
+        }],
+        "metric": "vsphere.cpu_usage_percent"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "vSphere Hosts",
+      "navigatorCategory": "Virtualization",
+      "navigatorCategoryDisplayName": "Virtualization",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "sites": "o11y",
+      "systemTypes": [
+        "vsphere"
+      ],
+      "uiModel": {
+        "alertQuery": "_exists_:esx_ip",
+        "category": "Virtualization",
+        "categoryPriority": 100,
+        "discoveryQuery": [
+          "_exists_:esx_ip"
+        ],
+        "displayName": "vSphere Host",
+        "filterProperties": null,
+        "id": "vspherehost",
+        "idName": "Host",
+        "idTemplate": "{{esx_ip}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Host",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": null
+            },
+            "description": "This metric shows the CPU usage (%). Darker colors indicate higher relative values.",
+            "displayName": "CPU (%)",
+            "id": "vsphere_host_cpu_pct",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"esx_ip\"])",
+              "varName": "CPU_PCT"
+            },
+            "metricSelectors": [
+              "vsphere.cpu_usage_percent"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "CPU",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the aggregated value of disk I/O rate (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Disk I/O (bytes)",
+            "id": "vsphere_host_disk_io",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DISK_USAGE = data(\"vsphere.disk_usage_kbs\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average')\nDISK_USAGE_MEAN = (DISK_USAGE).mean(by=['esx_ip']).mean(over='15m')",
+              "varName": "DISK_USAGE_MEAN"
+            },
+            "metricSelectors": [
+              "vsphere.disk_usage_kbs"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Disk I/O",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the average latency of disk (ms). Darker colors indicate higher relative values.",
+            "displayName": "Disk Latency (ms)",
+            "id": "vsphere_host_disk_latency",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DISK_LATENCY = data(\"vsphere.disk_max_total_latency_ms\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}})\nDISK_LATENCY_MEAN = (DISK_LATENCY).mean(by=['esx_ip']).mean(over='15m')",
+              "varName": "DISK_LATENCY_MEAN"
+            },
+            "metricSelectors": [
+              "vsphere.disk_max_total_latency_ms"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Disk latency",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the average rate at which data was sent/received during the interval. Darker colors indicate higher relative values.",
+            "displayName": "Disk Max Queue Depth",
+            "id": "vsphere_host_max_disk_queue_depth",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DISK_MAX_QUEUE_DEPTH = data(\"vsphere.disk_max_queue_depth\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])",
+              "varName": "DISK_MAX_QUEUE_DEPTH"
+            },
+            "metricSelectors": [
+              "vsphere.disk_max_queue_depth"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Disk max queue depth",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": null
+            },
+            "description": "This metric shows the percentage of host's physical memory that has been consumed. Darker colors indicate higher relative values.",
+            "displayName": "Memory (%)",
+            "id": "vsphere_host_mem_pct",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "USED_MEMORY = data(\"vsphere.mem_usage_percent\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).sum(by=[\"esx_ip\"])",
+              "varName": "USED_MEMORY"
+            },
+            "metricSelectors": [
+              "vsphere.mem_usage_percent"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Memory",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the average rate at which data was sent/received during the interval (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Network I/O (bytes)",
+            "id": "vsphere_host_net_io",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "NET_SENT = data(\"vsphere.net_transmitted_kbs\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nNET_RECEIVED = data(\"vsphere.net_received_kbs\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nNET_IO = (NET_SENT + NET_RECEIVED)",
+              "varName": "NET_IO"
+            },
+            "metricSelectors": [
+              "vsphere.net_transmitted_kbs",
+              "vsphere.net_received_kbs"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Network I/O",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the average rate at which memory is swapped from disk into active memory and vice versa during the interval. Darker colors indicate higher relative values.",
+            "displayName": "Swap Rate",
+            "id": "vsphere_host_swap_rate",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "SWAP_IN = data(\"vsphere.mem_swapin_rate_kbs\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nSWAP_OUT = data(\"vsphere.mem_swapout_rate_kbs\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nSWAP_TOTAL = (SWAP_IN + SWAP_OUT)",
+              "varName": "SWAP_TOTAL"
+            },
+            "metricSelectors": [
+              "vsphere.mem_swapin_rate_kbs",
+              "vsphere.mem_swapout_rate_kbs"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Swap rate",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "sf_metric:vsphere.cpu_usage_percent",
+        "o11yMetricName": "Running Hosts",
+        "o11yMetricUnit": null,
+        "o11yProductName": "vSphere Hosts",
+        "o11ySignalflowTemplate": "A = data('vsphere.cpu_usage_percent', filter=(not filter('object', '*'))).mean(by=['esx_ip']).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "esx_ip"
+        ],
+        "singleHostSystemDashboardName": "Host",
+        "systemDashboardName": "Hosts",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Instance Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
