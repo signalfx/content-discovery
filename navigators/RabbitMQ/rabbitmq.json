@@ -1,0 +1,509 @@
+{
+  "hashCode": -214745336,
+  "id": "FKaM1pCAcAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "description": "",
+      "id": "FKaM1pCAcAA",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": [
+            "rabbitmq"
+          ]
+        }],
+        "metric": "gauge.node.uptime"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "RabbitMQ Nodes",
+      "navigatorCategory": "Messaging",
+      "navigatorCategoryDisplayName": "Messaging",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "ownerScope": "organization",
+      "sites": "o11y",
+      "systemTypes": [
+        "rabbitmq"
+      ],
+      "uiModel": {
+        "alertQuery": "plugin:rabbitmq",
+        "category": "Messaging",
+        "categoryPriority": 10,
+        "discoveryQuery": [
+          "plugin:rabbitmq"
+        ],
+        "displayName": "RabbitMQ Node",
+        "filterProperties": null,
+        "id": "rabbitmqnodes",
+        "idName": "Node",
+        "idTemplate": "{{host}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Node",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total count of messages published \"in\" to an exchange. Darker colors indicate higher relative values.",
+            "displayName": "# Exchanges",
+            "id": "rabbitmq_exchanges",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_NUMBER_OF_EXCHANGES = data(\"counter.exchange.message_stats.publish_in\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, rollup='rate').count(by=[\"host\"])",
+              "varName": "TOTAL_NUMBER_OF_EXCHANGES"
+            },
+            "metricSelectors": [
+              "counter.exchange.message_stats.publish_in"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Exchanges",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total number of consumers of the queue. Darker colors indicate higher relative values.",
+            "displayName": "# Queue Customers",
+            "id": "rabbitmq_queue_customers",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_NUMBER_OF_CONSUMERS = data(\"gauge.queue.consumers\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\"])",
+              "varName": "TOTAL_NUMBER_OF_CONSUMERS"
+            },
+            "metricSelectors": [
+              "gauge.queue.consumers"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Queue customers",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total number of queues. Darker colors indicate higher relative values.",
+            "displayName": "# Queues",
+            "id": "rabbitmq_queues",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_NUMBER_OF_QUEUES = data(\"gauge.queue.memory\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).count(by=[\"host\"])",
+              "varName": "TOTAL_NUMBER_OF_QUEUES"
+            },
+            "metricSelectors": [
+              "gauge.queue.memory"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Queues",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total number of the channel, which uniquely identifies it within a connection. Darker colors indicate higher relative values.",
+            "displayName": "# Vhosts",
+            "id": "rabbtimq_vhosts",
+            "job": {
+              "filters": [],
+              "resolution": 10000,
+              "template": "NUMBER_OF_CHANNEL = data(\"gauge.channel.number\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, rollup='average').count(by=[\"vhost\",\"host\"])\nTOTAL_NUMBER_OF_VHOST = NUMBER_OF_CHANNEL.sum(by=['host'])",
+              "varName": "TOTAL_NUMBER_OF_VHOST"
+            },
+            "metricSelectors": [
+              "gauge.channel.number"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Vhosts",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total memory usage of active nodes (% of alarm level). Darker colors indicate higher relative values.",
+            "displayName": "Disk Free (% of alarm level)",
+            "id": "rabbitmq_disk_free",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_DISK_FREE = data(\"gauge.node.disk_free\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nTOTAL_DISK_FREE_LIMIT = data(\"gauge.node.disk_free_limit\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(1024).mean(by=[\"host\"])\nTOTAL_PERCENTAGE_OF_DISK_FREE_ALARM_LIMIT = (TOTAL_DISK_FREE/TOTAL_DISK_FREE_LIMIT*100)",
+              "varName": "TOTAL_PERCENTAGE_OF_DISK_FREE_ALARM_LIMIT"
+            },
+            "metricSelectors": [
+              "gauge.node.disk_free",
+              "gauge.node.disk_free_limit"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Disk free",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total file descriptors used (% of available) of active nodes. Darker colors indicate higher relative values.",
+            "displayName": "File Descriptors Used (% of available)",
+            "id": "rabbitmq_file_descriptor_usage",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_FD_USED = data(\"gauge.node.fd_used\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nTOTAL_FD_AVAILABLE = data(\"gauge.node.fd_total\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nTOTAL_FD_USED_OF_TOTAL_AVAILABLE = (TOTAL_FD_USED/TOTAL_FD_AVAILABLE).scale(100)",
+              "varName": "TOTAL_FD_USED_OF_TOTAL_AVAILABLE"
+            },
+            "metricSelectors": [
+              "gauge.node.fd_used",
+              "gauge.node.fd_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "File descriptors used",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the sum of average wall time for each disk read and write operation in the last statistics interval (ms). Darker colors indicate higher relative values.",
+            "displayName": "I/O Latency (ms)",
+            "id": "rabbitmq_io_latency",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "IO_READ_LATENCY = data(\"gauge.node.io_read_avg_time\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nIO_WRITE_LATENCY = data(\"gauge.node.io_write_avg_time\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nIO_LATENCY=(IO_READ_LATENCY+IO_WRITE_LATENCY)",
+              "varName": "IO_LATENCY"
+            },
+            "metricSelectors": [
+              "gauge.node.io_read_avg_time",
+              "gauge.node.io_write_avg_time"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "I/O latency",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total memory usage of active nodes (% of alarm level). Darker colors indicate higher relative values.",
+            "displayName": "Memory Usage (% of alarm level)",
+            "id": "rabbitmq_memory_usage_of_alarm_level",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_MEMORY_USED = data(\"gauge.node.mem_used\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nTOTAL_MEMORY_LIMIT = data(\"gauge.node.mem_limit\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nTOTAL_PERCENTAGE_OF_MEMORY_USAGE_ALARM_LEVEL = (TOTAL_MEMORY_USED/TOTAL_MEMORY_LIMIT*100)",
+              "varName": "TOTAL_PERCENTAGE_OF_MEMORY_USAGE_ALARM_LEVEL"
+            },
+            "metricSelectors": [
+              "gauge.node.mem_used",
+              "gauge.node.mem_limit"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Memory usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total amount of memory used (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Memory Usage (bytes)",
+            "id": "rabbitmq_total_memory_usage",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_MEMORY_USED = data(\"gauge.node.mem_used\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+              "varName": "TOTAL_MEMORY_USED"
+            },
+            "metricSelectors": [
+              "gauge.node.mem_used"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Memory usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total count of messages/sec delivered in acknowledgement mode to consumers. Darker colors indicate higher relative values.",
+            "displayName": "Messages Delivered / Sec",
+            "id": "rabbitmq_messages_delivered_per_sec",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_NUMBER_OF_MESSAGES_PER_SEC = data(\"counter.queue.message_stats.deliver\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).count(by=[\"host\"])",
+              "varName": "TOTAL_NUMBER_OF_MESSAGES_PER_SEC"
+            },
+            "metricSelectors": [
+              "counter.queue.message_stats.deliver"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Messages delivered / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total number of messages in. Darker colors indicate higher relative values.",
+            "displayName": "Messages In",
+            "id": "rabbitmq_messages_in",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_NUMBER_OF_MESSAGES_IN = data(\"counter.exchange.message_stats.publish_in\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\", \"name\"])",
+              "varName": "TOTAL_NUMBER_OF_MESSAGES_IN"
+            },
+            "metricSelectors": [
+              "counter.exchange.message_stats.publish_in"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Messages in",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total number of messages ready to be delivered to clients. Darker colors indicate higher relative values.",
+            "displayName": "Messages Ready",
+            "id": "rabbitmq_messages_ready",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_NUMBER_OF_MESSAGES_READY = data(\"gauge.queue.messages_ready\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).count(by=[\"host\"])",
+              "varName": "TOTAL_NUMBER_OF_MESSAGES_READY"
+            },
+            "metricSelectors": [
+              "gauge.queue.messages_ready"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Messages ready",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows total time since the Erlang VM started (hours). Darker colors indicate higher relative values.",
+            "displayName": "Node Uptime (hours)",
+            "id": "rabbitmq_node_uptime",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_NODE_UPTIME = data(\"gauge.node.uptime\", filter=filter(\"plugin\", \"rabbitmq\")   {{#filter}} {{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nTOTAL_NODE_UPTIME_IN_HOURS = (TOTAL_NODE_UPTIME/3600/1000)",
+              "varName": "TOTAL_NODE_UPTIME_IN_HOURS"
+            },
+            "metricSelectors": [
+              "gauge.node.uptime"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Node uptime",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "sf_metric:gauge.queue.messages_ready AND plugin:rabbitmq",
+        "o11yMetricName": "Running Nodes",
+        "o11yMetricUnit": null,
+        "o11yProductName": "RabbitMQ Nodes",
+        "o11ySignalflowTemplate": "A = data('gauge.node.uptime', filter=filter('plugin', 'rabbitmq')).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "RabbitMQ Node",
+        "systemDashboardName": "RabbitMQ",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Instance Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
