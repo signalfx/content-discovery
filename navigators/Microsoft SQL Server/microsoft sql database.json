@@ -1,0 +1,227 @@
+{
+  "hashCode": 1378195132,
+  "id": "FLOYz74AYAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": true,
+      "created": 0,
+      "creator": null,
+      "description": "",
+      "id": "FLOYz74AYAA",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": [
+            "telegraf-sqlserver"
+          ]
+        }],
+        "metric": "sqlserver_server_properties.db_online"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Microsoft SQL Databases",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "sites": "o11y",
+      "systemTypes": [
+        "sqlserver"
+      ],
+      "uiModel": {
+        "alertQuery": "plugin:telegraf-sqlserver",
+        "category": "Datastores",
+        "categoryPriority": 100,
+        "discoveryQuery": [
+          "plugin:telegraf-sqlserver",
+          "_exists_:host"
+        ],
+        "displayName": "Microsoft SQL Databases",
+        "filterProperties": null,
+        "id": "microsoftsqldatabases",
+        "idName": "Database",
+        "idTemplate": "{{database_name}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Database",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "SQL Instance",
+            "format": null,
+            "metric": null,
+            "property": "sql_instance",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of I/O bytes/sec (read and write operations) of databases. Darker colors indicate higher relative values.",
+            "displayName": "I/O Bytes / Sec",
+            "id": "mssql_io_bytes_per_sec",
+            "job": {
+              "filters": [{
+                "not": false,
+                "property": "_exists_",
+                "propertyValue": "database_name",
+                "type": "property"
+              }],
+              "resolution": 60000,
+              "template": "READ_BYTES = data(\"sqlserver_database_io.read_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"database_name\", \"sql_instance\", \"host\", \"file_type\"]).scale(8)\nWRITE_BYTES = data(\"sqlserver_database_io.write_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').scale(8).sum(by=[\"database_name\", \"sql_instance\", \"host\", \"file_type\"])\nIO_BYTES = (READ_BYTES+WRITE_BYTES)",
+              "varName": "IO_BYTES"
+            },
+            "metricSelectors": [
+              "sqlserver_database_io.write_bytes",
+              "sqlserver_database_io.read_bytes"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "I/O bytes / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of I/O transactions/sec (read and write operations) of databases and log files combined. Darker colors indicate higher relative values.",
+            "displayName": "I/O Transactions / Sec",
+            "id": "mssql_io_transactions_per_sec",
+            "job": {
+              "filters": [{
+                "not": false,
+                "property": "_exists_",
+                "propertyValue": "database_name",
+                "type": "property"
+              }],
+              "resolution": 60000,
+              "template": "IO_READS = data(\"sqlserver_database_io.reads\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"database_name\", \"sql_instance\", \"host\", \"file_type\"])\nIO_WRITES = data(\"sqlserver_database_io.writes\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"database_name\", \"sql_instance\", \"host\", \"file_type\"])\nIO_TRANSACTIONS = (IO_READS+IO_WRITES)",
+              "varName": "IO_TRANSACTIONS"
+            },
+            "metricSelectors": [
+              "sqlserver_database_io.reads",
+              "sqlserver_database_io.writes"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "I/O transactions / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the amount I/O latency of databases (ms). Darker colors indicate higher relative values.",
+            "displayName": "I/O Latency (ms)",
+            "id": "mssql_io_latency_per_sec",
+            "job": {
+              "filters": [{
+                "not": false,
+                "property": "_exists_",
+                "propertyValue": "database_name",
+                "type": "property"
+              }],
+              "resolution": 60000,
+              "template": "IO_READ_LAT = data(\"sqlserver_database_io.read_latency_ms\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"database_name\", \"sql_instance\", \"host\", \"file_type\"])\nIO_WRITE_LAT = data(\"sqlserver_database_io.write_latency_ms\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"database_name\", \"sql_instance\", \"host\", \"file_type\"])\nIO_LAT = (IO_READ_LAT+IO_WRITE_LAT)",
+              "varName": "IO_LAT"
+            },
+            "metricSelectors": [
+              "sqlserver_database_io.write_latency_ms",
+              "sqlserver_database_io.read_latency_ms"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "I/O latency",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "plugin:telegraf-sqlserver",
+        "o11yMetricName": "Running Databases",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Microsoft SQL Databases",
+        "o11ySignalflowTemplate": "A = data('sqlserver_database_io.reads').count(by=['database_name'])\nB = A.count().publish(label='B')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "Microsoft SQL Database",
+        "systemDashboardName": "Microsoft SQL Databases",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "SQL Instance",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "sql_instance"
+          },
+          {
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Instance Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
