@@ -1,5 +1,5 @@
 {
-  "hashCode": -679277470,
+  "hashCode": 764184528,
   "id": "FKv_QfvAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -49,7 +49,7 @@
         "displayName": "Apache Solr Clusters",
         "filterProperties": null,
         "id": "apachesolrcluster",
-        "idName": "Apache Solr Cluster",
+        "idName": "Cluster",
         "idTemplate": "{{cluster}}",
         "listColumns": [{
             "aggregate": null,
@@ -119,8 +119,8 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CORES_PER_COLLECTION = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").count(by=[\"cluster\"])",
-              "varName": "CORES_PER_COLLECTION"
+              "template": "CORES_PER_CLUSTER = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").count(by=[\"cluster\"])",
+              "varName": "CORES_PER_CLUSTER"
             },
             "metricSelectors": [
               "gauge.solr.core_num_docs"
@@ -230,15 +230,15 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
+                "#810f7c",
                 "#8856a7",
-                "#810f7c"
+                "#8c96c6",
+                "#9ebcda",
+                "#bfd3e6"
               ]
             },
-            "description": "This metric shows the percentage value of total usable space available against total space allocated for the core. Darker colors indicate higher relative values.",
-            "displayName": "Disk Space (%)",
+            "description": "This metric shows the percentage value of total usable space available against total space allocated for the core. Darker colors indicate lower relative values.",
+            "displayName": "Disk Space (% of available)",
             "id": "solrcluster_disk_space",
             "job": {
               "filters": [],
@@ -300,7 +300,7 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the JVM garbage collector - CMS process time over last minute. This metric is not supported in SOLR version 8.0+. Darker colors indicate higher relative values.",
+            "description": "This metric shows the percentage value of JVM garbage collection by CMS process over last minute. This metric is not supported in SOLR version 8.0+. Darker colors indicate higher relative values.",
             "displayName": "GC CMS (%)",
             "id": "solrcluster_gc_cms",
             "job": {
@@ -331,7 +331,7 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the JVM garbage collector - ParNew process time over last minute. This metric is not supported in SOLR version 8.0+.  Darker colors indicate higher relative values.",
+            "description": "This metric shows the percentage value of JVM garbage collection by ParNew process over last minute. This metric is not supported in SOLR version 8.0+.  Darker colors indicate higher relative values.",
             "displayName": "GC ParNew (%)",
             "id": "solrcluster_gc_parnew",
             "job": {
@@ -368,7 +368,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "JVM_TOT_MEMORY = data(\"gauge.solr.jvm_total_memory\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\")\nJVM_USED_MEMORY = data(\"gauge.solr.jvm_total_memory_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\")\nHEAP=((JVM_USED_MEMORY/JVM_TOT_MEMORY )*100)",
+              "template": "JVM_TOT_MEMORY = data(\"gauge.solr.jvm_total_memory\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"cluster\"])\nJVM_USED_MEMORY = data(\"gauge.solr.jvm_total_memory_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"cluster\"])\nHEAP=((JVM_USED_MEMORY/JVM_TOT_MEMORY )*100)",
               "varName": "HEAP"
             },
             "metricSelectors": [
@@ -425,13 +425,13 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the search query response time. Darker colors indicate higher relative values.",
+            "description": "This metric shows the search query response time (ms). Darker colors indicate higher relative values.",
             "displayName": "Search Request Latency (ms)",
             "id": "solrcluster_search_request_latency",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "SEARCH_REQ_LATENCY = data(\"gauge.solr.search_query_response\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\")",
+              "template": "SEARCH_REQ_LATENCY = data(\"gauge.solr.search_query_response\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"cluster\"])",
               "varName": "SEARCH_REQ_LATENCY"
             },
             "metricSelectors": [
@@ -456,13 +456,13 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the update request handler response time. Darker colors indicate higher relative values.",
+            "description": "This metric shows the update request handler response time (ms). Darker colors indicate higher relative values.",
             "displayName": "Update Request Latency (ms)",
             "id": "solrcluster_update_request_latency",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "UPDATE_REQ_LATENCY = data(\"gauge.solr.update_request_handler_response\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\")",
+              "template": "UPDATE_REQ_LATENCY = data(\"gauge.solr.update_request_handler_response\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"cluster\"])",
               "varName": "UPDATE_REQ_LATENCY"
             },
             "metricSelectors": [

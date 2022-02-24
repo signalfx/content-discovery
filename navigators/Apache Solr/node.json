@@ -1,5 +1,5 @@
 {
-  "hashCode": -508713378,
+  "hashCode": -1975718775,
   "id": "FK-1HLaAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -41,7 +41,7 @@
         "displayName": "Apache Solr Nodes",
         "filterProperties": null,
         "id": "apachesolrnode",
-        "idName": "Apache Solr Node",
+        "idName": "Node",
         "idTemplate": "{{plugin_instance}}",
         "listColumns": [{
             "aggregate": null,
@@ -111,7 +111,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CORE_PER_NODE = data(\"gauge.solr.core_max_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)",
+              "template": "CORE_PER_NODE = data(\"gauge.solr.core_max_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])",
               "varName": "CORE_PER_NODE"
             },
             "metricSelectors": [
@@ -136,8 +136,8 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the total number of indexed docs in Solr core. Darker colors indicate higher relative values.",
-            "displayName": "Disk Space Usage",
+            "description": "This metric shows the percentage value of total used space available against total space allocated for the core. Darker colors indicate higher relative values.",
+            "displayName": "Disk Space Usage (%)",
             "id": "solrnode_disk_space_usage",
             "job": {
               "filters": [],
@@ -150,7 +150,7 @@
               "gauge.solr.core_usablespace"
             ],
             "type": "metric",
-            "valueFormat": "Number",
+            "valueFormat": "Percentage",
             "valueLabel": "Disk space usage",
             "valueType": null
           },
@@ -168,7 +168,7 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the JVM garbage collector - CMS prcoess time over last minute. This metric is not supported in SOLR version 8.0+. Darker colors indicate higher relative values.",
+            "description": "This metric shows the percentage value of JVM garbage collection by CMS process over last minute. This metric is not supported in SOLR version 8.0+. Darker colors indicate higher relative values.",
             "displayName": "GC CMS (%)",
             "id": "solrnode_gc_cms",
             "job": {
@@ -199,7 +199,7 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the JVM garbage collector - Parnew prcoess time over last minute. This metric is not supported in SOLR version 8.0+.  Darker colors indicate higher relative values.",
+            "description": "This metric shows the percentage value of JVM garbage collection by ParNew process over last minute. This metric is not supported in SOLR version 8.0+.  Darker colors indicate higher relative values.",
             "displayName": "GC Parnew (%)",
             "id": "solrnode_gc_parnew",
             "job": {
@@ -236,7 +236,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "INDEXED_DOCS = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)",
+              "template": "INDEXED_DOCS = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])",
               "varName": "INDEXED_DOCS"
             },
             "metricSelectors": [
@@ -266,7 +266,7 @@
             "id": "solrnode_jvm_heap_usage",
             "job": {
               "filters": [],
-              "resolution": 10000,
+              "resolution": 60000,
               "template": "JVM_HEAP_USAGE = data(\"gauge.solr.jvm_heap_usage\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")",
               "varName": "JVM_HEAP_USAGE"
             },
@@ -298,7 +298,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "TOTAL_MEMORY_USED = data(\"gauge.solr.jvm_total_memory_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)\nTOTAL_MEMORY = data(\"gauge.solr.jvm_total_memory\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)\nJVM_HEAP_USAGE=(TOTAL_MEMORY_USED/TOTAL_MEMORY)*100",
+              "template": "TOTAL_MEMORY_USED = data(\"gauge.solr.jvm_total_memory_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nTOTAL_MEMORY = data(\"gauge.solr.jvm_total_memory\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nJVM_HEAP_USAGE=(TOTAL_MEMORY_USED/TOTAL_MEMORY)*100",
               "varName": "JVM_HEAP_USAGE"
             },
             "metricSelectors": [
@@ -325,7 +325,7 @@
               ]
             },
             "description": "This metric shows the total number of http requests. Darker colors indicate higher relative values.",
-            "displayName": "Requests/Sec",
+            "displayName": "Requests / Sec",
             "id": "solrnode_req_per_sec",
             "job": {
               "filters": [],
@@ -356,12 +356,12 @@
               ]
             },
             "description": "This metric shows the sum of total number of 2xx http responses,4xx http responses and 5xx http responses. Darker colors indicate higher relative values.",
-            "displayName": "Responses/Sec",
+            "displayName": "Responses / Sec",
             "id": "solrnode_response_per_sec",
             "job": {
               "filters": [],
-              "resolution": 10000,
-              "template": "RESPONSE_VH = data(\"counter.solr.http_5xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nRESPONSE_VIH = data(\"counter.solr.http_4xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nRESPONSE_IIH = data(\"counter.solr.http_2xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nRESPONSE = (RESPONSE_VH + RESPONSE_VIH + RESPONSE_IIH) ",
+              "resolution": 60000,
+              "template": "RESPONSE_VH = data(\"counter.solr.http_5xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nRESPONSE_VIH = data(\"counter.solr.http_4xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nRESPONSE_IIH = data(\"counter.solr.http_2xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nRESPONSE = (RESPONSE_VH + RESPONSE_VIH + RESPONSE_IIH) ",
               "varName": "RESPONSE"
             },
             "metricSelectors": [
@@ -393,7 +393,7 @@
             "id": "solrnode_response_time",
             "job": {
               "filters": [],
-              "resolution": 180000,
+              "resolution": 60000,
               "template": "RESPONSE_TIME = data(\"gauge.solr.jetty_request_latency\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")",
               "varName": "RESPONSE_TIME"
             },
