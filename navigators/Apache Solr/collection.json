@@ -1,0 +1,453 @@
+{
+  "hashCode": 6085270,
+  "id": "FK-2O5eAcAE",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": true,
+      "created": 0,
+      "creator": null,
+      "description": "",
+      "id": "FK-2O5eAcAE",
+      "importQualifiers": [{
+        "filters": [{
+            "not": false,
+            "property": "plugin",
+            "values": [
+              "solr"
+            ]
+          },
+          {
+            "not": false,
+            "property": "_exists_",
+            "values": [
+              "collection"
+            ]
+          }
+        ],
+        "metric": "counter.solr.http_requests"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Apache Solr Collection",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "sites": "o11y",
+      "systemTypes": [
+        "solr"
+      ],
+      "uiModel": {
+        "alertQuery": "plugin:solr",
+        "category": "Datastores",
+        "categoryPriority": 10,
+        "discoveryQuery": [
+          "_exists_:collection"
+        ],
+        "displayName": "Apache Solr Collections",
+        "filterProperties": null,
+        "id": "apachesolrcollection",
+        "idName": "Collection",
+        "idTemplate": "{{collection}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Collection",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of indexed docs in Solr core. Darker colors indicate higher relative values.",
+            "displayName": "# Docs",
+            "id": "solrcollection_docs",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DOCS = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"collection\",\"shard\"]).sum(by=[\"collection\"])",
+              "varName": "DOCS"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_num_docs"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Docs",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the sum of cumulative hit ratio of document cache, field value cache and query cache. Darker colors indicate higher relative values.",
+            "displayName": "Cache Hit Ratio",
+            "id": "solrcollection_cache_hit_ratio",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "DOC_CACHE_HIT_RATIO = data(\"gauge.solr.document_cache_cumulative_hitratio\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"collection\"])\nFIELD_CACHE_HIT_RATIO = data(\"gauge.solr.field_value_cache_cumulative_hitratio\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"collection\"])\nQCACHE_HIT_RATIO = data(\"gauge.solr.query_result_cache_cumulative_hitratio\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"collection\"])\nCACHE_HIT_RATIO=(DOC_CACHE_HIT_RATIO + FIELD_CACHE_HIT_RATIO + QCACHE_HIT_RATIO)",
+              "varName": "CACHE_HIT_RATIO"
+            },
+            "metricSelectors": [
+              "gauge.solr.document_cache_cumulative_hitratio",
+              "gauge.solr.field_value_cache_cumulative_hitratio",
+              "gauge.solr.query_result_cache_cumulative_hitratio"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Cache hit ratio",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the doc growth ratio of last one hour. Darker colors indicate higher relative values.",
+            "displayName": "Doc Growth",
+            "id": "solrcollection_doc_growth",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "BEFORE_TIME_SHIFT = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"collection\",\"shard\"]).sum(by=[\"collection\"])\nAFTER_TIME_SHIFT=data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=[\"collection\",\"shard\"]).sum(by=[\"collection\"]).timeshift(\"1h\")\nDOC_GROWTH=((BEFORE_TIME_SHIFT -AFTER_TIME_SHIFT)/AFTER_TIME_SHIFT)",
+              "varName": "DOC_GROWTH"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_num_docs"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Doc growth",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage value of total used space available against total space allocated for the core. Darker colors indicate higher relative values.",
+            "displayName": "Disk Space Usage (%)",
+            "id": "solrcollection_disk_space_usage",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "CORES_TOTAL_SPACE = data(\"gauge.solr.core_totalspace\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"collection\"])\nCORES_USABLE_SPACE = data(\"gauge.solr.core_usablespace\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"collection\"])\nDISK_SPACE_USAGE=(((CORES_TOTAL_SPACE - CORES_USABLE_SPACE)/CORES_TOTAL_SPACE)*100)",
+              "varName": "DISK_SPACE_USAGE"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_totalspace",
+              "gauge.solr.core_usablespace"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Disk space usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the size of a core index (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Index Size (bytes)",
+            "id": "solrcollection_index_size",
+            "job": {
+              "filters": [],
+              "resolution": 10000,
+              "template": "INDEX_SIZE = data(\"gauge.solr.core_index_size\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"shard\",\"collection\"]).sum(by=[\"collection\"])",
+              "varName": "INDEX_SIZE"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_index_size"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Index size",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of search query requests. Darker colors indicate higher relative values.",
+            "displayName": "Search Requests / Sec",
+            "id": "solrcollection_search_requests",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "SEARCH_REQ = data(\"counter.solr.search_query_requests\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").mean(by=[\"shard\",\"collection\"]).sum(by=[\"collection\"]).mean(over=\"15s\")",
+              "varName": "SEARCH_REQ"
+            },
+            "metricSelectors": [
+              "counter.solr.search_query_requests"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Search requests / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the search query response time (ms). Darker colors indicate higher relative values.",
+            "displayName": "Search Request Latency (ms)",
+            "id": "solrcollection_search_request_latency",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "SEARCH_REQ_LATENCY = data(\"gauge.solr.search_query_response\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(over=\"30s\").mean(by=\"collection\")",
+              "varName": "SEARCH_REQ_LATENCY"
+            },
+            "metricSelectors": [
+              "gauge.solr.search_query_response"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Search request latency",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the time to new searcher to warm up. Darker colors indicate higher relative values.",
+            "displayName": "Searcher Warmup",
+            "id": "solrcollection_search_warmup",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "SEARCH_WARMUP = data(\"gauge.solr.searcher_warmup\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(by=\"collection\")",
+              "varName": "SEARCH_WARMUP"
+            },
+            "metricSelectors": [
+              "gauge.solr.searcher_warmup"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Searcher warmup",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of docs in Solr core. Darker colors indicate higher relative values.",
+            "displayName": "Shards",
+            "id": "solrcollection_shards",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "Shards = data(\"gauge.solr.core_max_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=\"collection\")",
+              "varName": "Shards"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_max_docs"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Shards",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of update handler requests. Darker colors indicate higher relative values.",
+            "displayName": "Update Requests / Sec",
+            "id": "solrcollection_update_requests",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "UPDATE_REQ = data(\"counter.solr.update_handler_requests\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=\"collection\")",
+              "varName": "UPDATE_REQ"
+            },
+            "metricSelectors": [
+              "counter.solr.update_handler_requests"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Update requests / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the update request handler response time (ms). Darker colors indicate higher relative values.",
+            "displayName": "Update Request Latency (ms)",
+            "id": "solrcollection_update_request_latency",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "UPDATE_REQ_LATENCY = data(\"gauge.solr.update_request_handler_response\",filter=filter(\"collection\",\"*\"){{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").mean(over=\"30s\").mean(by=\"collection\")",
+              "varName": "UPDATE_REQ_LATENCY"
+            },
+            "metricSelectors": [
+              "gauge.solr.update_request_handler_response"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Update request latency",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "plugin:solr",
+        "o11yMetricName": "Running Collections",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Apache Solr Collection",
+        "o11ySignalflowTemplate": "A = data('gauge.solr.core_num_docs').sum(by=['collection']).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "Solr Collection",
+        "systemDashboardName": "Solr Collections",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Host Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}

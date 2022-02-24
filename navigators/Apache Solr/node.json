@@ -1,0 +1,446 @@
+{
+  "hashCode": -1975718775,
+  "id": "FK-1HLaAcAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": true,
+      "created": 0,
+      "creator": null,
+      "description": "",
+      "id": "FK-1HLaAcAA",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": [
+            "solr"
+          ]
+        }],
+        "metric": "counter.solr.http_requests"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Apache Solr Node",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "sites": "o11y",
+      "systemTypes": [
+        "solr"
+      ],
+      "uiModel": {
+        "alertQuery": "plugin:solr",
+        "category": "Datastores",
+        "categoryPriority": 10,
+        "discoveryQuery": [
+          "_exists_:host"
+        ],
+        "displayName": "Apache Solr Nodes",
+        "filterProperties": null,
+        "id": "apachesolrnode",
+        "idName": "Node",
+        "idTemplate": "{{plugin_instance}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Plugin Instance",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of indexed docs in Solr core. Darker colors indicate higher relative values.",
+            "displayName": "# Cores",
+            "id": "solrnode_core_num_docs",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "CORE_COUNT = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])",
+              "varName": "CORE_COUNT"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_num_docs"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Cores",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of docs in Solr core. Darker colors indicate higher relative values.",
+            "displayName": "Cores per Node",
+            "id": "solrnode_cores_per_node",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "CORE_PER_NODE = data(\"gauge.solr.core_max_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])",
+              "varName": "CORE_PER_NODE"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_max_docs"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Cores per node",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage value of total used space available against total space allocated for the core. Darker colors indicate higher relative values.",
+            "displayName": "Disk Space Usage (%)",
+            "id": "solrnode_disk_space_usage",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "CORE_TOTAL_SPACE = data(\"gauge.solr.core_totalspace\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)\nCORE_USABLE_SPACE = data(\"gauge.solr.core_usablespace\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)\nDISK_SPACE_USAGE=((CORE_TOTAL_SPACE-CORE_USABLE_SPACE)*100/CORE_TOTAL_SPACE).mean(by=[\"plugin_instance\"])",
+              "varName": "DISK_SPACE_USAGE"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_totalspace",
+              "gauge.solr.core_usablespace"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Disk space usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage value of JVM garbage collection by CMS process over last minute. This metric is not supported in SOLR version 8.0+. Darker colors indicate higher relative values.",
+            "displayName": "GC CMS (%)",
+            "id": "solrnode_gc_cms",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "GC_CMS_BEFORE = data(\"gauge.solr.jvm_gc_cms_time\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)\nGC_CMS_AFTER = data(\"gauge.solr.jvm_gc_cms_time\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).timeshift(\"1m\")\nGC_CMS=((GC_CMS_BEFORE-GC_CMS_AFTER )/60).mean(by=[\"plugin_instance\"])",
+              "varName": "GC_CMS"
+            },
+            "metricSelectors": [
+              "gauge.solr.jvm_gc_cms_time"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "GC CMS",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage value of JVM garbage collection by ParNew process over last minute. This metric is not supported in SOLR version 8.0+.  Darker colors indicate higher relative values.",
+            "displayName": "GC Parnew (%)",
+            "id": "solrnode_gc_parnew",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "GC_PARNEW_BEFORE = data(\"gauge.solr.jvm_gc_parnew_time\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)\nGC_PARNEW_AFTER = data(\"gauge.solr.jvm_gc_parnew_time\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).timeshift(\"1m\")\nGC_PARNEW=((GC_PARNEW_BEFORE-GC_PARNEW_AFTER )/60).mean(by=[\"plugin_instance\"])",
+              "varName": "GC_PARNEW"
+            },
+            "metricSelectors": [
+              "gauge.solr.jvm_gc_parnew_time"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "GC Parnew",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of indexed docs in Solr core. Darker colors indicate higher relative values.",
+            "displayName": "Indexed Docs",
+            "id": "solrnode_indexed_docs",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "INDEXED_DOCS = data(\"gauge.solr.core_num_docs\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])",
+              "varName": "INDEXED_DOCS"
+            },
+            "metricSelectors": [
+              "gauge.solr.core_num_docs"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Indexed docs",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the JVM Heap usage. Darker colors indicate higher relative values.",
+            "displayName": "JVM Heap Usage",
+            "id": "solrnode_jvm_heap_usage",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "JVM_HEAP_USAGE = data(\"gauge.solr.jvm_heap_usage\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")",
+              "varName": "JVM_HEAP_USAGE"
+            },
+            "metricSelectors": [
+              "gauge.solr.jvm_heap_usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "JVM heap usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage value of total memory used against the total memory available. Darker colors indicate higher relative values.",
+            "displayName": "JVM Memory Usage (%)",
+            "id": "solrnode_jvm_memory_usage",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_MEMORY_USED = data(\"gauge.solr.jvm_total_memory_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nTOTAL_MEMORY = data(\"gauge.solr.jvm_total_memory\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nJVM_HEAP_USAGE=(TOTAL_MEMORY_USED/TOTAL_MEMORY)*100",
+              "varName": "JVM_HEAP_USAGE"
+            },
+            "metricSelectors": [
+              "gauge.solr.jvm_total_memory_used",
+              "gauge.solr.jvm_total_memory"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "JVM memory usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of http requests. Darker colors indicate higher relative values.",
+            "displayName": "Requests / Sec",
+            "id": "solrnode_req_per_sec",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "REQUEST = data(\"counter.solr.http_requests\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")",
+              "varName": "REQUEST"
+            },
+            "metricSelectors": [
+              "counter.solr.http_requests"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Requests / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the sum of total number of 2xx http responses,4xx http responses and 5xx http responses. Darker colors indicate higher relative values.",
+            "displayName": "Responses / Sec",
+            "id": "solrnode_response_per_sec",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "RESPONSE_VH = data(\"counter.solr.http_5xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nRESPONSE_VIH = data(\"counter.solr.http_4xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nRESPONSE_IIH = data(\"counter.solr.http_2xx_responses\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")\nRESPONSE = (RESPONSE_VH + RESPONSE_VIH + RESPONSE_IIH) ",
+              "varName": "RESPONSE"
+            },
+            "metricSelectors": [
+              "counter.solr.http_5xx_responses",
+              "counter.solr.http_4xx_responses",
+              "http_2xx_responses"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Responses / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total Http request response time. Darker colors indicate higher relative values.",
+            "displayName": "Response Time",
+            "id": "solrnode_response_time",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "RESPONSE_TIME = data(\"gauge.solr.jetty_request_latency\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=\"plugin_instance\")",
+              "varName": "RESPONSE_TIME"
+            },
+            "metricSelectors": [
+              "gauge.solr.jetty_request_latency"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Response time",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "plugin:solr",
+        "o11yMetricName": "Running Nodes",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Apache Solr Node",
+        "o11ySignalflowTemplate": "A = data('gauge.solr.core_num_docs').sum(by=['node']).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "Solr Node",
+        "systemDashboardName": "Solr Nodes",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Host Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
