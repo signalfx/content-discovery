@@ -1,0 +1,511 @@
+{
+  "hashCode": -1603253514,
+  "id": "FLOi0dcAcAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "description": "",
+      "id": "FLOi0dcAcAA",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": [
+            "GenericJMX"
+          ]
+        }],
+        "metric": "gauge.loaded_classes"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "JMX (collectd)",
+      "navigatorCategory": "Others",
+      "navigatorCategoryDisplayName": "Others",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "sites": "o11y",
+      "systemTypes": null,
+      "uiModel": {
+        "alertQuery": "plugin:GenericJMX",
+        "category": "Others",
+        "categoryPriority": 10,
+        "discoveryQuery": [
+          "plugin:GenericJMX"
+        ],
+        "displayName": "JMX (collectd)",
+        "filterProperties": null,
+        "id": "jmx",
+        "idName": "Process",
+        "idTemplate": "{{host}} | {{hostHasService}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Processes",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of classes loaded in the JVM. Darker colors indicate higher relative values.",
+            "displayName": "# Loaded Classes",
+            "id": "jmx_loaded_classes",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "LOADED_CLASSES = data(\"gauge.loaded_classes\"{{#filter}} filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).mean(by=[\"hostHasService\", \"host\" ])",
+              "varName": "LOADED_CLASSES"
+            },
+            "metricSelectors": [
+              "gauge.loaded_classes"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Loaded classes",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of JVM threads. Darker colors indicate higher relative values.",
+            "displayName": "# Threads",
+            "id": "jmx_threads",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "THREADS = data(\"gauge.jvm.threads.count\"{{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').max(by=[\"hostHasService\", \"host\"])",
+              "varName": "THREADS"
+            },
+            "metricSelectors": [
+              "gauge.jvm.threads.count"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Threads",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total usage of heap memory in code cache memory pool (%). Darker colors indicate higher relative values.",
+            "displayName": "Code Cache (%)",
+            "id": "jmx_code_cache_heap_usage",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "USED_MEMORY = data(\"jmx_memory.used\", filter=filter('plugin_instance', 'memory_pool-Code Cache') {{#filter}} and filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nMAX_MEMORY = data(\"jmx_memory.max\", filter=filter('plugin_instance', 'memory_pool-Code Cache'){{#filter}} and filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nUSED_MEMORY_PCT = (100*USED_MEMORY/MAX_MEMORY)",
+              "varName": "USED_MEMORY_PCT"
+            },
+            "metricSelectors": [
+              "jmx_memory.used",
+              "jmx_memory.max"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Code cache",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 10,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total amount of memory that is guaranteed to be available for use in Eden space memory pool (%). Darker colors indicate higher relative values.",
+            "displayName": "Eden Space (%)",
+            "id": "jmx_eden_space_non_heap_memory",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "USED_MEMORY = data(\"jmx_memory.used\", filter=filter('plugin_instance', 'memory_pool-Par Eden Space') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nCOMMITTED_MEMORY = data(\"jmx_memory.committed\", filter=filter('plugin_instance', 'memory_pool-Par Eden Space'){{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nNONHEAP_MEMORY = (100*USED_MEMORY/COMMITTED_MEMORY)",
+              "varName": "NONHEAP_MEMORY"
+            },
+            "metricSelectors": [
+              "jmx_memory.used",
+              "jmx_memory.committed"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Eden space",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total amount of time spent garbage collecting in milliseconds for GC CMS. GC CMS metric will not be available for Java Version 9.0 and above as it has been deprecated. Darker colors indicate higher relative values.",
+            "displayName": "GC: CMS Collection Time (ms)",
+            "id": "jmx_gc_cms_collection_time",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "CMS_COLLECTION_TIME = data(\"total_time_in_ms.collection_time\", filter=filter('plugin_instance', 'gc-ConcurrentMarkSweep') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='rate').mean(by=[\"hostHasService\", \"host\" ])",
+              "varName": "CMS_COLLECTION_TIME"
+            },
+            "metricSelectors": [
+              "total_time_in_ms.collection_time"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "GC: CMS collection time",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of garbage collection events for GC CMS per sec. GC CMS metric will not be available for Java Version 9.0 and above as it has been deprecated. Darker colors indicate higher relative values.",
+            "displayName": "GC: CMS Invocations / Sec",
+            "id": "jmx_gc_cms_invocations",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "CMS_EVENTS = data(\"invocations\", filter=filter('plugin_instance', 'gc-ConcurrentMarkSweep') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='rate').mean(by=[\"hostHasService\", \"host\" ])",
+              "varName": "CMS_EVENTS"
+            },
+            "metricSelectors": [
+              "invocations"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "GC: CMS invocations  / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total amount of time spent garbage collecting in milliseconds for GC ParNew. Darker colors indicate higher relative values.",
+            "displayName": "GC: ParNew Collection Time (ms)",
+            "id": "jmx_gc_parnew_collection_time",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "PARNEW_COLLECTION_TIME = data(\"total_time_in_ms.collection_time\", filter=filter('plugin_instance', 'gc-ParNew') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='rate').mean(by=[\"hostHasService\", \"host\" ])",
+              "varName": "PARNEW_COLLECTION_TIME"
+            },
+            "metricSelectors": [
+              "total_time_in_ms.collection_time"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "GC: ParNew collection time",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of garbage collection events for GC ParNew per sec. Darker colors indicate higher relative values.",
+            "displayName": "GC: ParNew Invocations / Sec",
+            "id": "jmx_gc_parnew_invocations",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "PARNEW_EVENTS = data(\"invocations\", filter=filter('plugin_instance', 'gc-ParNew') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='rate').mean(by=[\"hostHasService\", \"host\" ])",
+              "varName": "PARNEW_EVENTS"
+            },
+            "metricSelectors": [
+              "invocations"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "GC: ParNew invocations / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total usage of heap memory (%). Darker colors indicate higher relative values.",
+            "displayName": "Heap Usage (%)",
+            "id": "jmx_heap_usage",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "TOTAL_MEMORY = data(\"jmx_memory.max\",filter=filter('plugin_instance', 'memory-heap') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nUSED_MEMORY = data(\"jmx_memory.used\",filter=filter('plugin_instance', 'memory-heap') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nHEAP_USAGE = (100*USED_MEMORY/TOTAL_MEMORY)",
+              "varName": "HEAP_USAGE"
+            },
+            "metricSelectors": [
+              "jmx_memory.max",
+              "jmx_memory.used"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Heap usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total amount of memory that is guaranteed to be available for use (%). Darker colors indicate higher relative values.",
+            "displayName": "Non Heap Memory (%)",
+            "id": "jmx_non_heap_memory",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "USED_MEMORY = data(\"jmx_memory.used\", filter=filter('plugin_instance', 'memory-nonheap') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nCOMMITTED_MEMORY = data(\"jmx_memory.committed\", filter=filter('plugin_instance', 'memory-nonheap') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nNONHEAP_MEMORY = (100*USED_MEMORY/COMMITTED_MEMORY)",
+              "varName": "NONHEAP_MEMORY"
+            },
+            "metricSelectors": [
+              "jmx_memory.max",
+              "jmx_memory.used",
+              "jmx_memory.committed"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Non heap memory",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 10,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total amount of memory that is guaranteed to be available for use in PermGen heap space (%). Darker colors indicate higher relative values.",
+            "displayName": "PermGen Usage (%)",
+            "id": "jmx_perm_usage_non_heap_memory",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "USED_MEMORY = data(\"jmx_memory.used\"{{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nCOMMITTED_MEMORY = data(\"jmx_memory.committed\"{{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nNONHEAP_MEMORY = (100*USED_MEMORY/COMMITTED_MEMORY)",
+              "varName": "NONHEAP_MEMORY"
+            },
+            "metricSelectors": [
+              "jmx_memory.max",
+              "jmx_memory.used",
+              "jmx_memory.committed"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "PermGen usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total amount of memory that is used in survivor space memory pool (%). Darker colors indicate higher relative values.",
+            "displayName": "Survivor Space (%)",
+            "id": "jmx_survivor_space_non_heap_memory",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "USED_MEMORY = data(\"jmx_memory.used\", filter=filter('plugin_instance', 'memory_pool-Par Survivor Space') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nCOMMITTED_MEMORY = data(\"jmx_memory.committed\", filter=filter('plugin_instance', 'memory_pool-Par Survivor Space'){{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nNONHEAP_MEMORY = (100*USED_MEMORY/COMMITTED_MEMORY)",
+              "varName": "NONHEAP_MEMORY"
+            },
+            "metricSelectors": [
+              "jmx_memory.used",
+              "jmx_memory.committed"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Survivor space",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total amount of memory that is used tenured space (old-gen) (%). Darker colors indicate higher relative values.",
+            "displayName": "Tenured Generation Space (%)",
+            "id": "jmx_tenured_space_non_heap_memory",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "USED_MEMORY = data(\"jmx_memory.used\", filter=filter('plugin_instance', 'memory_pool-CMS Old Gen') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nCOMMITTED_MEMORY = data(\"jmx_memory.committed\", filter=filter('plugin_instance', 'memory_pool-CMS Old Gen'){{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"hostHasService\", \"host\" ])\nNONHEAP_MEMORY = (100*USED_MEMORY/COMMITTED_MEMORY)",
+              "varName": "NONHEAP_MEMORY"
+            },
+            "metricSelectors": [
+              "jmx_memory.used",
+              "jmx_memory.committed"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Tenured generation space",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "plugin:GenericJMX",
+        "o11yMetricName": "Running Java Processes",
+        "o11yMetricUnit": null,
+        "o11yProductName": "JMX (collectd)",
+        "o11ySignalflowTemplate": "A = data('gauge.loaded_classes', filter=filter('plugin', 'GenericJMX')).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "Java Process",
+        "systemDashboardName": "Java Processes",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Instance Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
