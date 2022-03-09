@@ -1,0 +1,353 @@
+{
+  "hashCode": 1578205082,
+  "id": "FNAXQ99AYAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": true,
+      "created": 0,
+      "creator": null,
+      "description": "",
+      "id": "FNAXQ99AYAA",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "sf_key",
+          "values": [
+            "backend"
+          ]
+        }],
+        "metric": "traefik_backend_requests_total"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Traefik Backends",
+      "navigatorCategory": "Web",
+      "navigatorCategoryDisplayName": "Others",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "ownerScope": "organization",
+      "sites": "o11y",
+      "systemTypes": [
+        "traefik"
+      ],
+      "uiModel": {
+        "alertQuery": "_exists_:backend",
+        "category": "Others",
+        "categoryPriority": 100,
+        "discoveryQuery": [
+          "_exists_:backend"
+        ],
+        "displayName": "Traefik Backends",
+        "filterProperties": null,
+        "id": "traefikbackends",
+        "idName": "Backend",
+        "idTemplate": "{{backend}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Backend",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of HTTP requests that were processed on a backend. Darker colors indicate higher relative values.",
+            "displayName": "# Requests",
+            "id": "traefik_backend_requests",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TOTAL_REQUESTS = data(\"traefik_backend_requests_total\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"backend\"])",
+              "varName": "TOTAL_REQUESTS"
+            },
+            "metricSelectors": [
+              "traefik_backend_requests_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Requests",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the average request duration in the last minute (ms). Darker colors indicate higher relative values.",
+            "displayName": "Avg Request Duration (ms)",
+            "id": "traefik_backend_avg_request_duration",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "REQUEST_DURATION = data(\"traefik_backend_request_duration_seconds\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"backend\"])\nTOTAL_REQUESTS = data(\"traefik_backend_requests_total\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=[\"backend\"])\nAVG_DURATION = (REQUEST_DURATION/TOTAL_REQUESTS)",
+              "varName": "AVG_DURATION"
+            },
+            "metricSelectors": [
+              "traefik_backend_request_duration_seconds",
+              "traefik_backend_requests_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Avg request duration",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows number of open connections that exist on a backend. Darker colors indicate higher relative values.",
+            "displayName": "Open Connections",
+            "id": "traefik_backend_open_connections",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "OPEN_CONNECTIONS = data(\"traefik_backend_open_connections\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').sum(by=[\"backend\"])",
+              "varName": "OPEN_CONNECTIONS"
+            },
+            "metricSelectors": [
+              "traefik_backend_open_connections"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Open connections",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number responses by HTTP status - 1xx returned by backend. Darker colors indicate higher relative values.",
+            "displayName": "Responses by HTTP Status - 1xx",
+            "id": "traefik_backend_responses_by_http_status_1xx",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_1XX = data(\"traefik_backend_requests_total\", filter=filter('code', '1*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='delta', extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"backend\"])",
+              "varName": "HTTP_1XX"
+            },
+            "metricSelectors": [
+              "traefik_backend_requests_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Responses by HTTP status - 1xx",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number responses by HTTP status - 2xx returned by backend. Darker colors indicate higher relative values.",
+            "displayName": "Responses by HTTP Status - 2xx",
+            "id": "traefik_backend_responses_by_http_status_2xx",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_2XX = data(\"traefik_backend_requests_total\", filter=filter('code', '2*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='delta', extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"backend\"])",
+              "varName": "HTTP_2XX"
+            },
+            "metricSelectors": [
+              "traefik_backend_requests_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Responses by HTTP status - 2xx",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number responses by HTTP status - 3xx returned by backend. Darker colors indicate higher relative values.",
+            "displayName": "Responses by HTTP Status - 3xx",
+            "id": "traefik_backend_responses_by_http_status_3xx",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_3XX = data(\"traefik_backend_requests_total\", filter=filter('code', '3*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='delta', extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"backend\"])",
+              "varName": "HTTP_3XX"
+            },
+            "metricSelectors": [
+              "traefik_backend_requests_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Responses by HTTP status - 3xx",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number responses by HTTP status - 4xx returned by backend. Darker colors indicate higher relative values.",
+            "displayName": "Responses by HTTP Status - 4xx",
+            "id": "traefik_backend_responses_by_http_status_4xx",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_4XX = data(\"traefik_backend_requests_total\", filter=filter('code', '4*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='delta', extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"backend\"])",
+              "varName": "HTTP_4XX"
+            },
+            "metricSelectors": [
+              "traefik_backend_requests_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Responses by HTTP status - 4xx",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number responses by HTTP status - 5xx returned by backend. Darker colors indicate higher relative values.",
+            "displayName": "Responses by HTTP Status - 5xx",
+            "id": "traefik_backend_responses_by_http_status_5xx",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_5XX = data(\"traefik_backend_requests_total\", filter=filter('code', '5*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='delta', extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"backend\"])",
+              "varName": "HTTP_5XX"
+            },
+            "metricSelectors": [
+              "traefik_backend_requests_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Responses by HTTP status - 5xx",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "sf_metric:traefik_backend_requests_total",
+        "o11yMetricName": "Running Backends",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Traefik Backends",
+        "o11ySignalflowTemplate": "A = data('traefik_backend_server_up').count(by=['backend']).above(0).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "backend"
+        ],
+        "singleHostSystemDashboardName": "Backend",
+        "systemDashboardName": "Backends",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Instance Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
