@@ -1,0 +1,385 @@
+{
+  "hashCode": 1839692827,
+  "id": "FPk9hznAYAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": true,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "FPk9hznAYAA",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "sf_key",
+          "values": [
+            "instance"
+          ]
+        }],
+        "metric": "oracledb_process_count"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Oracle DB Instances",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "sites": "o11y",
+      "systemTypes": null,
+      "uiModel": {
+        "alertQuery": "_exists_:session_id AND plugin:oracle",
+        "category": "Datastores",
+        "categoryPriority": 100,
+        "discoveryQuery": [
+          "_exists_:instance"
+        ],
+        "displayName": "Oracle DB Instances",
+        "filterProperties": null,
+        "id": "oracledbinstances",
+        "idName": "Instance",
+        "idTemplate": "{{host.name}} ({{host.id}}) | {{instance}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "Instance",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the rate of change in commits that happened in last 24 hours. Darker color indicate higher relative values.",
+            "displayName": "# Commits",
+            "id": "oracle_db_instances_commits",
+            "job": {
+              "filters": [{
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "host.id",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "instance",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "COMMITS = data(\"oracledb_activity_user_commits\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.id\", \"instance\", \"host.name\"]).rateofchange().sum(over=\"1d\")\nCOMMITS_BY_INSTANCE = COMMITS.sum(by=[\"host.id\", \"instance\", \"host.name\"])",
+              "varName": "COMMITS_BY_INSTANCE"
+            },
+            "metricSelectors": [
+              "oracledb_activity_user_commits"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Commits",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the rate of change in rollbacks that happened in last 24 hours. Darker color indicate higher relative values.",
+            "displayName": "# Rollbacks",
+            "id": "oracle_db_instances_rollbacks",
+            "job": {
+              "filters": [{
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "host.id",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "instance",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "ROLLBACKS = data(\"oracledb_activity_user_rollbacks\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.id\", \"instance\", \"host.name\"]).rateofchange().sum(over=\"1d\")\nROLLBACKS_BY_INSTANCE = ROLLBACKS.sum(by=[\"host.id\", \"instance\", \"host.name\"])",
+              "varName": "ROLLBACKS_BY_INSTANCE"
+            },
+            "metricSelectors": [
+              "oracledb_activity_user_rollbacks"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Rollbacks",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the rate of change in transactions that happened in last 24 hours. Darker color indicate higher relative values.",
+            "displayName": "# Transactions",
+            "id": "oracle_db_instances_transactions",
+            "job": {
+              "filters": [{
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "host.id",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "instance",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "TRANSACTIONS = data(\"oracledb_activity_execute_count\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.id\", \"instance\", \"host.name\"]).rateofchange().sum(over=\"1d\")\nTRANSACTION_BY_INSTANCE = TRANSACTIONS.sum(by=[\"host.id\", \"instance\", \"host.name\"])",
+              "varName": "TRANSACTION_BY_INSTANCE"
+            },
+            "metricSelectors": [
+              "oracledb_activity_execute_count"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Transactions",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": null
+            },
+            "description": "This metric shows the percentage utilization of resources in last 24 hours against the total limit. Under 20% (green), over 80% (red).",
+            "displayName": "Lock Utilization (%)",
+            "id": "oracle_db_instances_lock_utilization",
+            "job": {
+              "filters": [{
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "host.id",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "instance",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "CURRENT_UTILIZATION = data(\"oracledb_resource_current_utilization\", filter=filter(\"resource_name\", \"*locks\") and filter(\"host.id\", \"*\")and filter(\"instance\", \"*\") ).sum(over=\"1d\").sum(by=[\"host.id\", \"instance\", \"host.name\"])\nLIMIT_VALUE = data(\"oracledb_resource_limit_value\", filter=filter(\"resource_name\", \"*locks\") and filter(\"host.id\", \"*\")and filter(\"instance\", \"*\")).sum(by=[\"host.id\", \"instance\", \"host.name\"]).sum(over=\"1d\")\nLOCK_UTILIZATION = ((CURRENT_UTILIZATION / LIMIT_VALUE) * 100).sum(by=[\"host.id\", \"instance\", \"host.name\"])",
+              "varName": "LOCK_UTILIZATION"
+            },
+            "metricSelectors": [
+              "oracledb_resource_limit_value",
+              "oracledb_resource_current_utilization"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Lock utilization",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total time taken by foreground sessions executing database calls in last 24 hours (ms). Darker color indicate higher relative values.",
+            "displayName": "Query Wait Time (ms)",
+            "id": "oracle_db_instances_query_wait_time",
+            "job": {
+              "filters": [{
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "host.id",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "instance",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "QUERY_WAIT_TIME = data(\"oracledb_wait_time*\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(over=\"1d\").sum(by=[\"host.id\", \"instance\", \"host.name\"])\nTOTAL_QUERY_WAIT_TIME = (QUERY_WAIT_TIME * 1000)",
+              "varName": "TOTAL_QUERY_WAIT_TIME"
+            },
+            "metricSelectors": [
+              "oracledb_wait_time*"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Query wait time",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": null
+            },
+            "description": "This metric shows the percentage utilization of table spaces from last 24 hours against the max bytes. Under 20% (green), over 80% (red).",
+            "displayName": "Table Space Utilization (%)",
+            "id": "oracle_db_instances_table_space_utilization",
+            "job": {
+              "filters": [{
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "host.id",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "instance",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "MAX_BYTES = data(\"oracledb_tablespace_max_bytes\").sum(by=[\"host.id\", \"instance\", \"host.name\"]).sum(over=\"1d\")\nTABLESPACE_BYTES = data(\"oracledb_tablespace_bytes\").sum(over=\"1d\").sum(by=[\"host.id\", \"instance\", \"host.name\"])\nTABLESPACE_UTILISATION = ((TABLESPACE_BYTES / MAX_BYTES) * 100)",
+              "varName": "TABLESPACE_UTILISATION"
+            },
+            "metricSelectors": [
+              "oracledb_tablespace_max_bytes",
+              "oracledb_tablespace_bytes"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Table space utilisation",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total aggregated data stored in bytes across all instances and tablespaces. Darker color indicate higher relative values.",
+            "displayName": "Total Data Stored (bytes)",
+            "id": "oracle_db_instances_total_data_stored",
+            "job": {
+              "filters": [{
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "host.id",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "instance",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "TOTAL_DATA_STORED = data(\"oracledb_tablespace_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(over=\"1d\").sum(by=[\"host.id\", \"instance\", \"host.name\"])",
+              "varName": "TOTAL_DATA_STORED"
+            },
+            "metricSelectors": [
+              "oracledb_tablespace_bytes"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Total data stored",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "_exists_:instance",
+        "o11yMetricName": "Active Instances",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Oracle DB Instances",
+        "o11ySignalflowTemplate": "A = data('oracledb_process_count', filter=filter('host.id', '*') and filter('instance', '*') and filter('host.name', '*')).count(by=['host.id', 'host.name', 'instance']).publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "Oracle Database Instance",
+        "systemDashboardName": "Oracle Database Instances",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
