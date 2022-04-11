@@ -1,0 +1,96 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when number of ready and available pods in Deployments have diverged",
+      "detectorOrigin": "AutoDetect",
+      "id": "FKc_2IEAIAM",
+      "labelResolutions": {
+        "K8S Cluster Deployment is not at spec": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "Customization test - K8S Cluster Deployment is not at spec",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import deployments\ndeployments.deployment_not_at_spec_detector().publish('K8S Cluster Deployment is not at spec')",
+      "rules": [
+        {
+          "description": "The value of Available - Desired is outside of 0 and 0 for 80% of 5m.",
+          "detectLabel": "K8S Cluster Deployment is not at spec",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for B-A - Exclude x <= 0 - Count: {{inputs.C.value}}\n{{else}}Current signal value for B-A - Exclude x <= 0 - Count: {{inputs.C.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
+          "runbookUrl": null,
+          "severity": "Major",
+          "tip": null
+        }
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "showDataMarkers": false,
+        "showEventLines": false,
+        "time": {
+          "range": 900000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.namespace.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.deployment.name",
+              "values": []
+            }
+          ],
+          "metric": "k8s.deployment.desired"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.namespace.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.deployment.name",
+              "values": []
+            }
+          ],
+          "metric": "k8s.deployment.available"
+        }
+      ]
+    }
+  },
+  "hashCode": 444948900,
+  "id": "FKc_2IEAIAM",
+  "packageType": "DETECTOR"
+}
