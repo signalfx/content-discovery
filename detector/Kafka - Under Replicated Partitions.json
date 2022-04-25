@@ -5,7 +5,7 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "Alerts when at least one kafka partition is under replicated for at least 5m",
+      "description": "Alerts when Kafka partition is under replicated",
       "detectorOrigin": "AutoDetect",
       "id": "FBqHoaDAYAA",
       "labelResolutions": {
@@ -18,35 +18,28 @@
       "name": "Kafka - Partition is under-replicated",
       "overMTSLimit": false,
       "packageSpecifications": "",
-      "programText": "A = data('gauge.kafka-underreplicated-partitions').publish(label='A')\ndetect(when(A > threshold(0), lasting='5m'), auto_resolve_after='1d').publish('Kafka - Partition is under-replicated')",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.infra.kafka import broker\nbroker.underreplicated_partitions_detector().publish('Kafka - Partition is under-replicated')",
       "rules": [
         {
-          "description": "The value of Underreplicated Partitions is above 0.",
+          "description": "The value of Underreplicated Partitions is above threshold",
           "detectLabel": "Kafka - Partition is under-replicated",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.kafka-underreplicated-partitions: {{inputs.A.value}}\n{{else}}Current signal value for gauge.kafka-underreplicated-partitions: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.kafka-underreplicated-partitions: {{inputs.stream.value}}\n{{else}}Current signal value for gauge.kafka-underreplicated-partitions: {{inputs.stream.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
           "runbookUrl": null,
           "severity": "Critical",
           "tip": null
         }
       ],
+      "sf_metricsInObjectProgramText": null,
       "tags": null,
       "teams": null,
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
-        "publishLabelOptions": [
-          {
-            "displayName": "Underreplicated Partitions",
-            "label": "A",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          }
-        ],
+        "publishLabelOptions": [],
         "showDataMarkers": true,
         "showEventLines": false,
         "time": {
@@ -63,7 +56,7 @@
       ]
     }
   },
-  "hashCode": 717432544,
+  "hashCode": 119597765,
   "id": "FBqHoaDAYAA",
   "packageType": "DETECTOR"
 }

@@ -5,7 +5,7 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "Alerts when a consumer group is lagging behind the latest offset by a 100 for 2m",
+      "description": "Alerts when a consumer group is lagging behind the latest offset",
       "detectorOrigin": "AutoDetect",
       "id": "FBqJ9_IAYAA",
       "labelResolutions": {
@@ -15,47 +15,31 @@
       "lastUpdatedBy": null,
       "maxDelay": 0,
       "minDelay": 0,
-      "name": "Kafka - Consumer Group lag > 100 for last 2m",
+      "name": "Kafka - Consumer Group lag",
       "overMTSLimit": false,
       "packageSpecifications": "",
       "parentDetectorId": null,
-      "programText": "A = data('kafka.consumer_group.lag').fill(duration='1m').sum(by=['topic', 'partition', 'group']).publish('A')\nB = (A).min(over='2m').above(100, inclusive=True).count(by=['topic', 'partition', 'group'])\nC = (A).max(over='5m').above(100, inclusive=True).count(by=['topic', 'partition', 'group'])\nD = (B+C).not_between(0.5, 1.5, low_inclusive=True, high_inclusive=True).map(lambda x: ceil((x + 1)/3))\nE = combine(A * D).publish('E', enable=False)\n# Fires when signal A is above 100 for 2m and clears when signal A is below 100 for 5m\ndetect(when(E > threshold(100)), auto_resolve_after='2d').publish('Kafka - Consumer Group lag > 100')",
+      "programText": "from signalfx.detectors.autodetect.infra.kafka import consumer\nconsumer.consumer_group_lag_detector().publish('Kafka - Consumer Group lag > 100')",
       "rules": [
         {
-          "description": "The value of Consumer Group Lag is above 100.",
+          "description": "The value of Consumer Group Lag is above threshold",
           "detectLabel": "Kafka - Consumer Group lag > 100",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for kafka.consumer_group.lag: {{inputs.E.value}}\n{{else}}Current signal value for kafka.consumer_group.lag : {{inputs.E.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}} ({{inputs.fire_threshold_stream.value}})\n{{/if}}\n\n{{#if anomalous}}Signal value for kafka.consumer_group.lag: {{inputs.stream.value}}\n{{else}}Current signal value for kafka.consumer_group.lag : {{inputs.stream.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{detectorName}}}",
-          "runbookUrl": "",
+          "runbookUrl": null,
           "severity": "Critical",
-          "tip": ""
+          "tip": null
         }
       ],
+      "sf_metricsInObjectProgramText": null,
       "tags": null,
       "teams": null,
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
-        "publishLabelOptions": [
-          {
-            "displayName": "Consumer Group Lag",
-            "label": "A",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          },
-          {
-            "displayName": "Consumer Group Lag",
-            "label": "E",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          }
-        ],
+        "publishLabelOptions": [],
         "showDataMarkers": true,
         "showEventLines": false,
         "time": {
@@ -88,7 +72,7 @@
       ]
     }
   },
-  "hashCode": -1393332273,
+  "hashCode": -521748291,
   "id": "FBqJ9_IAYAA",
   "packageType": "DETECTOR"
 }
