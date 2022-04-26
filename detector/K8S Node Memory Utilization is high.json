@@ -5,7 +5,7 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "Alerts when K8s Node is using memory > 90% for 5m",
+      "description": "Alerts when K8s Node memory usage is higher than threshold",
       "detectorOrigin": "AutoDetect",
       "id": "FAdmGEaAYAA",
       "labelResolutions": {
@@ -15,38 +15,31 @@
       "lastUpdatedBy": null,
       "maxDelay": 0,
       "minDelay": 0,
-      "name": "K8S Node Memory is higher than 90% for 5m",
+      "name": "K8S Node Memory Utilization is high",
       "overMTSLimit": false,
       "packageSpecifications": "",
-      "programText": "A = data('memory.utilization', filter=filter('k8s.cluster.name', '*')).sum(by=['host', 'k8s.cluster.name']).publish(label='A')\ndetect(when(A > threshold(90), lasting='5m'), auto_resolve_after='1d').publish('K8S Node Memory is higher than 90% for 5m')",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import nodes\nnodes.node_memory_utilization_detector().publish('K8S Node Memory is higher than 90% for 5m')",
       "rules": [
         {
-          "description": "The value of Memory Utilization is above 90.",
+          "description": "The value of Memory Utilization is higher than specified threshold",
           "detectLabel": "K8S Node Memory is higher than 90% for 5m",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\t    Rule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{else}}\n\t    Rule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{/if}}\n    {{#if anomalous}}\n      Triggering condition: {{{readableRule}}}\n    {{/if}}\n    {{#if anomalous}}\n      Signal value: {{inputs.A.value}}\n    {{else}}\n      Current signal value: {{inputs.A.value}}\n    {{/if}}\n    {{#notEmpty dimensions}}\n      Signal details: {{{dimensions}}}\n    {{/notEmpty}}\n    {{#if anomalous}}\n      {{#if runbookUrl}}\n        Runbook: {{{runbookUrl}}}\n      {{/if}}\n      {{#if tip}}\n        Tip: {{{tip}}}\n      {{/if}}\n    {{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\t    Rule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{else}}\n\t    Rule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{/if}}\n    {{#if anomalous}}\n      Triggering condition: {{{readableRule}}} ({{inputs.fire_threshold_stream.value}}%)\n    {{/if}}\n    {{#if anomalous}}\n      Signal value: {{inputs.stream.value}}\n    {{else}}\n      Current signal value: {{inputs.stream.value}}\n    {{/if}}\n    {{#notEmpty dimensions}}\n      Signal details: {{{dimensions}}}\n    {{/notEmpty}}\n    {{#if anomalous}}\n      {{#if runbookUrl}}\n        Runbook: {{{runbookUrl}}}\n      {{/if}}\n      {{#if tip}}\n        Tip: {{{tip}}}\n      {{/if}}\n    {{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
           "runbookUrl": null,
           "severity": "Major",
           "tip": null
         }
       ],
+      "sf_metricsInObjectProgramText": null,
       "tags": null,
       "teams": null,
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
-        "publishLabelOptions": [
-          {
-            "displayName": "Memory Utilization",
-            "label": "A",
-            "paletteIndex": null,
-            "valuePrefix": "",
-            "valueSuffix": "",
-            "valueUnit": null
-          }
-        ],
+        "publishLabelOptions": [],
         "showDataMarkers": false,
         "showEventLines": false,
         "time": {
@@ -74,7 +67,7 @@
       ]
     }
   },
-  "hashCode": 1592365930,
+  "hashCode": 359958367,
   "id": "FAdmGEaAYAA",
   "packageType": "DETECTOR"
 }
