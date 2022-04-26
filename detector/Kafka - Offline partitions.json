@@ -15,38 +15,31 @@
       "lastUpdatedBy": null,
       "maxDelay": 0,
       "minDelay": 0,
-      "name": "Kafka - Offline partitions > 0 on a broker",
+      "name": "Kafka - Offline partitions on a broker",
       "overMTSLimit": false,
       "packageSpecifications": "",
-      "programText": "A = data('gauge.kafka-offline-partitions-count').max(by=['cluster', 'host']).publish(label='A')\ndetect(when(A > threshold(0)), auto_resolve_after='1d').publish('Kafka - Offline partitions > 0 on a broker')",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.infra.kafka import broker\nbroker.offline_partitions_detector().publish('Kafka - Offline partitions > 0 on a broker')",
       "rules": [
         {
-          "description": "The value of Offline Partitions - Max is above 0.",
+          "description": "The value of Offline Partitions - Max is above threshold",
           "detectLabel": "Kafka - Offline partitions > 0 on a broker",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.kafka-offline-partitions-count - Maximum: {{inputs.A.value}}\n{{else}}Current signal value for gauge.kafka-offline-partitions-count - Maximum: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}({{inputs.fire_threshold_stream.value}})\n{{/if}}\n\n{{#if anomalous}}Signal value for gauge.kafka-offline-partitions-count - Maximum: {{inputs.stream.value}}\n{{else}}Current signal value for gauge.kafka-offline-partitions-count - Maximum: {{inputs.stream.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
           "runbookUrl": null,
           "severity": "Critical",
           "tip": null
         }
       ],
+      "sf_metricsInObjectProgramText": null,
       "tags": null,
       "teams": null,
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
-        "publishLabelOptions": [
-          {
-            "displayName": "Offline Partitions - Max",
-            "label": "A",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          }
-        ],
+        "publishLabelOptions": [],
         "showDataMarkers": true,
         "showEventLines": false,
         "time": {
@@ -74,7 +67,7 @@
       ]
     }
   },
-  "hashCode": 1948365761,
+  "hashCode": -1190405794,
   "id": "FBqH_ZTAYAA",
   "packageType": "DETECTOR"
 }

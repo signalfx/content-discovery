@@ -18,35 +18,28 @@
       "name": "K8S Nodes are not ready",
       "overMTSLimit": false,
       "packageSpecifications": "",
-      "programText": "A = data('k8s.node.condition_ready').sum(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='A')\ndetect(when(A < threshold(1), lasting='30s'), auto_resolve_after='1d').publish('K8S Nodes are not ready')",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import nodes\nnodes.nodes_not_ready_detector().publish('K8S Nodes are not ready')",
       "rules": [
         {
-          "description": "The value of Nodes Not Ready is below 1.",
+          "description": "The value of Nodes Not Ready is below threshold",
           "detectLabel": "K8S Nodes are not ready",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for k8s.node.condition_ready - Sum by k8s.cluster.name,k8s.node.name: {{inputs.A.value}}\n{{else}}Current signal value for k8s.node.condition_ready - Sum by k8s.cluster.name,k8s.node.name: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}} {{inputs.fire_threshold_stream.value}}\n{{/if}}\n\n{{#if anomalous}}Signal value for k8s.node.condition_ready - Sum by k8s.cluster.name,k8s.node.name: {{inputs.stream.value}}\n{{else}}Current signal value for k8s.node.condition_ready - Sum by k8s.cluster.name,k8s.node.name: {{inputs.stream.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
           "runbookUrl": null,
           "severity": "Critical",
           "tip": null
         }
       ],
+      "sf_metricsInObjectProgramText": null,
       "tags": null,
       "teams": null,
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
-        "publishLabelOptions": [
-          {
-            "displayName": "Nodes Not Ready",
-            "label": "A",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          }
-        ],
+        "publishLabelOptions": [],
         "showDataMarkers": false,
         "showEventLines": false,
         "time": {
@@ -74,7 +67,7 @@
       ]
     }
   },
-  "hashCode": 151544992,
+  "hashCode": -876126576,
   "id": "FAdUyNbAYAA",
   "packageType": "DETECTOR"
 }

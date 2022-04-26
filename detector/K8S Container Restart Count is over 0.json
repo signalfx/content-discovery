@@ -19,35 +19,27 @@
       "overMTSLimit": false,
       "packageSpecifications": "",
       "parentDetectorId": null,
-      "programText": "A = data('k8s.container.restarts').sum(by=['k8s.namespace.name', 'k8s.pod.name', 'k8s.container.name', 'k8s.cluster.name']).delta().sum(over='5m').above(0, inclusive=True, clamp=True).publish(label='A')\ndetect(when(A > threshold(0), lasting='5m', at_least=0.8), auto_resolve_after='2d').publish('K8S Container Restart Count is > 0')",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import containers\ncontainers.container_restarts_detector().publish('K8S Container Restart Count is > 0')",
       "rules": [
         {
           "description": "The value of Container Restarts is above 0.",
           "detectLabel": "K8S Container Restart Count is > 0",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for Container Restarts: {{inputs.A.value}}\n{{else}}Current signal value for Container Restarts: {{inputs.A.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for Container Restarts: {{inputs.stream.value}}\n{{else}}Current signal value for Container Restarts: {{inputs.stream.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
           "runbookUrl": null,
           "severity": "Major",
           "tip": null
         }
       ],
+      "sf_metricsInObjectProgramText": null,
       "tags": null,
       "teams": null,
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
-        "publishLabelOptions": [
-          {
-            "displayName": "Container Restarts",
-            "label": "A",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          }
-        ],
+        "publishLabelOptions": [],
         "showDataMarkers": false,
         "showEventLines": false,
         "time": {
@@ -85,7 +77,7 @@
       ]
     }
   },
-  "hashCode": 1063236534,
+  "hashCode": -1651061464,
   "id": "E_wPbeQAgAA",
   "packageType": "DETECTOR"
 }
