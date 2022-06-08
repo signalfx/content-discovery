@@ -1,0 +1,3182 @@
+{
+    "chartExports": [
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "75th percentile response time",
+          "id": "FTetI15AgAQ",
+          "importOf": "FR9myrKAYAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Request Latency",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": true,
+                  "property": "os.name"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": 5,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "HTTP Latency in seconds from Mobile",
+                "label": "HTTP Latency in seconds from Mobile",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "sec",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Sparkline",
+            "sortBy": "",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "def weighted_duration(base, product, filter_, groupby):\n    durations     = data(base + '.time.ns.p75', filter=filter_ and filter('sf_product', product),  rollup='average').mean(by=groupby)\n\n    counts     = data(base + '.count', filter=filter_ and filter('sf_product', product),  rollup='sum').sum(by=groupby)\n\n    weight     = (durations * counts).sum(over='1m')\n\n\n    return (weight / (counts.sum(over='1m') * 1000000000))\n\nfilter_ = filter('sf_environment', '*') and filter('app', '*') and filter('app.version','*')\ngroupby = ['app', 'sf_environment', 'os.name']\nweighted_duration('rum.resource_request', 'mobile', filter_, groupby).publish(label='HTTP Latency in seconds from Mobile')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Error rate on requests made by the app",
+          "id": "FTetJDxAYAI",
+          "importOf": "FR9myioAYAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP error rate",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "%",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "LineChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 10000,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Errors",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Requests",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Error rate",
+                "label": "Error rate",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "filter_ = filter('sf_environment', '*') and filter('app', '*') and filter('sf_product','mobile') and filter('app.version','*')\nA = data('rum.resource_request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'app']).publish(label='A', enable=False)\nB = data('rum.resource_request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'app']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='Error rate')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Last 3 hours",
+          "id": "FTetJZbAcAA",
+          "importOf": "FR9q6zmAYAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Top App crashes",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": false,
+                  "property": "app"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_originatingMetric"
+                },
+                {
+                  "enabled": true,
+                  "property": "os.name"
+                },
+                {
+                  "enabled": true,
+                  "property": "os.version"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_operation"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": 4,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "A",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "B",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "C",
+                "label": "C",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "sortBy": "-value",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.crash.count', filter=filter('sf_environment', '*') and filter('app.version', '*')).sum(by=['sf_operation', 'app', 'sf_environment']).sum(over='3h').publish(label='A', enable=False)\nB = data('rum.crash.count', filter=filter('sf_environment', '*') and filter('app.version', '*')).sum(by=['app', 'sf_environment']).sum(over='3h').publish(label='B', enable=False)\nC = (A*100/B).publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "P75, Last 7 days",
+          "id": "FTetJemAgAE",
+          "importOf": "FR9wTlKAYAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Hot Startup Time",
+          "options": {
+            "colorBy": "Scale",
+            "colorScale2": [
+              {
+                "gt": 5,
+                "gte": null,
+                "lt": null,
+                "lte": 10,
+                "paletteIndex": 16
+              },
+              {
+                "gt": null,
+                "gte": 0,
+                "lt": null,
+                "lte": 5,
+                "paletteIndex": 20
+              }
+            ],
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": false,
+                  "property": "os.name"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Hot Startup Time",
+                "label": "Hot Startup Time",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "sec",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Linear",
+            "sortBy": "",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "def weighted_duration(base, product, filter_, groupby):\n    durations     = data(base + '.time.ns.p75', filter=filter_ and filter('sf_product', product),  rollup='average').mean(by=groupby)\n\n    counts     = data(base + '.count', filter=filter_ and filter('sf_product', product),  rollup='sum').sum(by=groupby)\n\n    weight     = (durations * counts).sum(over='7d')\n\n\n    return (weight / (counts.sum(over='7d') * 1000000000))\n\nfilter_ = filter('sf_environment', '*') and filter('app', '*') and filter('app.version','*')\ngroupby = ['app', 'sf_environment', 'os.name']\nweighted_duration('rum.hot_start', 'mobile', filter_, groupby).publish(label='Hot Startup Time')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Average over the last hour",
+          "id": "FTetJjbAYAE",
+          "importOf": "FR9myXNAcAM",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP error rate",
+          "options": {
+            "colorBy": "Scale",
+            "colorScale": null,
+            "colorScale2": [
+              {
+                "gt": 5,
+                "gte": null,
+                "lt": null,
+                "lte": null,
+                "paletteIndex": 16
+              },
+              {
+                "gt": 1,
+                "gte": null,
+                "lt": null,
+                "lte": 5,
+                "paletteIndex": 17
+              },
+              {
+                "gt": 0.1,
+                "gte": null,
+                "lt": null,
+                "lte": 1,
+                "paletteIndex": 18
+              },
+              {
+                "gt": 0,
+                "gte": null,
+                "lt": null,
+                "lte": 0.1,
+                "paletteIndex": 19
+              },
+              {
+                "gt": null,
+                "gte": null,
+                "lt": null,
+                "lte": 0,
+                "paletteIndex": 20
+              }
+            ],
+            "maximumPrecision": 2,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Errors",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Requests",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Error rate",
+                "label": "C",
+                "paletteIndex": 9,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "showSparkLine": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "timestampHidden": false,
+            "type": "SingleValue",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "filter_ = filter('sf_environment', '*') and filter('app', '*') and filter('sf_product','mobile') and filter('app.version','*')\nA = data('rum.resource_request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'app']).publish(label='A', enable=False)\nB = data('rum.resource_request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'app']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).mean(over='1h').publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTetJnmAcAA",
+          "importOf": "FR9pi5_AcAI",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "App Launches",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "ColumnChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Launches by App",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Total App Launches in Environment",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": "LineChart",
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 1
+              }
+            ],
+            "showEventLines": false,
+            "stacked": true,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.cold_start.count', filter=filter('sf_environment', '*') and filter('app.version', '*') and filter('app', '*')).sum(by=['app', 'sf_environment']).publish(label='A')\nB = data('rum.cold_start.count', filter=filter('sf_environment', '*') and filter('app', '*')).sum().publish(label='B')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Average per hour",
+          "id": "FTetJ1IAgAE",
+          "importOf": "FR90-iWAgAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Crash rate",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "rum.crash.count - Sum by app,sf_environment",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "rum.cold_start.count - Sum by app,sf_environment",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "100*A/B - Mean(1h)",
+                "label": "C",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "sortBy": "",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.crash.count', filter=filter('sf_environment', '*') and filter('app.version', '*'), rollup='sum').sum(by=['app', 'sf_environment']).publish(label='A', enable=False)\nB = data('rum.cold_start.count', filter=filter('sf_environment', '*') and filter('app.version', '*'), rollup='sum').sum(by=['app', 'sf_environment']).publish(label='B', enable=False)\nC = (100*A/B).mean(over='1h').publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTetJ9fAYAI",
+          "importOf": "FR9mybUAgAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Error Status Codes received",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "http.status_code"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_originatingMetric"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                }
+              ]
+            },
+            "maximumPrecision": 4,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "A",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "B",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "HTTP Error Status Code Breakdown",
+                "label": "HTTP Error Status Code Breakdown",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "sortBy": "-value",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.resource_request.count', filter=filter('sf_product', 'mobile') and filter('sf_environment', '*') and filter('app', '*') and filter('app.version', '*') and filter('sf_error', 'true')).sum(by=['http.status_code']).publish(label='A', enable=False)\nB = data('rum.resource_request.count', filter=filter('sf_product', 'mobile') and filter('sf_environment', '*') and filter('app', '*') and filter('app.version', '*') and filter('sf_error', 'true')).sum().publish(label='B', enable=False)\nC = (100*A/B).publish(label='HTTP Error Status Code Breakdown')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "p75 in seconds",
+          "id": "FTetKIZAcAE",
+          "importOf": "FR9myouAgAM",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Latency distribution",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "seconds",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "LineChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 10000,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "HTTP Latency in seconds from Mobile",
+                "label": "HTTP Latency in seconds from Mobile",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "def weighted_duration(base, product, filter_, groupby):\n    durations     = data(base + '.time.ns.p75', filter=filter_ and filter('sf_product', product),  rollup='average').mean(by=groupby)\n\n    counts     = data(base + '.count', filter=filter_ and filter('sf_product', product),  rollup='sum').sum(by=groupby)\n\n    weight     = (durations * counts).sum(over='1m')\n\n\n    return (weight / (counts.sum(over='1m') * 1000000000))\n\nfilter_ = filter('sf_environment', '*') and filter('app', '*') and filter('app.version','*')\ngroupby = ['app', 'sf_environment', 'os.name']\nweighted_duration('rum.resource_request', 'mobile', filter_, groupby).publish(label='HTTP Latency in seconds from Mobile')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Last 7 days",
+          "id": "FTetKMsAgAE",
+          "importOf": "FR9vd0LAgAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Top OS & OS Versions",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": false,
+                  "property": "app"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_originatingMetric"
+                },
+                {
+                  "enabled": true,
+                  "property": "os.name"
+                },
+                {
+                  "enabled": true,
+                  "property": "os.version"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": 4,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "A",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "B",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "C",
+                "label": "C",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "sortBy": "-value",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.cold_start.count', filter=filter('sf_environment', '*') and filter('app.version', '*') and filter('app', '*')).sum(by=['app', 'os.name', 'os.version']).sum(over='7d').publish(label='A', enable=False)\nB = data('rum.cold_start.count', filter=filter('sf_environment', '*') and filter('app.version', '*') and filter('app', '*')).sum(over='7d').sum().publish(label='B', enable=False)\nC = (100*A/B).publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTetKSvAYAA",
+          "importOf": "FR9uZmmAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "App Crashes by App Version",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "ColumnChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app.version",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "rum.crash.count - Sum by app,app.version,sf_environment",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": true,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.crash.count', filter=filter('sf_environment', '*') and filter('app.version', '*')).sum(by=['app', 'app.version', 'sf_environment']).publish(label='A')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTetKVWAcAI",
+          "importOf": "FR9myvaAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Performance",
+          "options": {
+            "markdown": "<table width=\"100%\" height=\"100%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#2E5984\">\n<font size=\"6\" color=\"white\"> HTTP Performance Metrics </font>\n</td></tr></table>",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTetKdLAgAA",
+          "importOf": "FR9otJyAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "App Launches",
+          "options": {
+            "markdown": "<table width=\"100%\" height=\"100%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#000\">\n<font size=\"6\" color=\"white\"> App Launch Statistics </font>\n</td></tr></table>",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Average rate per hour",
+          "id": "FTetKeQAYAA",
+          "importOf": "FR9ubEcAYAI",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Crash rate",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "%",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "LineChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "rum.crash.count - Sum by app,sf_environment",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "rum.cold_start.count - Sum by app,sf_environment",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Crash rate",
+                "label": "C",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.crash.count', filter=filter('sf_environment', '*') and filter('app.version', '*'), rollup='sum').sum(by=['app', 'sf_environment']).publish(label='A', enable=False)\nB = data('rum.cold_start.count', filter=filter('sf_environment', '*') and filter('app.version', '*'), rollup='sum').sum(by=['app', 'sf_environment']).publish(label='B', enable=False)\nC = (100*A/B).mean(over='1h').publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTetKiVAcAI",
+          "importOf": "FR9vGyZAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "App Startup Time",
+          "options": {
+            "markdown": "Users expect apps to be responsive and fast to load. An app with a slow start time doesn’t meet this expectation, and can be disappointing to users. This sort of poor experience may cause a user to rate your app poorly on the Play store, or even abandon your app altogether.\n\n[Vitals benchmarks](https://developer.android.com/topic/performance/vitals/launch-time) published by Google consider >5 seconds for cold starts and >1.5 seconds for hot starts excessive.",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTetKopAgAQ",
+          "importOf": "FR9oiLtAcAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "App Crashes & Errors",
+          "options": {
+            "markdown": "<table width=\"100%\" height=\"100%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#888\">\n<font size=\"6\" color=\"white\"> App Crashes & Errors </font>\n</td></tr></table>",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "P75, Last 7 days",
+          "id": "FTetKvTAYAE",
+          "importOf": "FR9vf3IAcAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Cold Startup Time",
+          "options": {
+            "colorBy": "Scale",
+            "colorScale2": [
+              {
+                "gt": 5,
+                "gte": null,
+                "lt": null,
+                "lte": 10,
+                "paletteIndex": 16
+              },
+              {
+                "gt": null,
+                "gte": 0,
+                "lt": null,
+                "lte": 5,
+                "paletteIndex": 20
+              }
+            ],
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": true,
+                  "property": "os.name"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Cold Startup Time",
+                "label": "Cold Startup Time",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "sec",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Linear",
+            "sortBy": "",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "def weighted_duration(base, product, filter_, groupby):\n    durations     = data(base + '.time.ns.p75', filter=filter_ and filter('sf_product', product),  rollup='average').mean(by=groupby)\n\n    counts     = data(base + '.count', filter=filter_ and filter('sf_product', product),  rollup='sum').sum(by=groupby)\n\n    weight     = (durations * counts).sum(over='7d')\n\n\n    return (weight / (counts.sum(over='7d') * 1000000000))\n\nfilter_ = filter('sf_environment', '*') and filter('app', '*') and filter('app.version','*')\ngroupby = ['app', 'sf_environment', 'os.name']\nweighted_duration('rum.cold_start', 'mobile', filter_, groupby).publish(label='Cold Startup Time')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Average over the last hour",
+          "id": "FTe5pYKAYAI",
+          "importOf": "FR9myXNAcAM",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP error rate",
+          "options": {
+            "colorBy": "Scale",
+            "colorScale": null,
+            "colorScale2": [
+              {
+                "gt": 5,
+                "gte": null,
+                "lt": null,
+                "lte": null,
+                "paletteIndex": 16
+              },
+              {
+                "gt": 1,
+                "gte": null,
+                "lt": null,
+                "lte": 5,
+                "paletteIndex": 17
+              },
+              {
+                "gt": 0.1,
+                "gte": null,
+                "lt": null,
+                "lte": 1,
+                "paletteIndex": 18
+              },
+              {
+                "gt": 0,
+                "gte": null,
+                "lt": null,
+                "lte": 0.1,
+                "paletteIndex": 19
+              },
+              {
+                "gt": null,
+                "gte": null,
+                "lt": null,
+                "lte": 0,
+                "paletteIndex": 20
+              }
+            ],
+            "maximumPrecision": 2,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Errors",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Requests",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Error rate",
+                "label": "C",
+                "paletteIndex": 9,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "showSparkLine": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "timestampHidden": false,
+            "type": "SingleValue",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "filter_ = filter('sf_environment', '*') and filter('app', '*') and filter('sf_product', 'web')\nA = data('rum.resource_request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'app']).publish(label='A', enable=False)\nB = data('rum.resource_request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'app']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).mean(over='1h').publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTe5pb2AcAA",
+          "importOf": "FR9myvaAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Performance",
+          "options": {
+            "markdown": "<table width=\"100%\" height=\"100%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#2E5984\">\n<font size=\"6\" color=\"white\"> HTTP Performance Metrics </font>\n</td></tr></table>",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTe5pkHAcAA",
+          "importOf": "FR9otJyAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Web Vitals",
+          "options": {
+            "markdown": "<table width=\"100%\" height=\"20%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#000\">\n<font size=\"6\" color=\"white\"> Web Vitals </font>\n</td></tr></table>\n<br/>\nMonitor Core Web Vitals to ensure users have a great experience when visiting your website. They are a modern way to quantify the performance and user experience of your web app, and are essential to driving traffic via search engines. \n\nTo learn more about Web Vitals, read [this blog](https://www.splunk.com/en_us/observability/resources/what-are-web-vitals.html) from Splunk or read out [product docs.](https://docs.splunk.com/Observability/rum/rum-use-case-library/use-case-monitoring.html#web-vitals)",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTe5plJAgAA",
+          "importOf": "FR9uZmmAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Javascript Errors by App",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "ColumnChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "rum.client_error.count - Sum by app",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": true,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.client_error.count', filter=filter('sf_environment', '*') and filter('app', '*')).sum(by=['app']).publish(label='A')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTe5p6YAcAA",
+          "importOf": "FR9mybUAgAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Error Status Codes received",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "http.status_code"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_originatingMetric"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                }
+              ]
+            },
+            "maximumPrecision": 4,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "A",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "B",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "HTTP Error Status Code Breakdown",
+                "label": "HTTP Error Status Code Breakdown",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "%",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "sortBy": "-value",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.resource_request.count', filter=filter('sf_product', 'web') and filter('sf_environment', '*') and filter('app', '*') and filter('sf_error', 'true')).sum(by=['http.status_code']).publish(label='A', enable=False)\nB = data('rum.resource_request.count', filter=filter('sf_product', 'web') and filter('sf_environment', '*') and filter('app', '*') and filter('sf_error', 'true')).sum().publish(label='B', enable=False)\nC = (100*A/B).publish(label='HTTP Error Status Code Breakdown')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "p75 in seconds",
+          "id": "FTe5p_OAgAE",
+          "importOf": "FR9myouAgAM",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Latency distribution",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "seconds",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "LineChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 10000,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "HTTP Latency in seconds from Web",
+                "label": "HTTP Latency in seconds from Web",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "def weighted_duration(base, product, filter_, groupby):\n    durations     = data(base + '.time.ns.p75', filter=filter_ and filter('sf_product', product),  rollup='average').mean(by=groupby)\n\n    counts     = data(base + '.count', filter=filter_ and filter('sf_product', product),  rollup='sum').sum(by=groupby)\n\n    weight     = (durations * counts).sum(over='1m')\n\n\n    return (weight / (counts.sum(over='1m') * 1000000000))\n\nfilter_ = filter('sf_environment', '*') and filter('app', '*')\ngroupby = ['app', 'sf_environment']\nweighted_duration('rum.resource_request', 'web', filter_, groupby).publish(label='HTTP Latency in seconds from Web')\n",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "75th percentile response time",
+          "id": "FTe5qExAcAA",
+          "importOf": "FR9myrKAYAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP Request Latency",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": true,
+                  "property": "os.name"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": 5,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "HTTP Latency in seconds from Web",
+                "label": "HTTP Latency in seconds from Web",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "sec",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Sparkline",
+            "sortBy": "",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "def weighted_duration(base, product, filter_, groupby):\n    durations     = data(base + '.time.ns.p75', filter=filter_ and filter('sf_product', product),  rollup='average').mean(by=groupby)\n\n    counts     = data(base + '.count', filter=filter_ and filter('sf_product', product),  rollup='sum').sum(by=groupby)\n\n    weight     = (durations * counts).sum(over='1m')\n\n\n    return (weight / (counts.sum(over='1m') * 1000000000))\n\nfilter_ = filter('sf_environment', '*') and filter('app', '*')\ngroupby = ['app', 'sf_environment']\nweighted_duration('rum.resource_request', 'web', filter_, groupby).publish(label='HTTP Latency in seconds from Web')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTe5qNEAgAE",
+          "importOf": "FR9oiLtAcAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Javascript Errors",
+          "options": {
+            "markdown": "<table width=\"100%\" height=\"100%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#888\">\n<font size=\"6\" color=\"white\"> Javascript Errors </font>\n</td></tr></table>",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Error rate on requests made by the app",
+          "id": "FTe5qP4AYAA",
+          "importOf": "FR9myioAYAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "HTTP error rate",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "%",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "LineChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 10000,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Errors",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Requests",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "Error rate",
+                "label": "Error rate",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "filter_ = filter('sf_environment', '*') and filter('app', '*') and filter('sf_product', 'web')\nA = data('rum.resource_request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'app']).publish(label='A', enable=False)\nB = data('rum.resource_request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'app']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='Error rate')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "Average per hour",
+          "id": "FTe5qQkAcAA",
+          "importOf": "FR90-iWAgAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "JS Errors per Page View",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "rum.client_error.count - Sum by app,sf_environment",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "rum.page_view.count - Sum by app,sf_environment",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "A/B - Mean(1h)",
+                "label": "C",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": "",
+                "valueSuffix": "",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "None",
+            "sortBy": "",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.client_error.count', filter=filter('sf_environment', '*') and filter('app', '*'), rollup='sum').sum(by=['app', 'sf_environment']).publish(label='A', enable=False)\nB = data('rum.page_view.count', filter=filter('sf_environment', '*') and filter('app', '*'), rollup='sum').sum(by=['app', 'sf_environment']).publish(label='B', enable=False)\nC = (A/B).mean(over='1h').publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTe_pD-AgAA",
+          "importOf": "FR9myvaAcAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Page Loads and Route Changes",
+          "options": {
+            "markdown": "<table width=\"100%\" height=\"100%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#000\">\n<font size=\"6\" color=\"white\"> Page Loads and Route Changes </font>\n</td></tr></table>",
+            "type": "Text"
+          },
+          "packageSpecifications": "",
+          "programText": "",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "P75, Last 7 days",
+          "id": "FTfBn7JAgAA",
+          "importOf": "FR9vf3IAcAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Page or Route Load Duration",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": false,
+                  "property": "os.name"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Page or Route Load Duration",
+                "label": "Page or Route Load Duration",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "sec",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Sparkline",
+            "sortBy": "",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "def weighted_duration(base, product, filter_, groupby):\n    durations     = data(base + '.time.ns.p75', filter=filter_ and filter('sf_product', product),  rollup='average').mean(by=groupby)\n\n    counts     = data(base + '.count', filter=filter_ and filter('sf_product', product),  rollup='sum').sum(by=groupby)\n\n    weight     = (durations * counts).sum(over='7d')\n\n\n    return (weight / (counts.sum(over='7d') * 1000000000))\n\nfilter_ = filter('sf_environment', '*') and filter('app', '*')\ngroupby = ['app', 'sf_environment']\nweighted_duration('rum.page_view', 'web', filter_, groupby).publish(label='Page or Route Load Duration')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "P75",
+          "id": "FTfCgqYAgAA",
+          "importOf": "FR9vf3IAcAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Largest Contentful Paint (LCP)",
+          "options": {
+            "colorBy": "Scale",
+            "colorScale": null,
+            "colorScale2": [
+              {
+                "gt": 4,
+                "gte": null,
+                "lt": null,
+                "lte": 10,
+                "paletteIndex": 16
+              },
+              {
+                "gt": 2.5,
+                "gte": null,
+                "lt": null,
+                "lte": 4,
+                "paletteIndex": 18
+              },
+              {
+                "gt": null,
+                "gte": 0,
+                "lt": null,
+                "lte": 2.5,
+                "paletteIndex": 20
+              }
+            ],
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "A",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "A/1000000000",
+                "label": "C",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "sec",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Linear",
+            "showSparkLine": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "timestampHidden": false,
+            "type": "SingleValue",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.webvitals_lcp.time.ns.p75', filter=filter('app', '*') and filter('sf_environment', '*')).percentile(pct=75, over='5m').percentile(pct=75).publish(label='A', enable=False)\nC = (A/1000000000).publish(label='C')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTfJCFJAgAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "First Input Delay (FID)",
+          "options": {
+            "colorBy": "Scale",
+            "colorScale": null,
+            "colorScale2": [
+              {
+                "gt": 300,
+                "gte": null,
+                "lt": null,
+                "lte": 400,
+                "paletteIndex": 16
+              },
+              {
+                "gt": 100,
+                "gte": null,
+                "lt": null,
+                "lte": 300,
+                "paletteIndex": 18
+              },
+              {
+                "gt": null,
+                "gte": 0,
+                "lt": null,
+                "lte": 100,
+                "paletteIndex": 20
+              }
+            ],
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "rum.webvitals_fid.time.ns.p75 - P75(5m) - P75",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              },
+              {
+                "displayName": "FID in milliseconds",
+                "label": "B",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": "ms",
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Linear",
+            "showSparkLine": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "timestampHidden": false,
+            "type": "SingleValue",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.webvitals_fid.time.ns.p75', filter=filter('app', '*') and filter('sf_environment', '*')).percentile(pct=75, over='5m').percentile(pct=75).publish(label='A', enable=False)\nB = (A/1000000).publish(label='B')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "P75",
+          "id": "FTzB2ZVAgAI",
+          "importOf": "FR9vf3IAcAE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Cumulative Layout Shift (CLS)",
+          "options": {
+            "colorBy": "Scale",
+            "colorScale": null,
+            "colorScale2": [
+              {
+                "gt": 0.25,
+                "gte": null,
+                "lt": null,
+                "lte": 0.75,
+                "paletteIndex": 16
+              },
+              {
+                "gt": 0.1,
+                "gte": null,
+                "lt": null,
+                "lte": 0.25,
+                "paletteIndex": 18
+              },
+              {
+                "gt": null,
+                "gte": 0,
+                "lt": null,
+                "lte": 0.1,
+                "paletteIndex": 20
+              }
+            ],
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "A",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": null,
+            "secondaryVisualization": "Linear",
+            "showSparkLine": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "timestampHidden": false,
+            "type": "SingleValue",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.webvitals_cls.score.p75', filter=filter('app', '*') and filter('sf_environment', '*')).percentile(pct=75, over='5m').percentile(pct=75).publish(label='A')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "P75",
+          "id": "FTzCpIZAcAA",
+          "importOf": "FToLtuPAwAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Page Load and Route Change Duration",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "LineChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": false,
+            "legendOptions": {
+              "fields": null
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "app",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Page load or Route change Duration",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": "Nanosecond",
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": false,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.page_view.time.ns.p75', filter=filter('sf_environment', '*') and filter('app', '*') and filter('sf_product', 'web')).percentile(pct=75, by=['app', 'sf_environment']).percentile(pct=75, over='5m').publish(label='A')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTzDIgKAcAM",
+          "importOf": "FToLrrmA0AE",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "P75 Load Time by Browser",
+          "options": {
+            "colorBy": "Dimension",
+            "colorScale2": null,
+            "hideMissingValues": false,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": false,
+                  "property": "sf_originatingMetric"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_ua_browsername"
+                },
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_operation"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_node_type"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_product"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_ua_osname"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "maximumPrecision": null,
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "rum.page_view.time.ns.p75 - Mean by sf_ua_browsername",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": "Nanosecond",
+                "yAxis": 0
+              }
+            ],
+            "refreshInterval": 3600000,
+            "secondaryVisualization": "Sparkline",
+            "sortBy": "-value",
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "List",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.page_view.time.ns.p75', filter=filter('sf_ua_browsername', '*'), rollup='average', extrapolation='last_value').mean(by=['sf_ua_browsername']).publish(label='A')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      },
+      {
+        "chart": {
+          "created": 0,
+          "creator": null,
+          "customProperties": {},
+          "description": "",
+          "id": "FTzEKO6AYow",
+          "importOf": "FToLoBnA4AA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "name": "Traffic by Browser Type",
+          "options": {
+            "areaChartOptions": {
+              "showDataMarkers": false
+            },
+            "axes": [
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "Views",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              },
+              {
+                "highWatermark": null,
+                "highWatermarkLabel": null,
+                "label": "",
+                "lowWatermark": null,
+                "lowWatermarkLabel": null,
+                "max": null,
+                "min": null
+              }
+            ],
+            "axisPrecision": null,
+            "colorBy": "Dimension",
+            "defaultPlotType": "AreaChart",
+            "eventPublishLabelOptions": [],
+            "histogramChartOptions": {
+              "colorThemeIndex": 16
+            },
+            "includeZero": true,
+            "legendOptions": {
+              "fields": [
+                {
+                  "enabled": false,
+                  "property": "sf_originatingMetric"
+                },
+                {
+                  "enabled": false,
+                  "property": "sf_metric"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_ua_browsername"
+                },
+                {
+                  "enabled": true,
+                  "property": "app"
+                },
+                {
+                  "enabled": true,
+                  "property": "sf_environment"
+                }
+              ]
+            },
+            "lineChartOptions": {
+              "showDataMarkers": false
+            },
+            "noDataOptions": {
+              "linkText": null,
+              "linkUrl": null,
+              "noDataMessage": null
+            },
+            "onChartLegendOptions": {
+              "dimensionInLegend": "sf_ua_browsername",
+              "showLegend": true
+            },
+            "programOptions": {
+              "disableSampling": false,
+              "maxDelay": 0,
+              "minimumResolution": 0,
+              "timezone": null
+            },
+            "publishLabelOptions": [
+              {
+                "displayName": "Page Views or Route Changes",
+                "label": "A",
+                "paletteIndex": null,
+                "plotType": null,
+                "valuePrefix": null,
+                "valueSuffix": null,
+                "valueUnit": null,
+                "yAxis": 0
+              }
+            ],
+            "showEventLines": false,
+            "stacked": true,
+            "time": {
+              "range": 900000,
+              "rangeEnd": 0,
+              "type": "relative"
+            },
+            "type": "TimeSeriesChart",
+            "unitPrefix": "Metric"
+          },
+          "packageSpecifications": "",
+          "programText": "A = data('rum.page_view.count', filter=filter('sf_ua_browsername', '*') and filter('sf_environment', '*') and filter('app', '*')).sum(by=['sf_ua_browsername']).publish(label='A')",
+          "relatedDetectorIds": [],
+          "tags": null
+        }
+      }
+    ],
+    "crossLinkExports": [],
+    "dashboardExports": [
+      {
+        "dashboard": {
+          "authorizedWriters": null,
+          "chartDensity": "DEFAULT",
+          "charts": [
+            {
+              "chartId": "FTetKopAgAQ",
+              "column": 0,
+              "height": 1,
+              "row": 0,
+              "width": 6
+            },
+            {
+              "chartId": "FTetJZbAcAA",
+              "column": 9,
+              "height": 2,
+              "row": 0,
+              "width": 3
+            },
+            {
+              "chartId": "FTetJ1IAgAE",
+              "column": 6,
+              "height": 1,
+              "row": 0,
+              "width": 3
+            },
+            {
+              "chartId": "FTetKSvAYAA",
+              "column": 0,
+              "height": 1,
+              "row": 1,
+              "width": 5
+            },
+            {
+              "chartId": "FTetKeQAYAA",
+              "column": 5,
+              "height": 1,
+              "row": 1,
+              "width": 4
+            },
+            {
+              "chartId": "FTetKVWAcAI",
+              "column": 0,
+              "height": 1,
+              "row": 2,
+              "width": 12
+            },
+            {
+              "chartId": "FTetJ9fAYAI",
+              "column": 9,
+              "height": 2,
+              "row": 3,
+              "width": 3
+            },
+            {
+              "chartId": "FTetJjbAYAE",
+              "column": 0,
+              "height": 1,
+              "row": 3,
+              "width": 3
+            },
+            {
+              "chartId": "FTetJDxAYAI",
+              "column": 3,
+              "height": 1,
+              "row": 3,
+              "width": 6
+            },
+            {
+              "chartId": "FTetI15AgAQ",
+              "column": 0,
+              "height": 1,
+              "row": 4,
+              "width": 3
+            },
+            {
+              "chartId": "FTetKIZAcAE",
+              "column": 3,
+              "height": 1,
+              "row": 4,
+              "width": 6
+            },
+            {
+              "chartId": "FTetKiVAcAI",
+              "column": 0,
+              "height": 1,
+              "row": 5,
+              "width": 4
+            },
+            {
+              "chartId": "FTetKdLAgAA",
+              "column": 4,
+              "height": 1,
+              "row": 5,
+              "width": 8
+            },
+            {
+              "chartId": "FTetKvTAYAE",
+              "column": 0,
+              "height": 2,
+              "row": 6,
+              "width": 2
+            },
+            {
+              "chartId": "FTetJnmAcAA",
+              "column": 4,
+              "height": 2,
+              "row": 6,
+              "width": 5
+            },
+            {
+              "chartId": "FTetKMsAgAE",
+              "column": 9,
+              "height": 2,
+              "row": 6,
+              "width": 3
+            },
+            {
+              "chartId": "FTetJemAgAE",
+              "column": 2,
+              "height": 2,
+              "row": 6,
+              "width": 2
+            }
+          ],
+          "created": 0,
+          "creator": null,
+          "customProperties": null,
+          "description": "Mobile App Health",
+          "discoveryOptions": null,
+          "eventOverlays": [],
+          "filters": {
+            "sources": null,
+            "time": {
+              "end": "Now",
+              "start": "-1d"
+            },
+            "variables": [
+              {
+                "alias": "Environment",
+                "applyIfExists": false,
+                "description": "RUM Environment Name",
+                "preferredSuggestions": [],
+                "property": "sf_environment",
+                "propertyMappings": [
+                  "sf_environment"
+                ],
+                "replaceOnly": true,
+                "required": false,
+                "restricted": false,
+                "value": null
+              },
+              {
+                "alias": "App",
+                "applyIfExists": false,
+                "description": "RUM App Name",
+                "preferredSuggestions": [],
+                "property": "app",
+                "propertyMappings": [
+                  "app"
+                ],
+                "replaceOnly": true,
+                "required": false,
+                "restricted": false,
+                "value": null
+              },
+              {
+                "alias": "App Version",
+                "applyIfExists": false,
+                "description": "Version of the app",
+                "preferredSuggestions": [],
+                "property": "app.version",
+                "propertyMappings": [
+                  "app.version"
+                ],
+                "replaceOnly": true,
+                "required": false,
+                "restricted": false,
+                "value": null
+              }
+            ]
+          },
+          "groupId": "FTessLLAYAA",
+          "groupName": "RUM Apps",
+          "id": "FTetKyoAcAo",
+          "importOf": "FR9my3NAgAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "maxDelayOverride": null,
+          "name": "Mobile App Health",
+          "permissions": null,
+          "selectedEventOverlays": [],
+          "tags": null
+        }
+      },
+      {
+        "dashboard": {
+          "authorizedWriters": null,
+          "chartDensity": "DEFAULT",
+          "charts": [
+            {
+              "chartId": "FTe_pD-AgAA",
+              "column": 0,
+              "height": 1,
+              "row": 0,
+              "width": 8
+            },
+            {
+              "chartId": "FTzEKO6AYow",
+              "column": 8,
+              "height": 1,
+              "row": 0,
+              "width": 4
+            },
+            {
+              "chartId": "FTfBn7JAgAA",
+              "column": 8,
+              "height": 1,
+              "row": 1,
+              "width": 4
+            },
+            {
+              "chartId": "FTzCpIZAcAA",
+              "column": 0,
+              "height": 1,
+              "row": 1,
+              "width": 5
+            },
+            {
+              "chartId": "FTzDIgKAcAM",
+              "column": 5,
+              "height": 1,
+              "row": 1,
+              "width": 3
+            },
+            {
+              "chartId": "FTe5pkHAcAA",
+              "column": 0,
+              "height": 1,
+              "row": 2,
+              "width": 12
+            },
+            {
+              "chartId": "FTfCgqYAgAA",
+              "column": 0,
+              "height": 1,
+              "row": 3,
+              "width": 4
+            },
+            {
+              "chartId": "FTfJCFJAgAA",
+              "column": 4,
+              "height": 1,
+              "row": 3,
+              "width": 4
+            },
+            {
+              "chartId": "FTzB2ZVAgAI",
+              "column": 8,
+              "height": 1,
+              "row": 3,
+              "width": 4
+            },
+            {
+              "chartId": "FTe5qNEAgAE",
+              "column": 0,
+              "height": 1,
+              "row": 4,
+              "width": 3
+            },
+            {
+              "chartId": "FTe5qQkAcAA",
+              "column": 3,
+              "height": 1,
+              "row": 4,
+              "width": 4
+            },
+            {
+              "chartId": "FTe5plJAgAA",
+              "column": 7,
+              "height": 1,
+              "row": 4,
+              "width": 5
+            },
+            {
+              "chartId": "FTe5pb2AcAA",
+              "column": 0,
+              "height": 1,
+              "row": 5,
+              "width": 12
+            },
+            {
+              "chartId": "FTe5pYKAYAI",
+              "column": 0,
+              "height": 1,
+              "row": 6,
+              "width": 3
+            },
+            {
+              "chartId": "FTe5p6YAcAA",
+              "column": 9,
+              "height": 2,
+              "row": 6,
+              "width": 3
+            },
+            {
+              "chartId": "FTe5qP4AYAA",
+              "column": 3,
+              "height": 1,
+              "row": 6,
+              "width": 6
+            },
+            {
+              "chartId": "FTe5qExAcAA",
+              "column": 0,
+              "height": 1,
+              "row": 7,
+              "width": 3
+            },
+            {
+              "chartId": "FTe5p_OAgAE",
+              "column": 3,
+              "height": 1,
+              "row": 7,
+              "width": 6
+            }
+          ],
+          "created": 0,
+          "creator": null,
+          "customProperties": null,
+          "description": "Browser App Health",
+          "discoveryOptions": null,
+          "eventOverlays": [],
+          "filters": {
+            "sources": null,
+            "time": {
+              "end": "Now",
+              "start": "-1d"
+            },
+            "variables": [
+              {
+                "alias": "Environment",
+                "applyIfExists": false,
+                "description": "RUM Environment Name",
+                "preferredSuggestions": [],
+                "property": "sf_environment",
+                "propertyMappings": [
+                  "sf_environment"
+                ],
+                "replaceOnly": true,
+                "required": false,
+                "restricted": false,
+                "value": ""
+              },
+              {
+                "alias": "App",
+                "applyIfExists": false,
+                "description": "RUM App Name",
+                "preferredSuggestions": [],
+                "property": "app",
+                "propertyMappings": [
+                  "app"
+                ],
+                "replaceOnly": true,
+                "required": false,
+                "restricted": false,
+                "value": null
+              }
+            ]
+          },
+          "groupId": "FTessLLAYAA",
+          "groupName": "RUM Apps",
+          "id": "FTe5qsAAYAA",
+          "importOf": "FR9my3NAgAA",
+          "lastUpdated": 0,
+          "lastUpdatedBy": null,
+          "maxDelayOverride": null,
+          "name": "Browser App Health",
+          "permissions": null,
+          "selectedEventOverlays": [],
+          "tags": null
+        }
+      }
+    ],
+    "groupExport": {
+      "group": {
+        "authorizedWriters": null,
+        "created": 0,
+        "creator": null,
+        "dashboardConfigs": [
+          {
+            "configId": "FTetK1tAYAE",
+            "dashboardId": "FTetKyoAcAo",
+            "descriptionOverride": null,
+            "filtersOverride": null,
+            "nameOverride": null
+          },
+          {
+            "configId": "FTe5qx3AcAE",
+            "dashboardId": "FTe5qsAAYAA",
+            "descriptionOverride": null,
+            "filtersOverride": null,
+            "nameOverride": null
+          }
+        ],
+        "dashboards": [
+          "FTetKyoAcAo",
+          "FTe5qsAAYAA"
+        ],
+        "description": "RUM Apps",
+        "email": null,
+        "id": "FTessLLAYAA",
+        "importQualifiers": [
+          {
+            "filters": [],
+            "metric": ""
+          }
+        ],
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "RUM Apps",
+        "permissions": null,
+        "teams": null
+      }
+    },
+    "hashCode": 1320318896,
+    "id": "FTessLLAYAA",
+    "modelVersion": 1,
+    "packageType": "GROUP"
+  }
