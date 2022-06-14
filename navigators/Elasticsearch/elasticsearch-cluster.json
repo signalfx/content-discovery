@@ -1,0 +1,511 @@
+{
+  "hashCode": -44261736,
+  "id": "FVIgyv9AcAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": false,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "FVIgyv9AcAA",
+      "idDisplayName": "{{cluster}}",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": ["elasticsearch"]
+        }],
+        "metric": "counter.indices.indexing.index-total"
+      }, {
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": ["elasticsearch"]
+        }],
+        "metric": "elasticsearch.indices.indexing.index-total"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Elasticsearch clusters",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+
+      "sites": "o11y",
+      "systemTypes": null,
+      "uiModel": {
+        "alertQuery": "_exists_:host.name AND _exists_:cluster AND plugin:elasticsearch",
+        "category": "Datastores",
+        "categoryPriority": 100,
+        "discoveryQuery": ["_exists_:host.name", "_exists_:cluster", "plugin:elasticsearch"],
+        "displayName": "Elasticsearch clusters",
+        "filterProperties": null,
+        "id": "elasticsearchclusters",
+        "idName": "Cluster",
+        "idTemplate": "{{host.name}} | {{cluster}}",
+        "listColumns": [{
+          "aggregate": null,
+          "displayName": "Clusters",
+          "format": "id",
+          "metric": null,
+          "property": "id",
+          "sortable": null
+        }, {
+          "aggregate": null,
+          "displayName": "Value",
+          "format": "Number",
+          "metric": null,
+          "property": "value",
+          "sortable": null
+        }],
+        "metrics": [{
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of active segment merges. Darker colors indicate higher relative values.",
+          "displayName": "# Active merges",
+          "id": "elasticsearch_clusters_active_merges",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "ACTIVE_MERGES =data(\"*.indices.merges.current\" ,filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
+            "varName": "ACTIVE_MERGES"
+          },
+          "metricSelectors": ["elasticsearch.indices.merges.current"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Active merges",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of open file descriptors. Darker colors indicate higher relative values.",
+          "displayName": "# File descriptor",
+          "id": "elasticsearch_clusters_file_descriptor",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "FILE_DESCRIPTOR = data(\"*.process.open_file_descriptors\",filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "FILE_DESCRIPTOR"
+          },
+          "metricSelectors": ["*.process.open_file_descriptors"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "File descriptor",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of segments in an index shard. Darker colors indicate higher relative values.",
+          "displayName": "# Segments",
+          "id": "elasticsearch_clusters_segments",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "SEGMENTS =data(\"*.indices.segments.count\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "SEGMENTS"
+          },
+          "metricSelectors": ["*.indices.segments.count"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Segments",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of rejected threads in thread pool. Darker colors indicate higher relative values.",
+          "displayName": "# Thread pool rejections",
+          "id": "elasticsearch_clusters_thread_pool_rejections",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "THREAD_POOL_REJECTION =data(\"*.thread_pool.rejected\",filter=filter('plugin', 'elasticsearch'){{#filter}} and {{{filter}}}{{/filter}}, rollup='rate', extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
+            "varName": "THREAD_POOL_REJECTION"
+          },
+          "metricSelectors": ["*.thread_pool.rejected"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Thread pool rejections",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the average of query latency of last 5 minutes in milliseconds. Darker colors indicate higher relative values.",
+          "displayName": "Average query latency (ms)",
+          "id": "elasticsearch_clusters_average_query_latency",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "A = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC=(A).timeshift(\"5m\")\nD = (B).timeshift(\"5m\")\nAVERAGE_QUERY_LATENCY = ((B-D)/(A-C))",
+            "varName": "AVERAGE_QUERY_LATENCY"
+          },
+          "metricSelectors": ["*.indices.search.query-total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Average query latency",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the size of fielddata cache in bytes. Darker colors indicate higher relative values.",
+          "displayName": "Cache size (bytes)",
+          "id": "elasticsearch_clusters_cache_size",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "CACHE_SIZE =data(\"elasticsearch.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "CACHE_SIZE"
+          },
+          "metricSelectors": ["elasticsearch.indices.fielddata.memory-size"],
+          "type": "metric",
+          "valueFormat": "Bytes",
+          "valueLabel": "Cache size",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the percentage of growth rate of documents in last one hour. Darker colors indicate higher relative values.",
+          "displayName": "Document growth rate (%)",
+          "id": "elasticsearch_clusters_document_growth_rate",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "A = data(\"*.indices.docs.count\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).mean()\nB = data(\"*.indices.docs.count\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).timeshift(\"1h\")\nDOC_GROWTH_RATE = ((A-B)*100/B).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "DOC_GROWTH_RATE"
+          },
+          "metricSelectors": ["*.indices.docs.count"],
+          "type": "metric",
+          "valueFormat": "Percentage",
+          "valueLabel": "Document growth rate",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": 100,
+            "method": "quantile",
+            "minValue": 0,
+            "range": null
+          },
+          "description": "This metric shows the garbage collection time of last one hour in percentage. Under 20% green, over 80% red.",
+          "displayName": "GC time (%)",
+          "id": "elasticsearch_clusters_gc_time",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "A=data(\"*.jvm.gc.time\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB=data(\"*.jvm.uptime\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC = (A).timeshift(\"1h\")\nD = (B).timeshift(\"1h\")\nGC_TIME = ((A-C)*100/(B-D))",
+            "varName": "GC_TIME"
+          },
+          "metricSelectors": ["*.jvm.gc.time", "*.jvm.uptime"],
+          "type": "metric",
+          "valueFormat": "Percentage",
+          "valueLabel": "GC time",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of documents indexed to an index per second. Darker colors indicate higher relative values.",
+          "displayName": "Indexing requests/sec",
+          "id": "elasticsearch_clusters_indexing_requestspersec",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "INDEXING_REQUEST = data(\"*.indices.indexing.index-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "INDEXING_REQUEST"
+          },
+          "metricSelectors": ["*.indices.indexing.index-total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Indexing requests/sec",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the current memory used by JVM heap in bytes. Darker colors indicate higher relative values.",
+          "displayName": "Memory heap size (bytes)",
+          "id": "elasticsearch_clusters_memory_heap_size",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "HEAP_MEMORY_USED =data(\"*.jvm.mem.heap-used\", filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "HEAP_MEMORY_USED"
+          },
+          "metricSelectors": ["*.jvm.mem.heap-used"],
+          "type": "metric",
+          "valueFormat": "Bytes",
+          "valueLabel": "Memory heap size",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of segment merges per second. Darker colors indicate higher relative values.",
+          "displayName": "Merges/sec",
+          "id": "elasticsearch_clusters_mergespersec",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "MERGES =data(\"*.indices.merges.total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='rate',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "MERGES"
+          },
+          "metricSelectors": ["*.indices.merges.total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Merges/sec",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of get requests per second. Darker colors indicate higher relative values.",
+          "displayName": "Requests/sec",
+          "id": "elasticsearch_clusters_requestspersec",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "GET_REQUEST =data(\"*.indices.get.total\", filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
+            "varName": "GET_REQUEST"
+          },
+          "metricSelectors": ["*.indices.get.total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Requests/sec",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of queries per second. Darker colors indicate higher relative values.",
+          "displayName": "Search requests/sec",
+          "id": "elasticsearch_clusters_search_requestspersec",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "host.name",
+              "type": "property"
+            }, {
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "cluster",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "SEARCH_REQUEST = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='rate',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+            "varName": "SEARCH_REQUEST"
+          },
+          "metricSelectors": ["*.indices.search.query-total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Search requests/sec",
+          "valueType": null
+        }],
+        "mtsQuery": "_exists_:host.name AND _exists_:cluster AND plugin:elasticsearch",
+        "o11yMetricName": "Running clusters",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Elasticsearch clusters",
+        "o11ySignalflowTemplate": "A = data('*.indices.indexing.index-total', filter=filter('plugin', 'elasticsearch') and (not filter('aggregation', '*')), rollup='rate').sum(by=['cluster']).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "Elasticsearch cluster",
+        "systemDashboardName": "Elasticsearch clusters",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+          "displayName": "Region",
+          "format": null,
+          "isSummaryProperty": true,
+          "property": "cloud.region"
+        }, {
+          "displayName": "Value",
+          "format": "Number",
+          "isSummaryProperty": true,
+          "property": "value"
+        }],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
