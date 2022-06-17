@@ -1,0 +1,82 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when RDS free disk space is expected to run out",
+      "detectorOrigin": "AutoDetect",
+      "id": "FKc3PuHAABE",
+      "labelResolutions": {
+        "AWS/RDS free disk space is going to run out in the next 48 hours": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "AWS/RDS free disk space is going to run out - tests 2",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.infra.aws import rds\nrds.disk_space_running_out_detector().publish('AWS/RDS free disk space is going to run out in the next 48 hours')",
+      "rules": [
+        {
+          "description": "The resource Free Space (assumed to be decreasing) is projected to decrease to 0",
+          "detectLabel": "AWS/RDS free disk space is going to run out in the next 48 hours",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}({{inputs.lower_threshold_signal.value}}h)\n{{/if}}\n\nHours left: {{inputs.hours_left.value}}\n\n{{#notEmpty dimensions}}Signal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": null,
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "namespace",
+              "values": [
+                "AWS/RDS"
+              ]
+            },
+            {
+              "not": false,
+              "property": "DBInstanceIdentifier",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "stat",
+              "values": [
+                "mean"
+              ]
+            }
+          ],
+          "metric": "FreeStorageSpace"
+        }
+      ]
+    }
+  },
+  "hashCode": -1435914932,
+  "id": "FB-pRUhAYAA",
+  "packageType": "DETECTOR"
+}
