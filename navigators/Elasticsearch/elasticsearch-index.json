@@ -1,0 +1,257 @@
+{
+  "hashCode": 1453753096,
+  "id": "FV8FAmbAgAE",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "connectedCategory": false,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "FV8FAmbAgAE",
+      "idDisplayName": "",
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": ["elasticsearch"]
+        }],
+        "metric": "counter.indices.indexing.index-total"
+      }, {
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": ["elasticsearch"]
+        }],
+        "metric": "elasticsearch.indices.indexing.index-total"
+      }],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Elasticsearch indexes",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "ownerScope": "organization",
+      "sites": "o11y",
+      "systemTypes": null,
+      "uiModel": {
+        "alertQuery": "_exists_:index AND plugin:elasticsearch",
+        "category": "Datastores",
+        "categoryPriority": 100,
+        "discoveryQuery": ["plugin:elasticsearch", "_exists_:index"],
+        "displayName": "Elasticsearch indexes",
+        "filterProperties": null,
+        "id": "elasticsearchindexes",
+        "idName": "Index",
+        "idTemplate": "{{index}}",
+        "listColumns": [{
+          "aggregate": null,
+          "displayName": "Indexes",
+          "format": "id",
+          "metric": null,
+          "property": "id",
+          "sortable": null
+        }, {
+          "aggregate": null,
+          "displayName": "Value",
+          "format": "Number",
+          "metric": null,
+          "property": "value",
+          "sortable": null
+        }],
+        "metrics": [{
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the percentage of growth rate of documents in last one hour. Darker colors indicate higher relative values.",
+          "displayName": "Document growth rate (%)",
+          "id": "elasticsearch_indexes_document_growth_rate",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "index",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "A = data(\"*.indices.docs.count\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"node_id\",'*', match_missing=True)) and (( not filter(\"aggregation\",'*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"index\"])\nB = (A).timeshift('1h')\nDOC_GROWTH_RATE = ((A-B)*100/B)",
+            "varName": "DOC_GROWTH_RATE"
+          },
+          "metricSelectors": ["*.indices.docs.count"],
+          "type": "metric",
+          "valueFormat": "Percentage",
+          "valueLabel": "Document growth rate",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": 100,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the percentage of growth rate of indexes in last one hour. Darker colors indicate higher relative values.",
+          "displayName": "Indexes by index size growth (%)",
+          "id": "elasticsearch_indexes_indexes_by_index_size_growth",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "index",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "A = data(\"*.indices.store.size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"node_id\",'*', match_missing=True)) and (( not filter(\"aggregation\",'*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"index\"])\nB = (A).timeshift('1d')\nINDEX_SIZE_GROWTH = ((A-B)*100/B)",
+            "varName": "INDEX_SIZE_GROWTH"
+          },
+          "metricSelectors": ["*.indices.store.size"],
+          "type": "metric",
+          "valueFormat": "Percentage",
+          "valueLabel": "Indexes by index size growth",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the worst value of the indexes from all the metric time series of last one hour in milliseconds. Darker colors indicate higher relative values.",
+          "displayName": "Indexes by query latency (ms)",
+          "id": "elasticsearch_indexes_indexes_by_query_latency",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "index",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "A =data(\"*.indices.search.query-total\" ,filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"])\nB =data(\"*.indices.search.query-time\" ,filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"])\nC = (A).timeshift(\"1h\")\nD = (B).timeshift('1h')\nE=(B-D)/(A-C)\nQUERY_LATENCY=(E).percentile(pct=99, by=[\"index\"])",
+            "varName": "QUERY_LATENCY"
+          },
+          "metricSelectors": ["*.indices.search.query-total", "*.indices.search.query-time"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Indexes by query latency",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of indexing requests per second. Darker colors indicate higher relative values.",
+          "displayName": "Indexing requests/sec",
+          "id": "elasticsearch_indexes_indexing_requests_per_sec",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "index",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "INDEXING_REQUESTS =data(\"*.indices.indexing.index-total\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"]).rateofchange()",
+            "varName": "INDEXING_REQUESTS"
+          },
+          "metricSelectors": ["*.indices.indexing.index-total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Indexing requests",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of segment merges per second. Darker colors indicate higher relative values.",
+          "displayName": "Merges/sec",
+          "id": "elasticsearch_indexes_merges_per_sec",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "index",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "ACTIVE_MERGES =data(\"*.indices.merges.total\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"])",
+            "varName": "ACTIVE_MERGES"
+          },
+          "metricSelectors": ["*.indices.merges.total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Merges",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the total number of search queries per second. Darker colors indicate higher relative values.",
+          "displayName": "Search requests/sec",
+          "id": "elasticsearch_indexes_search_requestspersec",
+          "job": {
+            "filters": [{
+              "not": false,
+              "property": "_exists_",
+              "propertyValue": "index",
+              "type": "property"
+            }],
+            "resolution": 60000,
+            "template": "SEARCH_REQUEST = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"index\"])",
+            "varName": "SEARCH_REQUEST"
+          },
+          "metricSelectors": ["*.indices.search.query-total"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Search requests/sec",
+          "valueType": null
+        }],
+        "mtsQuery": "plugin:elasticsearch AND _exists_:index",
+        "o11yMetricName": "Active indexes",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Elasticsearch indexes",
+        "o11ySignalflowTemplate": "A = data('elasticsearch.indices.indexing.index-total', filter=filter('plugin', 'elasticsearch') , rollup='rate').sum(by=['index']).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "Elasticsearch index",
+        "systemDashboardName": "Elasticsearch indexes",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+          "displayName": "Region",
+          "format": null,
+          "isSummaryProperty": true,
+          "property": "cloud.region"
+        }, {
+          "displayName": "Value",
+          "format": "Number",
+          "isSummaryProperty": true,
+          "property": "value"
+        }],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}

@@ -44,6 +44,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -55,7 +60,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.merges.total - Maximum by index - Rate of Change",
+          "displayName" : "Merges",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : "AreaChart",
@@ -67,7 +72,8 @@
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -83,18 +89,30 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "p99 latency over the last hour",
+      "description" : "P99 latency over the last hour",
       "id" : "DiVWX-dAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Indexes by Query Latency (ms)",
+      "name" : "Top 5 indexes by query latency (ms)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "index"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -102,7 +120,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.search.query-total - Maximum by index",
+          "displayName" : "Total search query",
           "label" : "A",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -111,7 +129,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "counter.indices.total.search.query-time - Maximum by index",
+          "displayName" : "Search query time",
           "label" : "B",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -120,7 +138,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A - Timeshift 1h",
+          "displayName" : "Total search query - Last hour",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -129,7 +147,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "B - Timeshift 1h",
+          "displayName" : "Search query time - Last hour",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
@@ -138,7 +156,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "(A-N)/(B-O)",
+          "displayName" : "Indexes by search query latency",
           "label" : "E",
           "paletteIndex" : null,
           "plotType" : null,
@@ -147,27 +165,28 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "",
+          "displayName" : "Top 5 P99 indexes by search query latency",
           "label" : "F",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Millisecond",
           "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
         "time" : {
-          "range" : 900000,
+          "range" : 3600000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*.indices*.search.query-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', '*', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).publish(label='A', enable=False)\nB = data('*.indices*.search.query-time', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).publish(label='B', enable=False)\nC = (A).timeshift('1h').publish(label='C', enable=False)\nD = (B).timeshift('1h').publish(label='D', enable=False)\nE = ((B-D)/(A-C)).publish(label='E', enable=False)\nF = (E).percentile(pct=99, by=['index']).top(count=5).publish(label='F')\n",
+      "programText" : "A = data('*.indices*.search.query-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', '*', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).publish(label='A', enable=False)\nB = data('*.indices*.search.query-time', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).publish(label='B', enable=False)\nC = (A).timeshift('1h').publish(label='C', enable=False)\nD = (B).timeshift('1h').publish(label='D', enable=False)\nE = ((B-D)/(A-C)).publish(label='E', enable=False)\nF = (E).percentile(pct=99, by=['index']).top(count=5).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -180,7 +199,7 @@
       "id" : "DiVWYI4AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Indexing Requests/sec",
+      "name" : "Indexing requests/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -216,6 +235,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -227,7 +251,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.indexing.index-total - Maximum by index - Rate of Change",
+          "displayName" : "Indexing requests/sec",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -239,7 +263,8 @@
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -259,7 +284,7 @@
       "id" : "DiVWYOAAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Search Requests/sec",
+      "name" : "Search requests/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -295,6 +320,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -306,7 +336,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.search.query-total - Maximum by index - Rate of Change",
+          "displayName" : "Search requests",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -318,14 +348,15 @@
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*.indices*.search.query-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', '*', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).rateofchange().publish(label='A')\n",
+      "programText" : "A = data('*.indices*.search.query-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', '*', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).rateofchange().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -334,18 +365,30 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "last day",
+      "description" : "Last day",
       "id" : "DiVWYVvAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Indexes by Index Size Growth %",
+      "name" : "Top 5 indexes by index size growth (%)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "index"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -353,7 +396,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.indices.total.store.size - Mean by index",
+          "displayName" : "Index size",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -362,7 +405,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "gauge.indices.total.store.size - Mean by index - Timeshift 1d",
+          "displayName" : "Index size - Last day",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -371,12 +414,12 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "",
+          "displayName" : "Top 5 indexes by index size growth",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -384,7 +427,8 @@
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
         "time" : {
-          "range" : 900000,
+          "range" : 86400001,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "List",
@@ -404,14 +448,26 @@
       "id" : "DiVWYYHAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Indexes by Search Requests",
+      "name" : "# Top 5 indexes by search requests",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "index"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -419,7 +475,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "",
+          "displayName" : "Top 5 indexes by search requests",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -433,6 +489,7 @@
         "sortBy" : "-value",
         "time" : {
           "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "List",
@@ -452,14 +509,26 @@
       "id" : "DiVWYYwAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Indexes by Indexing Requests",
+      "name" : "# Top 5 indexes by indexing requests",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "index"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 2,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -467,7 +536,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "",
+          "displayName" : "Top 5 indexes by indexing requests",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -481,13 +550,14 @@
         "sortBy" : "-value",
         "time" : {
           "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*.indices*.indexing.index-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', '  *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).rateofchange().top(count=5).publish(label='A')\n",
+      "programText" : "A = data('*.indices*.indexing.index-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', '  *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='max').max(by=['index']).rateofchange().top(count=5).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -496,11 +566,11 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "last hour",
+      "description" : "Last hour",
       "id" : "DiVWYkXAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Document Growth %",
+      "name" : "Document growth (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -536,6 +606,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -547,7 +622,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.indices.total.docs.count - Mean by index",
+          "displayName" : "Doc count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -556,7 +631,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A - Timeshift 1h",
+          "displayName" : "Doc count - last hour",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -565,19 +640,20 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Growth %",
+          "displayName" : "Document growth",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 3600000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -633,6 +709,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -644,7 +725,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.merges.total - Maximum by index - Rate of Change",
+          "displayName" : "Merges",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : "AreaChart",
@@ -656,7 +737,8 @@
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -712,6 +794,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -723,7 +810,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.merges.total - Maximum by index",
+          "displayName" : "Total merges",
           "label" : "A",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -732,7 +819,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "counter.indices.total.merges.total-time - Maximum by index",
+          "displayName" : "Merges time",
           "label" : "B",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -741,26 +828,27 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "latency",
+          "displayName" : "Merge latency",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Millisecond",
           "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*.indices*.merges.total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), extrapolation='last_value', maxExtrapolations=100,rollup='rate').max(by=['index']).publish(label='A', enable=False)\nB = data('*.indices*.merges.total-time', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), extrapolation='last_value', maxExtrapolations=100,rollup='rate').max(by=['index']).publish(label='B', enable=False)\nC = (B/A).publish(label='C')",
+      "programText" : "A = data('*.indices*.merges.total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='rate', extrapolation='last_value', maxExtrapolations=100).max(by=['index']).publish(label='A', enable=False)\nB = data('*.indices*.merges.total-time', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='rate', extrapolation='last_value', maxExtrapolations=100).max(by=['index']).publish(label='B', enable=False)\nC = (B/A).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -773,7 +861,7 @@
       "id" : "DiVWZJYAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Indexing Requests/sec",
+      "name" : "Indexing requests/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -809,6 +897,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -820,19 +913,20 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Indexing Requests per sec",
+          "displayName" : "Indexing requests per sec",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Millisecond",
           "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -852,7 +946,7 @@
       "id" : "DiVWaKnAYH0",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Document Growth %",
+      "name" : "Document growth (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -888,6 +982,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -899,7 +998,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.indices.total.docs.count - Mean by index",
+          "displayName" : "Documents count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -908,7 +1007,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A - Timeshift 1h",
+          "displayName" : "Documents count - last hour",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -917,19 +1016,20 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Growth %",
+          "displayName" : "Document growth (%)",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 3600000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -949,7 +1049,7 @@
       "id" : "DiVWaxEAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Cache Size (bytes)",
+      "name" : "Cache size (bytes)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -985,6 +1085,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -996,55 +1101,56 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Filter Cache",
+          "displayName" : "Filter cache",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         }, {
-          "displayName" : "Field Cache",
+          "displayName" : "Field cache",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         }, {
-          "displayName" : "Query Cache",
+          "displayName" : "Query cache",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         }, {
-          "displayName" : "Filter Cache",
+          "displayName" : "Filter cache",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         }, {
-          "displayName" : "Field Cache",
+          "displayName" : "Field cache",
           "label" : "E",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
-          "range" : 7200000,
+          "range" : 900001,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -1064,7 +1170,7 @@
       "id" : "DiVWa9aAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Search Requests/sec",
+      "name" : "Search requests/sec",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1100,6 +1206,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1111,7 +1222,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Search Requests per sec",
+          "displayName" : "Search requests per sec",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1123,7 +1234,8 @@
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
-          "range" : 7200000,
+          "range" : 900001,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -1143,7 +1255,7 @@
       "id" : "DiVWbs7AgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Deleted Documents %",
+      "name" : "Deleted documents (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1179,6 +1291,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1190,7 +1307,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "gauge.indices.total.docs.deleted - Mean by index",
+          "displayName" : "Deleted docs",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1199,7 +1316,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "gauge.indices.total.docs.count - Mean by index",
+          "displayName" : "Total docs",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1208,19 +1325,20 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "% of Deleted Documents",
+          "displayName" : "Deleted documents",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -1240,7 +1358,7 @@
       "id" : "DiVWcDgAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Search Latency (ms)",
+      "name" : "Search latency (ms)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1276,6 +1394,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1287,7 +1410,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.search.query-total - Maximum by index",
+          "displayName" : "Total search query",
           "label" : "A",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -1296,7 +1419,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "counter.indices.total.search.query-time - Maximum by index",
+          "displayName" : "Search query time",
           "label" : "B",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -1305,7 +1428,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "latency",
+          "displayName" : "Search latency",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1317,7 +1440,8 @@
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
@@ -1337,7 +1461,7 @@
       "id" : "DiVWcP3AgLc",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Index Latency (ms)",
+      "name" : "Index latency (ms)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1373,6 +1497,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1384,7 +1513,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "counter.indices.total.indexing.index-total - Maximum by index",
+          "displayName" : "Total indexes",
           "label" : "A",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -1393,7 +1522,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "counter.indices.total.indexing.index-time - Maximum by index",
+          "displayName" : "Index time",
           "label" : "B",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -1402,26 +1531,27 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "latency",
+          "displayName" : "Index latency",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Millisecond",
           "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
-          "range" : 7200000,
+          "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('*.indices*.indexing.index-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), extrapolation='last_value', maxExtrapolations=100,rollup='rate').max(by=['index']).publish(label='A', enable=False)\nB = data('*.indices*.indexing.index-time', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), extrapolation='last_value', maxExtrapolations=100,rollup='rate').max(by=['index']).publish(label='B', enable=False)\nC = (B/A).publish(label='C')",
+      "programText" : "A = data('*.indices*.indexing.index-total', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='rate', extrapolation='last_value', maxExtrapolations=100).max(by=['index']).publish(label='A', enable=False)\nB = data('*.indices*.indexing.index-time', filter=filter('plugin', 'elasticsearch') and (not filter('node_id', ' *', match_missing=True)) and (not filter('aggregation', ' * OR aggregation: total', match_missing=True)), rollup='rate', extrapolation='last_value', maxExtrapolations=100).max(by=['index']).publish(label='B', enable=False)\nC = (B/A).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1434,7 +1564,7 @@
       "id" : "DiVWcWKAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Elasticsearch Tips",
+      "name" : "Elasticsearch tips",
       "options" : {
         "markdown" : "<br>\n**Optimization Tip**\n\nIf your fielddata cache and heap usage are high, consider using [doc values](https://www.elastic.co/guide/en/elasticsearch/reference/current/doc-values.html)!",
         "type" : "Text"
@@ -1449,18 +1579,24 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "General Index Statistics: Size, Growth Rate & Document Count",
+      "description" : "General index statistics: Size, Growth Rate & Document Count",
       "id" : "DiVWcfwAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Index Statistics",
+      "name" : "Index statistics",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : null
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1468,16 +1604,16 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Index Size",
+          "displayName" : "Index size",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         }, {
-          "displayName" : "gauge.indices.total.store.size - Mean by index - Timeshift 1d",
+          "displayName" : "Index size - last day",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1486,16 +1622,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Index Growth Rate",
+          "displayName" : "Index growth rate",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Index Document Count",
+          "displayName" : "Index document count",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1509,6 +1645,7 @@
         "sortBy" : "+index",
         "time" : {
           "range" : 900000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "List",
@@ -1561,6 +1698,7 @@
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "DiVWYI4AYAA",
@@ -1623,18 +1761,19 @@
       "description" : "Default dashboard.",
       "discoveryOptions" : {
         "query" : "plugin:elasticsearch",
-        "selectors" : [ "sf_key:index" ]
+        "selectors" : [ "plugin:elasticsearch", "sf_key:index" ]
       },
       "eventOverlays" : null,
       "filters" : {
         "sources" : null,
         "time" : null,
         "variables" : [ {
-          "alias" : "cluster",
+          "alias" : "Cluster",
           "applyIfExists" : false,
           "description" : "Elasticsearch cluster",
           "preferredSuggestions" : [ ],
-          "property" : "plugin_instance",
+          "property" : "cluster",
+          "propertyMappings" : [ "cluster" ],
           "replaceOnly" : false,
           "required" : false,
           "restricted" : false,
@@ -1642,16 +1781,19 @@
         } ]
       },
       "groupId" : "DiVWXcUAcAA",
+      "groupName" : "Elasticsearch Index",
       "id" : "DiVWXpYAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
-      "name" : "Elasticsearch Indexes",
+      "name" : "Elasticsearch indexes",
+      "permissions" : null,
       "selectedEventOverlays" : [ ],
       "tags" : null
     }
   }, {
     "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "DiVWa9aAgAA",
@@ -1703,7 +1845,7 @@
         "width" : 4
       }, {
         "chartId" : "DiVWaxEAcAA",
-        "column" : 8,
+        "column" : 4,
         "height" : 1,
         "row" : 3,
         "width" : 4
@@ -1715,7 +1857,7 @@
         "width" : 4
       }, {
         "chartId" : "DiVWcWKAYAA",
-        "column" : 4,
+        "column" : 8,
         "height" : 1,
         "row" : 3,
         "width" : 4
@@ -1732,28 +1874,30 @@
       "description" : "",
       "discoveryOptions" : {
         "query" : "plugin:elasticsearch",
-        "selectors" : [ "_exists_:index", "sf_key:index" ]
+        "selectors" : [ "plugin:elasticsearch", "sf_key:index" ]
       },
       "eventOverlays" : null,
       "filters" : {
         "sources" : null,
         "time" : null,
         "variables" : [ {
-          "alias" : "index",
+          "alias" : "Index",
           "applyIfExists" : false,
           "description" : "Elasticsearch index",
           "preferredSuggestions" : [ ],
           "property" : "index",
+          "propertyMappings" : [ "index", "org.cloudfoundry.index" ],
           "replaceOnly" : false,
           "required" : true,
           "restricted" : false,
           "value" : [ "Choose index" ]
         }, {
-          "alias" : "cluster",
+          "alias" : "Cluster",
           "applyIfExists" : false,
           "description" : "Elasticsearch cluster",
           "preferredSuggestions" : [ ],
-          "property" : "plugin_instance",
+          "property" : "cluster",
+          "propertyMappings" : [ "cluster" ],
           "replaceOnly" : false,
           "required" : false,
           "restricted" : false,
@@ -1761,20 +1905,23 @@
         } ]
       },
       "groupId" : "DiVWXcUAcAA",
+      "groupName" : "Elasticsearch Index",
       "id" : "DiVWYpeAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
-      "name" : "Elasticsearch Index",
+      "name" : "Elasticsearch index",
+      "permissions" : null,
       "selectedEventOverlays" : [ ],
       "tags" : null
     }
   } ],
   "groupExport" : {
     "group" : {
+      "authorizedWriters" : null,
       "created" : 0,
       "creator" : null,
-      "dashboards" : [ "DiVWYpeAgAA", "DiVWXpYAYAA" ],
+      "dashboards" : [ "DiVWXpYAYAA", "DiVWYpeAgAA" ],
       "description" : "Dashboards about Elasticsearch indexes.",
       "email" : null,
       "id" : "DiVWXcUAcAA",
@@ -1789,10 +1936,11 @@
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Elasticsearch Index",
+      "permissions" : null,
       "teams" : null
     }
   },
-  "hashCode" : -225766084,
+  "hashCode" : 832192933,
   "id" : "DiVWXcUAcAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
