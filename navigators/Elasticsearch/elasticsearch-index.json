@@ -1,5 +1,5 @@
 {
-  "hashCode": 1453753096,
+  "hashCode": -315681505,
   "id": "FV8FAmbAgAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -97,7 +97,7 @@
             "minValue": 0,
             "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
           },
-          "description": "This metric shows the percentage of growth rate of indexes in last one hour. Darker colors indicate higher relative values.",
+          "description": "This metric shows the percentage of growth rate of indexes in last one day. Darker colors indicate higher relative values.",
           "displayName": "Indexes by index size growth (%)",
           "id": "elasticsearch_indexes_indexes_by_index_size_growth",
           "job": {
@@ -124,7 +124,7 @@
             "minValue": 0,
             "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
           },
-          "description": "This metric shows the worst value of the indexes from all the metric time series of last one hour in milliseconds. Darker colors indicate higher relative values.",
+          "description": "This metric shows the indexes having the worst value of query latency from all the metric time series of last one hour in milliseconds. Darker colors indicate higher relative values.",
           "displayName": "Indexes by query latency (ms)",
           "id": "elasticsearch_indexes_indexes_by_query_latency",
           "job": {
@@ -135,7 +135,7 @@
               "type": "property"
             }],
             "resolution": 60000,
-            "template": "A =data(\"*.indices.search.query-total\" ,filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"])\nB =data(\"*.indices.search.query-time\" ,filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"])\nC = (A).timeshift(\"1h\")\nD = (B).timeshift('1h')\nE=(B-D)/(A-C)\nQUERY_LATENCY=(E).percentile(pct=99, by=[\"index\"])",
+            "template": "A =data(\"*.indices.search.query-total\" ,filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"])\nB =data(\"*.indices.search.query-time\" ,filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"node_id\", '*', match_missing=True)) and ((not filter(\"aggregation\", '*', match_missing=True)) or (filter(\"aggregation\", \"total\", match_missing=True))){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).max(by=[\"index\"])\nC = (A).timeshift('1h')\nD = (B).timeshift('1h')\nE=(B-D)/(A-C)\nQUERY_LATENCY = (E).percentile(pct=99, by=[\"index\"])",
             "varName": "QUERY_LATENCY"
           },
           "metricSelectors": ["*.indices.search.query-total", "*.indices.search.query-time"],
@@ -168,7 +168,7 @@
           "metricSelectors": ["*.indices.indexing.index-total"],
           "type": "metric",
           "valueFormat": "Number",
-          "valueLabel": "Indexing requests",
+          "valueLabel": "Indexing requests/sec",
           "valueType": null
         }, {
           "coloring": {
@@ -195,7 +195,7 @@
           "metricSelectors": ["*.indices.merges.total"],
           "type": "metric",
           "valueFormat": "Number",
-          "valueLabel": "Merges",
+          "valueLabel": "Merges/sec",
           "valueType": null
         }, {
           "coloring": {
