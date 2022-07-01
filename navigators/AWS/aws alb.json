@@ -1,0 +1,336 @@
+{
+  "hashCode": 916623232,
+  "id": "FWV48S9AYAE",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": null,
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "FWV48S9AYAE",
+      "idDisplayName": null,
+      "importQualifiers": [{
+        "filters": [{
+            "not": false,
+            "property": "namespace",
+            "values": ["AWS/ApplicationELB"]
+          },
+          {
+            "not": false,
+            "property": "LoadBalancer",
+            "values": []
+          }
+        ],
+        "metric": "HealthyHostCount"
+      }],
+      "instanceDashboards": null,
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "AWS ALB instances",
+      "navigatorCategory": "AWS",
+      "navigatorCategoryDisplayName": "Amazon Web Services",
+      "navigatorCategoryGroupDisplayName": "Public Clouds",
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "sites": "o11y",
+      "systemTypes": null,
+      "uiModel": {
+        "alertQuery": "_exists_:LoadBalancer",
+        "category": "AWS",
+        "categoryPriority": 10,
+        "discoveryQuery": ["sf_key:LoadBalancer"],
+        "displayName": "AWS ALB instances",
+        "filterProperties": null,
+        "id": "awsalbinstances",
+        "idName": "Instance",
+        "idTemplate": "{{LoadBalancer}}",
+        "listColumns": [{
+            "aggregate": null,
+            "displayName": "ALB instance",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [{
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the total number of concurrent TCP connections active from clients to the load balancer and from the load balancer to targets. Darker colors indicate higher relative values.",
+            "displayName": "# Active connections",
+            "id": "awsalbinstances_active_connections",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "ACTIVE_CONNECTIONS = data(\"ActiveConnectionCount\",filter=filter(\"stat\",\"sum\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"latest\").sum(by=[\"LoadBalancer\"])",
+              "varName": "ACTIVE_CONNECTIONS"
+            },
+            "metricSelectors": ["ActiveConnectionCount"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Active connections",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the number of TLS connections initiated by the client that did not establish a session with the load balancer due to a TLS error. Darker colors indicate higher relative values.",
+            "displayName": "# Client TLS negotiation errors",
+            "id": "awsalbinstances_client_tls_negotiation_errors",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "TLS_ERR = data(\"ClientTLSNegotiationErrorCount\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "TLS_ERR"
+            },
+            "metricSelectors": ["ClientTLSNegotiationErrorCount"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Client TLS negotiation errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the number of HTTP redirection, client and server codes that originate from the load balancer. Darker colors indicate higher relative values.",
+            "displayName": "# HTTP client errors",
+            "id": "awsalbinstances_http_client_errors",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_ERR = data(\"HTTPCode_ELB*XX*\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "HTTP_ERR"
+            },
+            "metricSelectors": ["HTTPCode_ELB*XX*"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "HTTP client errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the number of HTTP response codes (2xx, 3xx, 4xx, 5xx) generated by the targets. Darker colors indicate higher relative values.",
+            "displayName": "# HTTP target response codes",
+            "id": "awsalbinstances_http_target_response_codes",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_TARGET_ERR = data(\"HTTPCode_T*\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "HTTP_TARGET_ERR"
+            },
+            "metricSelectors": ["HTTPCode_T*"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "HTTP target response codes",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the number of load balancer capacity units (LCU) used by the load balancer. Darker colors indicate higher relative values.",
+            "displayName": "# LCU usage",
+            "id": "awsalbinstances_lcu_usage",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "LCU_USAGE = data(\"ConsumedLCUs\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "LCU_USAGE"
+            },
+            "metricSelectors": ["ConsumedLCUs"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "LCU usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the number of requests processed over IPv4 and IPv6. Darker colors indicate higher relative values.",
+            "displayName": "# Requests",
+            "id": "awsalbinstances_requests",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "REQUESTS = data(\"RequestCount\", filter=filter(\"stat\",\"sum\") and filter(\"TargetGroup\", \"*\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "REQUESTS"
+            },
+            "metricSelectors": ["RequestCount"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Requests",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the number of connections that were not successfully established between the load balancer and target. Darker colors indicate higher relative values.",
+            "displayName": "# Target connection errors",
+            "id": "awsalbinstances_target_connection_errors",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "ERRORS = data(\"TargetConnectionErrorCount\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "ERRORS"
+            },
+            "metricSelectors": ["TargetConnectionErrorCount"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Target connection errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the number of TLS connections initiated by the load balancer that did not establish a session with the target. Darker colors indicate higher relative values.",
+            "displayName": "# Target TLS negotiation errors",
+            "id": "awsalbinstances_target_tls_negotiation_errors",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "NEGO_ERR = data(\"TargetTLSNegotiationErrorCount\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"LoadBalancer\"])",
+              "varName": "NEGO_ERR"
+            },
+            "metricSelectors": ["TargetTLSNegotiationErrorCount"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Target TLS negotiation errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+            },
+            "description": "This metric shows the time elapsed, in milliseconds, after the request leaves the load balancer until a response from the target is received. Darker colors indicate higher relative values.",
+            "displayName": "Target response time (ms)",
+            "id": "awsalbinstances_target_response_time",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "RESPONSE_TIME = data(\"TargetResponseTime\", filter=filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "RESPONSE_TIME"
+            },
+            "metricSelectors": ["TargetResponseTime"],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Target response time",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": null
+            },
+            "description": "This metric shows the percentage of targets of the load balancer that are considered unhealthy. Below 20% green and over 80% red.",
+            "displayName": "Unhealthy hosts (%)",
+            "id": "awsalbinstances_unhealthy_hosts",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HEALTHY = data(\"HealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nUNHEALTHY = data(\"UnHealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nPERCENTAGE =(UNHEALTHY/(HEALTHY +UNHEALTHY)).scale(100)",
+              "varName": "PERCENTAGE"
+            },
+            "metricSelectors": ["HealthyHostCount", "UnHealthyHostCount"],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Unhealthy hosts",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "sf_key:LoadBalancer AND _exists_:LoadBalancer",
+        "o11yMetricName": "Running instances",
+        "o11yMetricUnit": null,
+        "o11yProductName": "AWS ALB instances",
+        "o11ySignalflowTemplate": "A = data('HealthyHostCount', filter= filter('namespace','AWS/ApplicationELB'), extrapolation='last_value', maxExtrapolations=2).count(by=['LoadBalancer']).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": null,
+        "singleHostSystemDashboardName": "AWS ALB instance",
+        "systemDashboardName": "AWS ALB instances",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [{
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Host Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
