@@ -1,5 +1,5 @@
 {
-  "hashCode": 2042800372,
+  "hashCode": 1412423796,
   "id": "FV8FAmbAgAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -11,30 +11,25 @@
       "defaultGroupBy": null,
       "description": "",
       "id": "FV8FAmbAgAE",
-      "idDisplayName": "{{host}}",
-      "importQualifiers": [
-        {
-          "filters": [
-            {
-              "not": false,
-              "property": "plugin",
-              "values": [
-                "elasticsearch"
-              ]
-            }
-          ],
+      "idDisplayName": "{{host.name}}",
+      "importQualifiers": [{
+          "filters": [{
+            "not": false,
+            "property": "plugin",
+            "values": [
+              "elasticsearch"
+            ]
+          }],
           "metric": "counter.indices.indexing.index-total"
         },
         {
-          "filters": [
-            {
-              "not": false,
-              "property": "plugin",
-              "values": [
-                "elasticsearch"
-              ]
-            }
-          ],
+          "filters": [{
+            "not": false,
+            "property": "plugin",
+            "values": [
+              "elasticsearch"
+            ]
+          }],
           "metric": "elasticsearch.indices.indexing.index-total"
         }
       ],
@@ -57,15 +52,15 @@
         "category": "Datastores",
         "categoryPriority": 100,
         "discoveryQuery": [
+          "plugin:elasticsearch",
           "_exists_:host"
         ],
         "displayName": "Elasticsearch nodes",
         "filterProperties": null,
         "id": "elasticsearchnodes",
         "idName": "Node",
-        "idTemplate": "{{host}}",
-        "listColumns": [
-          {
+        "idTemplate": "{{host.name}}",
+        "listColumns": [{
             "aggregate": null,
             "displayName": "Host",
             "format": null,
@@ -106,8 +101,7 @@
             "sortable": null
           }
         ],
-        "metrics": [
-          {
+        "metrics": [{
             "coloring": {
               "limits": null,
               "maxValue": null,
@@ -300,8 +294,7 @@
             "displayName": "GC time (%)",
             "id": "elasticsearch_nodes_gc_time",
             "job": {
-              "filters": [
-                {
+              "filters": [{
                   "not": false,
                   "property": "_exists_",
                   "propertyValue": "host.name",
@@ -373,7 +366,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "QUERY_CACHE_SIZE = data(\"elasticsearch.indices.query-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",' * OR aggregation: total', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+              "template": "QUERY_CACHE_SIZE = data(\"elasticsearch.indices.query-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"* OR aggregation: total\", match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "QUERY_CACHE_SIZE"
             },
             "metricSelectors": [
@@ -383,9 +376,71 @@
             "valueFormat": "Bytes",
             "valueLabel": "Query cache",
             "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total size in bytes of field-data cache. Darker colors indicate higher relative values.",
+            "displayName": "Field-data cache (bytes)",
+            "id": "elasticsearch_nodes_field_data_cache",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "FIELDDATA_CACHE_SIZE = data(\"elasticsearch.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"total\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
+              "varName": "FIELDDATA_CACHE_SIZE"
+            },
+            "metricSelectors": [
+              "elasticsearch.indices.fielddata.memory-size"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Field-data cache",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total size in bytes of filter cache. Darker colors indicate higher relative values.",
+            "displayName": "Filter cache (bytes)",
+            "id": "elasticsearch_nodes_filter_cache",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "FILTER_CACHE_SIZE = data(\"elasticsearch.indices.filter-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\",\"total\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
+              "varName": "FILTER_CACHE_SIZE"
+            },
+            "metricSelectors": [
+              "elasticsearch.indices.filter-cache.memory-size"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Filter cache",
+            "valueType": null
           }
         ],
-        "mtsQuery": "plugin:elasticsearch AND _exists_:host",
+        "mtsQuery": "plugin:elasticsearch",
         "o11yMetricName": "Active nodes",
         "o11yMetricUnit": null,
         "o11yProductName": "Elasticsearch nodes",
@@ -397,8 +452,7 @@
         "singleHostSystemDashboardName": "Elasticsearch node",
         "systemDashboardName": "Elasticsearch nodes",
         "systemDashboardPrefix": null,
-        "tooltipKeyList": [
-          {
+        "tooltipKeyList": [{
             "displayName": "Node id",
             "format": null,
             "isSummaryProperty": true,
