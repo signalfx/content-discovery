@@ -1,40 +1,55 @@
 {
-  "hashCode" : 1280770250,
+  "hashCode" : 857231418,
   "id" : "DiVVNnDAcEQ",
   "modelVersion" : 1,
   "navigatorExport" : {
     "navigator" : {
+      "aggregateDashboards" : null,
+      "connectedCategory" : null,
       "created" : 0,
       "creator" : null,
+      "defaultGroupBy" : "aws_region",
       "description" : "",
       "id" : "DiVVNnDAcEQ",
+      "idDisplayName" : "AutoScalingGroupName",
       "importQualifiers" : [ {
         "filters" : [ {
           "not" : false,
-          "property" : "sf_key",
-          "values" : [ "AutoScalingGroupName" ]
+          "property" : "stat",
+          "values" : [ "mean" ]
+        }, {
+          "not" : false,
+          "property" : "namespace",
+          "values" : [ "AWS/AutoScaling" ]
         } ],
         "metric" : "GroupTotalInstances"
       } ],
+      "instanceDashboards" : null,
+      "instanceDisplayText" : null,
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "AutoScaling Groups",
+      "name" : "Autoscaling groups",
       "navigatorCategory" : "AWS",
+      "navigatorCategoryDisplayName" : "Amazon Web Services",
+      "navigatorCategoryGroupDisplayName" : "Public Clouds",
+      "navigatorCategoryInstancesName" : "service",
       "navigatorType" : "elemental",
-      "sites" : "signalview",
+      "ownerScope" : null,
+      "sites" : "o11yandsignalview",
+      "systemTypes" : null,
       "uiModel" : {
-        "alertQuery" : "_exists_:AutoScalingGroupName",
+        "alertQuery" : "namespace:\"AWS/AutoScaling\" AND _exists_:AutoScalingGroupName",
         "category" : "AWS",
-        "categoryPriority" : 100,
-        "discoveryQuery" : [ "sf_key:AutoScalingGroupName" ],
-        "displayName" : "AutoScaling Groups",
+        "categoryPriority" : 10,
+        "discoveryQuery" : [ "sf_key:AutoScalingGroupName", "namespace:AWS/AutoScaling" ],
+        "displayName" : "Autoscaling groups",
         "filterProperties" : null,
-        "id" : "autoscaling",
+        "id" : "autoscalinggroups",
         "idName" : "Group",
         "idTemplate" : "{{AutoScalingGroupName}}",
         "listColumns" : [ {
           "aggregate" : null,
-          "displayName" : "ID",
+          "displayName" : "Group name",
           "format" : "id",
           "metric" : null,
           "property" : "id",
@@ -55,47 +70,109 @@
             "minValue" : 0,
             "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
-          "description" : "Number of instances",
-          "displayName" : "Instances",
-          "id" : "aws.autoscaling.instances",
+          "description" : "This metric shows the total number of instances in the Auto Scaling group. Darker colors indicate higher relative values.",
+          "displayName" : "# Instances",
+          "id" : "autoscaling_groups_instances",
           "job" : {
             "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "GroupTotalInstances = data(\"GroupTotalInstances\", filter=filter(\"namespace\", \"AWS/AutoScaling\") and filter(\"stat\", \"mean\") and filter(\"AutoScalingGroupName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"AutoScalingGroupName\"])",
-            "varName" : "GroupTotalInstances"
+            "resolution" : 60000,
+            "template" : "INSTANCES = data(\"GroupTotalInstances\", filter=filter(\"stat\", \"mean\") and filter(\"namespace\", \"AWS/AutoScaling\"){{#filter}} and {{{filter}}}{{/filter}}).mean(by=[\"AutoScalingGroupName\"])",
+            "varName" : "INSTANCES"
           },
           "metricSelectors" : [ "GroupTotalInstances" ],
           "type" : "metric",
-          "valueFormat" : null,
+          "valueFormat" : "Number",
           "valueLabel" : "Instances",
           "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric shows the number of instances that are running as part of the Auto Scaling group. Darker colors indicate higher relative values.",
+          "displayName" : "# In-service instances",
+          "id" : "autoscaling_groups_in-service_instances",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "INSERVICE = data(\"GroupInServiceInstances\", filter=filter(\"stat\", \"mean\") and filter(\"namespace\", \"AWS/AutoScaling\"){{#filter}} and {{{filter}}}{{/filter}}).mean(by=[\"AutoScalingGroupName\"])",
+            "varName" : "INSERVICE"
+          },
+          "metricSelectors" : [ "GroupInServiceInstances" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "In-service instances",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "The number of instances that are pending. Darker colors indicate higher relative values.",
+          "displayName" : "# Pending instances",
+          "id" : "autoscaling_groups_pending_instances",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "PENDING = data(\"GroupPendingInstances\", filter=filter(\"stat\", \"mean\") and filter(\"namespace\", \"AWS/AutoScaling\"){{#filter}} and {{{filter}}}{{/filter}}).mean(by=[\"AutoScalingGroupName\"])",
+            "varName" : "PENDING"
+          },
+          "metricSelectors" : [ "GroupPendingInstances" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Pending instances",
+          "valueType" : null
+        }, {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "The number of instances that are in the process of terminating. Darker colors indicate higher relative values.",
+          "displayName" : "# Terminating instances",
+          "id" : "autoscaling_groups_terminating_instances",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 60000,
+            "template" : "TERMINATING = data(\"GroupTerminatingInstances\", filter=filter(\"stat\", \"mean\") and filter(\"namespace\", \"AWS/AutoScaling\"){{#filter}} and {{{filter}}}{{/filter}}).mean(by=[\"AutoScalingGroupName\"])",
+            "varName" : "TERMINATING"
+          },
+          "metricSelectors" : [ "GroupTerminatingInstances" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Terminating instances",
+          "valueType" : null
         } ],
-        "mtsQuery" : "sf_metric:GroupTotalInstances AND sf_key:AutoScalingGroupName AND _exists_:AutoScalingGroupName",
-        "o11yMetricName" : "# Auto Scaling Groups",
+        "mtsQuery" : "namespace:\"AWS/AutoScaling\" AND _exists_:AutoScalingGroupName",
+        "o11yMetricName" : "Active groups",
         "o11yMetricUnit" : null,
-        "o11yProductName" : "Auto Scaling",
+        "o11yProductName" : "Autoscaling groups",
         "o11ySignalflowTemplate" : "A = data('GroupTotalInstances', filter=filter('stat', 'mean') and filter('namespace', 'AWS/AutoScaling')).count(by=['AutoScalingGroupName']).sum().publish(label='A')",
         "o11yTrendDisplayMode" : "absolute",
-        "propertyColumns" : [ [ {
-          "header" : "AWS",
-          "properties" : [ ]
-        } ], [ {
-          "header" : "Tags",
-          "properties" : [ "sf_tags" ]
-        }, {
-          "header" : "Other",
-          "properties" : [ ]
-        } ] ],
+        "propertyColumns" : null,
         "proxyProperties" : null,
-        "requiredProperties" : [ "AutoScalingGroupName" ],
-        "singleHostSystemDashboardName" : null,
-        "systemDashboardName" : null,
-        "systemDashboardPrefix" : "AutoScaling",
+        "requiredProperties" : null,
+        "singleHostSystemDashboardName" : "AWS autoscaling group",
+        "systemDashboardName" : "AWS autoscaling groups",
+        "systemDashboardPrefix" : null,
         "tooltipKeyList" : [ {
-          "displayName" : "ID",
+          "displayName" : "Region",
           "format" : null,
           "isSummaryProperty" : true,
-          "property" : "id"
+          "property" : "cloud.region"
+        }, {
+          "displayName" : "Host Id",
+          "format" : null,
+          "isSummaryProperty" : true,
+          "property" : "AWSUniqueId"
         }, {
           "displayName" : "Value",
           "format" : "Number",
@@ -103,7 +180,7 @@
           "property" : "value"
         } ],
         "type" : "elemental",
-        "unreleased" : true
+        "unreleased" : false
       }
     }
   },
