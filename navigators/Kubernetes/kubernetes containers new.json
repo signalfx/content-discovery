@@ -1,9 +1,10 @@
 {
-    "hashCode": 1273914798,
+    "hashCode": -1755362205,
     "id": "FTBxJpUAgAA",
     "modelVersion": 1,
     "navigatorExport": {
         "navigator": {
+            "aggregateDashboards": null,
             "connectedCategory": false,
             "created": 0,
             "creator": null,
@@ -11,16 +12,22 @@
             "description": "",
             "id": "FTBxJpUAgAA",
             "idDisplayName": null,
-            "importQualifiers": [{
-                "filters": [{
-                    "not": false,
-                    "property": "sf_key",
-                    "values": [
-                        "k8s.container.name"
-                    ]
-                }],
-                "metric": "k8s.container.ready"
-            }],
+            "importQualifiers": [
+                {
+                    "filters": [
+                        {
+                            "not": false,
+                            "property": "sf_key",
+                            "values": [
+                                "k8s.container.name"
+                            ]
+                        }
+                    ],
+                    "metric": "k8s.container.ready"
+                }
+            ],
+            "instanceDashboards": null,
+            "instanceDisplayText": null,
             "lastUpdated": 0,
             "lastUpdatedBy": null,
             "name": "K8s containers",
@@ -45,7 +52,8 @@
                 "id": "k8scontainers",
                 "idName": "Container",
                 "idTemplate": "{{k8s.container.name}} ({{container.id}})",
-                "listColumns": [{
+                "listColumns": [
+                    {
                         "aggregate": null,
                         "displayName": "Container name (id)",
                         "format": "id",
@@ -86,7 +94,8 @@
                         "sortable": null
                     }
                 ],
-                "metrics": [{
+                "metrics": [
+                    {
                         "coloring": {
                             "limits": null,
                             "maxValue": 100,
@@ -98,7 +107,8 @@
                         "displayName": "CPU usage (%)",
                         "id": "k8s_containers_cpu_usage",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "container.id",
@@ -153,7 +163,8 @@
                         "displayName": "Disk usage (bytes)",
                         "id": "k8s_containers_disk_usage",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "container.id",
@@ -208,7 +219,8 @@
                         "displayName": "Memory usage (bytes)",
                         "id": "k8s_containers_memory_usage",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "container.id",
@@ -259,7 +271,8 @@
                         "displayName": "Most severe alert",
                         "id": "___SF_ALERT_COLLECTD",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "container.id",
@@ -294,6 +307,53 @@
                         "type": "event",
                         "valueFormat": "AlertSeverity",
                         "valueLabel": "Most severe alert"
+                    },
+                    {
+                        "coloring": {
+                            "limits": null,
+                            "maxValue": null,
+                            "method": "quantile",
+                            "minValue": 0,
+                            "range": null
+                        },
+                        "description": "This metric shows the ready status of containers.",
+                        "displayName": "Container Status",
+                        "id": "container_ready_hierarchy",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "k8s.cluster.name",
+                                    "type": "property"
+                                },
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "k8s.pod.uid",
+                                    "type": "property"
+                                },
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "container.id",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 60000,
+                            "template": "CONTAINER_READY = data(\"k8s.container.ready\" {{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")\nCONTAINER_READY.count(by=[\"k8s.cluster.name\", \"k8s.pod.uid\", \"container.id\", \"sf_service\"]).publish(\"Container SFx Service\")\nCONTAINER_READY.count(by=[\"k8s.cluster.name\", \"k8s.pod.uid\", \"container.id\", \"sf_environment\"]).publish(\"Container SFx Environment\")",
+                            "varName": "CONTAINER_READY"
+                        },
+                        "metricSelectors": [
+                            "k8s.container.ready"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": "Container Ready",
+                        "valueType": null,
+                        "visualizations": [
+                            "hierarchical"
+                        ]
                     }
                 ],
                 "mtsQuery": "_exists_:k8s.container.name AND _exists_:k8s.pod.name AND _exists_:k8s.cluster.name",
@@ -311,7 +371,8 @@
                 "singleHostSystemDashboardName": "K8s Container",
                 "systemDashboardName": "K8s Containers",
                 "systemDashboardPrefix": null,
-                "tooltipKeyList": [{
+                "tooltipKeyList": [
+                    {
                         "displayName": "Region",
                         "format": null,
                         "isSummaryProperty": true,
@@ -344,7 +405,45 @@
                 ],
                 "type": "elemental",
                 "unreleased": true
-            }
+            },
+            "visualizations": [
+                {
+                    "configuration": {
+                        "actions": {
+                            "showColorBy": false,
+                            "showGroupBy": true,
+                            "showNavigatorSettings": false,
+                            "showOutliers": false
+                        },
+                        "groupBy": "container.id",
+                        "hierarchicalFilter": "colorChild",
+                        "preferredRoot": false,
+                        "replaceOnlyFilters": [
+                            "k8s.namespace.name",
+                            "k8s.node.name",
+                            "k8s.pod.name",
+                            "k8s.cluster.name",
+                            "container_spec_name",
+                            "k8s.pod.uid",
+                            "container.id"
+                        ]
+                    },
+                    "defaultVisualization": true,
+                    "type": "hierarchical",
+                    "views": [
+                        "instance",
+                        "aggregate"
+                    ]
+                },
+                {
+                    "configuration": {},
+                    "defaultVisualization": false,
+                    "type": "list",
+                    "views": [
+                        "aggregate"
+                    ]
+                }
+            ]
         }
     },
     "packageType": "NAVIGATOR"

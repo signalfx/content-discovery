@@ -1,9 +1,10 @@
 {
-    "hashCode": 318316384,
+    "hashCode": 483152131,
     "id": "FTBzcwtAYAA",
     "modelVersion": 1,
     "navigatorExport": {
         "navigator": {
+            "aggregateDashboards": null,
             "connectedCategory": false,
             "created": 0,
             "creator": null,
@@ -11,16 +12,22 @@
             "description": "",
             "id": "FTBzcwtAYAA",
             "idDisplayName": null,
-            "importQualifiers": [{
-                "filters": [{
-                    "not": false,
-                    "property": "sf_key",
-                    "values": [
-                        "k8s.pod.uid"
-                    ]
-                }],
-                "metric": "k8s.pod.phase"
-            }],
+            "importQualifiers": [
+                {
+                    "filters": [
+                        {
+                            "not": false,
+                            "property": "sf_key",
+                            "values": [
+                                "k8s.pod.uid"
+                            ]
+                        }
+                    ],
+                    "metric": "k8s.pod.phase"
+                }
+            ],
+            "instanceDashboards": null,
+            "instanceDisplayText": null,
             "lastUpdated": 0,
             "lastUpdatedBy": null,
             "name": "K8s pods",
@@ -29,6 +36,12 @@
             "navigatorCategoryGroupDisplayName": "Containers",
             "navigatorCategoryInstancesName": "service",
             "navigatorType": "elemental",
+            "relationships": [
+                {
+                    "identifier": "k8scontainers",
+                    "type": "contains"
+                }
+            ],
             "sites": "o11y",
             "systemTypes": null,
             "uiModel": {
@@ -43,7 +56,8 @@
                 "id": "k8spods",
                 "idName": "Pod",
                 "idTemplate": "{{k8s.pod.name}} ({{k8s.pod.uid}})",
-                "listColumns": [{
+                "listColumns": [
+                    {
                         "aggregate": null,
                         "displayName": "Pod id",
                         "format": "id",
@@ -76,7 +90,8 @@
                         "sortable": null
                     }
                 ],
-                "metrics": [{
+                "metrics": [
+                    {
                         "coloring": {
                             "limits": null,
                             "maxValue": 1,
@@ -88,7 +103,8 @@
                         "displayName": "# Network errors",
                         "id": "k8s_pods_network_errors",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "k8s.node.name",
@@ -143,7 +159,8 @@
                         "displayName": "CPU usage (%)",
                         "id": "k8s_pods_cpu_usage",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "k8s.node.name",
@@ -200,7 +217,8 @@
                         "displayName": "Disk usage (bytes)",
                         "id": "k8s_pods_disk_usage",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "k8s.node.name",
@@ -261,7 +279,8 @@
                         "displayName": "Memory usage (bytes)",
                         "id": "k8s_pods_memory_usage",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "k8s.node.name",
@@ -318,7 +337,8 @@
                         "displayName": "Most severe alert",
                         "id": "___SF_ALERT_COLLECTD",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "k8s.node.name",
@@ -378,7 +398,8 @@
                         "displayName": "Network bytes / sec",
                         "id": "k8s_nodes_network_traffic_per_sec",
                         "job": {
-                            "filters": [{
+                            "filters": [
+                                {
                                     "not": false,
                                     "property": "_exists_",
                                     "propertyValue": "k8s.cluster.name",
@@ -408,6 +429,41 @@
                         "valueFormat": "Bytes",
                         "valueLabel": "Network bytes / sec",
                         "valueType": null
+                    },
+                    {
+                        "coloring": null,
+                        "description": "This metric shows the phases of pods.",
+                        "displayName": "Pod Phase",
+                        "id": "k8s_pods_hierarchy",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "k8s.cluster.name",
+                                    "type": "property"
+                                },
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "k8s.pod.uid",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 60000,
+                            "template": "\nKUBE_POD_PHASE = data(\"k8s.pod.phase\" {{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.pod.name\", \"sf_service\"]).publish(\"Pod SFx Service\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.pod.name\", \"sf_environment\"]).publish(\"Pod SFx Environment\")",
+                            "varName": "KUBE_POD_PHASE"
+                        },
+                        "metricSelectors": [
+                            "k8s.pod.phase"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": "Phase",
+                        "valueType": null,
+                        "visualizations": [
+                            "hierarchical"
+                        ]
                     }
                 ],
                 "mtsQuery": "_exists_:k8s.pod.name AND _exists_:k8s.cluster.name",
@@ -425,7 +481,8 @@
                 "singleHostSystemDashboardName": "K8s Pod",
                 "systemDashboardName": "K8s Pods",
                 "systemDashboardPrefix": null,
-                "tooltipKeyList": [{
+                "tooltipKeyList": [
+                    {
                         "displayName": "Region",
                         "format": null,
                         "isSummaryProperty": true,
@@ -458,7 +515,43 @@
                 ],
                 "type": "elemental",
                 "unreleased": true
-            }
+            },
+            "visualizations": [
+                {
+                    "configuration": {
+                        "actions": {
+                            "showColorBy": false,
+                            "showGroupBy": true,
+                            "showNavigatorSettings": false,
+                            "showOutliers": false
+                        },
+                        "groupBy": "k8s.pod.name",
+                        "hierarchicalFilter": "colorChild",
+                        "preferredRoot": false,
+                        "replaceOnlyFilters": [
+                            "k8s.namespace.name",
+                            "k8s.node.name",
+                            "k8s.pod.name",
+                            "k8s.cluster.name",
+                            "k8s.pod.uid"
+                        ]
+                    },
+                    "defaultVisualization": true,
+                    "type": "hierarchical",
+                    "views": [
+                        "aggregate",
+                        "instance"
+                    ]
+                },
+                {
+                    "configuration": {},
+                    "defaultVisualization": false,
+                    "type": "list",
+                    "views": [
+                        "aggregate"
+                    ]
+                }
+            ]
         }
     },
     "packageType": "NAVIGATOR"
