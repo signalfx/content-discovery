@@ -1,5 +1,5 @@
 {
-  "hashCode": 1412423796,
+  "hashCode": 318129191,
   "id": "FV8FAmbAgAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -13,26 +13,15 @@
       "id": "FV8FAmbAgAE",
       "idDisplayName": "{{host.name}}",
       "importQualifiers": [{
-          "filters": [{
-            "not": false,
-            "property": "plugin",
-            "values": [
-              "elasticsearch"
-            ]
-          }],
-          "metric": "counter.indices.indexing.index-total"
-        },
-        {
-          "filters": [{
-            "not": false,
-            "property": "plugin",
-            "values": [
-              "elasticsearch"
-            ]
-          }],
-          "metric": "elasticsearch.indices.indexing.index-total"
-        }
-      ],
+        "filters": [{
+          "not": false,
+          "property": "plugin",
+          "values": [
+            "elasticsearch"
+          ]
+        }],
+        "metric": "*.indices.indexing.index-total"
+      }],
       "instanceDashboards": null,
       "instanceDisplayText": null,
       "lastUpdated": 0,
@@ -285,6 +274,68 @@
           {
             "coloring": {
               "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total size in bytes of field-data cache. Darker colors indicate higher relative values.",
+            "displayName": "Field-data cache (bytes)",
+            "id": "elasticsearch_nodes_field_data_cache",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "FIELDDATA_CACHE_SIZE = data(\"elasticsearch.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"*\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
+              "varName": "FIELDDATA_CACHE_SIZE"
+            },
+            "metricSelectors": [
+              "elasticsearch.indices.fielddata.memory-size"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Field-data cache",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total size in bytes of filter cache. Darker colors indicate higher relative values.",
+            "displayName": "Filter cache (bytes)",
+            "id": "elasticsearch_nodes_filter_cache",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "FILTER_CACHE_SIZE = data(\"elasticsearch.indices.filter-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\",\"*\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
+              "varName": "FILTER_CACHE_SIZE"
+            },
+            "metricSelectors": [
+              "elasticsearch.indices.filter-cache.memory-size"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Filter cache",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
               "maxValue": 100,
               "method": "quantile",
               "minValue": 0,
@@ -366,7 +417,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "QUERY_CACHE_SIZE = data(\"elasticsearch.indices.query-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"* OR aggregation: total\", match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+              "template": "QUERY_CACHE_SIZE = data(\"elasticsearch.indices.query-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"*\", match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "QUERY_CACHE_SIZE"
             },
             "metricSelectors": [
@@ -375,68 +426,6 @@
             "type": "metric",
             "valueFormat": "Bytes",
             "valueLabel": "Query cache",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the total size in bytes of field-data cache. Darker colors indicate higher relative values.",
-            "displayName": "Field-data cache (bytes)",
-            "id": "elasticsearch_nodes_field_data_cache",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "FIELDDATA_CACHE_SIZE = data(\"elasticsearch.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"total\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
-              "varName": "FIELDDATA_CACHE_SIZE"
-            },
-            "metricSelectors": [
-              "elasticsearch.indices.fielddata.memory-size"
-            ],
-            "type": "metric",
-            "valueFormat": "Bytes",
-            "valueLabel": "Field-data cache",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the total size in bytes of filter cache. Darker colors indicate higher relative values.",
-            "displayName": "Filter cache (bytes)",
-            "id": "elasticsearch_nodes_filter_cache",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "FILTER_CACHE_SIZE = data(\"elasticsearch.indices.filter-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\",\"total\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
-              "varName": "FILTER_CACHE_SIZE"
-            },
-            "metricSelectors": [
-              "elasticsearch.indices.filter-cache.memory-size"
-            ],
-            "type": "metric",
-            "valueFormat": "Bytes",
-            "valueLabel": "Filter cache",
             "valueType": null
           }
         ],
