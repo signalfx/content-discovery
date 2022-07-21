@@ -1,9 +1,10 @@
 {
-    "hashCode": 318316384,
+    "hashCode": -2055580732,
     "id": "FTBzcwtAYAA",
     "modelVersion": 1,
     "navigatorExport": {
         "navigator": {
+            "aggregateDashboards": null,
             "connectedCategory": false,
             "created": 0,
             "creator": null,
@@ -25,6 +26,8 @@
                     "metric": "k8s.pod.phase"
                 }
             ],
+            "instanceDashboards": null,
+            "instanceDisplayText": null,
             "lastUpdated": 0,
             "lastUpdatedBy": null,
             "name": "K8s pods",
@@ -33,6 +36,13 @@
             "navigatorCategoryGroupDisplayName": "Containers",
             "navigatorCategoryInstancesName": "service",
             "navigatorType": "elemental",
+            "ownerScope": "organization",
+            "relationships": [
+                {
+                    "identifier": "k8scontainers",
+                    "type": "contains"
+                }
+            ],
             "sites": "o11y",
             "systemTypes": null,
             "uiModel": {
@@ -420,6 +430,41 @@
                         "valueFormat": "Bytes",
                         "valueLabel": "Network bytes / sec",
                         "valueType": null
+                    },
+                    {
+                        "coloring": null,
+                        "description": "This metric shows the phases of pods.",
+                        "displayName": "Pod Phase",
+                        "id": "k8s_pods_hierarchy",
+                        "job": {
+                            "filters": [
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "k8s.cluster.name",
+                                    "type": "property"
+                                },
+                                {
+                                    "not": false,
+                                    "property": "_exists_",
+                                    "propertyValue": "k8s.pod.uid",
+                                    "type": "property"
+                                }
+                            ],
+                            "resolution": 60000,
+                            "template": "\nKUBE_POD_PHASE = data(\"k8s.pod.phase\" {{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.pod.name\", \"sf_service\"]).publish(\"Pod SFx Service\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.pod.name\", \"sf_environment\"]).publish(\"Pod SFx Environment\")",
+                            "varName": "KUBE_POD_PHASE"
+                        },
+                        "metricSelectors": [
+                            "k8s.pod.phase"
+                        ],
+                        "type": "metric",
+                        "valueFormat": null,
+                        "valueLabel": "Phase",
+                        "valueType": null,
+                        "visualizations": [
+                            "hierarchical"
+                        ]
                     }
                 ],
                 "mtsQuery": "_exists_:k8s.pod.name AND _exists_:k8s.cluster.name",
@@ -471,7 +516,43 @@
                 ],
                 "type": "elemental",
                 "unreleased": true
-            }
+            },
+            "visualizations": [
+                {
+                    "configuration": {
+                        "actions": {
+                            "showColorBy": false,
+                            "showGroupBy": true,
+                            "showNavigatorSettings": false,
+                            "showOutliers": false
+                        },
+                        "groupBy": "k8s.pod.name",
+                        "hierarchicalFilter": "colorChild",
+                        "preferredRoot": false,
+                        "replaceOnlyFilters": [
+                            "k8s.namespace.name",
+                            "k8s.node.name",
+                            "k8s.pod.name",
+                            "k8s.cluster.name",
+                            "k8s.pod.uid"
+                        ]
+                    },
+                    "defaultVisualization": true,
+                    "type": "hierarchical",
+                    "views": [
+                        "aggregate",
+                        "instance"
+                    ]
+                },
+                {
+                    "configuration": {},
+                    "defaultVisualization": false,
+                    "type": "list",
+                    "views": [
+                        "aggregate"
+                    ]
+                }
+            ]
         }
     },
     "packageType": "NAVIGATOR"
