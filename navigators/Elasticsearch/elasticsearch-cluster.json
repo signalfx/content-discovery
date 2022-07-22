@@ -1,5 +1,5 @@
 {
-  "hashCode": -1544705599,
+  "hashCode": -302909652,
   "id": "FVIgyv9AcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -103,7 +103,7 @@
               "varName": "ACTIVE_MERGES"
             },
             "metricSelectors": [
-              "elasticsearch.indices.merges.current"
+              "*.indices.merges.current"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -271,11 +271,12 @@
                 }
               ],
               "resolution": 60000,
-              "template": "A = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC=(A).timeshift(\"5m\")\nD = (B).timeshift(\"5m\")\nAVERAGE_QUERY_LATENCY = ((B-D)/(A-C))",
+              "template": "A = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB = data(\"*.indices.search.query-time\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC=(A).timeshift(\"5m\")\nD = (B).timeshift(\"5m\")\nAVERAGE_QUERY_LATENCY = ((B-D)/(A-C))",
               "varName": "AVERAGE_QUERY_LATENCY"
             },
             "metricSelectors": [
-              "*.indices.search.query-total"
+              "*.indices.search.query-total",
+              "*.indices.search.query-time"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -314,11 +315,11 @@
                 }
               ],
               "resolution": 60000,
-              "template": "CACHE_SIZE =data(\"elasticsearch.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "CACHE_SIZE =data(\"*.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "CACHE_SIZE"
             },
             "metricSelectors": [
-              "elasticsearch.indices.fielddata.memory-size"
+              "*.indices.fielddata.memory-size"
             ],
             "type": "metric",
             "valueFormat": "Bytes",
