@@ -1,0 +1,68 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when host usage percentage is above threshold",
+      "detectorOrigin": "AutoDetect",
+      "id": "FYSQTWPAAAE",
+      "labelResolutions": {
+        "Splunk Operational - Host usage percentage is expected to reach the limit": 600000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": null,
+      "minDelay": null,
+      "name": "[AutoDetect BETA] Splunk System Limits - Host usage percentage is expected to reach the limit",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "parentDetectorId": "FF7_JyvAIII",
+      "programText": "from signalfx.detectors.autodetect.splunk import operational\noperational.hosts_limit_detector().publish('Splunk Operational - Host usage percentage is expected to reach the limit')",
+      "rules": [
+        {
+          "description": "Host usage percentage is above threshold",
+          "detectLabel": "Splunk Operational - Host usage percentage is expected to reach the limit",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}({{inputs.fire_threshold_stream.value}}%)\n{{/if}}\n\nPercentage of used hosts(vs. limit): {{inputs.host_usage_percentage.value}}\n\n{{#notEmpty dimensions}}Signal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
+          "runbookUrl": null,
+          "severity": "Critical",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": null,
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": null
+      },
+      "importQualifiers": [
+        {
+          "metric": "sf.org.limit.hosts"
+        },
+        {
+          "metric": "sf.org.numResourcesMonitored",
+          "filters": [
+            {
+              "not": false,
+              "property": "resourceType",
+              "values": [
+                "host"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": -1166150739,
+  "id": "FYSQTWPAAAE",
+  "packageType": "DETECTOR"
+}
