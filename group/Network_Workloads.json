@@ -99,7 +99,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['srole', 'drole']).publish(label='A',enable=False)\nB = data('udp.bytes', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='UDP Traffic')",
+      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A',enable=False)\nB = data('udp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='UDP Traffic')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -185,7 +185,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.resets', filter=filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.resets', filter=filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -271,7 +271,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.retrans', filter=filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.retrans', filter=filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -375,7 +375,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['srole','drole']).publish(label='A')\nB = data('http.status_code', filter=filter('srole', '*') and filter('status_code', '500')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='HTTP 5xx')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['source.workload.name','dest.workload.name']).publish(label='A')\nB = data('http.status_code', filter=filter('source.workload.name', '*') and filter('status_code', '500')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='HTTP 5xx')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -461,7 +461,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.client.duration.average', filter=filter('srole', '*'), rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.client.duration.average', filter=filter('source.workload.name', '*'), rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -547,7 +547,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false') and filter('srole', '*'), rollup='rate').sum(by=['drole', 'srole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false') and filter('source.workload.name', '*'), rollup='rate').sum(by=['dest.workload.name', 'source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -651,7 +651,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole', 'drole']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -737,7 +737,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.active', filter=filter('srole', '*'), rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('udp.active', filter=filter('source.workload.name', '*'), rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -841,7 +841,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole','drole']).publish(label='A', enable=False)\nB = data('tcp.bytes', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='TCP Traffic')\n\n\n#A = data('tcp.bytes', rollup='rate', filter=filter('drole', \"emailservice\")).sum(by=['srole','drole']).publish(label='A')\n",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name','dest.workload.name']).publish(label='A', enable=False)\nB = data('tcp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='TCP Traffic')\n\n\n#A = data('tcp.bytes', rollup='rate', filter=filter('dest.workload.name', \"emailservice\")).sum(by=['source.workload.name','dest.workload.name']).publish(label='A')\n",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -927,7 +927,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.bytes', filter=filter('srole', '*'), rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('udp.bytes', filter=filter('source.workload.name', '*'), rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -999,7 +999,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.retrans', filter=filter('srole', '*')).sum(by=['srole']).publish(label='A', enable=False)\nB = data('tcp.packets', filter=filter('srole', '*')).sum(by=['srole']).publish(label='B', enable=False)\nD = ((A*100)/(A+B)).publish(label='D')",
+      "programText" : "A = data('tcp.retrans', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).publish(label='A', enable=False)\nB = data('tcp.packets', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).publish(label='B', enable=False)\nD = ((A*100)/(A+B)).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1103,7 +1103,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "#A = data('http.server.duration.average', filter=filter('srole', '*'), rollup='max').max(by=['drole']).publish(label='A')\n\nA = data('http.client.duration.average', rollup='max').sum(by=['srole','drole']).publish(label='A', enable=False)\nB = data('http.client.duration.average', filter=filter('srole', '*'), rollup='max').sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Max HTTP Client Latency')",
+      "programText" : "#A = data('http.server.duration.average', filter=filter('source.workload.name', '*'), rollup='max').max(by=['dest.workload.name']).publish(label='A')\n\nA = data('http.client.duration.average', rollup='max').sum(by=['source.workload.name','dest.workload.name']).publish(label='A', enable=False)\nB = data('http.client.duration.average', filter=filter('source.workload.name', '*'), rollup='max').sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Max HTTP Client Latency')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1225,7 +1225,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole', 'drole']).mean(over='1h').publish(label='A', enable=False)\nB = data('tcp.bytes', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='C', enable=False)\nD = (C).timeshift('1d').mean(over='1h').publish(label='D', enable=False)\nE = ((C-D)/C*100).publish(label='day-over-day change %')\n\n\n#A = data('tcp.bytes').sum(by=['drole']).publish(label='A',enable=False)\n#B = data('tcp.bytes', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\n#C = ((A/B)*B).publish(label='C')\n\n#G = data('tcp.bytes', rollup='rate', filter=filter('drole', 'frontend') ).sum(by=['srole']).mean(over='1h').publish(label='A')\n",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).mean(over='1h').publish(label='A', enable=False)\nB = data('tcp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='C', enable=False)\nD = (C).timeshift('1d').mean(over='1h').publish(label='D', enable=False)\nE = ((C-D)/C*100).publish(label='day-over-day change %')\n\n\n#A = data('tcp.bytes').sum(by=['dest.workload.name']).publish(label='A',enable=False)\n#B = data('tcp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\n#C = ((A/B)*B).publish(label='C')\n\n#G = data('tcp.bytes', rollup='rate', filter=filter('dest.workload.name', 'frontend') ).sum(by=['source.workload.name']).mean(over='1h').publish(label='A')\n",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1311,7 +1311,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.syn_timeouts', filter=filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.syn_timeouts', filter=filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1415,7 +1415,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['srole','drole']).publish(label='A', enable=False)\nB = data('tcp.retrans', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Retransmissions')",
+      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['source.workload.name','dest.workload.name']).publish(label='A', enable=False)\nB = data('tcp.retrans', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Retransmissions')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1501,7 +1501,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.client.duration.average', filter=filter('srole', '*'), rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('dns.client.duration.average', filter=filter('source.workload.name', '*'), rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1555,7 +1555,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', filter=filter('srole', '*'), rollup='max').max(by=['srole']).publish(label='A')",
+      "programText" : "A = data('tcp.rtt.average', filter=filter('source.workload.name', '*'), rollup='max').max(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1659,7 +1659,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['srole','drole']).publish(label='A', enable=False)\nB = data('tcp.resets', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='TCP Resets')",
+      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['source.workload.name','dest.workload.name']).publish(label='A', enable=False)\nB = data('tcp.resets', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='TCP Resets')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1763,7 +1763,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['srole','drole']).publish(label='A')\nB = data('http.status_code', filter=filter('srole', '*') and filter('status_code', '200')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='HTTP 2xx')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['source.workload.name','dest.workload.name']).publish(label='A')\nB = data('http.status_code', filter=filter('source.workload.name', '*') and filter('status_code', '200')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='HTTP 2xx')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1849,7 +1849,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.timeouts', filter=filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('dns.timeouts', filter=filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1921,7 +1921,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes').sum(by=['drole']).publish(label='A',enable=False)\nB = data('tcp.bytes', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='C')",
+      "programText" : "A = data('tcp.bytes').sum(by=['dest.workload.name']).publish(label='A',enable=False)\nB = data('tcp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2025,7 +2025,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.active', rollup='rate').sum(by=['srole', 'drole']).publish(label='A',enable=False)\nB = data('udp.active', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='UDP Active Sockets')",
+      "programText" : "A = data('udp.active', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A',enable=False)\nB = data('udp.active', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='UDP Active Sockets')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2111,7 +2111,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', filter=filter('srole', '*'), rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.rtt.average', filter=filter('source.workload.name', '*'), rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2215,7 +2215,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.active', rollup='rate').sum(by=['srole', 'drole']).publish(label='A',enable=False)\nB = data('udp.active', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='UDP Packets')",
+      "programText" : "A = data('udp.active', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A',enable=False)\nB = data('udp.active', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='UDP Packets')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2247,7 +2247,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "tcp.retrans - Sum by srole",
+          "displayName" : "tcp.retrans - Sum by source.workload.name",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2256,7 +2256,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "tcp.packets - Sum by srole",
+          "displayName" : "tcp.packets - Sum by source.workload.name",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2323,7 +2323,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "#A = data('tcp.bytes', rollup='rate').sum(by=['srole', 'drole']).publish(label='A',enable=False)\n#B = data('tcp.bytes', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\n#C = ((A/B)*B).publish(label='C')\n\n#A = data('tcp.bytes').sum(by=['drole']).publish(label='A',enable=False)\n#B = data('tcp.bytes', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\n#C = ((A/B)*B).publish(label='C')\n\n\nA = data('tcp.retrans').sum(by=['drole']).publish(label='A', enable=False)\nB = data('tcp.packets').sum(by=['drole']).publish(label='B', enable=False)\nC = data('tcp.retrans', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='C', enable=False)\nD = data('tcp.packets', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='D', enable=False)\nE =  ((A/C)*C).publish(label='E', enable=False)\nF = ((B/D)*D).publish(label='F', enable=False)\nG = ((E*100)/(E+F)).publish(label='G')",
+      "programText" : "#A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A',enable=False)\n#B = data('tcp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\n#C = ((A/B)*B).publish(label='C')\n\n#A = data('tcp.bytes').sum(by=['dest.workload.name']).publish(label='A',enable=False)\n#B = data('tcp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\n#C = ((A/B)*B).publish(label='C')\n\n\nA = data('tcp.retrans').sum(by=['dest.workload.name']).publish(label='A', enable=False)\nB = data('tcp.packets').sum(by=['dest.workload.name']).publish(label='B', enable=False)\nC = data('tcp.retrans', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='C', enable=False)\nD = data('tcp.packets', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='D', enable=False)\nE =  ((A/C)*C).publish(label='E', enable=False)\nF = ((B/D)*D).publish(label='F', enable=False)\nG = ((E*100)/(E+F)).publish(label='G')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2427,7 +2427,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "#A = data('http.server.duration.average', filter=filter('srole', '*'), rollup='max').max(by=['drole']).publish(label='A')\n\nA = data('http.server.duration.average', rollup='max').sum(by=['srole','drole']).publish(label='A', enable=False)\nB = data('http.server.duration.average', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Max HTTP Server Latency')",
+      "programText" : "#A = data('http.server.duration.average', filter=filter('source.workload.name', '*'), rollup='max').max(by=['dest.workload.name']).publish(label='A')\n\nA = data('http.server.duration.average', rollup='max').sum(by=['source.workload.name','dest.workload.name']).publish(label='A', enable=False)\nB = data('http.server.duration.average', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Max HTTP Server Latency')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2513,7 +2513,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.server.duration.average', filter=filter('srole', '*'), rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.server.duration.average', filter=filter('source.workload.name', '*'), rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2567,7 +2567,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('srole', '*')).sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2653,7 +2653,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '200') and filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '200') and filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2739,7 +2739,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '500') and filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '500') and filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2825,7 +2825,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('srole', '*'), rollup='rate').sum(by=['drole', 'srole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', filter=filter('source.workload.name', '*'), rollup='rate').sum(by=['dest.workload.name', 'source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2929,7 +2929,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['srole','drole']).publish(label='A', enable=False)\nB = data('tcp.syn_timeouts', filter=filter('srole', '*')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='TCP Connection Timeouts')",
+      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['source.workload.name','dest.workload.name']).publish(label='A', enable=False)\nB = data('tcp.syn_timeouts', filter=filter('source.workload.name', '*')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='TCP Connection Timeouts')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3015,7 +3015,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.responses', filter=filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('dns.responses', filter=filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3101,7 +3101,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '400') and filter('srole', '*'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '400') and filter('source.workload.name', '*'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3205,7 +3205,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['srole','drole']).publish(label='A', enable=False)\nB = data('tcp.bytes', filter=filter('srole', '*') and filter('az_equal', 'false')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Cross Zone Traffic')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['source.workload.name','dest.workload.name']).publish(label='A', enable=False)\nB = data('tcp.bytes', filter=filter('source.workload.name', '*') and filter('az_equal', 'false')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Cross Zone Traffic')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3246,7 +3246,7 @@
           "valueUnit" : "Second",
           "yAxis" : 0
         }, {
-          "displayName" : "Round trip time (srole)",
+          "displayName" : "Round trip time (source.workload.name)",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -3277,7 +3277,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', rollup='max').sum(by=['drole']).publish(label='A',enable=False)\nB = data('tcp.rtt.average', filter=filter('srole', '*'), rollup='max').sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='C')",
+      "programText" : "A = data('tcp.rtt.average', rollup='max').sum(by=['dest.workload.name']).publish(label='A',enable=False)\nB = data('tcp.rtt.average', filter=filter('source.workload.name', '*'), rollup='max').sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3381,7 +3381,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['srole','drole']).publish(label='A')\nB = data('http.status_code', filter=filter('srole', '*') and filter('status_code', '400')).sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='HTTP 4xx')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['source.workload.name','dest.workload.name']).publish(label='A')\nB = data('http.status_code', filter=filter('source.workload.name', '*') and filter('status_code', '400')).sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='HTTP 4xx')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3485,7 +3485,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', rollup='max').sum(by=['srole','drole']).publish(label='A',enable=False)\nB = data('tcp.rtt.average', filter=filter('srole', '*'), rollup='max').sum(by=['srole']).dimensions(renames={'drole':'srole'}).count(by=['drole']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Max Round Trip Time between')",
+      "programText" : "A = data('tcp.rtt.average', rollup='max').sum(by=['source.workload.name','dest.workload.name']).publish(label='A',enable=False)\nB = data('tcp.rtt.average', filter=filter('source.workload.name', '*'), rollup='max').sum(by=['source.workload.name']).dimensions(renames={'dest.workload.name':'source.workload.name'}).count(by=['dest.workload.name']).publish(label='B', enable=False)\nC = ((A/B)*B).publish(label='Max Round Trip Time between')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3571,7 +3571,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.packets', filter=filter('srole', '*'), rollup='rate').sum(by=['drole']).publish(label='A')",
+      "programText" : "A = data('udp.packets', filter=filter('source.workload.name', '*'), rollup='rate').sum(by=['dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3677,7 +3677,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3693,13 +3693,13 @@
       "lastUpdatedBy" : null,
       "name" : "Top  UDP traffic (bytes)",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -3708,7 +3708,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -3758,7 +3758,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.bytes').sum(by=['srole', 'drole']).sum(over='1m').publish(label='A')\nB = data('udp.bytes').sum(by=['srole', 'drole']).sum(over='1h').publish(label='B')\nC = data('udp.bytes').sum(by=['srole', 'drole']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('udp.bytes').sum(by=['source.workload.name', 'dest.workload.name']).sum(over='1m').publish(label='A')\nB = data('udp.bytes').sum(by=['source.workload.name', 'dest.workload.name']).sum(over='1h').publish(label='B')\nC = data('udp.bytes').sum(by=['source.workload.name', 'dest.workload.name']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3844,7 +3844,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3898,7 +3898,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['srole', 'drole']).publish(label='A')\nB = data('http.server.duration.average', rollup='max').max(by=['srole', 'drole']).publish(label='B')",
+      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')\nB = data('http.server.duration.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3914,13 +3914,13 @@
       "lastUpdatedBy" : null,
       "name" : "# Top DNS timeouts and responses",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -3929,7 +3929,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -3979,7 +3979,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.timeouts').sum(by=['srole', 'saz']).publish(label='A')\nD = data('dns.responses').sum(by=['srole', 'saz']).publish(label='D')\nE = data('dns.client.duration_average', rollup='max').max(by=['srole', 'saz']).publish(label='E')",
+      "programText" : "A = data('dns.timeouts').sum(by=['source.workload.name', 'saz']).publish(label='A')\nD = data('dns.responses').sum(by=['source.workload.name', 'saz']).publish(label='D')\nE = data('dns.client.duration_average', rollup='max').max(by=['source.workload.name', 'saz']).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4065,7 +4065,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.responses', rollup='sum').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('dns.responses', rollup='sum').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4081,13 +4081,13 @@
       "lastUpdatedBy" : null,
       "name" : "Top cross zone traffic (bytes)",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -4096,7 +4096,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -4146,7 +4146,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['srole', 'saz', 'drole', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['srole', 'drole']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['srole', 'drole']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['source.workload.name', 'saz', 'dest.workload.name', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['source.workload.name', 'dest.workload.name']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['source.workload.name', 'dest.workload.name']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4162,13 +4162,13 @@
       "lastUpdatedBy" : null,
       "name" : "# Top HTTP responses",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -4177,7 +4177,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -4227,7 +4227,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('http.status_code', filter=filter('status_code', '500')).sum(by=['srole', 'drole']).publish(label='C')\nA = data('http.status_code', filter=filter('status_code', '200')).sum(by=['srole', 'drole']).publish(label='A')\nB = data('http.status_code', filter=filter('status_code', '400')).sum(by=['srole', 'drole']).publish(label='B')",
+      "programText" : "C = data('http.status_code', filter=filter('status_code', '500')).sum(by=['source.workload.name', 'dest.workload.name']).publish(label='C')\nA = data('http.status_code', filter=filter('status_code', '200')).sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')\nB = data('http.status_code', filter=filter('status_code', '400')).sum(by=['source.workload.name', 'dest.workload.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4313,7 +4313,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4399,7 +4399,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4485,7 +4485,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4532,10 +4532,10 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -4583,7 +4583,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4669,7 +4669,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.server.duration.average', rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.server.duration.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4755,7 +4755,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.timeouts', rollup='sum').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('dns.timeouts', rollup='sum').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4841,7 +4841,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4888,7 +4888,7 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -4897,7 +4897,7 @@
             "property" : "sf_metric"
           }, {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           } ]
         },
         "lineChartOptions" : {
@@ -4939,7 +4939,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4955,7 +4955,7 @@
       "lastUpdatedBy" : null,
       "name" : "# TCP errors",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -4999,7 +4999,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('tcp.retrans', rollup='sum').sum(by=['srole', 'drole']).publish(label='B')\nA = data('tcp.syn.timeouts', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')\nC = data('tcp.resets').sum(by=['srole', 'drole']).publish(label='C')",
+      "programText" : "B = data('tcp.retrans', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='B')\nA = data('tcp.syn_timeouts', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')\nC = data('tcp.resets').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5085,7 +5085,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5171,7 +5171,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['drole', 'srole']).publish(label='A')",
+      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['dest.workload.name', 'source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5257,7 +5257,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.client.duration.average', rollup='max').max(by=['srole']).publish(label='A')",
+      "programText" : "A = data('dns.client.duration.average', rollup='max').max(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5273,13 +5273,13 @@
       "lastUpdatedBy" : null,
       "name" : "Top TCP traffic (bytes)",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -5288,7 +5288,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -5338,7 +5338,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='sum').sum(by=['srole', 'drole']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', rollup='sum').sum(by=['srole', 'drole']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', rollup='sum').sum(by=['srole', 'drole']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('tcp.bytes', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5385,10 +5385,10 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -5436,7 +5436,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5540,7 +5540,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole', 'drole']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5626,7 +5626,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['drole']).publish(label='A')",
+      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5673,10 +5673,10 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -5724,7 +5724,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5810,7 +5810,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.timeouts', rollup='sum').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('dns.timeouts', rollup='sum').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5896,7 +5896,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5982,7 +5982,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['srole']).publish(label='A')",
+      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6068,7 +6068,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.client.duration.average', rollup='max').max(by=['srole']).publish(label='A')",
+      "programText" : "A = data('dns.client.duration.average', rollup='max').max(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6154,7 +6154,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6258,7 +6258,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6344,7 +6344,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6430,7 +6430,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6516,7 +6516,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.responses', rollup='sum').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('dns.responses', rollup='sum').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6532,13 +6532,13 @@
       "lastUpdatedBy" : null,
       "name" : "Top cross zone traffic (bytes)",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -6547,7 +6547,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -6597,7 +6597,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['srole', 'saz', 'drole', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['srole', 'saz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['srole', 'saz']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['source.workload.name', 'saz', 'dest.workload.name', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['source.workload.name', 'saz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false')).sum(by=['source.workload.name', 'saz']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6683,7 +6683,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6730,10 +6730,10 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -6781,7 +6781,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6867,7 +6867,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.server.duration.average', rollup='max').max(by=['srole']).publish(label='A')",
+      "programText" : "A = data('http.server.duration.average', rollup='max').max(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6953,7 +6953,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['srole']).publish(label='A')",
+      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7039,7 +7039,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['srole']).publish(label='A')",
+      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['source.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7143,7 +7143,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['drole']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['dest.workload.name']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7159,13 +7159,13 @@
       "lastUpdatedBy" : null,
       "name" : "# Top DNS timeouts and responses",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -7174,7 +7174,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -7224,7 +7224,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('dns.timeouts').sum(by=['srole', 'saz']).publish(label='A')\nD = data('dns.responses').sum(by=['srole', 'saz']).publish(label='D')\nE = data('dns.client.duration_average', rollup='max').max(by=['srole', 'saz']).publish(label='E')",
+      "programText" : "A = data('dns.timeouts').sum(by=['source.workload.name', 'saz']).publish(label='A')\nD = data('dns.responses').sum(by=['source.workload.name', 'saz']).publish(label='D')\nE = data('dns.client.duration_average', rollup='max').max(by=['source.workload.name', 'saz']).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7240,7 +7240,7 @@
       "lastUpdatedBy" : null,
       "name" : "# TCP errors",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -7284,7 +7284,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('tcp.retrans', rollup='sum').sum(by=['srole', 'drole']).publish(label='B')\nA = data('tcp.syn.timeouts', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')\nC = data('tcp.resets').sum(by=['srole', 'drole']).publish(label='C')",
+      "programText" : "B = data('tcp.retrans', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='B')\nA = data('tcp.syn_timeouts', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')\nC = data('tcp.resets').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7300,13 +7300,13 @@
       "lastUpdatedBy" : null,
       "name" : "# Top HTTP responses",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -7315,7 +7315,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -7365,7 +7365,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('http.status_code', filter=filter('status_code', '500')).sum(by=['srole', 'saz']).publish(label='C')\nA = data('http.status_code', filter=filter('status_code', '200')).sum(by=['srole', 'saz']).publish(label='A')\nB = data('http.status_code', filter=filter('status_code', '400')).sum(by=['srole', 'saz']).publish(label='B')",
+      "programText" : "C = data('http.status_code', filter=filter('status_code', '500')).sum(by=['source.workload.name', 'saz']).publish(label='C')\nA = data('http.status_code', filter=filter('status_code', '200')).sum(by=['source.workload.name', 'saz']).publish(label='A')\nB = data('http.status_code', filter=filter('status_code', '400')).sum(by=['source.workload.name', 'saz']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7381,13 +7381,13 @@
       "lastUpdatedBy" : null,
       "name" : "Top TCP traffic (bytes)",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -7396,7 +7396,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -7446,7 +7446,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='sum').sum(by=['srole', 'saz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', rollup='sum').sum(by=['srole', 'saz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', rollup='sum').sum(by=['srole', 'saz']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('tcp.bytes', rollup='sum').sum(by=['source.workload.name', 'saz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', rollup='sum').sum(by=['source.workload.name', 'saz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', rollup='sum').sum(by=['source.workload.name', 'saz']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7500,7 +7500,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['srole', 'saz']).publish(label='A')\nB = data('http.server.duration.average', rollup='max').max(by=['srole', 'saz']).publish(label='B')",
+      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['source.workload.name', 'saz']).publish(label='A')\nB = data('http.server.duration.average', rollup='max').max(by=['source.workload.name', 'saz']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7522,7 +7522,7 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_metric"
@@ -7531,7 +7531,7 @@
             "property" : "saz"
           }, {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : true,
             "property" : "sf_originatingMetric"
@@ -7581,7 +7581,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.bytes').sum(by=['srole', 'saz']).sum(over='1m').publish(label='A')\nB = data('udp.bytes').sum(by=['srole', 'saz']).sum(over='1h').publish(label='B')\nC = data('udp.bytes').sum(by=['srole', 'saz']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('udp.bytes').sum(by=['source.workload.name', 'saz']).sum(over='1m').publish(label='A')\nB = data('udp.bytes').sum(by=['source.workload.name', 'saz']).sum(over='1h').publish(label='B')\nC = data('udp.bytes').sum(by=['source.workload.name', 'saz']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7628,7 +7628,7 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "drole"
+            "property" : "dest.workload.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -7637,7 +7637,7 @@
             "property" : "sf_metric"
           }, {
             "enabled" : true,
-            "property" : "srole"
+            "property" : "source.workload.name"
           } ]
         },
         "lineChartOptions" : {
@@ -7679,7 +7679,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7765,7 +7765,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '400'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7851,7 +7851,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.packets', rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('udp.packets', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7937,7 +7937,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.active', rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('udp.active', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8041,7 +8041,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['drole', 'srole']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['dest.workload.name', 'source.workload.name']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8127,7 +8127,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.syn_timeouts', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8213,7 +8213,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('udp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8299,7 +8299,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8385,7 +8385,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.server.duration.average', rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.server.duration.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8471,7 +8471,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '500'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8557,7 +8557,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8643,7 +8643,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.resets', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8729,7 +8729,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.status_code', filter=filter('status_code', '200'), rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8783,7 +8783,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8837,7 +8837,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.rtt.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8869,7 +8869,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "tcp.retrans - Sum by srole,drole",
+          "displayName" : "tcp.retrans - Sum by source.workload.name,dest.workload.name",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -8878,7 +8878,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "tcp.packets - Sum by srole,drole",
+          "displayName" : "tcp.packets - Sum by source.workload.name,dest.workload.name",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -8909,7 +8909,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.retrans').sum(by=['srole', 'drole']).publish(label='A', enable=False)\nB = data('tcp.packets').sum(by=['srole', 'drole']).publish(label='B', enable=False)\nD = ((A*100)/(A+B)).publish(label='D')",
+      "programText" : "A = data('tcp.retrans').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A', enable=False)\nB = data('tcp.packets').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='B', enable=False)\nD = ((A*100)/(A+B)).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8995,7 +8995,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9081,7 +9081,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.retrans', rollup='sum').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9167,7 +9167,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('http.client.duration.average', rollup='max').max(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9183,7 +9183,7 @@
       "lastUpdatedBy" : null,
       "name" : "Top cross zone traffic (bytes)",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -9227,7 +9227,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['srole', 'saz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['srole', 'saz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['srole', 'saz']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['source.workload.name', 'saz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['source.workload.name', 'saz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['source.workload.name', 'saz']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9313,7 +9313,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['srole', 'drole']).publish(label='A')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9395,7 +9395,7 @@
       "lastUpdatedBy" : null,
       "name" : "Top cross zone traffic (bytes)",
       "options" : {
-        "groupBy" : [ "drole" ],
+        "groupBy" : [ "dest.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -9439,7 +9439,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['drole', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['drole', 'daz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['drole', 'daz']).sum(over='6h').publish(label='C')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['dest.workload.name', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['dest.workload.name', 'daz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['dest.workload.name', 'daz']).sum(over='6h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9543,7 +9543,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['srole', 'drole']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='rate').sum(by=['source.workload.name', 'dest.workload.name']).mean(over='1h').publish(label='A', enable=False)\nC = (A).timeshift('1d').mean(over='1h').publish(label='C', enable=False)\nE = ((A-C)/A*100).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9559,7 +9559,7 @@
       "lastUpdatedBy" : null,
       "name" : "Top cross zone traffic (bytes)",
       "options" : {
-        "groupBy" : [ "srole" ],
+        "groupBy" : [ "source.workload.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -9609,7 +9609,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['srole', 'saz', 'drole', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['srole', 'saz', 'drole', 'daz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['srole', 'saz', 'drole', 'daz']).sum(over='6h').publish(label='C')\nD = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['srole', 'saz', 'drole', 'daz']).sum(over='1d').publish(label='D')",
+      "programText" : "A = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['source.workload.name', 'saz', 'dest.workload.name', 'daz']).sum(over='1m').publish(label='A')\nB = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['source.workload.name', 'saz', 'dest.workload.name', 'daz']).sum(over='1h').publish(label='B')\nC = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['source.workload.name', 'saz', 'dest.workload.name', 'daz']).sum(over='6h').publish(label='C')\nD = data('tcp.bytes', filter=filter('az_equal', 'false'), rollup='sum').sum(by=['source.workload.name', 'saz', 'dest.workload.name', 'daz']).sum(over='1d').publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -10061,8 +10061,8 @@
           "applyIfExists" : false,
           "description" : "",
           "preferredSuggestions" : [ ],
-          "property" : "srole",
-          "propertyMappings" : [ "srole" ],
+          "property" : "source.workload.name",
+          "propertyMappings" : [ "source.workload.name" ],
           "replaceOnly" : true,
           "required" : true,
           "restricted" : false,
@@ -10386,8 +10386,8 @@
           "applyIfExists" : true,
           "description" : "",
           "preferredSuggestions" : [ ],
-          "property" : "srole",
-          "propertyMappings" : [ "srole" ],
+          "property" : "source.workload.name",
+          "propertyMappings" : [ "source.workload.name" ],
           "replaceOnly" : false,
           "required" : true,
           "restricted" : false,
@@ -10397,8 +10397,8 @@
           "applyIfExists" : false,
           "description" : "",
           "preferredSuggestions" : [ ],
-          "property" : "drole",
-          "propertyMappings" : [ "drole" ],
+          "property" : "dest.workload.name",
+          "propertyMappings" : [ "dest.workload.name" ],
           "replaceOnly" : false,
           "required" : true,
           "restricted" : false,
@@ -10519,7 +10519,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -1868669896,
+  "hashCode" : -1516706704,
   "id" : "FYRGM6WAcAE",
   "modelVersion" : 1,
   "packageType" : "GROUP"
