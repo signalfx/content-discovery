@@ -9,35 +9,37 @@
       "detectorOrigin": "AutoDetect",
       "id": "FKc_2IEAIAM",
       "labelResolutions": {
-        "K8S Cluster Deployment is not at spec": 1000
+        "Test - K8S Container Restart Count is > 0": 1000
       },
       "lastUpdated": 0,
       "lastUpdatedBy": null,
       "maxDelay": 0,
       "minDelay": 0,
-      "name": "Customization test - K8S Cluster Deployment is not at spec",
+      "name": "Test - K8S Container Restart Count is > 0",
       "overMTSLimit": false,
       "packageSpecifications": "",
       "parentDetectorId": null,
-      "programText": "from signalfx.detectors.autodetect.infra.k8s import deployments\ndeployments.deployment_not_at_spec_detector().publish('K8S Cluster Deployment is not at spec')",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import containers\ncontainers.container_restarts_detector().publish('K8S Container Restart Count is > 0')",
       "rules": [
         {
-          "description": "The value of Available - Desired is outside of 0 and 0 for 80% of 5m.",
-          "detectLabel": "K8S Cluster Deployment is not at spec",
+          "description": "The value of Container Restarts is above 0.",
+          "detectLabel": "K8S Container Restart Count is > 0",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for B-A - Exclude x <= 0 - Count: {{inputs.C.value}}\n{{else}}Current signal value for B-A - Exclude x <= 0 - Count: {{inputs.C.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for Container Restarts: {{inputs.stream.value}}\n{{else}}Current signal value for Container Restarts: {{inputs.stream.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
           "runbookUrl": null,
           "severity": "Major",
           "tip": null
         }
       ],
+      "sf_metricsInObjectProgramText": null,
       "tags": null,
       "teams": null,
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
+        "publishLabelOptions": [],
         "showDataMarkers": false,
         "showEventLines": false,
         "time": {
@@ -51,16 +53,31 @@
           "filters": [
             {
               "not": false,
-              "property": "k8s.deployment.name",
+              "property": "k8s.namespace.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.pod.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.container.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
               "values": []
             }
           ],
-          "metric": "k8s.deployment.available"
+          "metric": "k8s.container.restarts"
         }
       ]
     }
   },
-  "hashCode": 444948901,
+  "hashCode": -1651061464,
   "id": "FKc_2IEAIAM",
   "packageType": "DETECTOR"
 }
