@@ -1,9 +1,10 @@
 {
-  "hashCode" : 1822048044,
+  "hashCode" : -1489165003,
   "id" : "FTwxEZhAcAA",
   "modelVersion" : 1,
   "navigatorExport" : {
     "navigator" : {
+      "aggregateDashboards" : null,
       "connectedCategory" : false,
       "created" : 0,
       "creator" : null,
@@ -26,6 +27,8 @@
         } ],
         "metric" : "container.cpu.utilization"
       } ],
+      "instanceDashboards" : null,
+      "instanceDisplayText" : null,
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "K8s clusters",
@@ -141,10 +144,10 @@
           "job" : {
             "filters" : [ ],
             "resolution" : 60000,
-            "template" : "CPU_CAPACITY = data(\"container.cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])",
-            "varName" : "CPU_CAPACITY"
+            "template" : "CPU_UTILIZATION = data(\"container.cpu.utilization\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum()\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\") and filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container.cpu.utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\") and filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = union(CPU_USED_EKS, CPU_USED_MACHINE, CPU_USED_FARGATE)",
+            "varName" : "CPU_CAPACITY_USED"
           },
-          "metricSelectors" : [ "container.cpu.utilization" ],
+          "metricSelectors" : [ "container.cpu.utilization", "cpu.num_processors", "machine_cpu_cores", "k8s.container.cpu_limit" ],
           "type" : "metric",
           "valueFormat" : "Percentage",
           "valueLabel" : "CPU capacity used",
