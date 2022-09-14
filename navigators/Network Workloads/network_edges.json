@@ -1,12 +1,10 @@
 {
-  "hashCode": -303260210,
+  "hashCode": 897132050,
   "id": "FYgqVToAYAI",
   "modelVersion": 1,
   "navigatorExport": {
     "navigator": {
-      "aggregateDashboards": [
-        "FZY64shAYAA", "FcdL0DBAgAA", "FcdMGioAgAE"
-      ],
+      "aggregateDashboards": null,
       "connectedCategory": null,
       "created": 0,
       "creator": null,
@@ -14,26 +12,19 @@
       "description": "",
       "id": "FYgqVToAYAI",
       "idDisplayName": null,
-      "importQualifiers": [
-        {
-          "filters": [
-            {
-              "not": false,
-              "property": "source.workload.name",
-              "values": []
-            },
-            {
-              "not": false,
-              "property": "dest.workload.name",
-              "values": []
-            }
-          ],
-          "metric": "tcp.bytes"
-        }
-      ],
-      "instanceDashboards": [
-        "FZY65LiAcAE", "FcdJBaoAcAI", "FcdT2seAYAE"
-      ],
+      "importQualifiers": [{
+        "filters": [{
+          "not": false,
+          "property": "source.workload.name",
+          "values": []
+        }, {
+          "not": false,
+          "property": "dest.workload.name",
+          "values": []
+        }],
+        "metric": "tcp.bytes"
+      }],
+      "instanceDashboards": null,
       "instanceDisplayText": null,
       "lastUpdated": 0,
       "lastUpdatedBy": null,
@@ -48,162 +39,119 @@
       "systemTypes": null,
       "uiModel": {
         "alertQuery": "_exists_:source.workload.name AND _exists_:dest.workload.name",
-        "category": "Containers",
+        "category": "Network Explorer",
         "categoryPriority": 100,
-        "discoveryQuery": null,
+        "discoveryQuery": ["_exists_:source.workload.name", "_exists_:dest.workload.name"],
         "displayName": "Network edges",
         "filterProperties": null,
         "id": "networkedges",
         "idName": "Edge",
         "idTemplate": "{{source.workload.name}} | {{dest.workload.name}}",
-        "listColumns": [
-          {
-            "aggregate": null,
-            "displayName": "Source workload | Destination workload",
-            "format": "id",
-            "metric": null,
-            "property": "id",
-            "sortable": null
+        "listColumns": [{
+          "aggregate": null,
+          "displayName": "Source workload | Destination workload",
+          "format": "id",
+          "metric": null,
+          "property": "id",
+          "sortable": null
+        }, {
+          "aggregate": null,
+          "displayName": "Value",
+          "format": "Number",
+          "metric": null,
+          "property": "value",
+          "sortable": null
+        }],
+        "metrics": [{
+          "coloring": {
+            "limits": null,
+            "maxValue": 100,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
           },
-          {
-            "aggregate": null,
-            "displayName": "Value",
-            "format": "Number",
-            "metric": null,
-            "property": "value",
-            "sortable": null
-          }
-        ],
-        "metrics": [
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the percentage of the network packet loss. Darker colors indicate higher relative values.",
-            "displayName": "Network packet loss (%)",
-            "id": "network_edges_network_packet_loss",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "RETRANSMISSION = data(\"tcp.retrans\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nPACKETS = data(\"tcp.packets\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nNET_PACK_LOSS = ((RETRANSMISSION*100)/(RETRANSMISSION+PACKETS)).sum(by=[\"source.workload.name\", \"dest.workload.name\"])",
-              "varName": "NET_PACK_LOSS"
-            },
-            "metricSelectors": [
-              "tcp.retrans",
-              "tcp.packets"
-            ],
-            "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "Network packet loss",
-            "valueType": null
+          "description": "This metric shows the percentage of the network packet loss. Darker colors indicate higher relative values.",
+          "displayName": "Network packet loss (%)",
+          "id": "network_edges_network_packet_loss",
+          "job": {
+            "filters": [],
+            "resolution": 60000,
+            "template": "RETRANSMISSION = data(\"tcp.retrans\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nPACKETS = data(\"tcp.packets\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nNET_PACK_LOSS = ((RETRANSMISSION*100)/(RETRANSMISSION+PACKETS)).sum(by=[\"source.workload.name\", \"dest.workload.name\"])",
+            "varName": "NET_PACK_LOSS"
           },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the round trip time in milliseconds for NPM edge. Darker colors indicate higher relative values.",
-            "displayName": "Round trip time (ms)",
-            "id": "network_edges_round_trip_time",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "ROUND_TRIP_TIME = data(\"tcp.rtt.average\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"max\").max(by=[\"source.workload.name\", \"dest.workload.name\"])",
-              "varName": "ROUND_TRIP_TIME"
-            },
-            "metricSelectors": [
-              "tcp.rtt.average"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Round trip time",
-            "valueType": null
+          "metricSelectors": ["tcp.retrans", "tcp.packets"],
+          "type": "metric",
+          "valueFormat": "Percentage",
+          "valueLabel": "Network packet loss",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": null,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
           },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the TCP connection timeout value in percentage. Darker colors indicate higher relative values.",
-            "displayName": "TCP connection timeouts (%)",
-            "id": "network_edges_tcp_connection_timeouts",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "TIMEOUTS = data(\"tcp.syn_timeouts\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nTCP_CONNECTION_TIMEOUT = ((TIMEOUTS*100)/(TIMEOUTS+ACTIVE))",
-              "varName": "TCP_CONNECTION_TIMEOUT"
-            },
-            "metricSelectors": [
-              "tcp.syn_timeouts",
-              "tcp.active"
-            ],
-            "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "TCP connection timeouts",
-            "valueType": null
+          "description": "This metric shows the round trip time in milliseconds for NPM edge. Darker colors indicate higher relative values.",
+          "displayName": "Round trip time (ms)",
+          "id": "network_edges_round_trip_time",
+          "job": {
+            "filters": [],
+            "resolution": 60000,
+            "template": "ROUND_TRIP_TIME = data(\"tcp.rtt.average\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"max\").max(by=[\"source.workload.name\", \"dest.workload.name\"])",
+            "varName": "ROUND_TRIP_TIME"
           },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the amount of TCP resets happened in percentage. Darker colors indicate higher relative values.",
-            "displayName": "TCP resets (%)",
-            "id": "network_edges_tcp_resets",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "RESETS = data(\"tcp.resets\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nTCP_RESETS = ((RESETS*100)/(RESETS+ACTIVE))",
-              "varName": "TCP_RESETS"
-            },
-            "metricSelectors": [
-              "tcp.resets",
-              "tcp.active"
-            ],
-            "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "TCP resets",
-            "valueType": null
-          }
-        ],
-        "mtsQuery": null,
+          "metricSelectors": ["tcp.rtt.average"],
+          "type": "metric",
+          "valueFormat": "Number",
+          "valueLabel": "Round trip time",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": 100,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the TCP connection timeout value in percentage. Darker colors indicate higher relative values.",
+          "displayName": "TCP connection timeouts (%)",
+          "id": "network_edges_tcp_connection_timeouts",
+          "job": {
+            "filters": [],
+            "resolution": 60000,
+            "template": "TIMEOUTS = data(\"tcp.syn_timeouts\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nTCP_CONNECTION_TIMEOUT = ((TIMEOUTS*100)/(TIMEOUTS+ACTIVE))",
+            "varName": "TCP_CONNECTION_TIMEOUT"
+          },
+          "metricSelectors": ["tcp.syn_timeouts", "tcp.active"],
+          "type": "metric",
+          "valueFormat": "Percentage",
+          "valueLabel": "TCP connection timeouts",
+          "valueType": null
+        }, {
+          "coloring": {
+            "limits": null,
+            "maxValue": 100,
+            "method": "quantile",
+            "minValue": 0,
+            "range": ["#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c"]
+          },
+          "description": "This metric shows the amount of TCP resets happened in percentage. Darker colors indicate higher relative values.",
+          "displayName": "TCP resets (%)",
+          "id": "network_edges_tcp_resets",
+          "job": {
+            "filters": [],
+            "resolution": 60000,
+            "template": "RESETS = data(\"tcp.resets\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"source.workload.name\", \"dest.workload.name\"])\nTCP_RESETS = ((RESETS*100)/(RESETS+ACTIVE))",
+            "varName": "TCP_RESETS"
+          },
+          "metricSelectors": ["tcp.resets", "tcp.active"],
+          "type": "metric",
+          "valueFormat": "Percentage",
+          "valueLabel": "TCP resets",
+          "valueType": null
+        }],
+        "mtsQuery": "_exists_:source.workload.name AND _exists_:dest.workload.name",
         "o11yMetricName": "Running edges",
         "o11yMetricUnit": null,
         "o11yProductName": "Network edges",
@@ -211,27 +159,21 @@
         "o11yTrendDisplayMode": "absolute",
         "propertyColumns": null,
         "proxyProperties": null,
-        "requiredProperties": [
-          "source.workload.name",
-          "dest.workload.name"
-        ],
-        "singleHostSystemDashboardName": "Edge - TCP",
-        "systemDashboardName": "TCP overview",
+        "requiredProperties": ["source.workload.name", "dest.workload.name"],
+        "singleHostSystemDashboardName": "Edge dashboard",
+        "systemDashboardName": "Edge overview",
         "systemDashboardPrefix": null,
-        "tooltipKeyList": [
-          {
-            "displayName": "Region",
-            "format": null,
-            "isSummaryProperty": true,
-            "property": "cloud.region"
-          },
-          {
-            "displayName": "Value",
-            "format": null,
-            "isSummaryProperty": true,
-            "property": "value"
-          }
-        ],
+        "tooltipKeyList": [{
+          "displayName": "Region",
+          "format": null,
+          "isSummaryProperty": true,
+          "property": "cloud.region"
+        }, {
+          "displayName": "Value",
+          "format": null,
+          "isSummaryProperty": true,
+          "property": "value"
+        }],
         "type": "elemental",
         "unreleased": false
       }
