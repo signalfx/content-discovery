@@ -21,6 +21,17 @@ class DetectorScheme:
     PROGRAM_TEXT = 'programText'
     NAME = 'name'
     DETECTOR_ORIGIN = 'detectorOrigin'
+    PACKAGE_SPECIFICATION = 'packageSpecifications'
+    IMPORT_QUALIFIERS = 'importQualifiers'
+    RULES = 'rules'
+    TIP = 'tip'
+    RUNBOOK_URL = 'runbookUrl'
+
+
+class DetectorExportScheme:
+    DETECTOR_EXPORT = 'detectorExport'
+    DETECTOR = 'detector'
+    HASH_CODE = 'hashCode'
 
 
 class DetectorExportState:
@@ -146,6 +157,9 @@ class DetectorExportInfo:
             else:
                 stats["errors"] = stats.get("errors", 0) + 1
         print(stats)
+        if stats.get(DetectorExportState.ADD_NEW, 0) > 0:
+            print(f"{Colors.WARNING}[Warning] Please review import qualifiers, before committing changes. "
+                  f"API used for that purpose doesn't support many complex scenarios{Colors.ENDC}")
 
 
 def base_api_url_from_env(env: str) -> str:
@@ -161,7 +175,7 @@ def get_token_from_file() -> str:
     return token.strip()
 
 
-def make_request(endpoint, realm, token, method="GET", headers={}, data=None, ):
+def make_request(endpoint, realm, token, method="GET", headers={}, data=None, rsp_format='json'):
     base_url = base_api_url_from_env(env=realm)
     url = base_url + endpoint
     merged_headers = {
@@ -175,9 +189,13 @@ def make_request(endpoint, realm, token, method="GET", headers={}, data=None, ):
             raise Exception("No data provided for POST request")
         rsp = requests.post(url, data=data, headers=merged_headers)
     else:
-        raise Exception("Only POST, PUT, GET methods are supported")
-    if rsp.status_code != 200:
+        raise Exception("Only POST, GET methods are supported")
+    if rsp.status_code >= 400:
         raise Exception(rsp.status_code, rsp.text)
+
+    if rsp_format == "text":
+        return rsp.text
+
     return rsp.json()
 
 
@@ -202,7 +220,7 @@ def fetch_detector_sf_model(program_text, realm, token):
 
 
 def fetch_detectors(name, realm, token):
-    endpoint = f"v2/detector?name={name}&limit=1000"
+    endpoint = f"v2/detector?name={name}"
     response = make_request(endpoint, token=token, realm=realm)
     detectors_list = response.get("results", [])
     return detectors_list
@@ -226,6 +244,13 @@ def create_new_detector(detector, realm, token):
     created_detector = make_request(endpoint, method="POST", headers=headers,
                                     data=json.dumps(detector), token=token, realm=realm)
     return created_detector
+
+
+def post_detector_validate(detector, realm, token):
+    endpoint = "v2/detector/validate"
+    headers = {"Content-Type": "application/json"}
+    make_request(endpoint, method="POST", headers=headers,
+                 data=json.dumps(detector), token=token, realm=realm, rsp_format='text')
 
 
 def extract_import_qualifiers_from_detector_program_text(detector: object, realm: str, token: str):
@@ -317,8 +342,21 @@ def validate_description(detector, **kwargs) -> bool:
 
 @detector_validator(desc="Autodetect supports one rule only")
 def validate_num_of_rules(detector, **kwargs) -> bool:
-    detector_rules = detector.get("rules", [])
+    detector_rules = detector.get(DetectorScheme.RULES, [])
     if len(detector_rules) != 1:
+        return False
+
+    return True
+
+
+@detector_validator(desc="Detector's dry run")
+def validate_dry_run(detector, **kwargs) -> bool:
+    realm = kwargs.get("realm")
+    token = kwargs.get("token")
+    try:
+        post_detector_validate(detector, realm, token)
+    except Exception as e:
+        print(e)
         return False
 
     return True
@@ -363,12 +401,13 @@ def read_detectors_from_local_path(path):
             if filename.endswith(".json"):
                 with open(os.path.join(root, filename), 'r') as file:
                     existing_detector_export = json.loads(file.read())
-                    import_qualifiers = existing_detector_export.get("detectorExport").get("detector") \
-                        .get("importQualifiers")
-                    data[existing_detector_export.get("id")] = {
+                    import_qualifiers = existing_detector_export.get(DetectorExportScheme.DETECTOR_EXPORT) \
+                        .get(DetectorExportScheme.DETECTOR) \
+                        .get(DetectorScheme.IMPORT_QUALIFIERS)
+                    data[existing_detector_export.get(DetectorScheme.ID)] = {
                         "filename": filename,
-                        "id": existing_detector_export.get("id"),
-                        "hashCode": existing_detector_export.get("hashCode"),
+                        "id": existing_detector_export.get(DetectorScheme.ID),
+                        "hashCode": existing_detector_export.get(DetectorExportScheme.HASH_CODE),
                         "importQualifiers": import_qualifiers,
                     }
     # print(data)
@@ -390,12 +429,12 @@ def export_detector_to_file(detector, detector_export_props, realm, token, repo_
     if detector.get(DetectorScheme.DETECTOR_ORIGIN) == ORIGIN_AUTODETECT:
         return DetectorExportInfo.skip_autodetect(detector)
 
-    detector_export = fetch_detector_export_by_id(detector.get("id"), realm=realm, token=token)
+    detector_export = fetch_detector_export_by_id(detector.get(DetectorScheme.ID), realm=realm, token=token)
 
-    detector_hash_code = detector_export.get("hashCode")
-    detector = detector_export.get("detectorExport").get("detector")
+    detector_hash_code = detector_export.get(DetectorExportScheme.HASH_CODE)
+    detector = detector_export.get(DetectorExportScheme.DETECTOR_EXPORT).get(DetectorExportScheme.DETECTOR)
 
-    if detector_hash_code == detector_export_props.get("hashCode"):
+    if detector_hash_code == detector_export_props.get(DetectorExportScheme.HASH_CODE):
         return DetectorExportInfo.skip_no_changes(detector)
 
     valid, validation_results = validate_detector(detector, VALIDATORS_LIST, realm=realm, token=token)
@@ -404,17 +443,17 @@ def export_detector_to_file(detector, detector_export_props, realm, token, repo_
     if not valid:
         return DetectorExportInfo.skip_validation_errors(detector, detector_state, validation_results)
 
-    for rule in detector.get("rules", []):
-        if rule["tip"] == "":
-            rule["tip"] = None
+    for rule in detector.get(DetectorScheme.RULES, []):
+        if rule[DetectorScheme.TIP] == "":
+            rule[DetectorScheme.TIP] = None
 
-        if rule["runbookUrl"] == "":
-            rule["runbookUrl"] = None
+        if rule[DetectorScheme.RUNBOOK_URL] == "":
+            rule[DetectorScheme.RUNBOOK_URL] = None
 
-    detector["importQualifiers"] = detector_export_props.get("importQualifiers")
-    detector["packageSpecifications"] = ""
+    detector[DetectorScheme.IMPORT_QUALIFIERS] = detector_export_props.get(DetectorScheme.IMPORT_QUALIFIERS)
+    detector[DetectorScheme.PACKAGE_SPECIFICATION] = ""
 
-    detector_export.get("detectorExport")["detector"] = detector
+    detector_export.get(DetectorExportScheme.DETECTOR_EXPORT)[DetectorExportScheme.DETECTOR] = detector
 
     export_path = os.path.join(repo_location, "detector", detector_export_props.get("filename"))
 
@@ -456,7 +495,6 @@ def export_detectors(args):
                                                   args.access_token,
                                                   detector_id=args.detector_id,
                                                   detector_name=args.detector_name)
-    print(args.repo_location)
     detector_path = os.sep.join([args.repo_location, "detector"])
     existing_detectors_props = read_detectors_from_local_path(detector_path)
     summary = []
@@ -473,7 +511,7 @@ def export_detectors(args):
     DetectorExportInfo.print_summary(summary)
 
     if args.skip_write:
-        print(f"{Colors.BOLD}{Colors.WARNING}[Info] Export plan requested. No detectors exported {Colors.ENDC}")
+        print(f"{Colors.BOLD}{Colors.OKBLUE}[Info] Export plan requested. No detectors exported {Colors.ENDC}")
 
     branch = get_git_branch(args.repo_location)
     print(f"[GIT BRANCH]: {branch}")
@@ -483,6 +521,7 @@ def import_detectors(args):
     detector_id = args.detector_id
     detector = fetch_detector_by_id(detector_id, realm=args.src_realm, token=args.src_access_token)
     detector[DetectorScheme.ID] = None
+
     imported_detector = create_new_detector(detector, realm=args.realm, token=args.access_token)
     imported_detector_id = imported_detector[DetectorScheme.ID]
     print(f"{Colors.BOLD}{Colors.OKGREEN}[Info] Detector successfully imported {imported_detector_id} {Colors.ENDC}")
