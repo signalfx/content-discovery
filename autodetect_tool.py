@@ -220,7 +220,7 @@ def fetch_detector_sf_model(program_text, realm, token):
 
 
 def fetch_detectors(name, realm, token):
-    endpoint = f"v2/detector?name={name}"
+    endpoint = f"v2/detector?name={name}&limit=10000"
     response = make_request(endpoint, token=token, realm=realm)
     detectors_list = response.get("results", [])
     return detectors_list
