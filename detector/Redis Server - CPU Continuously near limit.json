@@ -1,0 +1,80 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when Redis Server CPU usage is higher than threshold",
+      "detectorOrigin": "Standard",
+      "id": "FadUmhaAcAA",
+      "labelResolutions": {
+        "Redis CPU utilization is high": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": null,
+      "minDelay": null,
+      "name": "Redis Server - CPU Continuously near limit",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.infra.db import redis\nredis.cpu_utilization_detector().publish('Redis CPU utilization is high')",
+      "rules": [
+        {
+          "description": "The value of CPU Utilization is higher than specified threshold",
+          "detectLabel": "Redis CPU utilization is high",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\t    Rule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{else}}\n\t    Rule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{/if}}\n    {{#if anomalous}}\n      Triggering condition: {{{readableRule}}} ({{inputs.fire_threshold_stream.value}}%)\n    {{/if}}\n    {{#if anomalous}}\n      Signal value: {{inputs.stream.value}}\n    {{else}}\n      Current signal value: {{inputs.stream.value}}\n    {{/if}}\n    {{#notEmpty dimensions}}\n      Signal details: {{{dimensions}}}\n    {{/notEmpty}}\n    {{#if anomalous}}\n      {{#if runbookUrl}}\n        Runbook: {{{runbookUrl}}}\n      {{/if}}\n      {{#if tip}}\n        Tip: {{{tip}}}\n      {{/if}}\n    {{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
+          "runbookUrl": null,
+          "severity": "Major",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "counter.used_cpu_sys",
+        "counter.used_cpu_user"
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": null
+      },
+      "importQualifiers": [
+        {
+          "metric": "counter.used_cpu_user",
+          "filters": [
+            {
+              "values": [
+                "redis_info"
+              ],
+              "property": "plugin",
+              "not": false
+            }
+          ]
+        },
+        {
+          "metric": "counter.used_cpu_sys",
+          "filters": [
+            {
+              "values": [
+                "redis_info"
+              ],
+              "property": "plugin",
+              "not": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": 1794132716,
+  "id": "FadUmhaAcAA",
+  "packageType": "DETECTOR"
+}
