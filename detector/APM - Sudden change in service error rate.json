@@ -22,11 +22,11 @@
       "programText": "from signalfx.detectors.autodetect.apm import errors\nerrors.error_rate_sudden_change_detector().publish('APM - Sudden change in service error rate')\n",
       "rules": [
         {
-          "description": "The error rate has suddenly grown by a specified amount",
+          "description": "Error rate in a service has suddenly grown by a specified amount",
           "detectLabel": "APM - Sudden change in service error rate",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\nError rate over the last {{event_annotations.current_window}}: {{inputs.current_error_pct.value}}%\nHistorical error rate (over the preceding {{event_annotations.preceding_window}}): {{inputs.preceding_error_pct.value}}%\nThreshold: {{inputs.fire_threshold.value}}%\nSignal details: {{{inputs.current_error_pct.key}}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": null,
           "runbookUrl": null,
           "severity": "Critical",
@@ -58,7 +58,7 @@
       ]
     }
   },
-  "hashCode": 349692482,
+  "hashCode": -113333594,
   "id": "Ff2fhBRAcAE",
   "packageType": "DETECTOR"
 }
