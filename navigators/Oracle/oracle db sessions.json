@@ -1,33 +1,42 @@
 {
-  "hashCode": -1906254471,
+  "hashCode": -1017872745,
   "id": "FPlQze7AgAE",
   "modelVersion": 1,
   "navigatorExport": {
     "navigator": {
+      "aggregateDashboards": [
+        "FPfyWnWAcAA"
+      ],
       "connectedCategory": true,
       "created": 0,
       "creator": null,
       "defaultGroupBy": null,
       "description": "",
       "id": "FPlQze7AgAE",
+      "idDisplayName": null,
       "importQualifiers": [{
         "filters": [{
           "not": false,
           "property": "sf_key",
           "values": [
-            "instance"
+            "oracledb.instance.name"
           ]
         }],
-        "metric": "oracledb_session_cpu_usage"
+        "metric": "oracledb.sessions.usage"
       }],
+      "instanceDashboards": [
+        "FPkpYdfAYAA"
+      ],
+      "instanceDisplayText": null,
       "lastUpdated": 0,
       "lastUpdatedBy": null,
-      "name": "Oracle DB Sessions",
+      "name": "Oracle DB sessions",
       "navigatorCategory": "Datastores",
       "navigatorCategoryDisplayName": "Datastores",
       "navigatorCategoryGroupDisplayName": null,
       "navigatorCategoryInstancesName": "service",
       "navigatorType": "elemental",
+      "ownerScope": "organization",
       "sites": "o11y",
       "systemTypes": null,
       "uiModel": {
@@ -35,19 +44,35 @@
         "category": "Datastores",
         "categoryPriority": 100,
         "discoveryQuery": [
-          "_exists_:instance"
+          "_exists_:oracledb.instance.name"
         ],
-        "displayName": "Oracle DB Sessions",
+        "displayName": "Oracle DB sessions",
         "filterProperties": null,
         "id": "oracledbsessions",
         "idName": "Session",
-        "idTemplate": "{{host.name}} | {{instance}} | {{session_id}}",
+        "idTemplate": "{{session_id}}",
         "listColumns": [{
             "aggregate": null,
             "displayName": "Session",
             "format": "id",
             "metric": null,
             "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Host name",
+            "format": null,
+            "metric": null,
+            "property": "host.name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Instance name",
+            "format": null,
+            "metric": null,
+            "property": "oracledb.instance.name",
             "sortable": null
           },
           {
@@ -74,16 +99,16 @@
               ]
             },
             "description": "This metric shows the total number of hard parses per session. Darker color indicate higher relative values.",
-            "displayName": "# Hard Parses",
+            "displayName": "# Hard parses",
             "id": "oracle_db_sessions_hard_parses",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "HARD_PARSES = data(\"oracledb_session_hard_parses\", filter=filter(\"host.id\", \"*\") and filter(\"instance\", \"*\") and filter(\"session_id\", \"*\"))",
+              "template": "HARD_PARSES = data(\"oracledb.hard_parses\", filter=filter(\"host.id\", \"*\") and filter(\"oracledb.instance.name\", \"*\") and filter(\"session_id\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"session_id\"])",
               "varName": "HARD_PARSES"
             },
             "metricSelectors": [
-              "oracledb_session_hard_parses"
+              "oracledb.hard_parses"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -105,16 +130,16 @@
               ]
             },
             "description": "This metric shows the total number of logical (block gets and consistent gets) reads of sessions. Darker color indicate higher relative values.",
-            "displayName": "# Logical Reads",
+            "displayName": "# Logical reads",
             "id": "oracle_db_sessions_logical_reads",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "LOGICAL_READS = data(\"oracledb_session_logical_reads\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"instance\", \"session_id\", \"host.name\"])",
+              "template": "LOGICAL_READS = data(\"oracledb.logical_reads\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"oracledb.instance.name\", \"session_id\")",
               "varName": "LOGICAL_READS"
             },
             "metricSelectors": [
-              "oracledb_session_logical_reads"
+              "oracledb.logical_reads"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -136,16 +161,16 @@
               ]
             },
             "description": "This metric shows the number of data blocks read from disk per sessions. Darker color indicate higher relative values.",
-            "displayName": "# Physical Reads",
+            "displayName": "# Physical reads",
             "id": "oracle_db_sessions_physical_reads",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "PHYSICAL_READS = data(\"oracledb_session_physical_reads\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"instance\", \"session_id\", \"host.name\"])",
+              "template": "PHYSICAL_READS = data(\"oracledb.physical_reads\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"oracledb.instance.name\", \"session_id\"])",
               "varName": "PHYSICAL_READS"
             },
             "metricSelectors": [
-              "oracledb_session_physical_reads"
+              "oracledb.physical_reads"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -166,17 +191,17 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the total number of soft parses per sessions. Darker color indicate higher relative values.",
-            "displayName": "# Soft Parses",
+            "description": "This metric shows the total number of soft parses per session. Darker color indicate higher relative values.",
+            "displayName": "# Soft parses",
             "id": "oracle_db_sessions_soft_parses",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "SOFT_PARSES = data(\"oracledb_session_soft_parses\", filter=filter(\"host.id\", \"*\") and filter(\"instance\", \"*\") and filter(\"session_id\", \"*\"))",
+              "template": "SOFT_PARSES = data(\"oracledb.parse_calls\", filter=filter(\"host.id\", \"*\") and filter(\"oracledb.instance.name\", \"*\") and filter(\"session_id\", \"*\"){{#filter}} and {{{filter}}}{{/filter}})",
               "varName": "SOFT_PARSES"
             },
             "metricSelectors": [
-              "oracledb_session_soft_parses"
+              "oracledb.parse_calls"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -191,17 +216,17 @@
               "minValue": 0,
               "range": null
             },
-            "description": "This metric shows the CPU usage per session (%). Under 20% green and over 80% red.",
-            "displayName": "CPU Usage (%)",
+            "description": "This metric shows the CPU usage per session(%). Under 20% green and over 80% red.",
+            "displayName": "CPU usage (%)",
             "id": "oracle_db_sessions_cpu_usage",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CPU_USAGE = data(\"oracledb_session_cpu_usage\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"session_id\",\"host.id\",\"instance\"])",
+              "template": "CPU_USAGE = data(\"oracledb.cpu_time\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"session_id\",\"host.id\",\"oracledb.instance.name\"])",
               "varName": "CPU_USAGE"
             },
             "metricSelectors": [
-              "oracledb_session_cpu_usage"
+              "oracledb.cpu_time"
             ],
             "type": "metric",
             "valueFormat": "Percentage",
@@ -223,16 +248,16 @@
               ]
             },
             "description": "This metric shows the current PGA (Program Global Area) size available in bytes for a session. Darker color indicate higher relative values.",
-            "displayName": "PGA Memory Usage (bytes)",
+            "displayName": "PGA memory usage (bytes)",
             "id": "oracle_db_sessions_pga_memory_usage",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "PGA_MEMORY_USAGE = data(\"oracledb_session_pga_memory\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"instance\", \"session_id\", \"host.name\"])",
+              "template": "PGA_MEMORY_USAGE = data(\"oracledb.pga_memory\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"oracledb.instance.name\", \"session_id\"])",
               "varName": "PGA_MEMORY_USAGE"
             },
             "metricSelectors": [
-              "oracledb_session_pga_memory"
+              "oracledb.pga_memory"
             ],
             "type": "metric",
             "valueFormat": "Bytes",
@@ -240,17 +265,17 @@
             "valueType": null
           }
         ],
-        "mtsQuery": "_exists_:instance",
-        "o11yMetricName": "Active Sessions",
+        "mtsQuery": "_exists_:oracledb.instance.name",
+        "o11yMetricName": "Active sessions",
         "o11yMetricUnit": null,
-        "o11yProductName": "Oracle DB Sessions",
-        "o11ySignalflowTemplate": "A = data('oracledb_session_cpu_usage', filter=filter('host.id', '*') and filter('instance', '*')).count().max(over='15m').publish(label='A')",
+        "o11yProductName": "Oracle DB sessions",
+        "o11ySignalflowTemplate": "A = data('oracledb_session_cpu_usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).count().max(over='15m').publish(label='A')",
         "o11yTrendDisplayMode": "absolute",
         "propertyColumns": null,
         "proxyProperties": null,
         "requiredProperties": null,
-        "singleHostSystemDashboardName": "Oracle DB Session",
-        "systemDashboardName": "Oracle DB Sessions",
+        "singleHostSystemDashboardName": "Oracle DB session",
+        "systemDashboardName": "Oracle DB sessions",
         "systemDashboardPrefix": null,
         "tooltipKeyList": [{
             "displayName": "Region",
