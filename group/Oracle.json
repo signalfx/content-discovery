@@ -56,6 +56,9 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "lineChartOptions" : {
@@ -97,7 +100,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name']).rateofchange().publish(label='A')",
+      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'oracledb.instance.name']).rateofchange().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -605,11 +608,11 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "Process usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
+          "max" : 110.0,
+          "min" : 0.0
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
@@ -741,7 +744,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1089,7 +1092,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1112,11 +1115,11 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "Lock usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
+          "max" : 110.0,
+          "min" : 0.0
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
@@ -1263,7 +1266,7 @@
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -1507,7 +1510,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('instance', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'instance']).rateofchange().publish(label='A')",
+      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'oracledb.instance.name']).rateofchange().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1686,6 +1689,12 @@
         "includeZero" : false,
         "legendOptions" : {
           "fields" : [ {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
             "enabled" : false,
             "property" : "AWSUniqueId"
           }, {
@@ -1710,14 +1719,11 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "resource_name"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
           }, {
             "enabled" : false,
             "property" : "host.type"
@@ -1801,7 +1807,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2130,8 +2136,14 @@
             "enabled" : false,
             "property" : "host.type"
           }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
             "enabled" : false,
             "property" : "instance"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : false,
             "property" : "job"
@@ -2140,12 +2152,9 @@
             "property" : "os.type"
           }, {
             "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
             "property" : "port"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "resource_name"
           }, {
             "enabled" : false,
@@ -2186,15 +2195,6 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Process utilization",
-          "label" : "Process utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "Session usage",
           "label" : "D",
           "paletteIndex" : null,
@@ -2206,15 +2206,6 @@
         }, {
           "displayName" : "Session limit",
           "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Session utilization",
-          "label" : "Session utilization",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -2240,15 +2231,6 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Locks utilization",
-          "label" : "Locks utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "Enqueue resources usage",
           "label" : "J",
           "paletteIndex" : null,
@@ -2267,12 +2249,39 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
+          "displayName" : "Process utilization",
+          "label" : "Process utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Session utilization",
+          "label" : "Session utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Locks utilization",
+          "label" : "Locks utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "Enqueue resources utilization",
           "label" : "Enqueue resources utilization",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -2393,7 +2402,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.name', 'instance', 'status', 'type']).publish(label='A')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.name', 'oracledb.instance.name', 'session_status', 'session_type']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2471,6 +2480,9 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -2525,7 +2537,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C', enable=False)\nD = (C/B*100).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='C', enable=False)\nD = (C/B*100).sum(by=['oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2980,11 +2992,11 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "Tablespace usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
+          "max" : 110.0,
+          "min" : 0.0
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
@@ -3119,7 +3131,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C', enable=False)\nD = (C/B*100).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3197,11 +3209,11 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "",
+          "label" : "Session usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
+          "max" : 110.0,
+          "min" : 0.0
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
@@ -3279,7 +3291,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3596,6 +3608,9 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "lineChartOptions" : {
@@ -3655,7 +3670,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('resource_name', 'processes') and filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4286,150 +4301,6 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('oracledb.cpu_time').publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkpfo0AgAE",
-      "importOf" : "FPftU_qAIBg",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Execution Rate",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.account.id"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.availability_zone"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.platform"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.provider"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.region"
-          }, {
-            "enabled" : false,
-            "property" : "host.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.image.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.type"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
-          }, {
-            "enabled" : true,
-            "property" : "instance"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          }, {
-            "enabled" : true,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "os.type"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "port"
-          }, {
-            "enabled" : false,
-            "property" : "scheme"
-          }, {
-            "enabled" : false,
-            "property" : "service.name"
-          }, {
-            "enabled" : true,
-            "property" : "session_id"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Executes",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('oracledb_session_activity_execute_count_value', rollup='max').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5387,12 +5258,6 @@
         "row" : 0,
         "width" : 3
       }, {
-        "chartId" : "FPkpfo0AgAE",
-        "column" : 3,
-        "height" : 1,
-        "row" : 0,
-        "width" : 3
-      }, {
         "chartId" : "FPkpaRVAgAE",
         "column" : 6,
         "height" : 1,
@@ -5405,17 +5270,17 @@
         "row" : 0,
         "width" : 3
       }, {
+        "chartId" : "FPkqlQSAcAI",
+        "column" : 3,
+        "height" : 1,
+        "row" : 0,
+        "width" : 3
+      }, {
         "chartId" : "FPkpfmGAcAA",
         "column" : 0,
         "height" : 1,
         "row" : 1,
-        "width" : 3
-      }, {
-        "chartId" : "FPkqlQSAcAI",
-        "column" : 3,
-        "height" : 1,
-        "row" : 1,
-        "width" : 3
+        "width" : 6
       }, {
         "chartId" : "FPkrqQjAYAA",
         "column" : 6,
@@ -5549,7 +5414,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 1223959822,
+  "hashCode" : -439103437,
   "id" : "FPfySWlAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
