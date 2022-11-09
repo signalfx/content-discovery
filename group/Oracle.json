@@ -45,8 +45,11 @@
             "enabled" : false,
             "property" : "host.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : true,
             "property" : "host.name"
@@ -56,9 +59,6 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
-          }, {
-            "enabled" : true,
-            "property" : "oracledb.instance.name"
           } ]
         },
         "lineChartOptions" : {
@@ -80,7 +80,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Execute Rate",
+          "displayName" : "Execution rate",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -203,6 +203,9 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "lineChartOptions" : {
@@ -244,7 +247,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.pga_memory').publish(label='A')",
+      "programText" : "A = data('oracledb.pga_memory', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -259,9 +262,9 @@
       "importOf" : "FPftU_qAICE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Commits/Rollbacks",
+      "name" : "# Commits/Rollbacks",
       "options" : {
-        "groupBy" : [ "None" ],
+        "groupBy" : [ "oracledb.instance.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -319,6 +322,9 @@
           }, {
             "enabled" : false,
             "property" : "job"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "maximumPrecision" : null,
@@ -341,8 +347,8 @@
           "valueSuffix" : "",
           "valueUnit" : null
         } ],
-        "refreshInterval" : null,
-        "sortBy" : "-Commits",
+        "refreshInterval" : 60000,
+        "sortBy" : "-oracledb.instance.name",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -353,7 +359,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.user_commits', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B')\nC = data('oracledb.user_rollbacks', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C')",
+      "programText" : "B = data('oracledb.user_commits', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name', 'host.id']).sum(over='1h').publish(label='B')\nC = data('oracledb.user_rollbacks', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name', 'host.id']).sum(over='1h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -370,7 +376,7 @@
       "lastUpdatedBy" : null,
       "name" : "Resource utilization",
       "options" : {
-        "groupBy" : [ "None" ],
+        "groupBy" : [ "oracledb.instance.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -434,9 +440,9 @@
         }, {
           "displayName" : "PGA memory",
           "label" : "PGA memory",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte"
         }, {
           "displayName" : "Hard parses",
           "label" : "Hard parses",
@@ -451,7 +457,7 @@
           "valueUnit" : null
         }, {
           "displayName" : "Soft parses",
-          "label" : "Soft parses",
+          "label" : "H",
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
@@ -469,7 +475,7 @@
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
-        "sortBy" : "",
+        "sortBy" : "-oracledb.instance.name",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -480,7 +486,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.cpu_time').publish(label='CPU time')\nB = data('oracledb.pga_memory').publish(label='PGA memory')\nC = data('oracledb.hard_parses').publish(label='Hard parses')\nD = data('oracledb.parse_calls').publish(label='Total parses', enable=False)\nE = data('D-C').publish(label='Soft parses')\nF = data('oracledb.physical_reads').publish(label='Physical reads')\nG = data('oracledb.logical_reads').publish(label='Logical reads')",
+      "programText" : "H = (D-C).publish(label='H')\nA = data('oracledb.cpu_time').publish(label='CPU time')\nB = data('oracledb.pga_memory').publish(label='PGA memory')\nC = data('oracledb.hard_parses').sum(by=['oracledb.instance.name']).publish(label='Hard parses')\nD = data('oracledb.parse_calls').sum(by=['oracledb.instance.name']).publish(label='Total parses', enable=False)\nF = data('oracledb.physical_reads').publish(label='Physical reads')\nG = data('oracledb.logical_reads').publish(label='Logical reads')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -519,14 +525,62 @@
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "cloud.account.id"
+          }, {
+            "enabled" : false,
+            "property" : "cloud.availability_zone"
+          }, {
+            "enabled" : false,
+            "property" : "cloud.platform"
+          }, {
+            "enabled" : false,
+            "property" : "cloud.provider"
+          }, {
+            "enabled" : false,
+            "property" : "cloud.region"
+          }, {
+            "enabled" : false,
+            "property" : "host.id"
+          }, {
+            "enabled" : false,
+            "property" : "host.image.id"
+          }, {
+            "enabled" : true,
+            "property" : "session_type"
+          }, {
+            "enabled" : true,
+            "property" : "session_status"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : false,
+            "property" : "host.type"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "os.type"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
@@ -575,7 +629,7 @@
           "yAxis" : 0
         } ],
         "showEventLines" : false,
-        "stacked" : true,
+        "stacked" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -595,7 +649,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Current Utilization compared to Limit (%)",
+      "description" : "Current utilization compared to limit (%)",
       "id" : "FPfySzcAcAA",
       "importOf" : "FPftU_qAICY",
       "lastUpdated" : 0,
@@ -657,6 +711,9 @@
             "property" : "host.image.id"
           }, {
             "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : false,
             "property" : "instance"
           }, {
             "enabled" : true,
@@ -724,7 +781,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Process utilization (%)",
+          "displayName" : "Process utilization",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -744,7 +801,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -799,7 +856,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.transactions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*'), rollup='max').sum(by=['host.id', 'host.name','oracledb.instance.name']).rateofchange().sum(over='1d').publish(label='A')",
+      "programText" : "A = data('oracledb.transactions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*'), rollup='max').count().rateofchange().sum(over='1d').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -816,7 +873,7 @@
       "lastUpdatedBy" : null,
       "name" : "Session activity (1 hour)",
       "options" : {
-        "groupBy" : [ "None" ],
+        "groupBy" : [ "oracledb.instance.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -920,7 +977,7 @@
           "valueSuffix" : "",
           "valueUnit" : null
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "sortBy" : "",
         "time" : {
           "range" : 900000,
@@ -932,7 +989,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', rollup='max').sum(over='1h').publish(label='A')\nB = data('oracledb.parse_calls', rollup='max').sum(over='1h').publish(label='B')\nC = data('oracledb.user_commits', rollup='max').sum(over='1h').publish(label='C')\nD = data('oracledb.user_rollbacks', rollup='max').sum(over='1h').publish(label='D')\nE = data('oracledb.exchange_deadlocks', rollup='max').sum(over='1h').publish(label='E')\nF = data('oracledb.enqueue_deadlocks', rollup='max').sum(over='1h').publish(label='F')",
+      "programText" : "A = data('oracledb.executions', filter=filter('oracledb.instance.name', '*'), rollup='max').sum(over='1h').publish(label='A')\nB = data('oracledb.parse_calls', filter=filter('oracledb.instance.name', '*'), rollup='max').sum(over='1h').publish(label='B')\nC = data('oracledb.user_commits', filter=filter('oracledb.instance.name', '*'), rollup='max').sum(over='1h').publish(label='C')\nD = data('oracledb.user_rollbacks', filter=filter('oracledb.instance.name', '*'), rollup='max').sum(over='1h').publish(label='D')\nE = data('oracledb.exchange_deadlocks', filter=filter('oracledb.instance.name', '*'), rollup='max').sum(over='1h').publish(label='E')\nF = data('oracledb.enqueue_deadlocks', filter=filter('oracledb.instance.name', '*'), rollup='max').sum(over='1h').publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -997,7 +1054,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Current session utilization as compared to limit (%)",
+      "description" : "Current session utilization as compared to limit",
       "id" : "FPfyTGzAcAA",
       "importOf" : "FPftU_qAIAE",
       "lastUpdated" : 0,
@@ -1033,7 +1090,16 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
@@ -1074,7 +1140,7 @@
         }, {
           "displayName" : "Session utilization (%)",
           "label" : "C",
-          "paletteIndex" : null,
+          "paletteIndex" : 4,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
@@ -1092,7 +1158,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['session_status', 'oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['host.name', 'oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1118,8 +1184,8 @@
           "label" : "Lock usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : 110.0,
-          "min" : 0.0
+          "max" : null,
+          "min" : null
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
@@ -1163,10 +1229,13 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "resource_name"
           }, {
             "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : false,
             "property" : "instance"
           }, {
             "enabled" : true,
@@ -1206,8 +1275,8 @@
           "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
-          "dimensionInLegend" : "resource_name",
-          "showLegend" : false
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -1225,7 +1294,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Enqueque locks limit",
+          "displayName" : "Enqueue locks limit",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1234,16 +1303,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Enqueque lock utilization (%)",
+          "displayName" : "Enqueue locks utilization (%)",
           "label" : "C",
-          "paletteIndex" : null,
+          "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Dml locks usage",
+          "displayName" : "DML locks usage",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1252,7 +1321,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Dml locks limit",
+          "displayName" : "DML locks limit",
           "label" : "E",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1261,9 +1330,9 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Dml lock utilization (%)",
+          "displayName" : "DML locks utilization (%)",
           "label" : "F",
-          "paletteIndex" : null,
+          "paletteIndex" : 13,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
@@ -1281,7 +1350,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')\nD = data('oracledb.dml_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='D', enable=False)\nE = data('oracledb.dml_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='E', enable=False)\nF = (D/E*100).publish(label='F')",
+      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')\nD = data('oracledb.dml_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='D', enable=False)\nE = data('oracledb.dml_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='E', enable=False)\nF = (D/E*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1361,8 +1430,14 @@
             "enabled" : false,
             "property" : "host.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
+          }, {
+            "enabled" : false,
+            "property" : "tablespace_name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : true,
             "property" : "host.name"
@@ -1408,7 +1483,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name','oracledb.instance.name']).publish(label='A')",
+      "programText" : "A = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.name', 'oracledb.instance.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1458,17 +1533,20 @@
             "enabled" : false,
             "property" : "host.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
           } ]
         },
         "lineChartOptions" : {
@@ -1490,7 +1568,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Execute rate",
+          "displayName" : "Execution rate",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1556,17 +1634,14 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "tablespace"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "type"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
           }, {
             "enabled" : false,
             "property" : "host.type"
@@ -1588,6 +1663,15 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : false,
+            "property" : "tablespace_name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -1642,7 +1726,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C', enable=False)\nD = (C/B*100).max(by=['host.name','oracledb.instance.name']).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).max(by=['host.name', 'oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1789,7 +1873,7 @@
         }, {
           "displayName" : "Lock utilization (%)",
           "label" : "C",
-          "paletteIndex" : null,
+          "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
@@ -1832,8 +1916,11 @@
             "enabled" : false,
             "property" : "host.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : true,
             "property" : "host.name"
@@ -1879,7 +1966,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name','oracledb.instance.name']).publish(label='A')",
+      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'oracledb.instance.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1984,11 +2071,8 @@
             "enabled" : false,
             "property" : "host.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -2034,6 +2118,12 @@
           }, {
             "enabled" : false,
             "property" : "job"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
           } ]
         },
         "lineChartOptions" : {
@@ -2103,9 +2193,12 @@
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
-        "hideMissingValues" : false,
+        "hideMissingValues" : true,
         "legendOptions" : {
           "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
             "enabled" : false,
             "property" : "AWSUniqueId"
           }, {
@@ -2131,19 +2224,16 @@
             "property" : "host.image.id"
           }, {
             "enabled" : false,
-            "property" : "host.name"
-          }, {
-            "enabled" : false,
             "property" : "host.type"
           }, {
             "enabled" : true,
-            "property" : "sf_metric"
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : false,
             "property" : "instance"
           }, {
-            "enabled" : true,
-            "property" : "oracledb.instance.name"
+            "enabled" : false,
+            "property" : "host.name"
           }, {
             "enabled" : false,
             "property" : "job"
@@ -2162,6 +2252,9 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "maximumPrecision" : 4,
@@ -2177,6 +2270,42 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "Process utilization",
+          "label" : "Process utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Session utilization",
+          "label" : "Session utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Locks utilization",
+          "label" : "Locks utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Enqueue resources utilization",
+          "label" : "Enqueue resources utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "Process usage",
           "label" : "A",
           "paletteIndex" : null,
@@ -2248,42 +2377,6 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : "Process utilization",
-          "label" : "Process utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Session utilization",
-          "label" : "Session utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Locks utilization",
-          "label" : "Locks utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Enqueue resources utilization",
-          "label" : "Enqueue resources utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -2297,7 +2390,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B*100).publish(label='Process utilization')\nF = (D/E*100).publish(label='Session utilization')\nI = (G/H*100).publish(label='Locks utilization')\nL = (J/K*100).above(0).publish(label='Enqueue resources utilization')\nA = data('oracledb.processes.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='B', enable=False)\nD = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='D', enable=False)\nE = data('oracledb.sessions.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='E', enable=False)\nG = data('oracledb.enqueue_locks.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='G', enable=False)\nH = data('oracledb.enqueue_locks.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='H', enable=False)\nJ = data('oracledb.enqueue_resources.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='J', enable=False)\nK = data('oracledb.enqueue_resources.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).publish(label='K', enable=False)",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nD = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='D', enable=False)\nE = data('oracledb.sessions.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='E', enable=False)\nG = data('oracledb.enqueue_locks.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='G', enable=False)\nH = data('oracledb.enqueue_locks.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='H', enable=False)\nJ = data('oracledb.enqueue_resources.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='J', enable=False)\nK = data('oracledb.enqueue_resources.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='K', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='Process utilization')\nF = (D/E*100).sum(by=['oracledb.instance.name']).publish(label='Session utilization')\nI = (G/H*100).sum(by=['oracledb.instance.name']).publish(label='Locks utilization')\nL = (J/K*100).above(0).publish(label='Enqueue resources utilization')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2307,7 +2400,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Session type | session status | instance name | host name",
       "id" : "FPfyUq-AYAA",
       "importOf" : "FPftU_qAIBU",
       "lastUpdated" : 0,
@@ -2336,7 +2429,7 @@
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
@@ -2344,14 +2437,23 @@
         "includeZero" : false,
         "legendOptions" : {
           "fields" : [ {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "status"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "type"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
+          }, {
+            "enabled" : true,
+            "property" : "session_type"
+          }, {
+            "enabled" : true,
+            "property" : "session_status"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : true,
             "property" : "host.name"
@@ -2392,7 +2494,7 @@
           "yAxis" : 0
         } ],
         "showEventLines" : false,
-        "stacked" : true,
+        "stacked" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -2448,17 +2550,14 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "tablespace"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "type"
           }, {
             "enabled" : false,
             "property" : "instance"
-          }, {
-            "enabled" : false,
-            "property" : "host.name"
           }, {
             "enabled" : false,
             "property" : "host.type"
@@ -2482,7 +2581,13 @@
             "property" : "service.name"
           }, {
             "enabled" : true,
+            "property" : "tablespace_name"
+          }, {
+            "enabled" : true,
             "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -2537,7 +2642,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='C', enable=False)\nD = (C/B*100).sum(by=['oracledb.instance.name']).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'oracledb.instance.name', 'host.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2547,7 +2652,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Tablespace name | instance name | host name",
       "id" : "FPfyU5CAYAA",
       "importOf" : "FPftU_qAICw",
       "lastUpdated" : 0,
@@ -2608,14 +2713,20 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "tablespace"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "type"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
+          }, {
+            "enabled" : true,
+            "property" : "tablespace_name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : true,
             "property" : "host.name"
@@ -2640,6 +2751,9 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "lineChartOptions" : {
@@ -2679,7 +2793,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Tablespace utilization (%)",
+          "displayName" : "Tablespace utilization",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2699,7 +2813,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C', enable=False)\nD = (C/B*100).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'host.name', 'oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2745,16 +2859,19 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "tablespace"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "type"
           }, {
             "enabled" : false,
             "property" : "instance"
           }, {
-            "enabled" : false,
+            "enabled" : true,
+            "property" : "tablespace_name"
+          }, {
+            "enabled" : true,
             "property" : "host.name"
           }, {
             "enabled" : false,
@@ -2780,6 +2897,9 @@
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -2890,7 +3010,7 @@
             "enabled" : true,
             "property" : "session_id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
           }, {
             "enabled" : true,
@@ -2919,6 +3039,9 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "lineChartOptions" : {
@@ -2930,8 +3053,8 @@
           "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
-          "dimensionInLegend" : "session_id",
-          "showLegend" : false
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -2942,7 +3065,7 @@
         "publishLabelOptions" : [ {
           "displayName" : "Logical reads",
           "label" : "A",
-          "paletteIndex" : null,
+          "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -2951,7 +3074,7 @@
         }, {
           "displayName" : "Physical reads",
           "label" : "B",
-          "paletteIndex" : null,
+          "paletteIndex" : 13,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -2969,7 +3092,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.logical_reads').publish(label='A')\nB = data('oracledb.physical_reads').publish(label='B')",
+      "programText" : "A = data('oracledb.logical_reads', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='A')\nB = data('oracledb.physical_reads', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2979,7 +3102,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Utilization rate (%) by Tablespace",
+      "description" : "Utilization rate (%) by tablespace",
       "id" : "FPfyVQjAYAA",
       "importOf" : "FPftU_qAIBc",
       "lastUpdated" : 0,
@@ -2995,7 +3118,7 @@
           "label" : "Tablespace usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : 110.0,
+          "max" : null,
           "min" : 0.0
         }, {
           "highWatermark" : null,
@@ -3040,17 +3163,14 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "tablespace"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "type"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
           }, {
             "enabled" : false,
             "property" : "host.type"
@@ -3072,6 +3192,15 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : true,
+            "property" : "tablespace_name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
           } ]
         },
         "lineChartOptions" : {
@@ -3111,7 +3240,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Tablespace utilization (%)",
+          "displayName" : "Tablespace utilization",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
@@ -3131,7 +3260,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['oracledb.instance.name']).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'oracledb.instance.name', 'host.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3232,7 +3361,16 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
@@ -3271,7 +3409,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Session utilization (%)",
+          "displayName" : "Session utilization",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -3291,7 +3429,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3394,6 +3532,9 @@
           }, {
             "enabled" : false,
             "property" : "service.name"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           } ]
         },
         "lineChartOptions" : {
@@ -3405,8 +3546,8 @@
           "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -3415,9 +3556,9 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Hard",
+          "displayName" : "Hard parses",
           "label" : "A",
-          "paletteIndex" : null,
+          "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -3433,9 +3574,9 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Soft",
-          "label" : "C",
-          "paletteIndex" : null,
+          "displayName" : "Soft parses",
+          "label" : "D",
+          "paletteIndex" : 13,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
@@ -3453,7 +3594,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.hard_parses', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A')\nB = data('oracledb.parse_calls', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('B-A').publish(label='C')",
+      "programText" : "A = data('oracledb.hard_parses', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='A')\nB = data('oracledb.parse_calls', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='B', enable=False)\nD = (B-A).sum(by=['oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3534,8 +3675,8 @@
           "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
+          "max" : 110.0,
+          "min" : 0.0
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
@@ -3579,8 +3720,11 @@
             "enabled" : false,
             "property" : "host.image.id"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "instance"
+          }, {
+            "enabled" : true,
+            "property" : "oracledb.instance.name"
           }, {
             "enabled" : true,
             "property" : "host.name"
@@ -3609,8 +3753,8 @@
             "enabled" : false,
             "property" : "service.name"
           }, {
-            "enabled" : true,
-            "property" : "oracledb.instance.name"
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "lineChartOptions" : {
@@ -3650,9 +3794,9 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Process utilization (%)",
+          "displayName" : "Process utilization",
           "label" : "C",
-          "paletteIndex" : null,
+          "paletteIndex" : 11,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
@@ -3670,7 +3814,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3757,7 +3901,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.cpu_time').publish(label='A')",
+      "programText" : "A = data('oracledb.cpu_time', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3816,1064 +3960,6 @@
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkpW2wAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Logical and physical reads",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.account.id"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.availability_zone"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.platform"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.provider"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.region"
-          }, {
-            "enabled" : false,
-            "property" : "host.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.image.id"
-          }, {
-            "enabled" : true,
-            "property" : "session_id"
-          }, {
-            "enabled" : true,
-            "property" : "instance"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
-          }, {
-            "enabled" : true,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "host.type"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "os.type"
-          }, {
-            "enabled" : false,
-            "property" : "port"
-          }, {
-            "enabled" : false,
-            "property" : "scheme"
-          }, {
-            "enabled" : false,
-            "property" : "service.name"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : "session_id",
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Logical reads",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Physical reads",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.logical_reads').publish(label='A')\nB = data('oracledb.physical_reads').publish(label='B')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkpaRVAgAE",
-      "importOf" : "FPftU_qAIB4",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Soft and hard parses",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.account.id"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.availability_zone"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.platform"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.provider"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.region"
-          }, {
-            "enabled" : false,
-            "property" : "host.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.image.id"
-          }, {
-            "enabled" : true,
-            "property" : "session_id"
-          }, {
-            "enabled" : true,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : true,
-            "property" : "instance"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
-          }, {
-            "enabled" : false,
-            "property" : "host.type"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "os.type"
-          }, {
-            "enabled" : false,
-            "property" : "port"
-          }, {
-            "enabled" : false,
-            "property" : "scheme"
-          }, {
-            "enabled" : false,
-            "property" : "service.name"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : "sf_metric",
-          "showLegend" : true
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Hard",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Total",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Soft",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.hard_parses', filter=filter('host.id', '*') and filter('session_id', '*') and filter('oracledb.instance.name', '*')).publish(label='A')\nB = data('oracledb.parse_calls', filter=filter('host.id', '*') and filter('session_id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = data('B-A').publish(label='C')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkpe5TAYAA",
-      "importOf" : "FPftU_qAICQ",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "PGA memory usage (bytes)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "PGA memory usage (bytes)",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : "Byte",
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.pga_memory').publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkpfmGAcAA",
-      "importOf" : "FPftU_qAICI",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "CPU usage (%)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "CPU usage (%)",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.cpu_time').publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkqlQSAcAI",
-      "importOf" : "FPftU_qAIBw",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Commit and rollback",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Metric",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.account.id"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.availability_zone"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.platform"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.provider"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.region"
-          }, {
-            "enabled" : false,
-            "property" : "host.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.image.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.type"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
-          }, {
-            "enabled" : true,
-            "property" : "instance"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          }, {
-            "enabled" : true,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "os.type"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "port"
-          }, {
-            "enabled" : false,
-            "property" : "scheme"
-          }, {
-            "enabled" : false,
-            "property" : "service.name"
-          }, {
-            "enabled" : true,
-            "property" : "session_id"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : "sf_metric",
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Commits",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Rollbacks",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "C = data('oracledb.user_commits', rollup='max').publish(label='C')\nD = data('oracledb.user_rollbacks', rollup='max').publish(label='D')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkrmxKAYAA",
-      "importOf" : "FPftU_qAIB8",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Resource utilization (24h)",
-      "options" : {
-        "groupBy" : [ "None" ],
-        "groupBySort" : "Descending",
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "scheme"
-          }, {
-            "enabled" : false,
-            "property" : "host.image.id"
-          }, {
-            "enabled" : false,
-            "property" : "os.type"
-          }, {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "host.type"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.availability_zone"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.platform"
-          }, {
-            "enabled" : false,
-            "property" : "host.id"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.region"
-          }, {
-            "enabled" : false,
-            "property" : "service.name"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.provider"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.account.id"
-          }, {
-            "enabled" : false,
-            "property" : "port"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          }, {
-            "enabled" : false,
-            "property" : "instance"
-          }, {
-            "enabled" : false,
-            "property" : "host.name"
-          }, {
-            "enabled" : true,
-            "property" : "session_id"
-          }, {
-            "enabled" : true,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "CPU time",
-          "label" : "CPU time",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "PGA memory",
-          "label" : "PGA memory",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Hard parses",
-          "label" : "Hard parses",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Total parses",
-          "label" : "Total parses",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Soft Parses",
-          "label" : "Soft Parses",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Physical reads",
-          "label" : "Physical reads",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Logical reads",
-          "label" : "Logical reads",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        } ],
-        "refreshInterval" : 60000,
-        "sortBy" : "",
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "timestampHidden" : false,
-        "type" : "TableChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.cpu_time').sum(over='24h').publish(label='CPU time')\nB = data('oracledb.pga_memory').sum(over='24h').publish(label='PGA memory')\nC = data('oracledb.hard_parses').sum(over='24h').publish(label='Hard parses')\nD = data('oracledb.parse_calls').sum(over='24h').publish(label='Total parses', enable=False)\nE = data('D-C').publish(label='Soft Parses')\nF = data('oracledb.physical_reads').sum(over='24h').publish(label='Physical reads')\nG = data('oracledb.logical_reads').sum(over='24h').publish(label='Logical reads')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkroIwAgAQ",
-      "importOf" : "FPftU_qAIAk",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Resource utilization",
-      "options" : {
-        "groupBy" : [ "None" ],
-        "groupBySort" : "Descending",
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "scheme"
-          }, {
-            "enabled" : false,
-            "property" : "host.image.id"
-          }, {
-            "enabled" : false,
-            "property" : "os.type"
-          }, {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "host.type"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.availability_zone"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.platform"
-          }, {
-            "enabled" : false,
-            "property" : "host.id"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.region"
-          }, {
-            "enabled" : false,
-            "property" : "service.name"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.provider"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.account.id"
-          }, {
-            "enabled" : false,
-            "property" : "port"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          }, {
-            "enabled" : false,
-            "property" : "instance"
-          }, {
-            "enabled" : false,
-            "property" : "host.name"
-          }, {
-            "enabled" : true,
-            "property" : "session_id"
-          }, {
-            "enabled" : true,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "CPU time",
-          "label" : "CPU Time",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "PGA memory",
-          "label" : "PGA memory",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Hard parses",
-          "label" : "Hard Parses",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Total parses",
-          "label" : "Total Parses",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Soft parses",
-          "label" : "Soft Parses",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Physical reads",
-          "label" : "Physical reads",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Logical reads",
-          "label" : "Logical reads",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        } ],
-        "refreshInterval" : 60000,
-        "sortBy" : "",
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "timestampHidden" : false,
-        "type" : "TableChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "F = data('oracledb.physical_reads').publish(label='Physical reads')\nG = data('oracledb.logical_reads').publish(label='Logical reads')\nC = data('oracledb.hard_parses').publish(label='Hard Parses')\nD = data('oracledb.parse_calls').publish(label='Total Parses', enable=False)\nE = data('D-C').publish(label='Soft Parses')\nB = data('oracledb.pga_memory').publish(label='PGA memory')\nA = data('oracledb.cpu_time').publish(label='CPU Time')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FPkrqQjAYAA",
-      "importOf" : "FPftU_qAIBs",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Activity (1 hour)",
-      "options" : {
-        "groupBy" : [ "None" ],
-        "groupBySort" : "Descending",
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.account.id"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.availability_zone"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.platform"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.provider"
-          }, {
-            "enabled" : false,
-            "property" : "cloud.region"
-          }, {
-            "enabled" : false,
-            "property" : "host.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.image.id"
-          }, {
-            "enabled" : false,
-            "property" : "host.type"
-          }, {
-            "enabled" : true,
-            "property" : "host.name"
-          }, {
-            "enabled" : true,
-            "property" : "instance"
-          }, {
-            "enabled" : false,
-            "property" : "job"
-          }, {
-            "enabled" : true,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "os.type"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "port"
-          }, {
-            "enabled" : false,
-            "property" : "scheme"
-          }, {
-            "enabled" : false,
-            "property" : "service.name"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Executes",
-          "label" : "A",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Parses",
-          "label" : "B",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Commits",
-          "label" : "C",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Rollbacks",
-          "label" : "D",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Exchange Deadlocks",
-          "label" : "E",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Enqueue Deadlocks",
-          "label" : "F",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        } ],
-        "refreshInterval" : null,
-        "sortBy" : "",
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "timestampHidden" : false,
-        "type" : "TableChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', rollup='max').sum(over='1h').publish(label='A')\nB = data('oracledb.parse_calls', rollup='max').sum(over='1h').publish(label='B')\nC = data('oracledb.user_commits', rollup='max').sum(over='1h').publish(label='C')\nD = data('oracledb.user_rollbacks', rollup='max').sum(over='1h').publish(label='D')\nE = data('oracledb.exchange_deadlocks', rollup='max').sum(over='1h').publish(label='E')\nF = data('oracledb.enqueue_deadlocks', rollup='max').sum(over='1h').publish(label='F')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
   } ],
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
@@ -4899,14 +3985,14 @@
         "row" : 0,
         "width" : 2
       }, {
-        "chartId" : "FPfyTJNAgAA",
-        "column" : 6,
+        "chartId" : "FPfySzcAcAA",
+        "column" : 9,
         "height" : 1,
         "row" : 0,
         "width" : 3
       }, {
-        "chartId" : "FPfySzcAcAA",
-        "column" : 9,
+        "chartId" : "FPfySZNAcAA",
+        "column" : 6,
         "height" : 1,
         "row" : 0,
         "width" : 3
@@ -4917,25 +4003,19 @@
         "row" : 1,
         "width" : 6
       }, {
-        "chartId" : "FPfyVb4AYAE",
+        "chartId" : "FPfySeCAcAA",
         "column" : 0,
         "height" : 1,
         "row" : 1,
-        "width" : 3
+        "width" : 6
       }, {
-        "chartId" : "FPfySZNAcAA",
-        "column" : 3,
+        "chartId" : "FPfyVb4AYAE",
+        "column" : 0,
         "height" : 1,
-        "row" : 1,
-        "width" : 3
-      }, {
-        "chartId" : "FPfyT2OAgAA",
-        "column" : 9,
-        "height" : 2,
         "row" : 2,
         "width" : 3
       }, {
-        "chartId" : "FPfyT9KAcAE",
+        "chartId" : "FPfyT2OAgAA",
         "column" : 6,
         "height" : 2,
         "row" : 2,
@@ -4947,10 +4027,16 @@
         "row" : 2,
         "width" : 3
       }, {
-        "chartId" : "FPfySeCAcAA",
-        "column" : 0,
+        "chartId" : "FPfyT9KAcAE",
+        "column" : 9,
         "height" : 2,
         "row" : 2,
+        "width" : 3
+      }, {
+        "chartId" : "FPfyTJNAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 3,
         "width" : 3
       } ],
       "created" : 0,
@@ -5201,17 +4287,6 @@
         "sources" : null,
         "time" : null,
         "variables" : [ {
-          "alias" : "Session",
-          "applyIfExists" : false,
-          "description" : "",
-          "preferredSuggestions" : [ ],
-          "property" : "session_id",
-          "propertyMappings" : [ "session_id" ],
-          "replaceOnly" : false,
-          "required" : false,
-          "restricted" : false,
-          "value" : null
-        }, {
           "alias" : "Instance",
           "applyIfExists" : false,
           "description" : "",
@@ -5247,117 +4322,6 @@
       "selectedEventOverlays" : [ ],
       "tags" : null
     }
-  }, {
-    "dashboard" : {
-      "authorizedWriters" : null,
-      "chartDensity" : "DEFAULT",
-      "charts" : [ {
-        "chartId" : "FPkpW2wAcAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 0,
-        "width" : 3
-      }, {
-        "chartId" : "FPkpaRVAgAE",
-        "column" : 6,
-        "height" : 1,
-        "row" : 0,
-        "width" : 3
-      }, {
-        "chartId" : "FPkpe5TAYAA",
-        "column" : 9,
-        "height" : 1,
-        "row" : 0,
-        "width" : 3
-      }, {
-        "chartId" : "FPkqlQSAcAI",
-        "column" : 3,
-        "height" : 1,
-        "row" : 0,
-        "width" : 3
-      }, {
-        "chartId" : "FPkpfmGAcAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 6
-      }, {
-        "chartId" : "FPkrqQjAYAA",
-        "column" : 6,
-        "height" : 1,
-        "row" : 1,
-        "width" : 6
-      }, {
-        "chartId" : "FPkroIwAgAQ",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 6
-      }, {
-        "chartId" : "FPkrmxKAYAA",
-        "column" : 6,
-        "height" : 1,
-        "row" : 2,
-        "width" : 6
-      } ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : null,
-      "description" : "",
-      "discoveryOptions" : {
-        "query" : "_exists_:instance",
-        "selectors" : [ "_exists_:instance" ]
-      },
-      "eventOverlays" : null,
-      "filters" : {
-        "sources" : null,
-        "time" : null,
-        "variables" : [ {
-          "alias" : "Session",
-          "applyIfExists" : false,
-          "description" : "",
-          "preferredSuggestions" : [ ],
-          "property" : "session_id",
-          "propertyMappings" : [ "session_id" ],
-          "replaceOnly" : false,
-          "required" : true,
-          "restricted" : false,
-          "value" : [ "Choose session" ]
-        }, {
-          "alias" : "Instance",
-          "applyIfExists" : false,
-          "description" : "",
-          "preferredSuggestions" : [ ],
-          "property" : "oracledb.instance.name",
-          "propertyMappings" : [ "oracledb.instance.name" ],
-          "replaceOnly" : false,
-          "required" : false,
-          "restricted" : false,
-          "value" : null
-        }, {
-          "alias" : "Host",
-          "applyIfExists" : false,
-          "description" : "",
-          "preferredSuggestions" : [ ],
-          "property" : "host.name",
-          "propertyMappings" : [ "host.name", "host" ],
-          "replaceOnly" : false,
-          "required" : false,
-          "restricted" : false,
-          "value" : null
-        } ]
-      },
-      "groupId" : "FPfySWlAYAA",
-      "groupName" : "Oracle DB",
-      "id" : "FPkpYdfAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "maxDelayOverride" : null,
-      "name" : "Oracle DB session",
-      "permissions" : null,
-      "selectedEventOverlays" : [ ],
-      "tags" : null
-    }
   } ],
   "groupExport" : {
     "group" : {
@@ -5382,14 +4346,8 @@
         "descriptionOverride" : null,
         "filtersOverride" : null,
         "nameOverride" : null
-      }, {
-        "configId" : "FPkpYnRAYAA",
-        "dashboardId" : "FPkpYdfAYAA",
-        "descriptionOverride" : null,
-        "filtersOverride" : null,
-        "nameOverride" : null
       } ],
-      "dashboards" : [ "FPfyWVZAgAM", "FPfyWXMAcAA", "FPfyWnWAcAA", "FPkpYdfAYAA" ],
+      "dashboards" : [ "FPfyWVZAgAM", "FPfyWXMAcAA", "FPfyWnWAcAA" ],
       "description" : "Oracle Database",
       "email" : null,
       "id" : "FPfySWlAYAA",
@@ -5414,7 +4372,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -439103437,
+  "hashCode" : -1145046501,
   "id" : "FPfySWlAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
