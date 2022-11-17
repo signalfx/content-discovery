@@ -1,19 +1,25 @@
 {
   "chartExports" : [ {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Percentage of time CPU is utilized",
       "id" : "DiVWtCxAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU %",
+      "name" : "CPU usage (%)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
         "colorScale2" : null,
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -21,7 +27,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : null,
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -30,30 +36,35 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : null,
+          "displayName" : "CPU uitlization",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
         "showSparkLine" : false,
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "timestampHidden" : false,
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='A', enable=False)\nB = (100-A).publish(label='B')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='A', enable=False)\nB = (100-A).mean().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -61,7 +72,7 @@
       "id" : "DiVWta1AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Processes 24h Change %",
+      "name" : "# Processes 24h change (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -69,7 +80,15 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "% change",
+          "label" : "# Processes change",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -77,17 +96,34 @@
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -100,7 +136,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "# procs",
+          "displayName" : "# processes",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -109,7 +145,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A - Timeshift 1d",
+          "displayName" : "Timeshift 1d",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -118,12 +154,12 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "24h Change %",
+          "displayName" : "24h change in # processes",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -131,18 +167,20 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'upper'), extrapolation='zero').mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B - 1).scale(100).publish(label='C')",
+      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'upper'), extrapolation='zero').mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B-1).scale(100).mean(by=['StackId', 'AWSUniqueId']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -150,37 +188,16 @@
       "id" : "DiVWtonAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Total Memory",
+      "name" : "Total memory (bytes)",
       "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "bytes",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -189,78 +206,73 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "memory_free - Scale:1024",
+          "displayName" : "Total memory",
           "label" : "A",
-          "paletteIndex" : 14,
+          "paletteIndex" : 1,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "memory_used - Scale:1024",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
-        "showEventLines" : false,
-        "stacked" : true,
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "TimeSeriesChart",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory_free', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').scale(1024).publish(label='A')\nB = data('memory_used', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).scale(1024).publish(label='B')",
+      "programText" : "A = data('memory_total', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').scale(1024).mean().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Percentage of time CPU is utilized",
       "id" : "DiVWtrSAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU % by Category",
+      "name" : "CPU usage by category (%)",
       "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "%",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
+        "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "StackId"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "stat"
+          }, {
+            "enabled" : true,
+            "property" : "namespace"
+          } ]
         },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -269,76 +281,79 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle",
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : 14,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu_nice",
+          "displayName" : "CPU nice",
           "label" : "B",
           "paletteIndex" : 15,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu_waitio",
+          "displayName" : "CPU waitio",
           "label" : "C",
           "paletteIndex" : 6,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu_user",
+          "displayName" : "CPU user",
           "label" : "D",
           "paletteIndex" : 9,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu_system",
+          "displayName" : "CPU system",
           "label" : "E",
           "paletteIndex" : 7,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu_steal",
+          "displayName" : "CPU steal",
           "label" : "F",
           "paletteIndex" : 2,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "showEventLines" : false,
-        "stacked" : true,
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "TimeSeriesChart",
+        "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='A')\nB = data('cpu_nice', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='B')\nC = data('cpu_waitio', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='C')\nD = data('cpu_user', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='D')\nE = data('cpu_system', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='E')\nF = data('cpu_steal', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='F')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).mean().publish(label='A')\nB = data('cpu_nice', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).mean().publish(label='B')\nC = data('cpu_waitio', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).mean().publish(label='C')\nD = data('cpu_user', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).mean().publish(label='D')\nE = data('cpu_system', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).mean().publish(label='E')\nF = data('cpu_steal', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).mean().publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -346,7 +361,7 @@
       "id" : "DiVWt2TAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU % 24h Change %",
+      "name" : "CPU usage 24h change (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -354,7 +369,15 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "change %",
+          "label" : "CPU utilization chnage",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -369,10 +392,33 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : false,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "stat"
+          }, {
+            "enabled" : false,
+            "property" : "namespace"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -385,25 +431,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : null,
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "B - Timeshift 1d",
+          "displayName" : "Timeshift 1d",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -412,8 +440,26 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "24h change %",
+          "displayName" : "24h change of CPU uitlization",
           "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU idle",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU utilization",
+          "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -425,18 +471,20 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='A', enable=False)\nB = (100-A).mean(over='1h').publish(label='B', enable=False)\nC = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C - 1).scale(100).publish(label='D')",
+      "programText" : "C = (B).timeshift('1d').publish(label='C', enable=False)\nD = (B/C-1).scale(100).mean(by=['StackId', 'AWSUniqueId']).publish(label='D')\nA = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean')).publish(label='A', enable=False)\nB = (100-A).mean(over='1h').publish(label='B', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -450,6 +498,11 @@
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -457,7 +510,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : null,
+          "displayName" : "# Processes",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -466,25 +519,30 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
         "showSparkLine" : false,
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "timestampHidden" : false,
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'upper'), extrapolation='zero').publish(label='A')",
+      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'upper'), extrapolation='zero').sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Load averaged over a different time interval(1-minute, 5-minute, 15-minute)",
       "id" : "DiVWt9xAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -496,29 +554,54 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "load",
+          "label" : "Load",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -527,7 +610,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "load_1",
+          "displayName" : "Load over 1 minute",
           "label" : "A",
           "paletteIndex" : 2,
           "plotType" : null,
@@ -536,7 +619,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "load_5",
+          "displayName" : "Load over 5 minute",
           "label" : "B",
           "paletteIndex" : 9,
           "plotType" : null,
@@ -545,7 +628,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "load_15",
+          "displayName" : "Load over 15 minute",
           "label" : "C",
           "paletteIndex" : 7,
           "plotType" : null,
@@ -558,89 +641,20 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('load_1', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').publish(label='A')\nB = data('load_5', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').publish(label='B')\nC = data('load_15', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').publish(label='C')",
+      "programText" : "A = data('load_1', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').mean(by=['StackId', 'AWSUniqueId']).publish(label='A')\nB = data('load_5', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').mean(by=['StackId', 'AWSUniqueId']).publish(label='B')\nC = data('load_15', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean'), extrapolation='zero').mean(by=['StackId', 'AWSUniqueId']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWuvkAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Processes",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "processes",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "# procs",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'upper'), extrapolation='zero').publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -648,7 +662,7 @@
       "id" : "DiVWvmbAcDU",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Memory % by Stack",
+      "name" : "Memory used by stack (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -656,11 +670,19 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "memory %",
+          "label" : "Memory usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
@@ -671,10 +693,24 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data found for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -687,7 +723,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "memory_used",
+          "displayName" : "Memory used",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -696,7 +732,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "memory_total",
+          "displayName" : "Total memory",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -705,12 +741,12 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "memory %",
+          "displayName" : "Memory utilization",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -718,33 +754,53 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory_used', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).publish(label='A', enable=False)\nB = data('memory_total', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('memory_used', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).publish(label='A', enable=False)\nB = data('memory_total', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).publish(label='B', enable=False)\nC = (A/B*100).mean(by=['StackId', 'AWSUniqueId']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "The load averaged over a 15 minute window",
       "id" : "DiVWvzSAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Stacks by Load-15min",
+      "name" : "Top stacks by load-15min",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "‘Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -752,7 +808,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "",
+          "displayName" : "Load to stacks over 15 minutes",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -761,20 +817,25 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('load_15', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId']).publish(label='A')",
+      "programText" : "A = data('load_15', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId', 'AWSUniqueId']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -787,7 +848,12 @@
         "colorBy" : "Dimension",
         "colorScale" : null,
         "colorScale2" : null,
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -795,19 +861,23 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle - Count",
+          "displayName" : "Total stacks",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valuePrefix" : "",
+          "valueSuffix" : "",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
         "showSparkLine" : false,
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "timestampHidden" : false,
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
@@ -819,6 +889,7 @@
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -826,14 +897,20 @@
       "id" : "DiVWwsMAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Stacks by # Processes",
+      "name" : "Top stacks by # processes",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : null
         },
         "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -841,7 +918,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "",
+          "displayName" : "# Processes",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -850,10 +927,14 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
@@ -864,6 +945,7 @@
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -871,7 +953,7 @@
       "id" : "DiVWwsWAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Total Memory by Stack",
+      "name" : "Total memory by stack (bytes)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -879,25 +961,56 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "bytes",
+          "label" : "Bytes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "namespace"
+          }, {
+            "enabled" : false,
+            "property" : "stat"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -910,46 +1023,66 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "memory_total",
+          "displayName" : "Total memory",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
         "showEventLines" : false,
-        "stacked" : true,
+        "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory_total', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean'), extrapolation='last_value', maxExtrapolations=5).publish(label='A')",
+      "programText" : "A = data('memory_total', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean'), extrapolation='last_value', maxExtrapolations=5).mean(by=['StackId', 'AWSUniqueId']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Percentage of time CPU is used by top instances",
       "id" : "DiVWw8NAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Instances by CPU %",
+      "name" : "Top instances by CPU usage (%)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "InstanceId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -957,7 +1090,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle - Mean by InstanceId",
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -966,29 +1099,34 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "",
+          "displayName" : "CPU usage",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('InstanceId', '*')).mean(by=['InstanceId']).publish(label='A', enable=False)\nB = (100-A).top(count=5).publish(label='B')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('InstanceId', '*')).mean(by=['InstanceId', 'AWSUniqueId']).publish(label='A', enable=False)\nB = (100-A).top(count=5).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -996,14 +1134,29 @@
       "id" : "DiVWw_gAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Stacks by Memory %",
+      "name" : "Top stacks by memory utilization (%)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : null,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1011,7 +1164,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "memory_used - Mean by StackId",
+          "displayName" : "Memory used",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1020,7 +1173,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "memory_total - Mean by StackId",
+          "displayName" : "Total memory",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1029,8 +1182,76 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "",
+          "displayName" : "Memory utilization",
           "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('memory_used', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId', 'AWSUniqueId']).publish(label='A', enable=False)\nB = data('memory_total', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId', 'AWSUniqueId']).publish(label='B', enable=False)\nC = (A/B*100).top(count=5).publish(label='C')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "The load averaged over a 1 minute window",
+      "id" : "DiVWxGVAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Top stacks by load-1 min",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Load to stack over 1 minute",
+          "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -1038,28 +1259,101 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
-        "time" : null,
+        "time" : {
+          "range" : 7200000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory_used', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId']).publish(label='A', enable=False)\nB = data('memory_total', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId']).publish(label='B', enable=False)\nC = (A/B*100).top(count=5).publish(label='C')",
+      "programText" : "A = data('load_1', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId', 'AWSUniqueId']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWxGVAgAA",
+      "description" : "The load averaged over a 5 minute window",
+      "id" : "DiVWxHDAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Load-5min by Stack",
+      "name" : "Top stacks by load-5min",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Load to stacks over 5 minutes",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('load_5', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId', 'AWSUniqueId']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Percentage of time CPU is utilised",
+      "id" : "DiVWxwQAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "CPU usage by stack (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1067,127 +1361,19 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "load_5",
+          "label" : "CPU usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "load_5",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : false,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('load_5', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWxHDAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top Stacks by Load-5min",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "maximumPrecision" : 3,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
-        "time" : null,
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('load_5', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId']).publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWxwQAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "CPU % by Stack",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
+        }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
           "label" : "",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
-          "min" : 0.0
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
@@ -1198,10 +1384,27 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -1214,7 +1417,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle - Mean by StackId",
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1223,12 +1426,12 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu %",
+          "displayName" : "CPU usage",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -1236,18 +1439,20 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId']).publish(label='A', enable=False)\nB = (100-A).publish(label='B')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId', 'AWSUniqueId']).publish(label='A', enable=False)\nB = (100-A).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -1255,12 +1460,17 @@
       "id" : "DiVWxwrAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# of Instances",
+      "name" : "# Instances",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1268,7 +1478,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle - Count",
+          "displayName" : "Total instances",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1277,10 +1487,14 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
         "showSparkLine" : false,
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "timestampHidden" : false,
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
@@ -1292,14 +1506,15 @@
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Percentage of time CPU is utilised",
       "id" : "DiVWxx0AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU % by Layer",
+      "name" : "CPU usage by layer (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1307,11 +1522,19 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "cpu %",
+          "label" : "CPU usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
@@ -1322,10 +1545,27 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "LayerId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -1338,7 +1578,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle - Mean by LayerId",
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1347,12 +1587,12 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu %",
+          "displayName" : "CPU usage",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -1360,33 +1600,53 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('LayerId', '*')).mean(by=['LayerId']).publish(label='A', enable=False)\nB = (100-A).publish(label='B')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('LayerId', '*')).mean(by=['LayerId', 'AWSUniqueId']).publish(label='A', enable=False)\nB = (100-A).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Percentage of time CPU is used by top stacks",
       "id" : "DiVWx3PAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Stacks by CPU %",
+      "name" : "Top stacks by CPU usage (%)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1394,7 +1654,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle - Mean by StackId",
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1403,29 +1663,34 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "",
+          "displayName" : "CPU usage",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId']).publish(label='A', enable=False)\nB = (100-A).top(count=5).publish(label='B')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean')).mean(by=['StackId', 'AWSUniqueId']).publish(label='A', enable=False)\nB = (100-A).top(count=5).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -1438,7 +1703,12 @@
         "colorBy" : "Dimension",
         "colorScale" : null,
         "colorScale2" : null,
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1446,7 +1716,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : null,
+          "displayName" : "Total layers",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1455,10 +1725,14 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
         "showSparkLine" : false,
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "timestampHidden" : false,
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
@@ -1470,6 +1744,7 @@
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -1477,7 +1752,7 @@
       "id" : "DiVWyC_AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Processes by Stack",
+      "name" : "# Processes by stack",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1485,11 +1760,19 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "# processes",
+          "label" : "Processes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
           "min" : 0.0
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
@@ -1500,10 +1783,33 @@
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "StackId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "namespace"
+          }, {
+            "enabled" : false,
+            "property" : "stat"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -1516,7 +1822,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "procs",
+          "displayName" : "Processes",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1529,97 +1835,28 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean'), extrapolation='last_value').publish(label='A')",
+      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean'), extrapolation='last_value').mean(by=['StackId', 'AWSUniqueId']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "DiVWyIdAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Total # Processes by Stack",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "# processes",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "procs",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : false,
-        "stacked" : true,
-        "time" : {
-          "range" : 7200000,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('procs', filter=filter('namespace', 'AWS/OpsWorks') and filter('StackId', '*') and filter('stat', 'mean'), extrapolation='last_value').publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "percentile distribution",
+      "description" : "Percentage of time CPU is utilised",
       "id" : "DiVWyIeAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU % by Instance",
+      "name" : "CPU usage by instance (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1627,25 +1864,56 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "cpu %",
+          "label" : "CPU usage",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
-          "min" : 0.0
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "AreaChart",
+        "defaultPlotType" : "LineChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
         },
         "includeZero" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "InstanceId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "namespace"
+          }, {
+            "enabled" : false,
+            "property" : "stat"
+          } ]
         },
         "lineChartOptions" : {
           "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
@@ -1658,7 +1926,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle",
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1667,57 +1935,12 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "cpu %",
+          "displayName" : "CPU usage",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "min",
-          "label" : "C",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p10",
-          "label" : "D",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "median",
-          "label" : "E",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "p90",
-          "label" : "F",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "max",
-          "label" : "G",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -1725,33 +1948,53 @@
         "stacked" : false,
         "time" : {
           "range" : 7200000,
+          "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('InstanceId', '*')).publish(label='A', enable=False)\nB = (100-A).publish(label='B')\nC = (B).min().publish(label='C')\nD = (B).percentile(pct=10).publish(label='D')\nE = (B).percentile(pct=50).publish(label='E')\nF = (B).percentile(pct=90).publish(label='F')\nG = (B).max().publish(label='G')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('InstanceId', '*')).mean(by=['InstanceId', 'AWSUniqueId']).publish(label='A', enable=False)\nB = (100-A).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
   }, {
     "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Percentage of time CPU is used by top layers",
       "id" : "DiVWyIfAcAI",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top Layers by CPU %",
+      "name" : "Top layers by CPU usage (%)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
+        "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : null
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "LayerId"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
         },
-        "maximumPrecision" : 3,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1759,7 +2002,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu_idle - Mean by LayerId",
+          "displayName" : "CPU idle",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1768,24 +2011,108 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "",
+          "displayName" : "CPU usage",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : null,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
-        "time" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
         "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('LayerId', '*')).mean(by=['LayerId']).publish(label='A', enable=False)\nB = (100-A).top(count=5).publish(label='B')",
+      "programText" : "A = data('cpu_idle', filter=filter('namespace', 'AWS/OpsWorks') and filter('stat', 'mean') and filter('LayerId', '*')).mean(by=['LayerId', 'AWSUniqueId']).publish(label='A', enable=False)\nB = (100-A).top(count=5).publish(label='B')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "Fhgx-eKAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : ".",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"40%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Stacks</font>\n</td></tr></table>\n<p align=\"center\" ><br /><font>The charts below refer to the running stacks and CPU usage by the stacks.\n</font></p>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FhgyW9XAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : ".",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"40%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Layers</font>\n</td></tr></table>\n<p align=\"center\" ><br /><font>The charts below refer to the running layers and CPU usage by the layers.\n</font></p>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FhgyXTiAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : ".",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"40%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Instances</font>\n</td></tr></table>\n<p align=\"center\" ><br /><font>The charts below refer to the running instances and CPU usage by the instances.\n</font></p>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "Fhg0BuKAYAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : ".",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"40%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Stacks' memory, # processes and load overview</font>\n</td></tr></table>\n<p align=\"center\" ><br /><font>The charts below refer to the stacks' memory used, # processes, and load for the stacks.\n</font></p>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1793,6 +2120,163 @@
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
     "dashboard" : {
+      "authorizedWriters" : null,
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
+        "chartId" : "Fhgx-eKAcAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "FhgyW9XAYAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "FhgyXTiAgAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWxwrAgAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWx6GAgAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWv6-AgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWyIeAgAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWxx0AcAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWxwQAYAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWw8NAcAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWyIfAcAI",
+        "column" : 4,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWx3PAYAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "Fhg0BuKAYAE",
+        "column" : 0,
+        "height" : 1,
+        "row" : 4,
+        "width" : 12
+      }, {
+        "chartId" : "DiVWw_gAYAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 5,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWvmbAcDU",
+        "column" : 4,
+        "height" : 1,
+        "row" : 5,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWwsWAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 5,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWwsMAYAA",
+        "column" : 6,
+        "height" : 1,
+        "row" : 6,
+        "width" : 6
+      }, {
+        "chartId" : "DiVWyC_AcAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 6,
+        "width" : 6
+      }, {
+        "chartId" : "DiVWvzSAYAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 7,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWxGVAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 7,
+        "width" : 4
+      }, {
+        "chartId" : "DiVWxHDAcAA",
+        "column" : 4,
+        "height" : 1,
+        "row" : 7,
+        "width" : 4
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "Default dashboard.",
+      "discoveryOptions" : {
+        "query" : "_exists_:namespace",
+        "selectors" : [ "namespace:AWS/OpsWorks" ]
+      },
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : null,
+        "time" : null,
+        "variables" : null
+      },
+      "groupId" : "DiVWsv_AYAA",
+      "groupName" : "AWS OpsWorks",
+      "id" : "DiVWu76AgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "maxDelayOverride" : null,
+      "name" : "OpsWorks stacks",
+      "permissions" : null,
+      "selectedEventOverlays" : [ ],
+      "tags" : null
+    }
+  }, {
+    "dashboard" : {
+      "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
         "chartId" : "DiVWtCxAcAA",
@@ -1817,13 +2301,13 @@
         "column" : 0,
         "height" : 1,
         "row" : 1,
-        "width" : 6
+        "width" : 4
       }, {
         "chartId" : "DiVWt9xAcAA",
-        "column" : 6,
+        "column" : 4,
         "height" : 1,
         "row" : 1,
-        "width" : 6
+        "width" : 8
       }, {
         "chartId" : "DiVWt4SAgAA",
         "column" : 0,
@@ -1831,17 +2315,11 @@
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "DiVWuvkAYAA",
+        "chartId" : "DiVWta1AYAA",
         "column" : 4,
         "height" : 1,
         "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWta1AYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
+        "width" : 8
       } ],
       "created" : 0,
       "creator" : null,
@@ -1855,158 +2333,50 @@
       "filters" : {
         "sources" : null,
         "time" : null,
-        "variables" : null
+        "variables" : [ {
+          "alias" : "Stack id",
+          "applyIfExists" : false,
+          "description" : "Stack id of opsworks",
+          "preferredSuggestions" : [ ],
+          "property" : "StackId",
+          "propertyMappings" : [ "StackId" ],
+          "replaceOnly" : false,
+          "required" : true,
+          "restricted" : false,
+          "value" : [ "Choose stack" ]
+        } ]
       },
       "groupId" : "DiVWsv_AYAA",
+      "groupName" : "AWS OpsWorks",
       "id" : "DiVWs78AgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
-      "name" : "OpsWorks",
-      "selectedEventOverlays" : [ ],
-      "tags" : null
-    }
-  }, {
-    "dashboard" : {
-      "chartDensity" : "DEFAULT",
-      "charts" : [ {
-        "chartId" : "DiVWv6-AgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWxwrAgAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWx6GAgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWxwQAYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWxx0AcAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWyIeAgAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWx3PAYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWyIfAcAI",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWw8NAcAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWw_gAYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWvmbAcDU",
-        "column" : 4,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWwsWAgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWwsMAYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWyC_AcAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWyIdAYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWvzSAYAA",
-        "column" : 8,
-        "height" : 1,
-        "row" : 5,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWxHDAcAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 5,
-        "width" : 4
-      }, {
-        "chartId" : "DiVWxGVAgAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 5,
-        "width" : 4
-      } ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : null,
-      "description" : "Default dashboard.",
-      "discoveryOptions" : {
-        "query" : "_exists_:namespace",
-        "selectors" : [ "namespace:AWS/OpsWorks" ]
-      },
-      "eventOverlays" : null,
-      "filters" : {
-        "sources" : null,
-        "time" : null,
-        "variables" : null
-      },
-      "groupId" : "DiVWsv_AYAA",
-      "id" : "DiVWu76AgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "maxDelayOverride" : null,
-      "name" : "OpsWorks (a)",
+      "name" : "OpsWorks stack",
+      "permissions" : null,
       "selectedEventOverlays" : [ ],
       "tags" : null
     }
   } ],
   "groupExport" : {
     "group" : {
+      "authorizedWriters" : null,
       "created" : 0,
       "creator" : null,
-      "dashboards" : [ "DiVWs78AgAA", "DiVWu76AgAA" ],
+      "dashboardConfigs" : [ {
+        "configId" : "DoN5MoeAYAA",
+        "dashboardId" : "DiVWu76AgAA",
+        "descriptionOverride" : null,
+        "filtersOverride" : null,
+        "nameOverride" : null
+      }, {
+        "configId" : "DoN5MolAcAA",
+        "dashboardId" : "DiVWs78AgAA",
+        "descriptionOverride" : null,
+        "filtersOverride" : null,
+        "nameOverride" : null
+      } ],
+      "dashboards" : [ "DiVWu76AgAA", "DiVWs78AgAA" ],
       "description" : "Dashboards about AWS OpsWorks.",
       "email" : null,
       "id" : "DiVWsv_AYAA",
@@ -2029,10 +2399,11 @@
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "AWS OpsWorks",
+      "permissions" : null,
       "teams" : null
     }
   },
-  "hashCode" : 773790902,
+  "hashCode" : -1131561588,
   "id" : "DiVWsv_AYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
