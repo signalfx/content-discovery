@@ -176,36 +176,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Smart agent k8s CPU usage (%)",
-          "label" : "N",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "H",
-          "label" : "G",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "G1",
-          "label" : "G1",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "G",
-          "label" : "F",
-          "valuePrefix" : "",
-          "valueSuffix" : "%",
-          "valueUnit" : null
-        }, {
-          "displayName" : "M",
-          "label" : "M",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
           "displayName" : "Otel collector k8s CPU usage (%)",
           "label" : "L",
           "valuePrefix" : "",
@@ -223,6 +193,36 @@
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
+        }, {
+          "displayName" : "G",
+          "label" : "F",
+          "valuePrefix" : "",
+          "valueSuffix" : "%",
+          "valueUnit" : null
+        }, {
+          "displayName" : "G1",
+          "label" : "G1",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "M",
+          "label" : "M",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "H",
+          "label" : "G",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Smart agent k8s CPU usage (%)",
+          "label" : "N",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
         } ],
         "refreshInterval" : null,
         "sortDirection" : "Ascending",
@@ -237,7 +237,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = (A/D).publish(label='N')",
+      "programText" : "C = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = (A/D).publish(label='N')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -837,6 +837,18 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "M",
+          "label" : "M",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "G",
+          "label" : "G",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
           "displayName" : "Smart agent k8s CPU usage (%)",
           "label" : "N",
           "valuePrefix" : "",
@@ -872,18 +884,6 @@
           "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null
-        }, {
-          "displayName" : "M",
-          "label" : "M",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "G",
-          "label" : "G",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
         } ],
         "refreshInterval" : 60000,
         "sortDirection" : "Descending",
@@ -898,7 +898,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = (A/D).publish(label='N')\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "E = (A/D).publish(label='N')\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nH = ((F*100)/G).publish(label='H')\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1284,42 +1284,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Otel collector k8s CPU usage (%)",
-          "label" : "N",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Smart agent k8s CPU usage (%)",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU capacity used per node",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage (%)",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "M",
           "label" : "M",
           "paletteIndex" : null,
@@ -1355,6 +1319,42 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Otel collector k8s CPU usage (%)",
+          "label" : "N",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Smart agent k8s CPU usage (%)",
+          "label" : "L",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU capacity used per node",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Fargate k8s CPU usage (%)",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -1367,7 +1367,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nE = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "E = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nH = ((F*100)/G).publish(label='H')\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2684,6 +2684,15 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "Top 10 nodes by CPU capacity usage",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "M",
           "label" : "M",
           "paletteIndex" : null,
@@ -2729,15 +2738,6 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Top 10 nodes by CPU capacity usage",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "F",
           "label" : "F",
           "paletteIndex" : null,
@@ -2768,7 +2768,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = (A/D).publish(label='N')\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nC = (A/B).publish(label='L')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = (A/D).publish(label='N')\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nC = (A/B).publish(label='L')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nH = ((F*100)/G).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3664,42 +3664,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Otel collector k8s CPU usage",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Smart agent k8s CPU usage",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Highest CPU use per pod (%)",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "G",
           "label" : "G",
           "paletteIndex" : null,
@@ -3735,6 +3699,42 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Otel collector k8s CPU usage",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Smart agent k8s CPU usage",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Fargate k8s CPU usage",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Highest CPU use per pod (%)",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -3748,7 +3748,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "G = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='F', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='B', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).publish(label='E')\nH = ((F*100)/G).publish(label='H')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='A', enable=False)",
+      "programText" : "G = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='F', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='B', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).publish(label='E')\nH = ((F*100)/G).publish(label='H')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3872,8 +3872,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU capacity used",
-          "label" : "A",
+          "displayName" : "CPU usage (%)",
+          "label" : "N",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU usage (%)",
+          "label" : "L",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU usage (%)",
+          "label" : "H",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -3917,26 +3935,8 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "CPU usage (%)",
-          "label" : "N",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage (%)",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage (%)",
-          "label" : "H",
+          "displayName" : "CPU capacity used",
+          "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -3955,7 +3955,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "E = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nH = ((F*100)/G).publish(label='H')\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name']).publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name']).publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name']).publish(label='F', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name']).publish(label='A', enable=False)",
+      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name']).publish(label='A', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name']).publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name']).publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name']).publish(label='F', enable=False)\nE = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nH = ((F*100)/G).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4119,6 +4119,33 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "CPU usage per pod (%)",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU usage per pod (%)",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU usage per pod (%)",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "G",
           "label" : "G",
           "paletteIndex" : null,
@@ -4163,33 +4190,6 @@
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage per pod (%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage per pod (%)",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage per pod (%)",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -4202,7 +4202,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B).publish(label='C')\nE = (A/D).publish(label='E')\nH = ((F*100)/G).publish(label='H')\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='B', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='A', enable=False)",
+      "programText" : "G = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='B', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='A', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).publish(label='E')\nH = ((F*100)/G).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4766,42 +4766,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Smart agent k8s CPU usage",
-          "label" : "N",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Otel collector k8s CPU usage",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU used by containers",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "M",
           "label" : "M",
           "paletteIndex" : null,
@@ -4837,6 +4801,42 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Smart agent k8s CPU usage",
+          "label" : "N",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Otel collector k8s CPU usage",
+          "label" : "L",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU used by containers",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : "",
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Fargate k8s CPU usage",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -4850,7 +4850,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('machine_cpu_cores').sum().publish(label='M', enable=False)\nB = data('cpu.num_processors').sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.container.name']).publish(label='F', enable=False)\nE = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=(not filter('eks.amazonaws.com/fargate-profile', '*')) and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.container.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "E = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=(not filter('eks.amazonaws.com/fargate-profile', '*')) and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.container.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')\nD = data('machine_cpu_cores').sum().publish(label='M', enable=False)\nB = data('cpu.num_processors').sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.container.name']).publish(label='F', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6034,6 +6034,33 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "G",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "D",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "F",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "CPU utilization",
           "label" : "A",
           "paletteIndex" : null,
@@ -6078,33 +6105,6 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : "G",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "D",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "F",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -6117,7 +6117,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "G = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*'), rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.pod.name']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='B', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).sum().publish(label='E')\nH = ((F*100)/G).sum().publish(label='H')",
+      "programText" : "G = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*'), rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='B', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).sum().publish(label='E')\nH = ((F*100)/G).sum().publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7446,42 +7446,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU capacity used",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Smart agent k8s CPU usage (%)",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Otel collector k8s CPU usage (%)",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage (%)",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "A",
           "label" : "A",
           "paletteIndex" : null,
@@ -7517,6 +7481,42 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "CPU capacity used",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Smart agent k8s CPU usage (%)",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Otel collector k8s CPU usage (%)",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Fargate k8s CPU usage (%)",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -7530,7 +7530,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.cluster.name']).publish(label='A', enable=False)\nB = data('machine_cpu_cores').sum().publish(label='B', enable=False)\nC = data('cpu.num_processors').sum(by=['k8s.cluster.name']).publish(label='C', enable=False)\nE = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='E', enable=False)\nD = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='D', enable=False)\nF = (A/B).publish(label='F')\nG = (A/C).publish(label='G')\nH = (D*100/E).publish(label='H')",
+      "programText" : "A = data('container.cpu.utilization', rollup='rate').sum(by=['k8s.cluster.name']).publish(label='A', enable=False)\nB = data('machine_cpu_cores').sum().publish(label='B', enable=False)\nC = data('cpu.num_processors').sum(by=['k8s.cluster.name']).publish(label='C', enable=False)\nE = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='E', enable=False)\nD = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*'), rollup='rate').sum(by=['k8s.cluster.name']).publish(label='D', enable=False)\nF = (A/B).publish(label='F')\nG = (A/C).publish(label='G')\nH = (D*100/E).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8302,42 +8302,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Smart agent k8s CPU usage",
-          "label" : "N",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Otel collector k8s CPU usage",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU used by containers",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "M",
           "label" : "M",
           "paletteIndex" : null,
@@ -8373,6 +8337,42 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Smart agent k8s CPU usage",
+          "label" : "N",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Otel collector k8s CPU usage",
+          "label" : "L",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU used by containers",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : "",
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Fargate k8s CPU usage",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -8386,7 +8386,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.container.name']).publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.container.name']).publish(label='F', enable=False)\nE = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.container.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "E = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.container.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.container.name']).publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.container.name']).publish(label='F', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8887,7 +8887,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.cluster.name']).publish(label='A', enable=False)\nB = data('machine_cpu_cores').sum().publish(label='B', enable=False)\nC = data('cpu.num_processors').sum(by=['k8s.cluster.name']).publish(label='C', enable=False)\nD = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='D', enable=False)\nE = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='E', enable=False)\nF = (A/B).publish(label='F')\nG = (A/C).publish(label='G')\nH = (D*100/E).publish(label='H')",
+      "programText" : "A = data('container.cpu.utilization', rollup='rate').sum(by=['k8s.cluster.name']).publish(label='A', enable=False)\nB = data('machine_cpu_cores').sum().publish(label='B', enable=False)\nC = data('cpu.num_processors').sum(by=['k8s.cluster.name']).publish(label='C', enable=False)\nD = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*'), rollup='rate').sum(by=['k8s.cluster.name']).publish(label='D', enable=False)\nE = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='E', enable=False)\nF = (A/B).publish(label='F')\nG = (A/C).publish(label='G')\nH = (D*100/E).publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -12039,33 +12039,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Otel collector k8s CPU usage",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Smart agent k8s CPU usage",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "G",
           "label" : "G",
           "paletteIndex" : null,
@@ -12110,6 +12083,33 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Otel collector k8s CPU usage",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Smart agent k8s CPU usage",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Fargate k8s CPU usage",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -12122,7 +12122,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "G = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nA = data('container.cpu.utilization').sum(by=['k8s.pod.name']).publish(label='A', enable=False)\nB = data('cpu.num_processors', rollup='average').sum().publish(label='B', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).sum().publish(label='E')\nH = ((F*100)/G).sum().publish(label='H')",
+      "programText" : "C = (A/B).publish(label='C')\nE = (A/D).sum().publish(label='E')\nH = ((F*100)/G).sum().publish(label='H')\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nA = data('container.cpu.utilization', rollup='rate').sum(by=['k8s.pod.name']).publish(label='A', enable=False)\nB = data('cpu.num_processors', rollup='average').sum().publish(label='B', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -14483,7 +14483,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 663706345,
+  "hashCode" : -197736825,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
