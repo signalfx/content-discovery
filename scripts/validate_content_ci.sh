@@ -7,6 +7,13 @@
 CONTENT_DIRECTORIES="group|navigators|detector"
 VALIDATION_FAILED=false
 
+git status
+
+git diff
+
+git log
+
+
 echo "Validating content files."
 
 # go through changed git files and check for any content with modified Ids
