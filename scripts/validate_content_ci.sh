@@ -10,11 +10,12 @@ VALIDATION_FAILED=false
 echo "CI COMMIT BRANCH"
 echo $CI_COMMIT_BRANCH
 
-git status
-
-git diff
-
-git log
+git diff origin/lab --name-only
+#git status
+#
+#git diff
+#
+#git log
 
 
 echo "Validating content files."
