@@ -12,10 +12,15 @@ echo $CI_COMMIT_BRANCH
 
 git branch
 
+
 echo "NEXT STEP"
 git fetch origin $CI_COMMIT_BRANCH
 
-git diff $CI_COMMIT_BRANCH --name-only
+git branch -a
+
+git diff origin/$CI_COMMIT_BRANCH --name-only
+
+echo "DONE"
 #git status
 #
 #git diff
