@@ -7,6 +7,9 @@
 CONTENT_DIRECTORIES="group|navigators|detector"
 VALIDATION_FAILED=false
 
+echo "CI COMMIT BRANCH"
+echo $CI_COMMIT_BRANCH
+
 git status
 
 git diff
