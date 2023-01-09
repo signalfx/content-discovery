@@ -10,6 +10,10 @@ VALIDATION_FAILED=false
 echo "CI COMMIT BRANCH"
 echo $CI_COMMIT_BRANCH
 
+git branch
+
+echo "NEXT STEP"
+
 git diff origin/lab --name-only
 #git status
 #
