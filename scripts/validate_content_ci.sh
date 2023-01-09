@@ -41,7 +41,7 @@ while read file; do
     if [ "$id" != "null" ]; then
       # check the file's git diff to see if the content id was changed.
       # Note: use word-diff and grep for leading "-...+" to detect modifications only (subtraction + addition), and ignore newly added files.
-      ID_CHANGED=$(git diff HEAD^ --word-diff --unified=0 "$file" | grep -c -e "-.*+.*\"$id\"")
+      ID_CHANGED=$(git diff lab --word-diff --unified=0 "$file" | grep -c -e "-.*+.*\"$id\"")
       if [ "$ID_CHANGED" -ge 1 ]; then
         echo
         echo "  ERROR: Id has changed in $file: \"$id\"; navigator/group/detector ids should be immutable. Please correct."
@@ -58,7 +58,7 @@ while read file; do
     echo "ignoring: $file "
     ;;
   esac
-done < <(git diff HEAD^ --name-only | grep -E "^($CONTENT_DIRECTORIES)/")
+done < <(git diff lab --name-only | grep -E "^($CONTENT_DIRECTORIES)/")
 
 if [ $VALIDATION_FAILED == true ]; then
   echo
