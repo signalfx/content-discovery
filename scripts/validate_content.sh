@@ -10,7 +10,7 @@ VALIDATION_FAILED=false
 DIFF_BRANCH=--cached # default to diffing against local committed (cached) files
 
 if [ -n "${CI_MR_TARGET_BRANCH+set}" ]; then
-  echo "Running in CI against branch $CI_MR_TARGET_BRANCH"
+  echo "Running in CI against branch: $CI_MR_TARGET_BRANCH"
   git fetch origin $CI_MR_TARGET_BRANCH
 
   # on gitlab ci, diff the current (MR) branch against the origin branch that will be merged to
