@@ -1,586 +1,590 @@
 {
-    "hashCode": 1820757291,
-    "id": "FNP-xnyAYAA",
-    "modelVersion": 1,
-    "navigatorExport": {
-        "navigator": {
-            "connectedCategory": true,
-            "created": 0,
-            "creator": null,
-            "defaultGroupBy": null,
-            "description": "",
-            "id": "FNP-xnyAYAA",
-            "idDisplayName": null,
-            "importQualifiers": [
-                {
-                    "filters": [
-                        {
-                            "not": false,
-                            "property": "plugin",
-                            "values": [
-                                "couchbase"
-                            ]
-                        },
-                        {
-                            "not": false,
-                            "property": "sf_key",
-                            "values": [
-                                "bucket"
-                            ]
-                        }
-                    ],
-                    "metric": "gauge.bucket.basic.diskUsed"
-                }
-            ],
-            "lastUpdated": 0,
-            "lastUpdatedBy": null,
-            "name": "Couchbase Bucket",
-            "navigatorCategory": "Datastores",
-            "navigatorCategoryDisplayName": "Datastores",
-            "navigatorCategoryGroupDisplayName": null,
-            "navigatorCategoryInstancesName": "service",
-            "navigatorType": "elemental",
-            "sites": "o11y",
-            "systemTypes": null,
-            "uiModel": {
-                "alertQuery": "_exists_:cluster AND sf_key:bucket",
-                "category": "Datastores",
-                "categoryPriority": 10,
-                "discoveryQuery": [
-                    "_exists_:cluster",
-                    "sf_key:bucket"
-                ],
-                "displayName": "Couchbase Buckets",
-                "filterProperties": null,
-                "id": "couchbasebucket",
-                "idName": "Bucket",
-                "idTemplate": "{{cluster}} | {{bucket}}",
-                "listColumns": [
-                    {
-                        "aggregate": null,
-                        "displayName": "Bucket",
-                        "format": "id",
-                        "metric": null,
-                        "property": "id",
-                        "sortable": null
-                    },
-                    {
-                        "aggregate": null,
-                        "displayName": "Value",
-                        "format": "Number",
-                        "metric": null,
-                        "property": "value",
-                        "sortable": null
-                    }
-                ],
-                "metrics": [
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the total number of items associated with the bucket. Darker colors indicate higher relative values.",
-                        "displayName": "# Current Items",
-                        "id": "couchbasebucket_items",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "ITEMS = data(\"gauge.bucket.basic.itemCount\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "ITEMS"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.basic.itemCount"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Current items",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the number of open connection per bucket. Darker colors indicate higher relative values.",
-                        "displayName": "# Open Connections",
-                        "id": "couchbasebucket_open_connections",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "OPS = data(\"gauge.bucket.op.curr_connections\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "OPS"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.curr_connections"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Open connections",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the percentage value of number of items fetched from disk  against the number of total requested objects. Darker colors indicate higher relative values.",
-                        "displayName": "Cache Miss Rate (%)",
-                        "id": "couchbasebucket_cache_miss_rate",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "BG_FETCHED = data(\"gauge.bucket.op.ep_bg_fetched\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nCMD_GET = data(\"gauge.bucket.op.cmd_get\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nCACHE_MISS_RATE=((BG_FETCHED / CMD_GET)*100)",
-                            "varName": "CACHE_MISS_RATE"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.ep_bg_fetched",
-                            "gauge.bucket.op.cmd_get"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Percentage",
-                        "valueLabel": "Cache miss rate",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the total number of items fetched from disk. Darker colors indicate higher relative values.",
-                        "displayName": "Disk Reads / Sec",
-                        "id": "couchbasebucket_disk_reads",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "DISK_READS = data(\"gauge.bucket.op.ep_bg_fetched\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "DISK_READS"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.ep_bg_fetched"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Disk reads / sec",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the amount of disk used (bytes). Darker colors indicate higher relative values.",
-                        "displayName": "Disk Used (bytes)",
-                        "id": "couchbasebucket_disk_used",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "DISK_USED = data(\"gauge.bucket.basic.diskUsed\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "DISK_USED"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.basic.diskUsed"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Bytes",
-                        "valueLabel": "Disk used",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the number of enqueued items on disk queue. Darker colors indicate higher relative values.",
-                        "displayName": "Disk Write Queue Fill",
-                        "id": "couchbasebucket_disk_write_queue_fill",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "DISK_WRITES = data(\"gauge.bucket.op.ep_diskqueue_fill\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "DISK_WRITES"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.ep_diskqueue_fill"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Disk write queue fill",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the number of items removed from disk queue. Darker colors indicate higher relative values.",
-                        "displayName": "Disk Write Queue Drain",
-                        "id": "couchbasebucket_disk_write_queue_drain",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "DISK_WRITE_DRAIN = data(\"gauge.bucket.op.ep_diskqueue_drain\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "DISK_WRITE_DRAIN"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.ep_diskqueue_drain"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Disk write queue drain",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the number of objects ejected out of the bucket. Darker colors indicate higher relative values.",
-                        "displayName": "Ejections / Sec",
-                        "id": "couchbasebucket_ejections",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "EJECTIONS = data(\"gauge.bucket.op.ep_num_value_ejects\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "EJECTIONS"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.ep_num_value_ejects"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Ejections / sec",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the fragmentation percentage of documents in this bucket. Darker colors indicate higher relative values.",
-                        "displayName": "Fragmentation (%)",
-                        "id": "couchbasebucket_fragmentation",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "FRAGMENTATION = data(\"gauge.bucket.op.couch_docs_fragmentation\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"cluster\",\"bucket\"])",
-                            "varName": "FRAGMENTATION"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.couch_docs_fragmentation"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Percentage",
-                        "valueLabel": "Fragmentation",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the number of items queued for storage. Darker colors indicate higher relative values.",
-                        "displayName": "Items Queued for Disk Storage",
-                        "id": "couchbasebucket_items_queued",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "ITEMS_QUEUED = data(\"gauge.bucket.op.ep_queue_size\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "ITEMS_QUEUED"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.ep_queue_size"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Items queued for disk storage",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the difference in bytes between memory used and high water mark (point at which active objects begin to be ejected from bucket). Darker colors indicate higher relative values.",
-                        "displayName": "Memory Headroom (bytes)",
-                        "id": "couchbasebucket_memory_headroom",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "MEMORY_USED = data(\"gauge.bucket.op.mem_used\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nMEMORY_WAT = data(\"gauge.bucket.op.ep_mem_high_wat\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nHEADROOM=(MEMORY_WAT - MEMORY_USED)",
-                            "varName": "HEADROOM"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.mem_used",
-                            "gauge.bucket.op.ep_mem_high_wat"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Bytes",
-                        "valueLabel": "Memory headroom",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the percentage of RAM used (for active objects) against the configure bucket size. Darker colors indicate higher relative values.",
-                        "displayName": "Memory Quota used (%)",
-                        "id": "couchbasebucket_memory_used",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "MEMORY_USED = data(\"gauge.bucket.basic.quotaPercentUsed\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"cluster\",\"bucket\"])",
-                            "varName": "MEMORY_USED"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.basic.quotaPercentUsed"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Percentage",
-                        "valueLabel": "Memory quota used",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the number of operations per second (bytes). Darker colors indicate higher relative values.",
-                        "displayName": "Operations / Sec",
-                        "id": "couchbasebucket_ops_per_sec",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "OPS = data(\"gauge.bucket.basic.opsPerSec\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"cluster\",\"bucket\"])",
-                            "varName": "OPS"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.basic.opsPerSec"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Bytes",
-                        "valueLabel": "Operations / sec",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the total number of request rejected errors. Darker colors indicate higher relative values.",
-                        "displayName": "Out of Memory Errors",
-                        "id": "couchbasebucket_out_of memory_errors",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "TMP_ERR = data(\"gauge.bucket.op.ep_tmp_oom_errors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nOOM_ERR = data(\"gauge.bucket.op.ep_oom_errors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nMEMORY_ERR= (TMP_ERR + OOM_ERR)",
-                            "varName": "MEMORY_ERR"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.ep_tmp_oom_errors",
-                            "gauge.bucket.op.ep_oom_errors"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Number",
-                        "valueLabel": "Out of memory errors",
-                        "valueType": null
-                    },
-                    {
-                        "coloring": {
-                            "limits": null,
-                            "maxValue": null,
-                            "method": "quantile",
-                            "minValue": 0,
-                            "range": [
-                                "#bfd3e6",
-                                "#9ebcda",
-                                "#8c96c6",
-                                "#8856a7",
-                                "#810f7c"
-                            ]
-                        },
-                        "description": "This metric shows the ratio of items kept in memory vs stored on disk. Darker colors indicate higher relative values.",
-                        "displayName": "Resident Items Ratio (%)",
-                        "id": "couchbasebucket_resident_items_ratio",
-                        "job": {
-                            "filters": [],
-                            "resolution": 60000,
-                            "template": "OPS = data(\"gauge.bucket.op.vb_active_resident_items_ratio\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
-                            "varName": "OPS"
-                        },
-                        "metricSelectors": [
-                            "gauge.bucket.op.vb_active_resident_items_ratio"
-                        ],
-                        "type": "metric",
-                        "valueFormat": "Percentage",
-                        "valueLabel": "Resident items ratio",
-                        "valueType": null
-                    }
-                ],
-                "mtsQuery": "plugin:couchbase",
-                "o11yMetricName": "Active Buckets",
-                "o11yMetricUnit": null,
-                "o11yProductName": "Couchbase Buckets",
-                "o11ySignalflowTemplate": "A = data('gauge.bucket.basic.opsPerSec', filter=filter('plugin', 'couchbase') ).count().publish(label='A')",
-                "o11yTrendDisplayMode": "absolute",
-                "propertyColumns": null,
-                "proxyProperties": null,
-                "requiredProperties": [
-                    "bucket"
-                ],
-                "singleHostSystemDashboardName": "Couchbase Bucket",
-                "systemDashboardName": "Couchbase Buckets",
-                "systemDashboardPrefix": null,
-                "tooltipKeyList": [
-                    {
-                        "displayName": "Region",
-                        "format": null,
-                        "isSummaryProperty": true,
-                        "property": "cloud.region"
-                    },
-                    {
-                        "displayName": "Host Id",
-                        "format": null,
-                        "isSummaryProperty": true,
-                        "property": "host.id"
-                    },
-                    {
-                        "displayName": "Value",
-                        "format": "Number",
-                        "isSummaryProperty": true,
-                        "property": "value"
-                    }
-                ],
-                "type": "elemental",
-                "unreleased": false
+  "hashCode": 2035608358,
+  "id": "FNP-xnyAYAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": null,
+      "connectedCategory": true,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "FNP-xnyAYAA",
+      "idDisplayName": null,
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "plugin",
+              "values": [
+                "couchbase"
+              ]
+            },
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "bucket"
+              ]
             }
+          ],
+          "metric": "gauge.bucket.basic.diskUsed"
         }
-    },
-    "packageType": "NAVIGATOR"
+      ],
+      "instanceDashboards": null,
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Couchbase bucket",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryInstancesName": "service",
+      "navigatorType": "elemental",
+      "ownerScope": "organization",
+      "sites": "o11y",
+      "systemTypes": null,
+      "uiModel": {
+        "alertQuery": "_exists_:cluster AND sf_key:bucket",
+        "category": "Datastores",
+        "categoryPriority": 10,
+        "discoveryQuery": [
+          "_exists_:cluster",
+          "sf_key:bucket"
+        ],
+        "displayName": "Couchbase buckets",
+        "filterProperties": null,
+        "id": "couchbasebucket",
+        "idName": "Bucket",
+        "idTemplate": "{{cluster}} | {{bucket}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Bucket",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of items associated with the bucket. Darker colors indicate higher relative values.",
+            "displayName": "# Current items",
+            "id": "couchbasebucket_items",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "ITEMS = data(\"gauge.bucket.basic.itemCount\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "ITEMS"
+            },
+            "metricSelectors": [
+              "gauge.bucket.basic.itemCount"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Current items",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of open connection per bucket. Darker colors indicate higher relative values.",
+            "displayName": "# Open connections",
+            "id": "couchbasebucket_open_connections",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "OPS = data(\"gauge.bucket.op.curr_connections\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "OPS"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.curr_connections"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Open connections",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage value of number of items fetched from disk  against the number of total requested objects. Darker colors indicate higher relative values.",
+            "displayName": "Cache miss rate (%)",
+            "id": "couchbasebucket_cache_miss_rate",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "BG_FETCHED = data(\"gauge.bucket.op.ep_bg_fetched\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nCMD_GET = data(\"gauge.bucket.op.cmd_get\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nCACHE_MISS_RATE=((BG_FETCHED / CMD_GET)*100)",
+              "varName": "CACHE_MISS_RATE"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.ep_bg_fetched",
+              "gauge.bucket.op.cmd_get"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Cache miss rate",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of items fetched from disk. Darker colors indicate higher relative values.",
+            "displayName": "Disk reads / sec",
+            "id": "couchbasebucket_disk_reads",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DISK_READS = data(\"gauge.bucket.op.ep_bg_fetched\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "DISK_READS"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.ep_bg_fetched"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Disk reads / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the amount of disk used (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Disk used (bytes)",
+            "id": "couchbasebucket_disk_used",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DISK_USED = data(\"gauge.bucket.basic.diskUsed\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "DISK_USED"
+            },
+            "metricSelectors": [
+              "gauge.bucket.basic.diskUsed"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Disk used",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of enqueued items on disk queue. Darker colors indicate higher relative values.",
+            "displayName": "Disk write queue fill",
+            "id": "couchbasebucket_disk_write_queue_fill",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DISK_WRITES = data(\"gauge.bucket.op.ep_diskqueue_fill\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "DISK_WRITES"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.ep_diskqueue_fill"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Disk write queue fill",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of items removed from disk queue. Darker colors indicate higher relative values.",
+            "displayName": "Disk write queue drain",
+            "id": "couchbasebucket_disk_write_queue_drain",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "DISK_WRITE_DRAIN = data(\"gauge.bucket.op.ep_diskqueue_drain\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "DISK_WRITE_DRAIN"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.ep_diskqueue_drain"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Disk write queue drain",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of objects ejected out of the bucket. Darker colors indicate higher relative values.",
+            "displayName": "Ejections / sec",
+            "id": "couchbasebucket_ejections",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "EJECTIONS = data(\"gauge.bucket.op.ep_num_value_ejects\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "EJECTIONS"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.ep_num_value_ejects"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Ejections / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the fragmentation percentage of documents in this bucket. Darker colors indicate higher relative values.",
+            "displayName": "Fragmentation (%)",
+            "id": "couchbasebucket_fragmentation",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "FRAGMENTATION = data(\"gauge.bucket.op.couch_docs_fragmentation\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"cluster\",\"bucket\"])",
+              "varName": "FRAGMENTATION"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.couch_docs_fragmentation"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Fragmentation",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of items queued for storage. Darker colors indicate higher relative values.",
+            "displayName": "Items queued for disk storage",
+            "id": "couchbasebucket_items_queued",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "ITEMS_QUEUED = data(\"gauge.bucket.op.ep_queue_size\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "ITEMS_QUEUED"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.ep_queue_size"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Items queued for disk storage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the difference in bytes between memory used and high water mark (point at which active objects begin to be ejected from bucket). Darker colors indicate higher relative values.",
+            "displayName": "Memory headroom (bytes)",
+            "id": "couchbasebucket_memory_headroom",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "MEMORY_USED = data(\"gauge.bucket.op.mem_used\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nMEMORY_WAT = data(\"gauge.bucket.op.ep_mem_high_wat\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nHEADROOM=(MEMORY_WAT - MEMORY_USED)",
+              "varName": "HEADROOM"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.mem_used",
+              "gauge.bucket.op.ep_mem_high_wat"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Memory headroom",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage of RAM used (for active objects) against the configure bucket size. Darker colors indicate higher relative values.",
+            "displayName": "Memory quota used (%)",
+            "id": "couchbasebucket_memory_used",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "MEMORY_USED = data(\"gauge.bucket.basic.quotaPercentUsed\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"cluster\",\"bucket\"])",
+              "varName": "MEMORY_USED"
+            },
+            "metricSelectors": [
+              "gauge.bucket.basic.quotaPercentUsed"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Memory quota used",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of operations per second (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Operations / sec",
+            "id": "couchbasebucket_ops_per_sec",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "OPS = data(\"gauge.bucket.basic.opsPerSec\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"cluster\",\"bucket\"])",
+              "varName": "OPS"
+            },
+            "metricSelectors": [
+              "gauge.bucket.basic.opsPerSec"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Operations / sec",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of request rejected errors. Darker colors indicate higher relative values.",
+            "displayName": "Out of memory errors",
+            "id": "couchbasebucket_out_of memory_errors",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TMP_ERR = data(\"gauge.bucket.op.ep_tmp_oom_errors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nOOM_ERR = data(\"gauge.bucket.op.ep_oom_errors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])\nMEMORY_ERR= (TMP_ERR + OOM_ERR)",
+              "varName": "MEMORY_ERR"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.ep_tmp_oom_errors",
+              "gauge.bucket.op.ep_oom_errors"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Out of memory errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the ratio of items kept in memory vs stored on disk. Darker colors indicate higher relative values.",
+            "displayName": "Resident items ratio (%)",
+            "id": "couchbasebucket_resident_items_ratio",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "OPS = data(\"gauge.bucket.op.vb_active_resident_items_ratio\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"cluster\",\"bucket\"])",
+              "varName": "OPS"
+            },
+            "metricSelectors": [
+              "gauge.bucket.op.vb_active_resident_items_ratio"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Resident items ratio",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": "plugin:couchbase",
+        "o11yMetricName": "Active buckets",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Couchbase buckets",
+        "o11ySignalflowTemplate": "A = data('gauge.bucket.basic.opsPerSec', filter=filter('plugin', 'couchbase') ).count().publish(label='A')",
+        "o11yTrendDisplayMode": "absolute",
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "bucket"
+        ],
+        "singleHostSystemDashboardName": "Couchbase Bucket",
+        "systemDashboardName": "Couchbase Buckets",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [
+          {
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Host id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "host.id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      }
+    }
+  },
+  "packageType": "NAVIGATOR"
 }
