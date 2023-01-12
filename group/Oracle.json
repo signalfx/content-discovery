@@ -100,7 +100,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'oracledb.instance.name']).rateofchange().publish(label='A')",
+      "programText" : "A = data('oracledb.executions', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).rateofchange().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -359,7 +359,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.user_commits', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name', 'host.id']).sum(over='1h').publish(label='B')\nC = data('oracledb.user_rollbacks', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name', 'host.id']).sum(over='1h').publish(label='C')",
+      "programText" : "B = data('oracledb.user_commits', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).sum(over='1h').publish(label='B')\nC = data('oracledb.user_rollbacks', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).sum(over='1h').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -801,7 +801,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -856,7 +856,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.transactions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*'), rollup='max').count().rateofchange().sum(over='1d').publish(label='A')",
+      "programText" : "A = data('oracledb.transactions.usage', filter=filter('oracledb.instance.name', '*'), rollup='max').count().rateofchange().sum(over='1d').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1044,7 +1044,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='C')",
+      "programText" : "C = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum().publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1099,6 +1099,12 @@
           }, {
             "enabled" : true,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "session_status"
+          }, {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "lineChartOptions" : {
@@ -1158,7 +1164,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['session_status', 'oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['host.name', 'oracledb.instance.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*') and filter('session_status', 'ACTIVE')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1350,7 +1356,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')\nD = data('oracledb.dml_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='D', enable=False)\nE = data('oracledb.dml_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='E', enable=False)\nF = (D/E*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='F')",
+      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')\nD = data('oracledb.dml_locks.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='D', enable=False)\nE = data('oracledb.dml_locks.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='E', enable=False)\nF = (D/E*100).sum(by=['oracledb.instance.name']).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1405,7 +1411,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*') and filter('host.name', '*')).count(by=['host.id', 'host.name', 'oracledb.instance.name']).publish(label='A')",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('oracledb.instance.name', '*')).count(by=['oracledb.instance.name']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1483,7 +1489,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.name', 'oracledb.instance.name']).publish(label='A')",
+      "programText" : "A = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1588,7 +1594,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'oracledb.instance.name']).rateofchange().publish(label='A')",
+      "programText" : "A = data('oracledb.executions', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).rateofchange().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1670,7 +1676,7 @@
             "enabled" : true,
             "property" : "oracledb.instance.name"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "host.name"
           } ]
         },
@@ -1726,7 +1732,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).max(by=['host.name', 'oracledb.instance.name']).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='C', enable=False)\nD = (C/B*100).max(by=['oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1891,7 +1897,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.enqueue_locks.usage', filter=filter('oracledb.instance.name', '*')).publish(label='A', enable=False)\nB = data('oracledb.enqueue_locks.limit', filter=filter('oracledb.instance.name', '*')).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1966,7 +1972,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.executions', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'oracledb.instance.name']).publish(label='A')",
+      "programText" : "A = data('oracledb.executions', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2021,7 +2027,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).count().max(over='15m').publish(label='A')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*')).count().max(over='15m').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2174,7 +2180,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.user_commits', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).delta().publish(label='B')\nC = data('oracledb.user_rollbacks', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).delta().publish(label='C')",
+      "programText" : "B = data('oracledb.user_commits', filter=filter('oracledb.instance.name', '*')).delta().publish(label='B')\nC = data('oracledb.user_rollbacks', filter=filter('oracledb.instance.name', '*')).delta().publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2270,42 +2276,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Process utilization",
-          "label" : "Process utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Session utilization",
-          "label" : "Session utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Locks utilization",
-          "label" : "Locks utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Enqueue resources utilization",
-          "label" : "Enqueue resources utilization",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "Process usage",
           "label" : "A",
           "paletteIndex" : null,
@@ -2377,6 +2347,42 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Process utilization",
+          "label" : "Process utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Session utilization",
+          "label" : "Session utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Locks utilization",
+          "label" : "Locks utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Enqueue resources utilization",
+          "label" : "Enqueue resources utilization",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -2390,7 +2396,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nD = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='D', enable=False)\nE = data('oracledb.sessions.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='E', enable=False)\nG = data('oracledb.enqueue_locks.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='G', enable=False)\nH = data('oracledb.enqueue_locks.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='H', enable=False)\nJ = data('oracledb.enqueue_resources.usage', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='J', enable=False)\nK = data('oracledb.enqueue_resources.limit', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name']).publish(label='K', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='Process utilization')\nF = (D/E*100).sum(by=['oracledb.instance.name']).publish(label='Session utilization')\nI = (G/H*100).sum(by=['oracledb.instance.name']).publish(label='Locks utilization')\nL = (J/K*100).above(0).publish(label='Enqueue resources utilization')",
+      "programText" : "C = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='Process utilization')\nF = (D/E*100).sum(by=['oracledb.instance.name']).publish(label='Session utilization')\nI = (G/H*100).sum(by=['oracledb.instance.name']).publish(label='Locks utilization')\nL = (J/K*100).above(0).publish(label='Enqueue resources utilization')\nA = data('oracledb.processes.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nD = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='D', enable=False)\nE = data('oracledb.sessions.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='E', enable=False)\nG = data('oracledb.enqueue_locks.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='G', enable=False)\nH = data('oracledb.enqueue_locks.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='H', enable=False)\nJ = data('oracledb.enqueue_resources.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='J', enable=False)\nK = data('oracledb.enqueue_resources.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='K', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2400,7 +2406,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Session type | session status | instance name | host name",
+      "description" : "Session type | session status | instance name",
       "id" : "FPfyUq-AYAA",
       "importOf" : "FPftU_qAIBU",
       "lastUpdated" : 0,
@@ -2455,7 +2461,7 @@
             "enabled" : true,
             "property" : "oracledb.instance.name"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "host.name"
           }, {
             "enabled" : false,
@@ -2504,7 +2510,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['host.name', 'oracledb.instance.name', 'session_status', 'session_type']).publish(label='A')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'session_status', 'session_type']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2642,7 +2648,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'oracledb.instance.name', 'host.name']).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2813,7 +2819,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'host.name', 'oracledb.instance.name']).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2936,7 +2942,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).publish(label='C')",
+      "programText" : "C = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3092,7 +3098,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.logical_reads', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='A')\nB = data('oracledb.physical_reads', filter=filter('oracledb.instance.name', '*') and filter('host.id', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='B')",
+      "programText" : "A = data('oracledb.logical_reads', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A')\nB = data('oracledb.physical_reads', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3260,7 +3266,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['tablespace_name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'oracledb.instance.name', 'host.name']).publish(label='D')",
+      "programText" : "B = data('oracledb.tablespace_size.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='B', enable=False)\nC = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='C', enable=False)\nD = (C/B*100).sum(by=['tablespace_name', 'oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3315,7 +3321,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.transactions.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['host.id', 'host.name', 'oracledb.instance.name']).rateofchange().sum(over='1d').publish(label='A')",
+      "programText" : "A = data('oracledb.transactions.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).rateofchange().sum(over='1d').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3429,7 +3435,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.sessions.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.sessions.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.sessions.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3594,7 +3600,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.hard_parses', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='A')\nB = data('oracledb.parse_calls', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.id']).publish(label='B', enable=False)\nD = (B-A).sum(by=['oracledb.instance.name']).publish(label='D')",
+      "programText" : "A = data('oracledb.hard_parses', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A')\nB = data('oracledb.parse_calls', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nD = (B-A).sum(by=['oracledb.instance.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3649,7 +3655,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum().publish(label='C')",
+      "programText" : "C = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).sum().publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3814,7 +3820,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.processes.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name', 'host.name']).publish(label='C')",
+      "programText" : "A = data('oracledb.processes.usage', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='A', enable=False)\nB = data('oracledb.processes.limit', filter=filter('oracledb.instance.name', '*')).sum(by=['oracledb.instance.name']).publish(label='B', enable=False)\nC = (A/B*100).sum(by=['oracledb.instance.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3956,7 +3962,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('oracledb.tablespace_size.usage', filter=filter('host.id', '*') and filter('oracledb.instance.name', '*')).count(by=['host.id', 'host.name', 'oracledb.instance.name']).publish(label='A')",
+      "programText" : "A = data('oracledb.tablespace_size.usage', filter=filter('oracledb.instance.name', '*')).count(by=['oracledb.instance.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4373,7 +4379,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -1285008917,
+  "hashCode" : -114095570,
   "id" : "FPfySWlAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
