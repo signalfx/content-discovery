@@ -1,0 +1,70 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when there is a sudden change in error rate for APM services.",
+      "detectorOrigin": "AutoDetect",
+      "id": "Fj2fhBRAcAE",
+      "labelResolutions": {
+        "APM - Sudden change in service error rate": 10000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "Test corn-2347a",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.apm import errors\nerrors.error_rate_sudden_change_detector().publish('APM - Sudden change in service error rate')\n",
+      "rules": [
+        {
+          "description": "Error rate in a service has suddenly grown by a specified amount",
+          "detectLabel": "APM - Sudden change in service error rate",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\nError rate over the last {{event_annotations.current_window}}: {{inputs.current_error_pct.value}}%\nHistorical error rate (over the preceding {{event_annotations.preceding_window}}): {{inputs.preceding_error_pct.value}}%\nThreshold: {{inputs.fire_threshold.value}}%\nSignal details: {{{inputs.current_error_pct.key}}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": null,
+          "runbookUrl": null,
+          "severity": "Critical",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "service.request.count"
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [{
+          "displayName" : "APM - Sudden change in service error rate",
+          "label" : "current_error_pct",
+          "valuePrefix" : "",
+          "valueSuffix" : "%",
+          "valueUnit" : null
+        }],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "service.request.count",
+          "filters": []
+        }
+      ]
+    }
+  },
+  "hashCode": 423376917,
+  "id": "Fj2fhBRAcAE",
+  "packageType": "DETECTOR"
+}
