@@ -475,7 +475,7 @@
       "importOf" : "FXdz897AgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU usage per pod (cpu units)",
+      "name" : "CPU usage per pod (CPU units)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -4608,12 +4608,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "With EKS/Fargate metric data can possibly go >100%",
+      "description" : "Container name | Pod name | Node name",
       "id" : "FY0-qSUAYAA",
       "importOf" : "FY0wxmzAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top containers by CPU usages (%)",
+      "name" : "Top containers by CPU usages (CPU units)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -4683,7 +4683,7 @@
             "enabled" : false,
             "property" : "container.id"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.pod.name"
           }, {
             "enabled" : false,
@@ -4698,7 +4698,7 @@
             "enabled" : false,
             "property" : "cloud.provider"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.node.name"
           }, {
             "enabled" : false,
@@ -4766,79 +4766,16 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Smart agent k8s CPU usage",
-          "label" : "N",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Otel collector k8s CPU usage",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "CPU used by containers",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : "",
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "M",
-          "label" : "M",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "G",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "G1",
-          "label" : "G1",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "F",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : 5000,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
         "time" : {
@@ -4850,7 +4787,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('machine_cpu_cores').sum().publish(label='M', enable=False)\nB = data('cpu.num_processors').sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.container.name']).publish(label='F', enable=False)\nE = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=(not filter('eks.amazonaws.com/fargate-profile', '*')) and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.container.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5301,7 +5238,7 @@
       "importOf" : "FY0wxjSAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top containers by CPU usages (cpu units)",
+      "name" : "Top containers by CPU usages (CPU units)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -5968,41 +5905,16 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "With EKS/Fargate metric data can possibly go >100%",
+      "description" : "Pod name | Node name",
       "id" : "FY0-vyBAYAA",
       "importOf" : "FXdz9XwAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU usage per pod (%)",
+      "name" : "Top 10 CPU usage per pod (CPU units)",
       "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "CPU %",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : 0.0
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : false,
+        "colorScale2" : null,
+        "hideMissingValues" : true,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : false,
@@ -6013,19 +5925,16 @@
           }, {
             "enabled" : true,
             "property" : "k8s.node.name"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
           } ]
         },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
+        "maximumPrecision" : 5,
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
           "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -6034,34 +5943,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "G",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "D",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "F",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU utilization",
+          "displayName" : "Top 10 pods by average CPU usage",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -6069,55 +5951,20 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : "CPU limit",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage (%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage (%)",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU usage (%)",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
         } ],
-        "showEventLines" : false,
-        "stacked" : false,
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "TimeSeriesChart",
+        "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "G = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*'), rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='average').sum().publish(label='B', enable=False)\nC = (A/B).publish(label='C')\nE = (A/D).sum().publish(label='E')\nH = ((F*100)/G).sum().publish(label='H')",
+      "programText" : "A = data('container.cpu.utilization').mean(by=['k8s.pod.name', 'k8s.node.name']).top(count=10).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6182,12 +6029,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Pod name | Node name",
       "id" : "FY0-wPEAcAA",
       "importOf" : "FXdz8x0AgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top 10 pods by average container memory usage (bytes)",
+      "name" : "Top 10 pods by average memory usage (bytes)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -6202,6 +6049,9 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -6217,7 +6067,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Top 10 pods by average container memory usage",
+          "displayName" : "Top 10 pods by average memory usage",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -6238,7 +6088,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).mean(by=['k8s.pod.name']).top(count=10).publish(label='A')",
+      "programText" : "A = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).mean(by=['k8s.pod.name', 'k8s.node.name']).top(count=10).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6422,135 +6272,6 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('k8s.pod.network.errors', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name']).publish(label='A')",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "FY0-wqMAcAI",
-      "importOf" : "FXdz8kFAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "CPU usage per pod (cpu units)",
-      "options" : {
-        "areaChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "axes" : [ {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "CPU usage",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        }, {
-          "highWatermark" : null,
-          "highWatermarkLabel" : null,
-          "label" : "",
-          "lowWatermark" : null,
-          "lowWatermarkLabel" : null,
-          "max" : null,
-          "min" : null
-        } ],
-        "axisPrecision" : null,
-        "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
-        "eventPublishLabelOptions" : [ ],
-        "histogramChartOptions" : {
-          "colorThemeIndex" : 16
-        },
-        "includeZero" : true,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "kubernetes_pod_name"
-          }, {
-            "enabled" : false,
-            "property" : "kubernetes_namespace"
-          }, {
-            "enabled" : false,
-            "property" : "kubernetes_cluster"
-          }, {
-            "enabled" : false,
-            "property" : "kubernetes_node"
-          }, {
-            "enabled" : false,
-            "property" : "host"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "kubernetes_node_uid"
-          }, {
-            "enabled" : false,
-            "property" : "metric_source"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : true,
-            "property" : "k8s.pod.name"
-          }, {
-            "enabled" : true,
-            "property" : "k8s.node.name"
-          }, {
-            "enabled" : true,
-            "property" : "k8s.namespace.name"
-          }, {
-            "enabled" : false,
-            "property" : "k8s.cluster.name"
-          }, {
-            "enabled" : false,
-            "property" : "k8s.container.name"
-          } ]
-        },
-        "lineChartOptions" : {
-          "showDataMarkers" : false
-        },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
-        "onChartLegendOptions" : {
-          "dimensionInLegend" : null,
-          "showLegend" : false
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : null,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "CPU usage per pod",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
-        "showEventLines" : true,
-        "stacked" : false,
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "TimeSeriesChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7495,7 +7216,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Percentile distribution - With EKS/Fargate metric data can possibly go >100%",
+      "description" : "Percentile distribution",
       "id" : "FY0_CXVAYAA",
       "importOf" : "FXdz8dJAYAE",
       "lastUpdated" : 0,
@@ -8099,12 +7820,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "With EKS/Fargate metric data can possibly go >100%",
+      "description" : "Container name | Pod name | Node name",
       "id" : "FY0_DdbAgAA",
       "importOf" : "FXdz9SHAgAI",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top CPU usages (%)",
+      "name" : "Top CPU usages (CPU units)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -8174,7 +7895,7 @@
             "enabled" : false,
             "property" : "container.id"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.pod.name"
           }, {
             "enabled" : false,
@@ -8189,7 +7910,7 @@
             "enabled" : false,
             "property" : "cloud.provider"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.node.name"
           }, {
             "enabled" : false,
@@ -8242,6 +7963,9 @@
           }, {
             "enabled" : false,
             "property" : "deployment.environment"
+          }, {
+            "enabled" : true,
+            "property" : "container.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -8257,79 +7981,16 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Smart agent k8s CPU usage",
-          "label" : "N",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Otel collector k8s CPU usage",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "CPU used by containers",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : "",
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "M",
-          "label" : "M",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "G",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "G1",
-          "label" : "G1",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "F",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : 5000,
+        "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
         "time" : {
@@ -8341,7 +8002,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.container.name']).publish(label='G1', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.container.name']).publish(label='F', enable=False)\nE = (A/D).publish(label='N')\nC = (A/B).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.container.name']).publish(label='A', enable=False)\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9724,7 +9385,7 @@
       "importOf" : "FXdz8RmAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU usage (cpu units)",
+      "name" : "CPU usage (CPU units)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -11854,7 +11515,7 @@
       "id" : "FY1bWayAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU usage per pod (%)",
+      "name" : "CPU usage per pod (CPU units)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -11878,7 +11539,7 @@
         } ],
         "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "defaultPlotType" : "LineChart",
+        "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ ],
         "histogramChartOptions" : {
           "colorThemeIndex" : 16
@@ -11894,6 +11555,9 @@
           }, {
             "enabled" : true,
             "property" : "k8s.node.name"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "lineChartOptions" : {
@@ -11915,71 +11579,8 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "G",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "D",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "F",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A",
+          "displayName" : "CPU utilization",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "B",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Otel collector k8s CPU usage",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Smart agent k8s CPU usage",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage",
-          "label" : "H",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -11998,7 +11599,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B).publish(label='C')\nE = (A/D).sum().publish(label='E')\nH = ((F*100)/G).sum().publish(label='H')\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.pod.name']).publish(label='G', enable=False)\nD = data('machine_cpu_cores', rollup='average').sum().publish(label='D', enable=False)\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*'), rollup='rate').sum(by=['k8s.pod.name']).publish(label='F', enable=False)\nA = data('container.cpu.utilization', rollup='rate').sum(by=['k8s.pod.name']).publish(label='A', enable=False)\nB = data('cpu.num_processors', rollup='average').sum().publish(label='B', enable=False)",
+      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.pod.name', 'k8s.node.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -13434,12 +13035,6 @@
         "row" : 1,
         "width" : 4
       }, {
-        "chartId" : "FY0-wqMAcAI",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
         "chartId" : "FY0-wPEAcAA",
         "column" : 8,
         "height" : 2,
@@ -13447,19 +13042,19 @@
         "width" : 4
       }, {
         "chartId" : "FY0-vyBAYAA",
-        "column" : 0,
-        "height" : 1,
+        "column" : 4,
+        "height" : 2,
         "row" : 2,
         "width" : 4
       }, {
         "chartId" : "FY0-wpMAgAM",
         "column" : 0,
         "height" : 1,
-        "row" : 3,
+        "row" : 2,
         "width" : 4
       }, {
         "chartId" : "FY0-vxdAcAE",
-        "column" : 4,
+        "column" : 0,
         "height" : 1,
         "row" : 3,
         "width" : 4
@@ -13574,8 +13169,14 @@
         "row" : 1,
         "width" : 4
       }, {
-        "chartId" : "FY0-qSUAYAA",
+        "chartId" : "FY0-sb4AcAI",
         "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "FY0-pi5AgAA",
+        "column" : 4,
         "height" : 1,
         "row" : 1,
         "width" : 4
@@ -13583,7 +13184,13 @@
         "chartId" : "FY0-sPiAgAA",
         "column" : 4,
         "height" : 1,
-        "row" : 1,
+        "row" : 2,
+        "width" : 4
+      }, {
+        "chartId" : "FY0-qSUAYAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 2,
         "width" : 4
       }, {
         "chartId" : "FY0-rRQAgAA",
@@ -13592,19 +13199,7 @@
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "FY0-sb4AcAI",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
         "chartId" : "FY0-r9AAYAA",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "FY0-pi5AgAA",
         "column" : 0,
         "height" : 1,
         "row" : 3,
@@ -13624,7 +13219,7 @@
         "time" : null,
         "variables" : [ {
           "alias" : "Pod",
-          "applyIfExists" : true,
+          "applyIfExists" : false,
           "description" : "K8s pod name",
           "preferredSuggestions" : [ ],
           "property" : "k8s.pod.name",
@@ -14443,7 +14038,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 1473631473,
+  "hashCode" : 793841671,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
