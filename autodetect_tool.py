@@ -263,6 +263,10 @@ def extract_import_qualifiers_from_detector_program_text(detector: object, realm
             metric_filter["property"] = metric_filter.get("name")
             del metric_filter["name"]
             metric_filter["not"] = False
+            # In case of filter values ["*"] we need to update it to [] Reference thread:
+            # https://splunk.slack.com/archives/CSN0BDJSJ/p1677149391265949?thread_ts=1677075481.884909&cid=CSN0BDJSJ
+            if metric_filter["values"][0] == "*":
+                metric_filter["values"] = []
         appended_metrics = [item.get("metric") for item in metrics]
         metric_name = metric_item.get("metricName")
         if metric_name not in appended_metrics:
