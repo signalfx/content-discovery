@@ -6948,7 +6948,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.filesystem.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*', match_missing=True), rollup='latest').top(count=10).sum(by=['k8s.container.name']).publish(label='A')",
+      "programText" : "A = data('container.filesystem.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*', match_missing=True), rollup='latest', extrapolation='last_value', maxExtrapolations=3).top(count=10).sum(by=['k8s.container.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7657,7 +7657,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*', match_missing=True) and filter('k8s.deployment.name', '*', match_missing=True), rollup='latest').count().publish(label='A')",
+      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*', match_missing=True) and filter('k8s.deployment.name', '*', match_missing=True), rollup='latest', extrapolation='last_value', maxExtrapolations=3).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -12655,6 +12655,162 @@
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FqH2WaQAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Containers properties",
+      "options" : {
+        "groupBy" : [ "k8s.container.name" ],
+        "groupBySort" : "Descending",
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "CPU usage (CPU units)",
+          "label" : "A",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU limit (CPU units)",
+          "label" : "B",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU usage (%)",
+          "label" : "C",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Memory usage",
+          "label" : "D",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte"
+        }, {
+          "displayName" : "Memory limit",
+          "label" : "G",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte"
+        }, {
+          "displayName" : "Memory usage (%)",
+          "label" : "H",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        } ],
+        "refreshInterval" : 60000,
+        "sortBy" : "+k8s.container.name",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "timestampHidden" : false,
+        "type" : "TableChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('container.cpu.utilization',rollup='delta').sum(by=['k8s.container.name','k8s.pod.name']).scale(0.001).publish(label='A')\nB = data('k8s.container.cpu_limit',rollup='average').sum(by=['k8s.container.name','k8s.pod.name']).publish(label='B')\nC = ((A*100)/B).publish(label='C')\nD = data('container.memory.usage',rollup='average').sum(by=['k8s.container.name','k8s.pod.name']).publish(label='D')\nE = data('container_spec_memory_limit_bytes',rollup='average').sum(by=['k8s.container.name','k8s.pod.name'])\nF = data('k8s.container.memory_limit',rollup='average').sum(by=['k8s.container.name','k8s.pod.name'])\nG = union(E,F).publish(label='G')\nH = ((D*100)/G).publish(label='H')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FqH5816AgAI",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Container properties",
+      "options" : {
+        "groupBy" : [ "None" ],
+        "groupBySort" : "Descending",
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "CPU usage (CPU units)",
+          "label" : "A",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU limit (CPU units)",
+          "label" : "B",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU usage (%)",
+          "label" : "C",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Memory usage",
+          "label" : "D",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte"
+        }, {
+          "displayName" : "Memory limit",
+          "label" : "G",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte"
+        }, {
+          "displayName" : "Memory usage (%)",
+          "label" : "H",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        } ],
+        "refreshInterval" : 60000,
+        "sortBy" : "+k8s.container.name",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "timestampHidden" : false,
+        "type" : "TableChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('container.cpu.utilization',rollup='delta').sum(by=['k8s.container.name','k8s.pod.name']).scale(0.001).publish(label='A')\nB = data('k8s.container.cpu_limit',rollup='average').sum(by=['k8s.container.name','k8s.pod.name']).publish(label='B')\nC = ((A*100)/B).publish(label='C')\nD = data('container.memory.usage',rollup='average').sum(by=['k8s.container.name','k8s.pod.name']).publish(label='D')\nE = data('container_spec_memory_limit_bytes',rollup='average').sum(by=['k8s.container.name','k8s.pod.name'])\nF = data('k8s.container.memory_limit',rollup='average').sum(by=['k8s.container.name','k8s.pod.name'])\nG = union(E,F).publish(label='G')\nH = ((D*100)/G).publish(label='H')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
   } ],
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
@@ -13419,49 +13575,55 @@
         "column" : 0,
         "height" : 1,
         "row" : 0,
-        "width" : 4
+        "width" : 3
       }, {
         "chartId" : "FY0_CtFAYAE",
-        "column" : 4,
+        "column" : 3,
         "height" : 1,
         "row" : 0,
-        "width" : 4
+        "width" : 3
       }, {
         "chartId" : "FY0_CQFAcAA",
-        "column" : 8,
+        "column" : 6,
         "height" : 1,
         "row" : 0,
-        "width" : 4
+        "width" : 3
+      }, {
+        "chartId" : "FY0_CBmAgAE",
+        "column" : 9,
+        "height" : 1,
+        "row" : 0,
+        "width" : 3
+      }, {
+        "chartId" : "FqH2WaQAYAA",
+        "column" : 0,
+        "height" : 2,
+        "row" : 1,
+        "width" : 12
       }, {
         "chartId" : "FY0_DdbAgAA",
         "column" : 0,
         "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "FY0_CBmAgAE",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
+        "row" : 3,
+        "width" : 6
       }, {
         "chartId" : "FY0_DtgAcAE",
-        "column" : 4,
+        "column" : 6,
         "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "FY0_ClYAgAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
+        "row" : 3,
+        "width" : 6
       }, {
         "chartId" : "FY0_CXVAYAA",
         "column" : 0,
         "height" : 1,
-        "row" : 2,
-        "width" : 4
+        "row" : 4,
+        "width" : 6
+      }, {
+        "chartId" : "FY0_ClYAgAA",
+        "column" : 6,
+        "height" : 1,
+        "row" : 4,
+        "width" : 6
       } ],
       "created" : 0,
       "creator" : null,
@@ -13538,19 +13700,19 @@
       "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
-        "chartId" : "FY0_KnoAgAg",
+        "chartId" : "FqH5816AgAI",
         "column" : 0,
         "height" : 1,
         "row" : 0,
-        "width" : 6
+        "width" : 12
       }, {
         "chartId" : "FY0_K34AcAA",
         "column" : 6,
         "height" : 1,
-        "row" : 0,
+        "row" : 1,
         "width" : 6
       }, {
-        "chartId" : "FY0_Jy-AcAA",
+        "chartId" : "FY0_KnoAgAg",
         "column" : 0,
         "height" : 1,
         "row" : 1,
@@ -13559,7 +13721,13 @@
         "chartId" : "FY0_J-TAYAA",
         "column" : 6,
         "height" : 1,
-        "row" : 1,
+        "row" : 2,
+        "width" : 6
+      }, {
+        "chartId" : "FY0_Jy-AcAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 2,
         "width" : 6
       } ],
       "created" : 0,
@@ -14218,7 +14386,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 3604541,
+  "hashCode" : -1289822743,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
