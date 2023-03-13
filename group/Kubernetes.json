@@ -237,7 +237,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nH = ((F*100)/G).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='H')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='G1', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = (A/D).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='N')",
+      "programText" : "C = (A/B).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='L')\nA = data('container.cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='A', enable=False)\nH = ((F*100)/G).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='H')\nF = data('container.cpu.utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='F', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='G1', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = (A/D).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='N')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -12928,7 +12928,7 @@
         },
         "variables" : [ {
           "alias" : "Cluster",
-          "applyIfExists" : false,
+          "applyIfExists" : true,
           "description" : "",
           "preferredSuggestions" : [ ],
           "property" : "k8s.cluster.name",
@@ -12939,7 +12939,7 @@
           "value" : ""
         }, {
           "alias" : "Namespace",
-          "applyIfExists" : false,
+          "applyIfExists" : true,
           "description" : "",
           "preferredSuggestions" : [ ],
           "property" : "k8s.namespace.name",
@@ -12950,7 +12950,7 @@
           "value" : ""
         }, {
           "alias" : "Node",
-          "applyIfExists" : false,
+          "applyIfExists" : true,
           "description" : "",
           "preferredSuggestions" : [ ],
           "property" : "k8s.node.name",
@@ -12961,7 +12961,7 @@
           "value" : ""
         }, {
           "alias" : "Deployment",
-          "applyIfExists" : false,
+          "applyIfExists" : true,
           "description" : "",
           "preferredSuggestions" : [ ],
           "property" : "k8s.deployment.name",
@@ -12972,7 +12972,7 @@
           "value" : ""
         }, {
           "alias" : "Service",
-          "applyIfExists" : false,
+          "applyIfExists" : true,
           "description" : "",
           "preferredSuggestions" : [ "kubernetes_service*" ],
           "property" : "sf_tags",
@@ -14386,7 +14386,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -1779308395,
+  "hashCode" : 1059136638,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
