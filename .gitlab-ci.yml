@@ -7,6 +7,7 @@ include:
 stages:
   - code_analysis
   - validate-content
+  - update-gsheet
 
 validate:
   stage: validate-content
@@ -14,3 +15,13 @@ validate:
     - schedules
   script:
     - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
+
+gsheet:
+  stage: update-gsheet
+  rules:
+      - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "master"
+#        changes:
+#          - navigators/*
+        when: always
+      - when: never
+  script: "echo This deploys!"
