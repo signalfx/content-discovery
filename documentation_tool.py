@@ -1,6 +1,6 @@
 import json
 import os
-from xlsxwriter import Workbook
+# from xlsxwriter import Workbook
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -45,25 +45,25 @@ def prepare_import_qualifiers(nav_import_qualifiers):
     return str_import_qualifiers
 
 
-def write_xlsx_file(nav_data_list):
-    """
-
-    """
-    ordered_list=["Name", "importQualifiers", "Category Group DisplayName", "Category DisplayName"] # List object calls by index, but the dict object calls items randomly
-
-    wb = Workbook("OOTB Navigators.xlsx")
-    ws = wb.add_worksheet("Navigators") # Or leave it blank. The default name is "Sheet 1"
-
-    first_row=0
-    for header in ordered_list:
-        col=ordered_list.index(header) # We are keeping order.
-        ws.write(first_row,col,header) # We have written first row which is the header of worksheet also.
-
-    for nav_data in nav_data_list:
-        for _key,_value in nav_data.items():
-            col=ordered_list.index(_key)
-            ws.write(row,col,_value)
-    wb.close()
+# def write_xlsx_file(nav_data_list):
+#     """
+#
+#     """
+#     ordered_list=["Name", "importQualifiers", "Category Group DisplayName", "Category DisplayName"] # List object calls by index, but the dict object calls items randomly
+#
+#     wb = Workbook("OOTB Navigators.xlsx")
+#     ws = wb.add_worksheet("Navigators") # Or leave it blank. The default name is "Sheet 1"
+#
+#     first_row=0
+#     for header in ordered_list:
+#         col=ordered_list.index(header) # We are keeping order.
+#         ws.write(first_row,col,header) # We have written first row which is the header of worksheet also.
+#
+#     for nav_data in nav_data_list:
+#         for _key,_value in nav_data.items():
+#             col=ordered_list.index(_key)
+#             ws.write(row,col,_value)
+#     wb.close()
 
 
 def collect_nav_name_desc_and_type(dest_list):
