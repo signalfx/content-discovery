@@ -5,11 +5,11 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "Alerts when spans are dropped due to ingest limits",
+      "description": "Alerts when number of spans dropped due to exceeding trace volume or ingest limits is above threshold",
       "detectorOrigin": "Standard",
       "id": "FsVf4G9AgAE",
       "labelResolutions": {
-        "APM - Spans are throttled": 30000
+        "APM - Spans are throttled": 5000
       },
       "lastUpdated": 0,
       "lastUpdatedBy": null,
@@ -22,11 +22,11 @@
       "programText": "from signalfx.detectors.autodetect.apm import operational\n\noperational.spans_throttling_detector().publish('APM - Spans are throttled')",
       "rules": [
         {
-          "description": "",
+          "description": "Number of throttled spans is above threshold",
           "detectLabel": "APM - Spans are throttled",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}({{inputs.fire_threshold_stream.value}})\n{{/if}}\n\nDatapoints dropped: {{inputs.stream.value}}\nIt is the total number of spans that APM was unable to process or has dropped because you significantly exceeded your trace volume or ingest limit.\n\n{{#notEmpty dimensions}}Signal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": null,
           "runbookUrl": null,
           "severity": "Critical",
@@ -58,7 +58,7 @@
       ]
     }
   },
-  "hashCode": -1304696713,
+  "hashCode": 380927527,
   "id": "FsVf4G9AgAE",
   "packageType": "DETECTOR"
 }

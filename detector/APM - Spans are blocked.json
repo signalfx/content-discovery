@@ -5,7 +5,7 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "Alerts when spans are dropped due to being blocked",
+      "description": "Alerts when number of spans dropped due to being blocked is above threshold",
       "detectorOrigin": "Standard",
       "id": "FsVgGmLAgAA",
       "labelResolutions": {
@@ -22,11 +22,11 @@
       "programText": "from signalfx.detectors.autodetect.apm import operational\n\noperational.spans_blocked_detector().publish('APM - Spans are blocked')",
       "rules": [
         {
-          "description": "",
+          "description": "Number of blocked spans is above threshold",
           "detectLabel": "APM - Spans are blocked",
           "disabled": false,
           "notifications": null,
-          "parameterizedBody": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}({{inputs.fire_threshold_stream.value}})\n{{/if}}\n\nDatapoints dropped: {{inputs.stream.value}}\nIt is the total number of blocked spans that Splunk APM did not accept because a trace had over 100k spans or the trace submitted had over 100k spans in a single ingest instance.\n\n{{#notEmpty dimensions}}Signal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
           "parameterizedSubject": null,
           "runbookUrl": null,
           "severity": "Critical",
@@ -58,7 +58,7 @@
       ]
     }
   },
-  "hashCode": -1051045960,
+  "hashCode": 809575787,
   "id": "FsVgGmLAgAA",
   "packageType": "DETECTOR"
 }
