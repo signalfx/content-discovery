@@ -621,7 +621,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('runtime.jvm.classes.loaded', rollup='sum').sum().publish(label='A')\nB = data('runtime.jvm.classes.unloaded').sum().publish(label='B')",
+      "programText" : "A = data('runtime.jvm.classes.loaded', filter=filter('deployment_environment', '*') and filter('service', '*'), rollup='sum').sum().publish(label='A')\nB = data('runtime.jvm.classes.unloaded', filter=filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -908,6 +908,9 @@
           }, {
             "enabled" : true,
             "property" : "cloud.account.id"
+          }, {
+            "enabled" : true,
+            "property" : "type"
           } ]
         },
         "lineChartOptions" : {
@@ -949,7 +952,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('process.runtime.jvm.memory.allocated', rollup='latest').rateofchange().publish(label='A')",
+      "programText" : "A = data('process.runtime.jvm.memory.allocated', filter=filter('service', '*') and filter('deployment_environment', '*'), rollup='latest').rateofchange().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1637,7 +1640,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('executor.threads.active').sum().publish(label='A')\nB = data('executor.threads.idle').sum().publish(label='B')\nC = data('executor.threads.max').sum().publish(label='C')",
+      "programText" : "A = data('executor.threads.active', filter=filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='A')\nB = data('executor.threads.idle', filter=filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='B')\nC = data('executor.threads.max', filter=filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2172,6 +2175,21 @@
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "os.type"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.id"
           } ]
         },
         "lineChartOptions" : {
@@ -2222,7 +2240,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('runtime.jvm.gc.overhead', rollup='latest').publish(label='A', enable=False)\nB = (A*100).publish(label='B')",
+      "programText" : "A = data('runtime.jvm.gc.overhead', filter=filter('service', '*') and filter('deployment_environment', '*'), rollup='latest').publish(label='A', enable=False)\nB = (A*100).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3372,7 +3390,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('runtime.jvm.gc.pause.totalTime').sum().publish(label='A')\nE = data('runtime.jvm.gc.pause.count').sum().publish(label='E')",
+      "programText" : "A = data('runtime.jvm.gc.pause.totalTime', filter=filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='A')\nE = data('runtime.jvm.gc.pause.count', filter=filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3495,7 +3513,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('runtime.jvm.gc.live.data.size').sum().publish(label='A')\nC = data('runtime.jvm.memory.max', filter=filter('area', 'heap')).sum().publish(label='C')\nD = data('runtime.jvm.memory.used', filter=filter('area', 'heap')).sum().publish(label='D')",
+      "programText" : "A = data('runtime.jvm.gc.live.data.size', filter=filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='A')\nC = data('runtime.jvm.memory.max', filter=filter('area', 'heap') and filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='C')\nD = data('runtime.jvm.memory.used', filter=filter('area', 'heap') and filter('deployment_environment', '*') and filter('service', '*')).sum().publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4027,7 +4045,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('runtime.jvm.threads.live', rollup='sum').sum().publish(label='A')\nB = data('runtime.jvm.threads.peak', rollup='sum').sum().publish(label='B')",
+      "programText" : "A = data('runtime.jvm.threads.live', filter=filter('deployment_environment', '*') and filter('service', '*'), rollup='sum').sum().publish(label='A')\nB = data('runtime.jvm.threads.peak', filter=filter('deployment_environment', '*') and filter('service', '*'), rollup='sum').sum().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4111,6 +4129,894 @@
       },
       "packageSpecifications" : "",
       "programText" : "A = data('network.total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FscoZm8AYAA",
+      "importOf" : "FUj-wp5AgAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "GC overhead (%)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : true,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "service"
+          }, {
+            "enabled" : true,
+            "property" : "container_id"
+          }, {
+            "enabled" : true,
+            "property" : "host_name"
+          }, {
+            "enabled" : true,
+            "property" : "deployment_environment"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "process_pid"
+          }, {
+            "enabled" : true,
+            "property" : "runtime"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "os.type"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.id"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "service",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "GC overhead %",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : "LineChart",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "GC overhead (%)",
+          "label" : "B",
+          "paletteIndex" : 10,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('runtime.jvm.gc.overhead', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='latest').publish(label='A', enable=False)\nB = (A*100).publish(label='B')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "Fsco4GLAgAI",
+      "importOf" : "FUj-vdBAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "# Thread pools",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : true,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Active threads",
+          "label" : "A",
+          "paletteIndex" : 13,
+          "plotType" : "AreaChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Idle threads",
+          "label" : "B",
+          "paletteIndex" : 3,
+          "plotType" : "AreaChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Max threads",
+          "label" : "C",
+          "paletteIndex" : 4,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('executor.threads.active', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='A')\nB = data('executor.threads.idle', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='B')\nC = data('executor.threads.max', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='C')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "Fsco6y9AcAA",
+      "importOf" : "FUj-1WoAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "# Thread count",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : true,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Live threads",
+          "label" : "A",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Peak threads",
+          "label" : "B",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('runtime.jvm.threads.live', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='sum').sum().publish(label='A')\nB = data('runtime.jvm.threads.peak', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='sum').sum().publish(label='B')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "Fscrfc1AYAA",
+      "importOf" : "FUj-tChAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "# Class loading",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : true,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Classes loaded",
+          "label" : "A",
+          "paletteIndex" : 13,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Classes unloaded",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('runtime.jvm.classes.loaded', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='sum').sum().publish(label='A')\nB = data('runtime.jvm.classes.unloaded', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='B')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FscskC3AgAA",
+      "importOf" : "FUj-znzAgAM",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Memory usage (bytes)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : true,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "service"
+          }, {
+            "enabled" : true,
+            "property" : "runtime"
+          }, {
+            "enabled" : true,
+            "property" : "deployment_environment"
+          }, {
+            "enabled" : true,
+            "property" : "process_pid"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Live data size",
+          "label" : "A",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte",
+          "yAxis" : 0
+        }, {
+          "displayName" : "Max heap size",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte",
+          "yAxis" : 0
+        }, {
+          "displayName" : "Used heap",
+          "label" : "D",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte",
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('runtime.jvm.gc.live.data.size', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='A')\nC = data('runtime.jvm.memory.max', filter=filter('area', 'heap') and filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='C')\nD = data('runtime.jvm.memory.used', filter=filter('area', 'heap') and filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='D')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FscuucsAcAE",
+      "importOf" : "FUj-v6QAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "ㅤ",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"40%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Thread pools</font>\n</td></tr>\n</table>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FscuueeAYAA",
+      "importOf" : "FUj-tx0AgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "ㅤ",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"40%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Memory usage</font>\n</td></tr>\n</table>\n<p align=\"center\"><br />\n<i>Below chart metrics will only populate if you are forwarding your application trace spans through a local <a href=\"https://github.com/signalfx/splunk-otel-java\">Java OpenTelemetry Collector</a> (running as an agent) to establish the correlation between your application and your infrastructure.</i>\n</p>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FscvaSqAgAA",
+      "importOf" : "FUj-ww5AcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "ㅤ",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"40%\" rules=\"none\">\n<tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Garbage collection activity</font>\n</td></tr>\n</table>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FscvaSqAgAE",
+      "importOf" : "FUj-tYaAgAI",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Allocation rate (bytes)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "Bytes/second",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : true,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "service"
+          }, {
+            "enabled" : true,
+            "property" : "container_id"
+          }, {
+            "enabled" : true,
+            "property" : "host_name"
+          }, {
+            "enabled" : true,
+            "property" : "deployment_environment"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "process_pid"
+          }, {
+            "enabled" : true,
+            "property" : "runtime"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "os.type"
+          }, {
+            "enabled" : true,
+            "property" : "gcp_id"
+          }, {
+            "enabled" : true,
+            "property" : "host.type"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.availability_zone"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.platform"
+          }, {
+            "enabled" : true,
+            "property" : "host.id"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.provider"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.account.id"
+          }, {
+            "enabled" : true,
+            "property" : "type"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "service",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Allocation rate",
+          "label" : "A",
+          "paletteIndex" : 10,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte",
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('process.runtime.jvm.memory.allocated', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='latest').rateofchange().publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "FscvaSqAgAI",
+      "importOf" : "FUj-zVBAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "GC activity",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "cause"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "GC activity total time",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : "LineChart",
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Second",
+          "yAxis" : 0
+        }, {
+          "displayName" : "GC activity count",
+          "label" : "E",
+          "paletteIndex" : 4,
+          "plotType" : "LineChart",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null,
+          "yAxis" : 1
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('runtime.jvm.gc.pause.totalTime', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='A')\nE = data('runtime.jvm.gc.pause.count', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum().publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -4524,6 +5430,152 @@
       "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
+        "chartId" : "FscuueeAYAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 0,
+        "width" : 12
+      }, {
+        "chartId" : "FscskC3AgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 6
+      }, {
+        "chartId" : "FscvaSqAgAE",
+        "column" : 6,
+        "height" : 1,
+        "row" : 1,
+        "width" : 6
+      }, {
+        "chartId" : "Fscrfc1AYAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 2,
+        "width" : 12
+      }, {
+        "chartId" : "FscvaSqAgAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 3,
+        "width" : 12
+      }, {
+        "chartId" : "FscvaSqAgAI",
+        "column" : 0,
+        "height" : 1,
+        "row" : 4,
+        "width" : 6
+      }, {
+        "chartId" : "FscoZm8AYAA",
+        "column" : 6,
+        "height" : 1,
+        "row" : 4,
+        "width" : 6
+      }, {
+        "chartId" : "FscuucsAcAE",
+        "column" : 0,
+        "height" : 1,
+        "row" : 5,
+        "width" : 12
+      }, {
+        "chartId" : "Fsco6y9AcAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 6,
+        "width" : 6
+      }, {
+        "chartId" : "Fsco4GLAgAI",
+        "column" : 6,
+        "height" : 1,
+        "row" : 6,
+        "width" : 6
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "",
+      "discoveryOptions" : null,
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : null,
+        "time" : {
+          "end" : "Now",
+          "start" : "-1h"
+        },
+        "variables" : [ {
+          "alias" : "Environment",
+          "applyIfExists" : false,
+          "description" : "APM environment name",
+          "preferredSuggestions" : [ ],
+          "property" : "sf_environment",
+          "propertyMappings" : [ "sf_environment" ],
+          "replaceOnly" : true,
+          "required" : true,
+          "restricted" : false,
+          "value" : [ "Choose Environment" ]
+        }, {
+          "alias" : "Service",
+          "applyIfExists" : false,
+          "description" : "APM service name",
+          "preferredSuggestions" : [ ],
+          "property" : "sf_service",
+          "propertyMappings" : [ "sf_service" ],
+          "replaceOnly" : true,
+          "required" : true,
+          "restricted" : false,
+          "value" : [ "Choose Service" ]
+        }, {
+          "alias" : "Host name",
+          "applyIfExists" : false,
+          "description" : "APM host name",
+          "preferredSuggestions" : [ ],
+          "property" : "host_name",
+          "propertyMappings" : [ "host_name" ],
+          "replaceOnly" : true,
+          "required" : false,
+          "restricted" : false,
+          "value" : ""
+        }, {
+          "alias" : "Container ID",
+          "applyIfExists" : false,
+          "description" : "APM container ID",
+          "preferredSuggestions" : [ ],
+          "property" : "container_id",
+          "propertyMappings" : [ "container_id", "container.id" ],
+          "replaceOnly" : true,
+          "required" : false,
+          "restricted" : false,
+          "value" : ""
+        }, {
+          "alias" : "Process PID",
+          "applyIfExists" : false,
+          "description" : "APM process PID",
+          "preferredSuggestions" : [ ],
+          "property" : "process_pid",
+          "propertyMappings" : [ "process_pid" ],
+          "replaceOnly" : true,
+          "required" : false,
+          "restricted" : false,
+          "value" : ""
+        } ]
+      },
+      "groupId" : "FUj-r9KAYAA",
+      "groupName" : "APM java services",
+      "id" : "FscvaSqAgAM",
+      "importOf" : "FUj-3oRAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "maxDelayOverride" : null,
+      "name" : "Java runtime metrics (SmartAgent)",
+      "permissions" : null,
+      "selectedEventOverlays" : [ ],
+      "tags" : null
+    }
+  }, {
+    "dashboard" : {
+      "authorizedWriters" : null,
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
         "chartId" : "FUj-tx0AgAA",
         "column" : 0,
         "height" : 1,
@@ -4603,7 +5655,7 @@
           "preferredSuggestions" : [ ],
           "property" : "deployment_environment",
           "propertyMappings" : [ "deployment_environment" ],
-          "replaceOnly" : false,
+          "replaceOnly" : true,
           "required" : true,
           "restricted" : false,
           "value" : [ "Choose Environment" ]
@@ -4614,7 +5666,7 @@
           "preferredSuggestions" : [ ],
           "property" : "service",
           "propertyMappings" : [ "service" ],
-          "replaceOnly" : false,
+          "replaceOnly" : true,
           "required" : true,
           "restricted" : false,
           "value" : [ "Choose Service" ]
@@ -4660,7 +5712,7 @@
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
-      "name" : "Java runtime metrics",
+      "name" : "Java runtime metrics (OTEL)",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
       "tags" : null
@@ -4684,13 +5736,121 @@
         "filtersOverride" : null,
         "nameOverride" : null
       }, {
+        "configId" : "FscvaSqAgAQ",
+        "dashboardId" : "FscvaSqAgAM",
+        "descriptionOverride" : null,
+        "filtersOverride" : {
+          "sources" : [ ],
+          "variables" : [ {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : null,
+            "property" : "deployment_environment",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : null
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : null,
+            "property" : "service",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : null
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : null,
+            "property" : "host_name",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : null
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : null,
+            "property" : "container_id",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : null
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : null,
+            "property" : "process_pid",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : null
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : [ ],
+            "property" : "",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : ""
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : [ ],
+            "property" : "",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : ""
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : [ ],
+            "property" : "",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : ""
+          }, {
+            "alias" : "null",
+            "applyIfExists" : false,
+            "description" : "",
+            "preferredSuggestions" : [ ],
+            "property" : "",
+            "propertyMappings" : null,
+            "replaceOnly" : false,
+            "required" : true,
+            "restricted" : false,
+            "value" : ""
+          } ]
+        },
+        "nameOverride" : null
+      }, {
         "configId" : "FUj-3yZAYAE",
         "dashboardId" : "FUj-3oRAgAA",
         "descriptionOverride" : null,
         "filtersOverride" : null,
         "nameOverride" : null
       } ],
-      "dashboards" : [ "FUj-1diAcAE", "FUj-20wAgAA", "FUj-3oRAgAA" ],
+      "dashboards" : [ "FUj-1diAcAE", "FUj-20wAgAA", "FscvaSqAgAM", "FUj-3oRAgAA" ],
       "description" : "APM java services dashboards",
       "email" : null,
       "id" : "FUj-r9KAYAA",
@@ -4711,7 +5871,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 886376501,
+  "hashCode" : -1129371882,
   "id" : "FUj-r9KAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
