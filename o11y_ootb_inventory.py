@@ -1,6 +1,9 @@
 import json
 import os
 from xlsxwriter import Workbook
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
 
 def collect_json_files(path):
     dest_list = []
@@ -66,50 +69,56 @@ def prepare_import_qualifiers(nav_import_qualifiers):
       str_import_qualifiers += ";  OR\n"
       dummy_import_qualifiers = str_import_qualifiers
     str_import_qualifiers = str_import_qualifiers[:-5]
-    print(str_import_qualifiers)
     return str_import_qualifiers
 
 
+def sort_list(content_list):
+    """
+ 
+    """
+    return(sorted(content_list, key = lambda x: x[0].lower()))   
+ 
 def write_xlsx_file(type, data_list):
     """
 
     """
-    ordered_list=""
-    wb = Workbook("O11y Out of the Box Inventory.xlsx")
+    creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json')
+    file=gspread.authorize(creds)
+    workbook = file.open("O11y Out of the Box Inventory Test")
+
     if type == 'navigator':
-      ordered_list=["Name", "importQualifiers", "Category Group DisplayName", "Category DisplayName"]
-      ws = wb.add_worksheet("Navigators")
-      ws.set_column('A:A', 20)
-      ws.set_column('B:B', 90)
-      ws.set_column('C:C', 30)
-      ws.set_column('D:D', 30)
+      sheet = workbook.worksheet('Navigators')
+      
+      #Clearing the Cells
+      sheet.batch_clear(["A2:D120"]) 
+      
+      #Sort the list alphabetically
+      data_list = sort_list(data_list)
+      
+      #Writing into GSheet
+      sheet.update('A2:D120',data_list)
     elif type == 'dashboard':
-      ordered_list=["Name","importQualifiers"]
-      ws = wb.add_worksheet("Dashboards")
-      ws.set_column('A:A', 30)
-      ws.set_column('B:B', 110)
+      sheet = workbook.worksheet('Dashboards')
+      
+      #Clearing the Cells
+      sheet.batch_clear(["A2:B200"]) 
+      
+      #Sort the list alphabetically
+      data_list = sort_list(data_list)
+      
+      #Writing into GSheet
+      sheet.update('A2:B200',data_list)
     elif type == 'detector':
-      ordered_list=["Name","importQualifiers"]
-      ws = wb.add_worksheet("Detectors")
-      ws.set_column('A:A', 60)
-      ws.set_column('B:B', 110)
-
-    first_row=0
-    bold = wb.add_format({'bold': True,'font':'georgia'})
-    bold.set_font_size(12)
-    font = wb.add_format({'font':'georgia'})
-    font.set_font_size(10)
-    for header in ordered_list:
-        col=ordered_list.index(header) # We are keeping order.
-        ws.write(first_row,col,header,bold) # We have written first row which is the header of worksheet also.
-
-    row=1
-    for nav_data in data_list:
-        for _key,_value in nav_data.items():
-            col=ordered_list.index(_key)
-            ws.write(row,col,_value,font)
-        row+=1 #enter the next row
-    wb.close()
+      sheet = workbook.worksheet('Detectors')
+      
+      #Clearing the Cells
+      sheet.batch_clear(["A2:B100"]) 
+      
+      #Sort the list alphabetically
+      data_list = sort_list(data_list)
+      
+      #Writing into GSheet
+      sheet.update('A2:B100',data_list)
 
 def collect_content_name_desc_and_type(dest_list):
     """
@@ -118,57 +127,48 @@ def collect_content_name_desc_and_type(dest_list):
     collections = []
     if 'content-discovery/navigators/' in dest_list[0]:
       for dest_path in dest_list:
-          print("---------")
-          print(dest_path)
           with open(dest_path, 'r') as nav_file:
               data = json.load(nav_file)
               navJson = data['navigatorExport']['navigator']
-              collections.append({
-                  'Name': navJson['uiModel']['o11yProductName'],
-                  'importQualifiers': prepare_import_qualifiers(navJson['importQualifiers']),
-                  'Category DisplayName': navJson.get('navigatorCategory') if navJson.get('navigatorCategory') is not None else "Others",
-                  'Category Group DisplayName': navJson.get('navigatorCategoryGroupDisplayName') if navJson.get('navigatorCategoryGroupDisplayName') is not None else "Others"
-              })
+              collections.append([
+                   navJson['uiModel']['o11yProductName'],
+                  prepare_import_qualifiers(navJson['importQualifiers']),
+                  navJson.get('navigatorCategory') if navJson.get('navigatorCategory') is not None else "Others",
+                  navJson.get('navigatorCategoryGroupDisplayName') if navJson.get('navigatorCategoryGroupDisplayName') is not None else "Others"
+              ])
     elif 'content-discovery/group/' in dest_list[0]:
       for dest_path in dest_list:
-          print("---------")
-          print(dest_path)
           with open(dest_path, 'r') as db_file:
               data = json.load(db_file)
-              collections.append({
-                  'Name': data['groupExport']['group']['name'],
-                  'importQualifiers': prepare_import_qualifiers(data['groupExport']['group']['importQualifiers']),
-              })
+              collections.append([
+                  data['groupExport']['group']['name'],
+                  prepare_import_qualifiers(data['groupExport']['group']['importQualifiers']),
+              ])
     elif 'content-discovery/detector/' in dest_list[0]:
       for dest_path in dest_list:
-          print("---------")
-          print(dest_path)
           with open(dest_path, 'r') as db_file:
               data = json.load(db_file)
-              collections.append({
-                  'Name': data['detectorExport']['detector']['name'],
-                  'importQualifiers': prepare_import_qualifiers(data['detectorExport']['detector']['importQualifiers']),
-              })
+              collections.append([
+                  data['detectorExport']['detector']['name'],
+                  prepare_import_qualifiers(data['detectorExport']['detector']['importQualifiers']),
+              ])
     return collections
 
-def write_readmemd_file(option):
+def main():
     """
 
     """
-    match option:
-      case '1':
-        nav_files = collect_json_files("navigators/")
-        nav_list = collect_content_name_desc_and_type(nav_files)
-        write_xlsx_file("navigator", nav_list)
-      case '2':
-        db_files = collect_json_files("group/")
-        db_list = collect_content_name_desc_and_type(db_files)
-        write_xlsx_file("dashboard", db_list)
-        return ""
-      case '3':
-        dt_files = collect_json_files("detector/")
-        dt_list = collect_content_name_desc_and_type(dt_files)
-        write_xlsx_file("detector", dt_list)
-        return ""
+    nav_files = collect_json_files("navigators/")
+    nav_list = collect_content_name_desc_and_type(nav_files)
+    write_xlsx_file("navigator", nav_list)
+  
+    db_files = collect_json_files("group/")
+    db_list = collect_content_name_desc_and_type(db_files)
+    write_xlsx_file("dashboard", db_list)
+  
+    dt_files = collect_json_files("detector/")
+    dt_list = collect_content_name_desc_and_type(dt_files)
+    write_xlsx_file("detector", dt_list)
 
-write_readmemd_file('3')
+if __name__ == "__main__":
+    main()
