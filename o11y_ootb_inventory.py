@@ -45,17 +45,18 @@ def prepare_import_qualifiers(nav_import_qualifiers):
     # To get the importQualifier
     for import_qualifier in nav_import_qualifiers:
         str_import_qualifiers += import_qualifier['metric'] + " "
-
         # To get the filters
         for value_property in import_qualifier.get('filters'):
+            #Checking if 'property' property exist in filters block, if not '(*)' will be added in L-77
             if 'property' in value_property.keys():
+                #Adding property value if exist, else '*' (asterisk)
                 str_import_qualifiers += "(" + (
                     value_property.get('property') if value_property.get('property') != "" else "*")
+                #If no property value exist, ending the current iteration with ') &'
                 if str_import_qualifiers[-1] == '*':
                     str_import_qualifiers += ") & "
                     continue
-
-                # Property operation {"not": false} will be considered as != and {"not": true} will be considered as =
+                # Property operation {"not": false} will be considered as = and {"not": true} will be considered as !=
                 prop_operation = " != " if value_property["not"] else " = "
                 str_import_qualifiers += prop_operation + " "
 
@@ -65,19 +66,22 @@ def prepare_import_qualifiers(nav_import_qualifiers):
                     list_values += prop_value + " | "
                 # Check if the list_values is null, replace it with *
                 if list_values == "":
-                    list_values = "* | "
-                # To remove last pipe symbol
-                # Todo: It will always get remove as we have same level of indentation
-                list_values = list_values[:-3]
-                str_import_qualifiers += list_values + ")" + " & "
+                    list_values = "*"
+                # Check if the list_value is not null, remove the extra '|' (pipe)
+                else:
+                    list_values = list_values[:-3]
+                # Adding ') &' at last, '&' will be removed in L-81
+                str_import_qualifiers += list_values + ") & "
+        
+        #If 'property' property doesn't exist
         if str_import_qualifiers == dummy_import_qualifiers + import_qualifier['metric'] + " ":
             str_import_qualifiers += "(*)"
         else:
-            # To remove last & symbol
+            # To remove last '&' symbol with one or multiple filter values
             str_import_qualifiers = str_import_qualifiers[:-3]
         str_import_qualifiers += ";  OR\n"
         dummy_import_qualifiers = str_import_qualifiers
-    # To remove last line "  OR\n" in the string as it get appended at L-74
+    # To remove last line "  OR\n" in the string as it get appended at L-82
     str_import_qualifiers = str_import_qualifiers[:-5]
     return str_import_qualifiers
 
