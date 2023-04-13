@@ -2,7 +2,7 @@ include:
   - project: "observability/shared/gitlab-jobs"
     ref: 1.0.65
     file: "sast-scan-template.yml"
-#  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
 stages:
   - code_analysis
@@ -19,6 +19,11 @@ validate:
 gsheet:
   image: python:3
   stage: O11y-Out-of-the-Box-Inventory
+  # To run this job to just only on master branch
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
   script:
     - pip install gspread
     - pip install gspread oauth2client
