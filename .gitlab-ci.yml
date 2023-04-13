@@ -1,45 +1,25 @@
-#include:
-#  - project: "observability/shared/gitlab-jobs"
-#    ref: 1.0.65
-#    file: "sast-scan-template.yml"
+include:
+  - project: "observability/shared/gitlab-jobs"
+    ref: 1.0.65
+    file: "sast-scan-template.yml"
 #  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
-variables:
-  UPDATE_INVENTORY:
-    value: "no"
-    description: "To update the O11y-Out-of-the-Box-Inventory google spread sheet."
-    options:
-      - "yes"
-      - "no"
 stages:
-#  - code_analysis
-#  - validate-content
+  - code_analysis
+  - validate-content
   - O11y-Out-of-the-Box-Inventory
 
-#validate:
-#  stage: validate-content
-#  except:
-#    - schedules
-#  script:
-#    - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
+validate:
+  stage: validate-content
+  except:
+    - schedules
+  script:
+    - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
 
-
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - when: always
 gsheet:
   image: python:3
   stage: O11y-Out-of-the-Box-Inventory
-  rules:
-    - if: ($UPDATE_INVENTORY == "yes")
-      when: always
-    - when: never
   script:
-    - "echo This deploys!"
-    - ls -l
-    - python --version
     - pip install gspread
     - pip install gspread oauth2client
     - python documentation_tool.py
