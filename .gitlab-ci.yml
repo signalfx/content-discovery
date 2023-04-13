@@ -4,10 +4,12 @@ include:
     file: "sast-scan-template.yml"
 #  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
+variables:
+  - UPDATE-INVENTORY: "no"
 stages:
   - code_analysis
   - validate-content
-  - update-gsheet
+  - O11y-Out-of-the-Box-Inventory
 
 validate:
   stage: validate-content
@@ -18,8 +20,11 @@ validate:
 
 gsheet:
   image: python:3
-  stage: update-gsheet
+  stage: O11y-Out-of-the-Box-Inventory
   rules:
+    - if: ($UPDATE-INVENTORY == "yes")
+      when: always
+    - when: never
 # To run only after MR got merged to master branch
 #      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
