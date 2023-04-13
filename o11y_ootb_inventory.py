@@ -93,7 +93,7 @@ def sort_list(content_list):
     return sorted(content_list, key=lambda x: x[0].lower())
 
 
-def write_xlsx_file(type, data_list):
+def write_xlsx_file(content_type, data_list):
     """
 
     """
@@ -101,7 +101,7 @@ def write_xlsx_file(type, data_list):
     file = gspread.authorize(creds)
     workbook = file.open("O11y Out of the Box Inventory Test")
 
-    if type == 'navigator':
+    if content_type == 'navigator':
         sheet = workbook.worksheet('Navigators')
 
         # Clearing the Cells
@@ -112,7 +112,7 @@ def write_xlsx_file(type, data_list):
 
         # Writing into GSheet
         sheet.update('A2:D120', data_list)
-    elif type == 'dashboard':
+    elif content_type == 'dashboard':
         sheet = workbook.worksheet('Dashboards')
 
         # Clearing the Cells
@@ -123,7 +123,7 @@ def write_xlsx_file(type, data_list):
 
         # Writing into GSheet
         sheet.update('A2:B200', data_list)
-    elif type == 'detector':
+    elif content_type == 'detector':
         sheet = workbook.worksheet('Detectors')
 
         # Clearing the Cells
@@ -136,7 +136,7 @@ def write_xlsx_file(type, data_list):
         sheet.update('A2:B100', data_list)
 
 
-def collect_content_name_desc_and_type(dest_list):
+def collect_content_name_importQualifiers_category_and_group(dest_list):
     """
 
     """
@@ -177,15 +177,15 @@ def main():
 
     """
     nav_files = collect_json_files("navigators/")
-    nav_list = collect_content_name_desc_and_type(nav_files)
+    nav_list = collect_content_name_importQualifiers_category_and_group(nav_files)
     write_xlsx_file("navigator", nav_list)
 
     db_files = collect_json_files("group/")
-    db_list = collect_content_name_desc_and_type(db_files)
+    db_list = collect_content_name_importQualifiers_category_and_group(db_files)
     write_xlsx_file("dashboard", db_list)
 
     dt_files = collect_json_files("detector/")
-    dt_list = collect_content_name_desc_and_type(dt_files)
+    dt_list = collect_content_name_importQualifiers_category_and_group(dt_files)
     write_xlsx_file("detector", dt_list)
 
 
