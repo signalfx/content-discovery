@@ -2404,31 +2404,7 @@
         "colorScale2" : null,
         "hideMissingValues" : false,
         "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "kubernetes_cluster"
-          }, {
-            "enabled" : false,
-            "property" : "kubernetes_name"
-          }, {
-            "enabled" : false,
-            "property" : "kubernetes_namespace"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "metric_source"
-          }, {
-            "enabled" : true,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "uid"
-          }, {
-            "enabled" : true,
-            "property" : "k8s.cluster.name"
-          } ]
+          "fields" : null
         },
         "maximumPrecision" : 4,
         "noDataOptions" : {
@@ -2481,7 +2457,7 @@
         } ],
         "refreshInterval" : 5000,
         "secondaryVisualization" : "Sparkline",
-        "sortBy" : "",
+        "sortBy" : "-value",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -2491,7 +2467,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes').sum(by=['k8s.cluster.name']).count().publish(label='A')\nB = data('k8s.daemonset.desired_scheduled_nodes').sum(by=['k8s.cluster.name']).count().publish(label='B')\nC = data('k8s.daemonset.misscheduled_nodes').sum(by=['k8s.cluster.name']).count().publish(label='C')\nD = data('k8s.daemonset.ready_nodes').sum(by=['k8s.cluster.name']).count().publish(label='D')\nAB = alerts(autodetect_id='FAUcoK8AcAA').publish(label='Autodetect alerts')",
+      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes').sum().publish(label='A')\nB = data('k8s.daemonset.desired_scheduled_nodes').sum().publish(label='B')\nC = data('k8s.daemonset.misscheduled_nodes').sum().publish(label='C')\nD = data('k8s.daemonset.ready_nodes').sum().publish(label='D')\nAB = alerts(autodetect_id='FAUcoK8AcAA').publish(label='Autodetect alerts')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2924,7 +2900,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', extrapolation='last_value').count(by=['k8s.node.name']).publish(label='A')",
+      "programText" : "A = data('k8s.pod.phase', extrapolation='last_value').count(by=['k8s.node.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3332,7 +3308,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('system.memory.usage', filter=filter('k8s.cluster.name', '*') and (not filter('state', 'free'))).mean(over='1m').top(count=10).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='C')",
+      "programText" : "C = data('system.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('state', 'used')).mean(over='1m').top(count=10).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3347,7 +3323,7 @@
       "importOf" : "FXdz8abAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top nodes by network usage (bytes)",
+      "name" : "Top nodes by network usage (bytes / sec)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -3441,9 +3417,9 @@
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
         "refreshInterval" : 5000,
@@ -4582,7 +4558,7 @@
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
         "refreshInterval" : 5000,
@@ -14772,7 +14748,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -987186074,
+  "hashCode" : -503941166,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
