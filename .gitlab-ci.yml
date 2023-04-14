@@ -2,7 +2,7 @@ include:
   - project: "observability/shared/gitlab-jobs"
     ref: 1.0.65
     file: "sast-scan-template.yml"
-#  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
 stages:
   - code_analysis
@@ -16,9 +16,17 @@ validate:
   script:
     - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
 
+# We are still testing this CICD to update the OOTB content details on spreadsheet and as of now it will update
+# the "O11y Out of the Box Inventory Test" google spreadsheet. Once we complete 2-3 round of testing to update content
+#  based on changes on master branch after that we will update the actual spread sheet name
 gsheet:
   image: python:3
   stage: O11y-Out-of-the-Box-Inventory
+  # To run this job to just only on master branch
+  rules:
+    - if: $CI_COMMIT_BRANCH == "poc-run-job-on-merged-commit"
+      when: always
+    - when: never
   script:
     - pip install gspread
     - pip install gspread oauth2client
