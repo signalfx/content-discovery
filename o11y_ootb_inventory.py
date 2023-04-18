@@ -16,8 +16,9 @@ def collect_json_files(path):
                     with open(os.path.abspath(os.path.join(dir, filename))) as file:
                         nav_json = json.load(file)
                         nav_json = nav_json['navigatorExport']['navigator']
-                        keys = nav_json['uiModel'].keys()
+                        print(nav_json['uiModel']['o11yProductName'])
                         print(keys)
+                        keys = nav_json['uiModel'].keys()
                         # To ignore the navigators with architectural type, and navigators with no Name(not getting displayed) and navigators with name "Nodes", "Pods", and "Containers" (Because older version file is also present in the repo and we have to ignore those) and ignore navigators with sites = "signalview" and ignored navigators that are unreleased
                         if 'o11yProductName' in keys and (nav_json['navigatorType'] != 'architectural') \
                                 and nav_json['uiModel']['o11yProductName'] not in NAVIGATOR_EXCLUDE_LIST and (
