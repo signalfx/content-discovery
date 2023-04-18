@@ -190,6 +190,7 @@ def get_credentials():
   cred_file = json.load(open('credentials.json'))
   cred_file["private_key_id"]= args.private_key_id
   cred_file["private_key"]= args.private_key
+  cred_file["private_key"] = cred_file["private_key"].replace("\\n","\n")
   cred_file["client_email"]= args.client_email
   cred_file["client_id"]= args.client_id
   cred_file["project_id"]= args.project_id
