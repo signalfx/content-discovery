@@ -2,6 +2,7 @@ import json
 import os
 import gspread
 import argparse
+import base64
 
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -90,7 +91,6 @@ def sort_list(content_list):
     """
  
     """
-    print(content_list)
     return sorted(content_list, key=lambda x: x[0].lower())
 
 
@@ -191,12 +191,12 @@ def get_credentials():
   args = parse_args()
   cred_file = json.load(open('credentials.json'))
   cred_file["private_key_id"]= args.private_key_id
-  cred_file["private_key"]= args.private_key
-  cred_file["private_key"] = cred_file["private_key"].replace("\\n","\n")
+  encoded_private_key = args.private_key
+  decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
+  cred_file["private_key"] = decoded_private_key.replace("\\n", "\n")
   cred_file["client_email"]= args.client_email
   cred_file["client_id"]= args.client_id
   cred_file["project_id"]= args.project_id
-  print(cred_file)
   return cred_file
 
 def main():
