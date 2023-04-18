@@ -2,6 +2,7 @@ import json
 import os
 import gspread
 import argparse
+import base64
 
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -177,7 +178,8 @@ def parse_args():
   """
     parser = argparse.ArgumentParser()
     parser.add_argument("-pki", "--private_key_id", help="Service account's private key id")
-    parser.add_argument("-pk", "--private_key", help="Service account's private key")
+    # parser.add_argument("-pk", "--private_key", help="Service account's private key")
+    parser.add_argument("-pke", "--private_key_encoded", help="Service account's private key encoded")
     parser.add_argument("-ci", "--client_id", help="Service account's client id")
     parser.add_argument("-ce", "--client_email", help="Service account's client email")
     parser.add_argument("-pi", "--project_id", help="Service account's project id")
@@ -192,7 +194,9 @@ def get_credentials():
     args = parse_args()
     cred_file = json.load(open('credentials.json'))
     cred_file["private_key_id"] = args.private_key_id
-    cred_file["private_key"] = args.private_key
+    encoded_private_key = args.private_key_encoded
+    decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
+    cred_file["private_key"] = decoded_private_key
     cred_file["client_email"] = args.client_email
     cred_file["client_id"] = args.client_id
     cred_file["project_id"] = args.project_id
