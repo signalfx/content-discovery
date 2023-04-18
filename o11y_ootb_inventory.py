@@ -5,7 +5,8 @@ import argparse
 
 from oauth2client.service_account import ServiceAccountCredentials
 
-NAVIGATOR_EXCLUDE_LIST = ['Pods','Containers','Nodes']
+NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
+
 
 def collect_json_files(path):
     dest_list = []
@@ -46,12 +47,12 @@ def prepare_import_qualifiers(nav_import_qualifiers):
         str_import_qualifiers += import_qualifier['metric'] + " "
         # To get the filters
         for value_property in import_qualifier.get('filters'):
-            #Checking if 'property' property exist in filters block, if not '(*)' will be added in L-77
+            # Checking if 'property' property exist in filters block, if not '(*)' will be added in L-77
             if 'property' in value_property.keys():
-                #Adding property value if exist, else '*' (asterisk)
+                # Adding property value if exist, else '*' (asterisk)
                 str_import_qualifiers += "(" + (
                     value_property.get('property') if value_property.get('property') != "" else "*")
-                #If no property value exist, ending the current iteration with ') &'
+                # If no property value exist, ending the current iteration with ') &'
                 if str_import_qualifiers[-1] == '*':
                     str_import_qualifiers += ") & "
                     continue
@@ -71,8 +72,8 @@ def prepare_import_qualifiers(nav_import_qualifiers):
                     list_values = list_values[:-3]
                 # Adding ') &' at last, '&' will be removed in L-81
                 str_import_qualifiers += list_values + ") & "
-        
-        #If 'property' property doesn't exist
+
+        # If 'property' property doesn't exist
         if str_import_qualifiers == dummy_import_qualifiers + import_qualifier['metric'] + " ":
             str_import_qualifiers += "(*)"
         else:
@@ -169,40 +170,48 @@ def collect_content_name_importQualifiers_category_and_group(dest_list):
                 ])
     return collections
 
+
 def parse_args():
-  """
+    """
   
   """
-  parser=argparse.ArgumentParser()
-  parser.add_argument("-pki","--private_key_id",help="Service account's private key id")
-  parser.add_argument("-pk","--private_key",help="Service account's private key")
-  parser.add_argument("-ci","--client_id",help="Service account's client id")
-  parser.add_argument("-ce","--client_email",help="Service account's client email")
-  parser.add_argument("-pi","--project_id",help="Service account's project id")
-  args=parser.parse_args()
-  return args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-pki", "--private_key_id", help="Service account's private key id")
+    parser.add_argument("-pk", "--private_key", help="Service account's private key")
+    parser.add_argument("-ci", "--client_id", help="Service account's client id")
+    parser.add_argument("-ce", "--client_email", help="Service account's client email")
+    parser.add_argument("-pi", "--project_id", help="Service account's project id")
+    args = parser.parse_args()
+    return args
+
 
 def get_credentials():
-  """
+    """
   
   """
-  args = parse_args()
-  cred_file = json.load(open('credentials.json'))
-  cred_file["private_key_id"]= args.private_key_id
-  cred_file["private_key"]= args.private_key
-  cred_file["client_email"]= args.client_email
-  cred_file["client_id"]= args.client_id
-  cred_file["project_id"]= args.project_id
-  print(cred_file)
-  return cred_file
+    args = parse_args()
+    cred_file = json.load(open('credentials.json'))
+    cred_file["private_key_id"] = args.private_key_id
+    cred_file["private_key"] = args.private_key
+    cred_file["client_email"] = args.client_email
+    cred_file["client_id"] = args.client_id
+    cred_file["project_id"] = args.project_id
+    print(cred_file)
+    return cred_file
+
 
 def main():
     """
 
     """
     cred_file = get_credentials()
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
-    
+
+    print(type(cred_file))
+    try:
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
+    except Exception as e:
+        print(e)
+
     nav_files = collect_json_files("navigators/")
     nav_list = collect_content_name_importQualifiers_category_and_group(nav_files)
     write_xlsx_file("navigator", nav_list, creds)
