@@ -2,6 +2,7 @@ import json
 import os
 import gspread
 import argparse
+import base64
 
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -18,8 +19,9 @@ def collect_json_files(path):
                         nav_json = nav_json['navigatorExport']['navigator']
                         keys = nav_json['uiModel'].keys()
                         # To ignore the navigators with architectural type, and navigators with no Name(not getting displayed) and navigators with name "Nodes", "Pods", and "Containers" (Because older version file is also present in the repo and we have to ignore those) and ignore navigators with sites = "signalview" and ignored navigators that are unreleased
-                        if 'o11yProductName' in keys and (nav_json['navigatorType'] != 'architectural') \
-                                and nav_json['uiModel']['o11yProductName'] not in NAVIGATOR_EXCLUDE_LIST and (
+                        if 'o11yProductName' in keys and (nav_json['navigatorType'] != 'architectural') and \
+                                nav_json['uiModel']['o11yProductName'] is not None and (
+                                nav_json['uiModel']['o11yProductName'] not in NAVIGATOR_EXCLUDE_LIST) and (
                                 nav_json['sites'] != "signalview") and (not nav_json['uiModel']['unreleased']):
                             dest_list.append(os.path.abspath(os.path.join(dir, filename)))
 
@@ -174,11 +176,11 @@ def parse_args():
   
   """
   parser=argparse.ArgumentParser()
-  parser.add_argument("-pki","--private_key_id",help="Service account's private key id")
-  parser.add_argument("-pk","--private_key",help="Service account's private key")
-  parser.add_argument("-ci","--client_id",help="Service account's client id")
-  parser.add_argument("-ce","--client_email",help="Service account's client email")
-  parser.add_argument("-pi","--project_id",help="Service account's project id")
+  parser.add_argument("-pki", "--private_key_id", help="Service account's private key id")
+  parser.add_argument("-pk", "--private_key", help="Service account's private key")
+  parser.add_argument("-ci", "--client_id", help="Service account's client id")
+  parser.add_argument("-ce", "--client_email", help="Service account's client email")
+  parser.add_argument("-pi", "--project_id", help="Service account's project id")
   args=parser.parse_args()
   return args
 
@@ -189,11 +191,12 @@ def get_credentials():
   args = parse_args()
   cred_file = json.load(open('credentials.json'))
   cred_file["private_key_id"]= args.private_key_id
-  cred_file["private_key"]= args.private_key
+  encoded_private_key = args.private_key
+  decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
+  cred_file["private_key"] = decoded_private_key.replace("\\n", "\n")
   cred_file["client_email"]= args.client_email
   cred_file["client_id"]= args.client_id
   cred_file["project_id"]= args.project_id
-  print(cred_file)
   return cred_file
 
 def main():
