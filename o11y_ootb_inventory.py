@@ -1,9 +1,11 @@
 import json
 import os
 import gspread
+import argparse
 
 from oauth2client.service_account import ServiceAccountCredentials
 
+NAVIGATOR_EXCLUDE_LIST = ['Pods','Containers','Nodes']
 
 def collect_json_files(path):
     dest_list = []
@@ -17,10 +19,7 @@ def collect_json_files(path):
                         keys = nav_json['uiModel'].keys()
                         # To ignore the navigators with architectural type, and navigators with no Name(not getting displayed) and navigators with name "Nodes", "Pods", and "Containers" (Because older version file is also present in the repo and we have to ignore those) and ignore navigators with sites = "signalview" and ignored navigators that are unreleased
                         if 'o11yProductName' in keys and (nav_json['navigatorType'] != 'architectural') \
-                                and (nav_json['uiModel']['o11yProductName'] is not None and
-                                     nav_json['uiModel']['o11yProductName'] != "Pods" and
-                                     nav_json['uiModel']['o11yProductName'] != "Containers" and
-                                     nav_json['uiModel']['o11yProductName'] != "Nodes") and (
+                                and nav_json['uiModel']['o11yProductName'] not in NAVIGATOR_EXCLUDE_LIST and (
                                 nav_json['sites'] != "signalview") and (not nav_json['uiModel']['unreleased']):
                             dest_list.append(os.path.abspath(os.path.join(dir, filename)))
 
@@ -93,11 +92,10 @@ def sort_list(content_list):
     return sorted(content_list, key=lambda x: x[0].lower())
 
 
-def write_xlsx_file(content_type, data_list):
+def write_xlsx_file(content_type, data_list, creds):
     """
 
     """
-    creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json')
     file = gspread.authorize(creds)
     workbook = file.open("O11y Out of the Box Inventory Test")
 
@@ -171,22 +169,51 @@ def collect_content_name_importQualifiers_category_and_group(dest_list):
                 ])
     return collections
 
+def parse_args():
+  """
+  
+  """
+  parser=argparse.ArgumentParser()
+  parser.add_argument("-pki","--private_key_id",help="Service account's private key id")
+  parser.add_argument("-pk","--private_key",help="Service account's private key")
+  parser.add_argument("-ci","--client_id",help="Service account's client id")
+  parser.add_argument("-ce","--client_email",help="Service account's client email")
+  parser.add_argument("-pi","--project_id",help="Service account's project id")
+  args=parser.parse_args()
+  return args
+
+def get_credentials():
+  """
+  
+  """
+  args = parse_args()
+  cred_file = json.load(open('credentials.json'))
+  cred_file["private_key_id"]= args.private_key_id
+  cred_file["private_key"]= args.private_key
+  cred_file["client_email"]= args.client_email
+  cred_file["client_id"]= args.client_id
+  cred_file["project_id"]= args.project_id
+  print(cred_file)
+  return cred_file
 
 def main():
     """
 
     """
+    cred_file = get_credentials()
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
+    
     nav_files = collect_json_files("navigators/")
     nav_list = collect_content_name_importQualifiers_category_and_group(nav_files)
-    write_xlsx_file("navigator", nav_list)
+    write_xlsx_file("navigator", nav_list, creds)
 
     db_files = collect_json_files("group/")
     db_list = collect_content_name_importQualifiers_category_and_group(db_files)
-    write_xlsx_file("dashboard", db_list)
+    write_xlsx_file("dashboard", db_list, creds)
 
     dt_files = collect_json_files("detector/")
     dt_list = collect_content_name_importQualifiers_category_and_group(dt_files)
-    write_xlsx_file("detector", dt_list)
+    write_xlsx_file("detector", dt_list, creds)
 
 
 if __name__ == "__main__":
