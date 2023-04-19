@@ -1,12 +1,11 @@
 import datetime
 import json
-import os
 import gspread
 import argparse
 import base64
 import requests
 import os
-
+import subprocess
 from oauth2client.service_account import ServiceAccountCredentials
 
 NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
@@ -179,7 +178,9 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                 # get_date_creation_file(dest_path.replace("content-discovery/", ""))
                 print("============================================")
                 print(dest_path)
-                print(datetime.datetime.fromtimestamp(os.path.getctime(dest_path)))
+                output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%aD', '--reverse',
+                                                  f'{dest_path}'])
+                print(output.decode('utf-8'))
     elif 'content-discovery/group/' in dest_list[0]:
         for dest_path in dest_list:
             with open(dest_path, 'r') as db_file:
@@ -190,7 +191,9 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                 ])
             print("============================================")
             print(dest_path)
-            print(datetime.datetime.fromtimestamp(os.path.getctime(dest_path)))
+            output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%aD', '--reverse',
+                                              f'{dest_path}'])
+            print(output.decode('utf-8'))
 
     elif 'content-discovery/detector/' in dest_list[0]:
         for dest_path in dest_list:
@@ -202,7 +205,9 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                 ])
             print("============================================")
             print(dest_path)
-            print(datetime.datetime.fromtimestamp(os.path.getctime(dest_path)))
+            output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%D', '--reverse',
+                                              f'{dest_path}'])
+            print(output.decode('utf-8'))
     return collections
 
 
