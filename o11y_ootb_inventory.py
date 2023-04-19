@@ -167,7 +167,7 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                 ])
             else:
                 break
-        output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%ad',
+        output = subprocess.check_output(['git', 'log', 'master', '--diff-filter=A', '--pretty=format:%ad',
                                           '--date=short', '--follow', f'{dest_path}'])
         release_date = output.decode('utf-8')
         collections[len(collections)-1].extend([release_date])
