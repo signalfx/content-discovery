@@ -1,12 +1,17 @@
+import datetime
 import json
 import os
 import gspread
 import argparse
 import base64
+import requests
+import os
 
 from oauth2client.service_account import ServiceAccountCredentials
 
-NAVIGATOR_EXCLUDE_LIST = ['Pods','Containers','Nodes']
+NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
+BASE_URL_GITLAB = "https://cd.splunkdev.com/api/v4/projects/9336/"
+FILE_META_DATA_PATH = ""
 
 def collect_json_files(path):
     dest_list = []
@@ -48,12 +53,12 @@ def prepare_import_qualifiers(nav_import_qualifiers):
         str_import_qualifiers += import_qualifier['metric'] + " "
         # To get the filters
         for value_property in import_qualifier.get('filters'):
-            #Checking if 'property' property exist in filters block, if not '(*)' will be added in L-77
+            # Checking if 'property' property exist in filters block, if not '(*)' will be added in L-77
             if 'property' in value_property.keys():
-                #Adding property value if exist, else '*' (asterisk)
+                # Adding property value if exist, else '*' (asterisk)
                 str_import_qualifiers += "(" + (
                     value_property.get('property') if value_property.get('property') != "" else "*")
-                #If no property value exist, ending the current iteration with ') &'
+                # If no property value exist, ending the current iteration with ') &'
                 if str_import_qualifiers[-1] == '*':
                     str_import_qualifiers += ") & "
                     continue
@@ -73,8 +78,8 @@ def prepare_import_qualifiers(nav_import_qualifiers):
                     list_values = list_values[:-3]
                 # Adding ') &' at last, '&' will be removed in L-81
                 str_import_qualifiers += list_values + ") & "
-        
-        #If 'property' property doesn't exist
+
+        # If 'property' property doesn't exist
         if str_import_qualifiers == dummy_import_qualifiers + import_qualifier['metric'] + " ":
             str_import_qualifiers += "(*)"
         else:
@@ -136,7 +141,23 @@ def write_xlsx_file(content_type, data_list, creds):
         sheet.update('A2:B100', data_list)
 
 
-def collect_content_name_importQualifiers_category_and_group(dest_list):
+def get_date_creation_file(file_path):
+
+
+    url = "repository/files/content-discovery%2Fnavigators%2FWindows%20IIS%2Fwindows%20IIS.json/blame?ref=master"
+
+    payload = {}
+    headers = {
+        'PRIVATE-TOKEN': 'Qg7nVHEPjwsE3GsGMzFr',
+        'Cookie': 'AWSALBAPP-0=_remove_; AWSALBAPP-1=_remove_; AWSALBAPP-2=_remove_; AWSALBAPP-3=_remove_'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    print(response.text)
+
+
+def collect_content_name_import_qualifiers_category_and_group(dest_list):
     """
 
     """
@@ -153,6 +174,12 @@ def collect_content_name_importQualifiers_category_and_group(dest_list):
                     nav_json.get('navigatorCategoryGroupDisplayName') if nav_json.get(
                         'navigatorCategoryGroupDisplayName') is not None else "Others"
                 ])
+
+                # Get the date creation for file
+                # get_date_creation_file(dest_path.replace("content-discovery/", ""))
+                print("============================================")
+                print(dest_path)
+                print(datetime.datetime.fromtimestamp(os.path.getctime(dest_path)))
     elif 'content-discovery/group/' in dest_list[0]:
         for dest_path in dest_list:
             with open(dest_path, 'r') as db_file:
@@ -161,6 +188,10 @@ def collect_content_name_importQualifiers_category_and_group(dest_list):
                     data['groupExport']['group']['name'],
                     prepare_import_qualifiers(data['groupExport']['group']['importQualifiers']),
                 ])
+            print("============================================")
+            print(dest_path)
+            print(datetime.datetime.fromtimestamp(os.path.getctime(dest_path)))
+
     elif 'content-discovery/detector/' in dest_list[0]:
         for dest_path in dest_list:
             with open(dest_path, 'r') as db_file:
@@ -169,54 +200,60 @@ def collect_content_name_importQualifiers_category_and_group(dest_list):
                     data['detectorExport']['detector']['name'],
                     prepare_import_qualifiers(data['detectorExport']['detector']['importQualifiers']),
                 ])
+            print("============================================")
+            print(dest_path)
+            print(datetime.datetime.fromtimestamp(os.path.getctime(dest_path)))
     return collections
 
+
 def parse_args():
-  """
+    """
   
   """
-  parser=argparse.ArgumentParser()
-  parser.add_argument("-pki", "--private_key_id", help="Service account's private key id")
-  parser.add_argument("-pk", "--private_key", help="Service account's private key")
-  parser.add_argument("-ci", "--client_id", help="Service account's client id")
-  parser.add_argument("-ce", "--client_email", help="Service account's client email")
-  parser.add_argument("-pi", "--project_id", help="Service account's project id")
-  args=parser.parse_args()
-  return args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-pki", "--private_key_id", help="Service account's private key id")
+    parser.add_argument("-pk", "--private_key", help="Service account's private key")
+    parser.add_argument("-ci", "--client_id", help="Service account's client id")
+    parser.add_argument("-ce", "--client_email", help="Service account's client email")
+    parser.add_argument("-pi", "--project_id", help="Service account's project id")
+    args = parser.parse_args()
+    return args
+
 
 def get_credentials():
-  """
+    """
   
   """
-  args = parse_args()
-  cred_file = json.load(open('credentials.json'))
-  cred_file["private_key_id"]= args.private_key_id
-  encoded_private_key = args.private_key
-  decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
-  cred_file["private_key"] = decoded_private_key.replace("\\n", "\n")
-  cred_file["client_email"]= args.client_email
-  cred_file["client_id"]= args.client_id
-  cred_file["project_id"]= args.project_id
-  return cred_file
+    args = parse_args()
+    cred_file = json.load(open('credentials.json'))
+    cred_file["private_key_id"] = args.private_key_id
+    encoded_private_key = args.private_key
+    decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
+    cred_file["private_key"] = decoded_private_key.replace("\\n", "\n")
+    cred_file["client_email"] = args.client_email
+    cred_file["client_id"] = args.client_id
+    cred_file["project_id"] = args.project_id
+    return cred_file
+
 
 def main():
     """
 
     """
-    cred_file = get_credentials()
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
-    
+    # cred_file = get_credentials()
+    # creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
+
     nav_files = collect_json_files("navigators/")
-    nav_list = collect_content_name_importQualifiers_category_and_group(nav_files)
-    write_xlsx_file("navigator", nav_list, creds)
+    nav_list = collect_content_name_import_qualifiers_category_and_group(nav_files)
+    # write_xlsx_file("navigator", nav_list, creds)
 
     db_files = collect_json_files("group/")
-    db_list = collect_content_name_importQualifiers_category_and_group(db_files)
-    write_xlsx_file("dashboard", db_list, creds)
+    db_list = collect_content_name_import_qualifiers_category_and_group(db_files)
+    # write_xlsx_file("dashboard", db_list, creds)
 
     dt_files = collect_json_files("detector/")
-    dt_list = collect_content_name_importQualifiers_category_and_group(dt_files)
-    write_xlsx_file("detector", dt_list, creds)
+    dt_list = collect_content_name_import_qualifiers_category_and_group(dt_files)
+    # write_xlsx_file("detector", dt_list, creds)
 
 
 if __name__ == "__main__":
