@@ -148,7 +148,7 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
             data = json.load(nav_file)
             print(dest_path)
             output = subprocess.check_output(['git', 'log', 'master', '--diff-filter=A', '--pretty=format:%cd',
-                                              '--date=short', f'-- {dest_path}'])
+                                              '--date=short', f'{dest_path}'])
             release_date = output.decode('utf-8')
             print(release_date)
             print("===========================")
