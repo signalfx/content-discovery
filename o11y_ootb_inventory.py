@@ -3,14 +3,12 @@ import json
 import gspread
 import argparse
 import base64
-import requests
 import os
 import subprocess
 from oauth2client.service_account import ServiceAccountCredentials
 
 NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
-BASE_URL_GITLAB = "https://cd.splunkdev.com/api/v4/projects/9336/"
-FILE_META_DATA_PATH = ""
+
 
 def collect_json_files(path):
     dest_list = []
@@ -109,51 +107,35 @@ def write_xlsx_file(content_type, data_list, creds):
         sheet = workbook.worksheet('Navigators')
 
         # Clearing the Cells
-        sheet.batch_clear(["A2:D120"])
+        sheet.batch_clear(["A2:E120"])
 
         # Sort the list alphabetically
         data_list = sort_list(data_list)
 
         # Writing into GSheet
-        sheet.update('A2:D120', data_list)
+        sheet.update('A2:E120', data_list)
     elif content_type == 'dashboard':
         sheet = workbook.worksheet('Dashboards')
 
         # Clearing the Cells
-        sheet.batch_clear(["A2:B200"])
+        sheet.batch_clear(["A2:C200"])
 
         # Sort the list alphabetically
         data_list = sort_list(data_list)
 
         # Writing into GSheet
-        sheet.update('A2:B200', data_list)
+        sheet.update('A2:C200', data_list)
     elif content_type == 'detector':
         sheet = workbook.worksheet('Detectors')
 
         # Clearing the Cells
-        sheet.batch_clear(["A2:B100"])
+        sheet.batch_clear(["A2:C100"])
 
         # Sort the list alphabetically
         data_list = sort_list(data_list)
 
         # Writing into GSheet
-        sheet.update('A2:B100', data_list)
-
-
-def get_date_creation_file(file_path):
-
-
-    url = "repository/files/content-discovery%2Fnavigators%2FWindows%20IIS%2Fwindows%20IIS.json/blame?ref=master"
-
-    payload = {}
-    headers = {
-        'PRIVATE-TOKEN': 'Qg7nVHEPjwsE3GsGMzFr',
-        'Cookie': 'AWSALBAPP-0=_remove_; AWSALBAPP-1=_remove_; AWSALBAPP-2=_remove_; AWSALBAPP-3=_remove_'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    print(response.text)
+        sheet.update('A2:C100', data_list)
 
 
 def collect_content_name_import_qualifiers_category_and_group(dest_list):
@@ -161,10 +143,10 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
 
     """
     collections = []
-    if 'content-discovery/navigators/' in dest_list[0]:
-        for dest_path in dest_list:
-            with open(dest_path, 'r') as nav_file:
-                data = json.load(nav_file)
+    for dest_path in dest_list:
+        with open(dest_path, 'r') as nav_file:
+            data = json.load(nav_file)
+            if 'content-discovery/navigators/' in dest_path:
                 nav_json = data['navigatorExport']['navigator']
                 collections.append([
                     nav_json['uiModel']['o11yProductName'],
@@ -173,41 +155,23 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                     nav_json.get('navigatorCategoryGroupDisplayName') if nav_json.get(
                         'navigatorCategoryGroupDisplayName') is not None else "Others"
                 ])
-
-                # Get the date creation for file
-                # get_date_creation_file(dest_path.replace("content-discovery/", ""))
-                print("============================================")
-                print(dest_path)
-                output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%aD', '--reverse',
-                                                  f'{dest_path}'])
-                print(output.decode('utf-8'))
-    elif 'content-discovery/group/' in dest_list[0]:
-        for dest_path in dest_list:
-            with open(dest_path, 'r') as db_file:
-                data = json.load(db_file)
+            elif 'content-discovery/group/' in dest_path:
                 collections.append([
                     data['groupExport']['group']['name'],
                     prepare_import_qualifiers(data['groupExport']['group']['importQualifiers']),
                 ])
-            print("============================================")
-            print(dest_path)
-            output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%aD', '--reverse',
-                                              f'{dest_path}'])
-            print(output.decode('utf-8'))
-
-    elif 'content-discovery/detector/' in dest_list[0]:
-        for dest_path in dest_list:
-            with open(dest_path, 'r') as db_file:
-                data = json.load(db_file)
+            elif 'content-discovery/detector/' in dest_path:
                 collections.append([
                     data['detectorExport']['detector']['name'],
                     prepare_import_qualifiers(data['detectorExport']['detector']['importQualifiers']),
                 ])
-            print("============================================")
-            print(dest_path)
-            output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%D', '--reverse',
-                                              f'{dest_path}'])
-            print(output.decode('utf-8'))
+            else:
+                break
+        output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%ad',
+                                          '--date=short', '--follow', f'{dest_path}'])
+        release_date = output.decode('utf-8')
+        collections[len(collections)-1].extend([release_date])
+
     return collections
 
 
@@ -232,8 +196,11 @@ def get_credentials():
     args = parse_args()
     cred_file = json.load(open('credentials.json'))
     cred_file["private_key_id"] = args.private_key_id
+
+    # Decode the base64 encoded private key
     encoded_private_key = args.private_key
     decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
+
     cred_file["private_key"] = decoded_private_key.replace("\\n", "\n")
     cred_file["client_email"] = args.client_email
     cred_file["client_id"] = args.client_id
@@ -245,20 +212,23 @@ def main():
     """
 
     """
-    # cred_file = get_credentials()
-    # creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
+    cred_file = get_credentials()
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
 
     nav_files = collect_json_files("navigators/")
     nav_list = collect_content_name_import_qualifiers_category_and_group(nav_files)
-    # write_xlsx_file("navigator", nav_list, creds)
+    print(nav_list)
+    write_xlsx_file("navigator", nav_list, creds)
 
     db_files = collect_json_files("group/")
     db_list = collect_content_name_import_qualifiers_category_and_group(db_files)
-    # write_xlsx_file("dashboard", db_list, creds)
+    print(db_list)
+    write_xlsx_file("dashboard", db_list, creds)
 
     dt_files = collect_json_files("detector/")
     dt_list = collect_content_name_import_qualifiers_category_and_group(dt_files)
-    # write_xlsx_file("detector", dt_list, creds)
+    print(dt_list)
+    write_xlsx_file("detector", dt_list, creds)
 
 
 if __name__ == "__main__":
