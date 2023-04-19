@@ -146,6 +146,12 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
     for dest_path in dest_list:
         with open(dest_path, 'r') as nav_file:
             data = json.load(nav_file)
+            print(dest_path)
+            output = subprocess.check_output(['git', 'log', 'master', '--diff-filter=A', '--pretty=format:%cd',
+                                              '--date=short', f'--  {dest_path}'])
+            release_date = output.decode('utf-8')
+            print(release_date)
+            print("===========================")
             if 'content-discovery/navigators/' in dest_path:
                 nav_json = data['navigatorExport']['navigator']
                 collections.append([
@@ -153,24 +159,27 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                     prepare_import_qualifiers(nav_json['importQualifiers']),
                     nav_json.get('navigatorCategory') if nav_json.get('navigatorCategory') is not None else "Others",
                     nav_json.get('navigatorCategoryGroupDisplayName') if nav_json.get(
-                        'navigatorCategoryGroupDisplayName') is not None else "Others"
+                        'navigatorCategoryGroupDisplayName') is not None else "Others",
+                    release_date
                 ])
             elif 'content-discovery/group/' in dest_path:
                 collections.append([
                     data['groupExport']['group']['name'],
                     prepare_import_qualifiers(data['groupExport']['group']['importQualifiers']),
+                    release_date
                 ])
             elif 'content-discovery/detector/' in dest_path:
                 collections.append([
                     data['detectorExport']['detector']['name'],
                     prepare_import_qualifiers(data['detectorExport']['detector']['importQualifiers']),
+                    release_date
                 ])
             else:
                 break
-        output = subprocess.check_output(['git', 'log', 'master', '--diff-filter=A', '--pretty=format:%ad',
-                                          '--date=short', '--follow', f'{dest_path}'])
-        release_date = output.decode('utf-8')
-        collections[len(collections)-1].extend([release_date])
+        # output = subprocess.check_output(['git', 'log', 'master', '--diff-filter=A', '--pretty=format:%ad',
+        #                                   '--date=short', '--follow', f'{dest_path}'])
+        # release_date = output.decode('utf-8')
+        # collections[len(collections)-1].extend([release_date])
 
     return collections
 
