@@ -207,6 +207,7 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
         with open(dest_path, 'r') as nav_file:
             data = json.load(nav_file)
             release_date = get_file_creation_date(file_path=dest_path)
+            release_pi = get_date_range(release_date)
             if 'content-discovery/navigators/' in dest_path:
                 nav_json = data['navigatorExport']['navigator']
                 collections.append([
@@ -215,19 +216,19 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                     nav_json.get('navigatorCategory') if nav_json.get('navigatorCategory') is not None else "Others",
                     nav_json.get('navigatorCategoryGroupDisplayName') if nav_json.get(
                         'navigatorCategoryGroupDisplayName') is not None else "Others",
-                    release_date
+                    release_pi
                 ])
             elif 'content-discovery/group/' in dest_path:
                 collections.append([
                     data['groupExport']['group']['name'],
                     prepare_import_qualifiers(data['groupExport']['group']['importQualifiers']),
-                    release_date
+                    release_pi
                 ])
             elif 'content-discovery/detector/' in dest_path:
                 collections.append([
                     data['detectorExport']['detector']['name'],
                     prepare_import_qualifiers(data['detectorExport']['detector']['importQualifiers']),
-                    release_date
+                    release_pi
                 ])
             else:
                 break
