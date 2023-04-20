@@ -165,6 +165,7 @@ def get_file_creation_date(file_path):
     """
 
     """
+    file_path = file_path.split('content-discovery/')[1]
     query_params = {
         "ref_name": "master",
         "per_page": 100,
@@ -177,12 +178,12 @@ def get_file_creation_date(file_path):
         'PRIVATE-TOKEN': 'Qg7nVHEPjwsE3GsGMzFr'
     }
     response = requests.request("GET", GITLAB_COMMIT_URL, headers=headers, params=query_params)
-    print(len(response.json()), f"for file: {file_path}")
+    print(len(response.json()), f"commits for file: {file_path}")
     print(response.json())
     if len(response.json()) > 0:
         commit_list = response.json()[-1]
         commit_date = parser.parse(commit_list.get('committed_date')).strftime('%d-%m-%Y')
-        print(f"This file:{file_path}'s creation date:")
+        print(f"This file:{file_path}'s creation date: {commit_date}")
         print("=========================================")
         return commit_date
     else:
