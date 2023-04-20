@@ -4,10 +4,43 @@ import gspread
 import argparse
 import base64
 import os
-import subprocess
+import requests
+
 from oauth2client.service_account import ServiceAccountCredentials
+from datetime import datetime
+from dateutil import parser
 
 NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
+PI_DATE_RANGE = {
+        'FY23PI1': ['08-02-2022', '16-05-2022'],
+        'FY23PI2': ['17-05-2022', '11-08-2022'],
+        'FY23PI3': ['12-08-2022', '14-11-2022'],
+        'FY23PI4': ['14-11-2022', '06-02-2023'],
+        'FY24PI1': ['07-02-2023', '02-05-2023'],
+        'FY24PI2': ['03-05-2023', '25-07-2023'],
+        'FY24PI3': ['26-07-2023', '31-10-2023'],
+        'FY24PI4': ['01-11-2023', '23-01-2024']
+    }
+GITLAB_COMMIT_URL = "https://cd.splunkdev.com/api/v4/projects/9336/repository/commits"
+INVENTORY_G_SHEET_NAME = "O11y Out of the Box Inventory Test"
+G_SHEET_CONTENT = {
+    'navigator':
+        {
+         'gsheet_name': 'Navigators',
+         'area': 'A2:E500'
+        },
+    'dashboard':
+        {
+         'gsheet_name': 'Dashboards',
+         'area': 'A2:C500'
+        },
+    'detector':
+        {
+            'gsheet_name': 'Navigators',
+            'area': 'A2:C500'
+        },
+
+}
 
 
 def collect_json_files(path):
@@ -101,41 +134,59 @@ def write_xlsx_file(content_type, data_list, creds):
 
     """
     file = gspread.authorize(creds)
-    workbook = file.open("O11y Out of the Box Inventory Test")
+    workbook = file.open(INVENTORY_G_SHEET_NAME)
 
-    if content_type == 'navigator':
-        sheet = workbook.worksheet('Navigators')
+    gsheet_info = G_SHEET_CONTENT[content_type]
+    sheet = workbook.worksheet(gsheet_info['gsheet_name'])
 
-        # Clearing the Cells
-        sheet.batch_clear(["A2:E120"])
+    # Clearing the Cells
+    sheet.batch_clear([gsheet_info['area']])
 
-        # Sort the list alphabetically
-        data_list = sort_list(data_list)
+    # Sort the list alphabetically
+    data_list = sort_list(data_list)
 
-        # Writing into GSheet
-        sheet.update('A2:E120', data_list)
-    elif content_type == 'dashboard':
-        sheet = workbook.worksheet('Dashboards')
+    # Writing into GSheet
+    sheet.update(gsheet_info['area'], data_list)
 
-        # Clearing the Cells
-        sheet.batch_clear(["A2:C200"])
 
-        # Sort the list alphabetically
-        data_list = sort_list(data_list)
+def get_date_range(date, date_ranges):
+    """
 
-        # Writing into GSheet
-        sheet.update('A2:C200', data_list)
-    elif content_type == 'detector':
-        sheet = workbook.worksheet('Detectors')
+    """
+    # Function to check which date range a given date falls into
+    date = datetime.strptime(date, '%d-%m-%Y')
+    for key, value in date_ranges.items():
+        if value[0] <= date <= value[1]:
+            return key
+    return 'Date not in any range'
 
-        # Clearing the Cells
-        sheet.batch_clear(["A2:C100"])
 
-        # Sort the list alphabetically
-        data_list = sort_list(data_list)
+def get_file_creation_date(file_path):
+    """
 
-        # Writing into GSheet
-        sheet.update('A2:C100', data_list)
+    """
+    query_params = {
+        "ref_name": "master",
+        "per_page": 100,
+        "order_by": "committed_date",
+        "all": False,
+        "path": file_path
+    }
+    headers = {
+        # todo: move to gitlab variable
+        'PRIVATE-TOKEN': 'Qg7nVHEPjwsE3GsGMzFr'
+    }
+    response = requests.request("GET", GITLAB_COMMIT_URL, headers=headers, params=query_params)
+    print(len(response.json()), f"for file: {file_path}")
+    print(response.json())
+    if len(response.json()) > 0:
+        commit_list = response.json()[-1]
+        commit_date = parser.parse(commit_list.get('committed_date')).strftime('%d-%m-%Y')
+        print(f"This file:{file_path}'s creation date:")
+        print("=========================================")
+        return commit_date
+    else:
+        print(f"Unexpected error while fetching {file_path} creation date")
 
 
 def collect_content_name_import_qualifiers_category_and_group(dest_list):
@@ -143,15 +194,15 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
 
     """
     collections = []
+    # convert date strings to datetime objects and store in dictionary
+    for pi in PI_DATE_RANGE:
+        PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
+        PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
+
     for dest_path in dest_list:
         with open(dest_path, 'r') as nav_file:
             data = json.load(nav_file)
-            print(dest_path)
-            output = subprocess.check_output(['git', 'log', '--diff-filter=A', '--pretty=format:%cd',
-                                              '--date=short', '--reverse', 'master', '-- ', f'{dest_path}'])
-            release_date = output.decode('utf-8')
-            print(release_date)
-            print("===========================")
+            release_date = get_file_creation_date(file_path=dest_path)
             if 'content-discovery/navigators/' in dest_path:
                 nav_json = data['navigatorExport']['navigator']
                 collections.append([
@@ -176,11 +227,6 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
                 ])
             else:
                 break
-        # output = subprocess.check_output(['git', 'log', 'master', '--diff-filter=A', '--pretty=format:%ad',
-        #                                   '--date=short', '--follow', f'{dest_path}'])
-        # release_date = output.decode('utf-8')
-        # collections[len(collections)-1].extend([release_date])
-
     return collections
 
 
