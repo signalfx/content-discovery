@@ -36,7 +36,7 @@ G_SHEET_CONTENT = {
         },
     'detector':
         {
-            'gsheet_name': 'Navigators',
+            'gsheet_name': 'Detectors',
             'area': 'A2:C500'
         },
 
@@ -149,13 +149,20 @@ def write_xlsx_file(content_type, data_list, creds):
     sheet.update(gsheet_info['area'], data_list)
 
 
-def get_date_range(date, date_ranges):
+def get_date_range(date):
     """
 
     """
     # Function to check which date range a given date falls into
     date = datetime.strptime(date, '%d-%m-%Y')
-    for key, value in date_ranges.items():
+
+    # convert date strings to datetime objects and store in dictionary
+    for pi in PI_DATE_RANGE:
+        PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
+        PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
+
+    for key, value in PI_DATE_RANGE.items():
+        print(type(value[0]), "and", type(value[1]))
         if value[0] <= date <= value[1]:
             return key
     return 'Date not in any range'
