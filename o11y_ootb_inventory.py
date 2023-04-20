@@ -195,10 +195,6 @@ def collect_content_name_import_qualifiers_category_and_group(dest_list):
 
     """
     collections = []
-    # convert date strings to datetime objects and store in dictionary
-    for pi in PI_DATE_RANGE:
-        PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
-        PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
 
     for dest_path in dest_list:
         with open(dest_path, 'r') as nav_file:
