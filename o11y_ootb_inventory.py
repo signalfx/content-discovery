@@ -171,6 +171,8 @@ def get_date_range(date):
         start_date = datetime.strptime(date_range[0], '%d-%m-%Y').date()
         end_date = datetime.strptime(date_range[1], '%d-%m-%Y').date()
         check_date = datetime.strptime(date, '%d-%m-%Y').date()
+        print("stratdate===========checkdate================enddate")
+        print(start_date, check_date, end_date)
         if start_date <= check_date <= end_date:
             print(key)
     return date
