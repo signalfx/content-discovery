@@ -143,7 +143,7 @@ def get_date_range(date):
 
     """
     # Function to check which date range a given date falls into
-    date = datetime.strptime(date, '%d-%m-%Y')
+    # date = datetime.strptime(date, '%d-%m-%Y')
     PI_DATE_RANGE = {
         'FY23PI1': ['08-02-2022', '16-05-2022'],
         'FY23PI2': ['17-05-2022', '11-08-2022'],
@@ -160,12 +160,19 @@ def get_date_range(date):
     #     PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
     #     PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
 
-    for key, value in PI_DATE_RANGE.items():
-        value[0] = datetime.strptime(value[0], '%d-%m-%Y')
-        value[1] = datetime.strptime(value[1], '%d-%m-%Y')
-        print(type(value[0]), "and", type(value[1]))
-        if value[0] <= date <= value[1]:
-            return key
+    # for key, value in PI_DATE_RANGE.items():
+    #     value[0] = datetime.strptime(value[0], '%d-%m-%Y')
+    #     value[1] = datetime.strptime(value[1], '%d-%m-%Y')
+    #     print(type(value[0]), "and", type(value[1]))
+    #     if value[0] <= date <= value[1]:
+    #         return key
+
+    for key, date_range in PI_DATE_RANGE.items():
+        start_date = datetime.strptime(date_range[0], '%d-%m-%Y').date()
+        end_date = datetime.strptime(date_range[1], '%d-%m-%Y').date()
+        check_date = datetime.strptime(date, '%d-%m-%Y').date()
+        if start_date <= check_date <= end_date:
+            print(key)
     return date
 
 
