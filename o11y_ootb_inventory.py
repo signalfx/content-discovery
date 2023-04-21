@@ -30,6 +30,17 @@ G_SHEET_CONTENT = {
         },
 
 }
+PI_DATE_RANGE = {
+        'FY22PI4': ['09-11-2021', '07-02-2022'],
+        'FY23PI1': ['08-02-2022', '16-05-2022'],
+        'FY23PI2': ['17-05-2022', '11-08-2022'],
+        'FY23PI3': ['12-08-2022', '13-11-2022'],
+        'FY23PI4': ['14-11-2022', '06-02-2023'],
+        'FY24PI1': ['07-02-2023', '02-05-2023'],
+        'FY24PI2': ['03-05-2023', '25-07-2023'],
+        'FY24PI3': ['26-07-2023', '31-10-2023'],
+        'FY24PI4': ['01-11-2023', '23-01-2024']
+    }
 
 
 def collect_json_files(path):
@@ -118,7 +129,7 @@ def sort_list(content_list):
     return sorted(content_list, key=lambda x: x[0].lower())
 
 
-def write_xlsx_file(content_type, data_list, creds):
+def write_to_gsheet_file(content_type, data_list, creds):
     """
 
     """
@@ -143,39 +154,15 @@ def get_date_range(date):
 
     """
     # Function to check which date range a given date falls into
-    # date = datetime.strptime(date, '%d-%m-%Y')
-    PI_DATE_RANGE = {
-        'FY23PI1': ['08-02-2022', '16-05-2022'],
-        'FY23PI2': ['17-05-2022', '11-08-2022'],
-        'FY23PI3': ['12-08-2022', '14-11-2022'],
-        'FY23PI4': ['14-11-2022', '06-02-2023'],
-        'FY24PI1': ['07-02-2023', '02-05-2023'],
-        'FY24PI2': ['03-05-2023', '25-07-2023'],
-        'FY24PI3': ['26-07-2023', '31-10-2023'],
-        'FY24PI4': ['01-11-2023', '23-01-2024']
-    }
-    # # convert date strings to datetime objects and store in dictionary
-    # for pi in PI_DATE_RANGE:
-    #     print("Type of pi date range", type(PI_DATE_RANGE[pi][0]))
-    #     PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
-    #     PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
-
-    # for key, value in PI_DATE_RANGE.items():
-    #     value[0] = datetime.strptime(value[0], '%d-%m-%Y')
-    #     value[1] = datetime.strptime(value[1], '%d-%m-%Y')
-    #     print(type(value[0]), "and", type(value[1]))
-    #     if value[0] <= date <= value[1]:
-    #         return key
-
     for key, date_range in PI_DATE_RANGE.items():
         start_date = datetime.strptime(date_range[0], '%d-%m-%Y').date()
         end_date = datetime.strptime(date_range[1], '%d-%m-%Y').date()
         check_date = datetime.strptime(date, '%d-%m-%Y').date()
-        print("stratdate===========checkdate================enddate")
-        print(start_date, check_date, end_date)
         if start_date <= check_date <= end_date:
-            print(key)
-    return date
+            return key
+
+    # If respective PI not found then return the actual date
+    return "Before FY22PI4"
 
 
 def get_file_creation_date(file_path):
@@ -201,7 +188,6 @@ def get_file_creation_date(file_path):
         commit_list = response.json()[-1]
         commit_date = parser.parse(commit_list.get('committed_date')).strftime('%d-%m-%Y')
         print(f"This file:{file_path}'s creation date: {commit_date}")
-        print("=========================================")
         return commit_date
     else:
         print(f"Unexpected error while fetching {file_path} creation date")
@@ -288,17 +274,17 @@ def main():
     nav_files = collect_json_files("navigators/")
     nav_list = collect_content_name_import_qualifiers_category_and_group(nav_files)
     print(nav_list)
-    write_xlsx_file("navigator", nav_list, creds)
+    write_to_gsheet_file("navigator", nav_list, creds)
 
     db_files = collect_json_files("group/")
     db_list = collect_content_name_import_qualifiers_category_and_group(db_files)
     print(db_list)
-    write_xlsx_file("dashboard", db_list, creds)
+    write_to_gsheet_file("dashboard", db_list, creds)
 
     dt_files = collect_json_files("detector/")
     dt_list = collect_content_name_import_qualifiers_category_and_group(dt_files)
     print(dt_list)
-    write_xlsx_file("detector", dt_list, creds)
+    write_to_gsheet_file("detector", dt_list, creds)
 
 
 if __name__ == "__main__":
