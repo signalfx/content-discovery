@@ -1,4 +1,3 @@
-import datetime
 import json
 import gspread
 import argparse
@@ -6,8 +5,8 @@ import base64
 import os
 import requests
 
-from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+from oauth2client.service_account import ServiceAccountCredentials
 from dateutil import parser
 
 NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
@@ -158,6 +157,7 @@ def get_date_range(date):
 
     # convert date strings to datetime objects and store in dictionary
     for pi in PI_DATE_RANGE:
+        print(type(PI_DATE_RANGE[pi][0]))
         PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
         PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
 
