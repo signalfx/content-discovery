@@ -157,9 +157,9 @@ def get_date_range(date):
 
     # convert date strings to datetime objects and store in dictionary
     for pi in PI_DATE_RANGE:
-        print(type(PI_DATE_RANGE[pi][0]))
-        PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
-        PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
+        print("type of pi date range: ", type(PI_DATE_RANGE[pi][0]))
+        PI_DATE_RANGE[pi][0] = datetime.strptime(str(PI_DATE_RANGE[pi][0]), '%d-%m-%Y')
+        PI_DATE_RANGE[pi][1] = datetime.strptime(str(PI_DATE_RANGE[pi][1]), '%d-%m-%Y')
 
     for key, value in PI_DATE_RANGE.items():
         print(type(value[0]), "and", type(value[1]))
