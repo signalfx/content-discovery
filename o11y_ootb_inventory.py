@@ -10,7 +10,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from dateutil import parser
 
 NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
-GITLAB_COMMIT_URL = "https://cd.splunkdev.com/api/v4/projects/9336/repository/commits"
+GITLAB_COMMIT_URL = "https://cd.splunkdev.com/api/v4/projects/9336/repository/files/{}/blame"
 INVENTORY_G_SHEET_NAME = "O11y Out of the Box Inventory Test"
 G_SHEET_CONTENT = {
     'navigator':
@@ -170,23 +170,24 @@ def get_file_creation_date(file_path):
 
     """
     file_path = file_path.split('content-discovery/')[1]
+    url_encode_path = requests.utils.quote(file_path, safe="")
+
+    # if you add the order_by: committed_date parameter to your API request, the API will return the
+    # commit history sorted by the commit date in ascending order (i.e., oldest commit first).
     query_params = {
-        "ref_name": "master",
-        "per_page": 100,
+        "ref": "master",
         "order_by": "committed_date",
-        "all": False,
-        "path": file_path
     }
     headers = {
-        # todo: move to gitlab variable
+        # Todo: move to gitlab variable
         'PRIVATE-TOKEN': 'Qg7nVHEPjwsE3GsGMzFr'
     }
-    response = requests.request("GET", GITLAB_COMMIT_URL, headers=headers, params=query_params)
+    response = requests.request("GET", GITLAB_COMMIT_URL.format(url_encode_path), headers=headers, params=query_params)
     print(len(response.json()), f"commits for file: {file_path}")
     print(response.json())
     if len(response.json()) > 0:
-        commit_list = response.json()[-1]
-        commit_date = parser.parse(commit_list.get('committed_date')).strftime('%d-%m-%Y')
+        commit_list = response.json()[0]
+        commit_date = parser.parse(commit_list.get('commit').get('committed_date')).strftime('%d-%m-%Y')
         print(f"This file:{file_path}'s creation date: {commit_date}")
         return commit_date
     else:
