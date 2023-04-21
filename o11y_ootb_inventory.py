@@ -10,16 +10,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 from dateutil import parser
 
 NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
-PI_DATE_RANGE = {
-    'FY23PI1': ['08-02-2022', '16-05-2022'],
-    'FY23PI2': ['17-05-2022', '11-08-2022'],
-    'FY23PI3': ['12-08-2022', '14-11-2022'],
-    'FY23PI4': ['14-11-2022', '06-02-2023'],
-    'FY24PI1': ['07-02-2023', '02-05-2023'],
-    'FY24PI2': ['03-05-2023', '25-07-2023'],
-    'FY24PI3': ['26-07-2023', '31-10-2023'],
-    'FY24PI4': ['01-11-2023', '23-01-2024']
-}
 GITLAB_COMMIT_URL = "https://cd.splunkdev.com/api/v4/projects/9336/repository/commits"
 INVENTORY_G_SHEET_NAME = "O11y Out of the Box Inventory Test"
 G_SHEET_CONTENT = {
@@ -154,18 +144,29 @@ def get_date_range(date):
     """
     # Function to check which date range a given date falls into
     date = datetime.strptime(date, '%d-%m-%Y')
-
-    # convert date strings to datetime objects and store in dictionary
-    for pi in PI_DATE_RANGE:
-        print("type of pi date range: ", type(PI_DATE_RANGE[pi][0]))
-        PI_DATE_RANGE[pi][0] = datetime.strptime(str(PI_DATE_RANGE[pi][0]), '%d-%m-%Y')
-        PI_DATE_RANGE[pi][1] = datetime.strptime(str(PI_DATE_RANGE[pi][1]), '%d-%m-%Y')
+    PI_DATE_RANGE = {
+        'FY23PI1': ['08-02-2022', '16-05-2022'],
+        'FY23PI2': ['17-05-2022', '11-08-2022'],
+        'FY23PI3': ['12-08-2022', '14-11-2022'],
+        'FY23PI4': ['14-11-2022', '06-02-2023'],
+        'FY24PI1': ['07-02-2023', '02-05-2023'],
+        'FY24PI2': ['03-05-2023', '25-07-2023'],
+        'FY24PI3': ['26-07-2023', '31-10-2023'],
+        'FY24PI4': ['01-11-2023', '23-01-2024']
+    }
+    # # convert date strings to datetime objects and store in dictionary
+    # for pi in PI_DATE_RANGE:
+    #     print("Type of pi date range", type(PI_DATE_RANGE[pi][0]))
+    #     PI_DATE_RANGE[pi][0] = datetime.strptime(PI_DATE_RANGE[pi][0], '%d-%m-%Y')
+    #     PI_DATE_RANGE[pi][1] = datetime.strptime(PI_DATE_RANGE[pi][1], '%d-%m-%Y')
 
     for key, value in PI_DATE_RANGE.items():
+        value[0] = datetime.strptime(value[0], '%d-%m-%Y')
+        value[1] = datetime.strptime(value[1], '%d-%m-%Y')
         print(type(value[0]), "and", type(value[1]))
         if value[0] <= date <= value[1]:
             return key
-    return 'Date not in any range'
+    return date
 
 
 def get_file_creation_date(file_path):
