@@ -199,13 +199,12 @@ class GitlabInventory:
         }
         response = requests.request("GET", cls.GITLAB_COMMIT_URL.format(url_encode_path), headers=headers,
                                     params=query_params)
-        print(response.json())
         if len(response.json()) > 0:
             commit_list = response.json()[0]
             commit_date = parser.parse(commit_list.get('commit').get('committed_date')).strftime('%d-%m-%Y')
             print(f"File:{file_path}'s creation date: {commit_date}")
             return commit_date
-        print(f"Unexpected error while fetching {file_path} creation date")
+        print(f"Unexpected error while fetching {file_path} creation date and response: {response.json()}")
 
     @classmethod
     def collect_inventory_data(cls, dest_list):
