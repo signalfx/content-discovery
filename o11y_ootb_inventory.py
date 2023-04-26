@@ -172,16 +172,35 @@ class GitlabInventory:
         """
         To get the PI based on given date.
         """
+        check_date = datetime.strptime(date, '%d-%m-%Y').date()
+        total_len_pi_range = len(list(cls.PI_DATE_RANGE.items()))
+
+        # To retrieve very 1st date and PI name from PI_DATE_RANGE mapping list
+        very_first_date = datetime.strptime(list(cls.PI_DATE_RANGE.items())[0][1][0], '%d-%m-%Y').date()
+        very_first_pi = list(cls.PI_DATE_RANGE.items())[0][0]
+
+        # To retrieve very last date and PI name from PI_DATE_RANGE mapping list
+        vert_last_date = datetime.strptime(list(cls.PI_DATE_RANGE.items())[total_len_pi_range-1][1][0], '%d-%m-%Y').date()
+        very_last_pi = list(cls.PI_DATE_RANGE.items())[total_len_pi_range-1][0]
+
         # Function to check which date range a given date falls into
         for key, date_range in cls.PI_DATE_RANGE.items():
             start_date = datetime.strptime(date_range[0], '%d-%m-%Y').date()
             end_date = datetime.strptime(date_range[1], '%d-%m-%Y').date()
-            check_date = datetime.strptime(date, '%d-%m-%Y').date()
             if start_date <= check_date <= end_date:
                 return key
 
-        # If respective PI not found then return the actual date
-        return "Before FY22PI4"
+        # If the date is before the very_first_date from PI_DATE_RANGE mapping
+        if check_date < very_first_date:
+            return f'Before {very_first_pi}'
+
+        # If the date is greater than the very_last_date from PI_DATE_RANGE mapping
+        elif check_date > vert_last_date:
+            return f'After {very_last_pi}'
+
+        else:
+            print(f"Unexpected case occurred while get_pi_from_date for date:{check_date}")
+            return date
 
     @classmethod
     def get_file_creation_date(cls, file_path):
