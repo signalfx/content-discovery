@@ -50,6 +50,9 @@ class GitlabInventory:
         'FY24PI3': ['26-07-2023', '31-10-2023'],
         'FY24PI4': ['01-11-2023', '23-01-2024']
     }
+    INVENTORY_CONTENTS = [{"path": "navigators/", "content_type": "navigator"},
+                          {"path": "group/", "content_type": "dashboard"},
+                          {"path": "detector/", "content_type": "detector"}]
 
     @classmethod
     def collect_json_files(cls, path):
@@ -202,8 +205,7 @@ class GitlabInventory:
             commit_date = parser.parse(commit_list.get('commit').get('committed_date')).strftime('%d-%m-%Y')
             print(f"File:{file_path}'s creation date: {commit_date}")
             return commit_date
-        else:
-            print(f"Unexpected error while fetching {file_path} creation date")
+        print(f"Unexpected error while fetching {file_path} creation date")
 
     @classmethod
     def collect_inventory_data(cls, dest_list):
@@ -292,20 +294,10 @@ class GitlabInventory:
         cred_file = cls.get_credentials()
         creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
 
-        nav_files = cls.collect_json_files("navigators/")
-        nav_list = cls.collect_inventory_data(nav_files)
-        print(nav_list)
-        cls.write_to_gsheet_file("navigator", nav_list, creds)
-
-        db_files = cls.collect_json_files("group/")
-        db_list = cls.collect_inventory_data(db_files)
-        print(db_list)
-        cls.write_to_gsheet_file("dashboard", db_list, creds)
-
-        dt_files = cls.collect_json_files("detector/")
-        dt_list = cls.collect_inventory_data(dt_files)
-        print(dt_list)
-        cls.write_to_gsheet_file("detector", dt_list, creds)
+        for content in cls.INVENTORY_CONTENTS:
+            content_files = cls.collect_json_files(content["path"])
+            content_list = cls.collect_inventory_data(content_files)
+            cls.write_to_gsheet_file(content["content_type"], content_list, creds)
 
 
 if __name__ == "__main__":
