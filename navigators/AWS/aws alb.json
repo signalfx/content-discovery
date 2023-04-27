@@ -1,5 +1,5 @@
 {
-  "hashCode": -392772194,
+  "hashCode": 1882574956,
   "id": "FWV48S9AYAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -80,125 +80,27 @@
           {
             "coloring": {
               "limits": null,
-              "maxValue": null,
+              "maxValue": 100,
               "method": "quantile",
               "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
+              "range": null
             },
-            "description": "This metric shows the total number of concurrent TCP connections active from clients to the load balancer and from the load balancer to targets. Darker colors indicate higher relative values.",
-            "displayName": "# Active connections",
-            "id": "awsalbinstances_active_connections",
+            "description": "This metric shows the percentage of targets of the load balancer that are considered unhealthy. Below 20% green and over 80% red.",
+            "displayName": "Unhealthy hosts (%)",
+            "id": "awsalbinstances_unhealthy_hosts",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "ACTIVE_CONNECTIONS = data(\"ActiveConnectionCount\",filter=filter(\"stat\",\"sum\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"latest\").sum(by=[\"LoadBalancer\"])",
-              "varName": "ACTIVE_CONNECTIONS"
+              "template": "HEALTHY = data(\"HealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nUNHEALTHY = data(\"UnHealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nPERCENTAGE =(UNHEALTHY/(HEALTHY +UNHEALTHY)).scale(100)",
+              "varName": "PERCENTAGE"
             },
             "metricSelectors": [
-              "ActiveConnectionCount"
+              "HealthyHostCount",
+              "UnHealthyHostCount"
             ],
             "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Active connections",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of TLS connections initiated by the client that did not establish a session with the load balancer due to a TLS error. Darker colors indicate higher relative values.",
-            "displayName": "# Client TLS negotiation errors",
-            "id": "awsalbinstances_client_tls_negotiation_errors",
-            "job": {
-              "filters": [],
-              "resolution": 180000,
-              "template": "TLS_ERR = data(\"ClientTLSNegotiationErrorCount\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
-              "varName": "TLS_ERR"
-            },
-            "metricSelectors": [
-              "ClientTLSNegotiationErrorCount"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Client TLS negotiation errors",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of HTTP redirection, client and server codes that originate from the load balancer. Darker colors indicate higher relative values.",
-            "displayName": "# HTTP client errors",
-            "id": "awsalbinstances_http_client_errors",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "HTTP_ERR = data(\"HTTPCode_ELB*XX*\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
-              "varName": "HTTP_ERR"
-            },
-            "metricSelectors": [
-              "HTTPCode_ELB*XX*"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "HTTP client errors",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of HTTP response codes (2xx, 3xx, 4xx, 5xx) generated by the targets. Darker colors indicate higher relative values.",
-            "displayName": "# HTTP target response codes",
-            "id": "awsalbinstances_http_target_response_codes",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "HTTP_TARGET_ERR = data(\"HTTPCode_T*\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
-              "varName": "HTTP_TARGET_ERR"
-            },
-            "metricSelectors": [
-              "HTTPCode_T*"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "HTTP target response codes",
+            "valueFormat": "Percentage",
+            "valueLabel": "Unhealthy hosts",
             "valueType": null
           },
           {
@@ -246,13 +148,44 @@
                 "#810f7c"
               ]
             },
+            "description": "This metric shows the total number of concurrent TCP connections active from clients to the load balancer and from the load balancer to targets. Darker colors indicate higher relative values.",
+            "displayName": "# Active connections",
+            "id": "awsalbinstances_active_connections",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "ACTIVE_CONNECTIONS = data(\"ActiveConnectionCount\",filter=filter(\"stat\",\"sum\") and filter(\"namespace\",\"AWS/ApplicationELB\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"latest\").sum(by=[\"LoadBalancer\"])",
+              "varName": "ACTIVE_CONNECTIONS"
+            },
+            "metricSelectors": [
+              "ActiveConnectionCount"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Active connections",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
             "description": "This metric shows the number of requests processed over IPv4 and IPv6. Darker colors indicate higher relative values.",
             "displayName": "# Requests",
             "id": "awsalbinstances_requests",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "REQUESTS = data(\"RequestCount\", filter=filter(\"stat\",\"sum\") and filter(\"TargetGroup\", \"*\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "REQUESTS = data(\"RequestCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"TargetGroup\", \"*\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "REQUESTS"
             },
             "metricSelectors": [
@@ -277,13 +210,106 @@
                 "#810f7c"
               ]
             },
+            "description": "This metric shows the number of TLS connections initiated by the client that did not establish a session with the load balancer due to a TLS error. Darker colors indicate higher relative values.",
+            "displayName": "# Client TLS negotiation errors",
+            "id": "awsalbinstances_client_tls_negotiation_errors",
+            "job": {
+              "filters": [],
+              "resolution": 180000,
+              "template": "TLS_ERR = data(\"ClientTLSNegotiationErrorCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "TLS_ERR"
+            },
+            "metricSelectors": [
+              "ClientTLSNegotiationErrorCount"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Client TLS negotiation errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of HTTP redirection, client and server codes that originate from the load balancer. Darker colors indicate higher relative values.",
+            "displayName": "# HTTP client errors",
+            "id": "awsalbinstances_http_client_errors",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_ERR = data(\"HTTPCode_ELB*XX*\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "HTTP_ERR"
+            },
+            "metricSelectors": [
+              "HTTPCode_ELB*XX*"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "HTTP client errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of HTTP response codes (2xx, 3xx, 4xx, 5xx) generated by the targets. Darker colors indicate higher relative values.",
+            "displayName": "# HTTP target response codes",
+            "id": "awsalbinstances_http_target_response_codes",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "HTTP_TARGET_ERR = data(\"HTTPCode_T*\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "varName": "HTTP_TARGET_ERR"
+            },
+            "metricSelectors": [
+              "HTTPCode_T*"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "HTTP target response codes",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
             "description": "This metric shows the number of connections that were not successfully established between the load balancer and target. Darker colors indicate higher relative values.",
             "displayName": "# Target connection errors",
             "id": "awsalbinstances_target_connection_errors",
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "ERRORS = data(\"TargetConnectionErrorCount\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "ERRORS = data(\"TargetConnectionErrorCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "ERRORS"
             },
             "metricSelectors": [
@@ -314,7 +340,7 @@
             "job": {
               "filters": [],
               "resolution": 180000,
-              "template": "NEGO_ERR = data(\"TargetTLSNegotiationErrorCount\", filter=filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"LoadBalancer\"])",
+              "template": "NEGO_ERR = data(\"TargetTLSNegotiationErrorCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"LoadBalancer\"])",
               "varName": "NEGO_ERR"
             },
             "metricSelectors": [
@@ -345,7 +371,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "RESPONSE_TIME = data(\"TargetResponseTime\", filter=filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "RESPONSE_TIME = data(\"TargetResponseTime\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "RESPONSE_TIME"
             },
             "metricSelectors": [
@@ -355,39 +381,13 @@
             "valueFormat": "Number",
             "valueLabel": "Target response time",
             "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": null
-            },
-            "description": "This metric shows the percentage of targets of the load balancer that are considered unhealthy. Below 20% green and over 80% red.",
-            "displayName": "Unhealthy hosts (%)",
-            "id": "awsalbinstances_unhealthy_hosts",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "HEALTHY = data(\"HealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nUNHEALTHY = data(\"UnHealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nPERCENTAGE =(UNHEALTHY/(HEALTHY +UNHEALTHY)).scale(100)",
-              "varName": "PERCENTAGE"
-            },
-            "metricSelectors": [
-              "HealthyHostCount",
-              "UnHealthyHostCount"
-            ],
-            "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "Unhealthy hosts",
-            "valueType": null
           }
         ],
         "mtsQuery": null,
         "o11yMetricName": "Running instances",
         "o11yMetricUnit": null,
         "o11yProductName": "ALB instances",
-        "o11ySignalflowTemplate": "A = data('HealthyHostCount', filter= filter('namespace','AWS/ApplicationELB'), extrapolation='last_value', maxExtrapolations=2).count(by=['LoadBalancer']).count().publish(label='A')",
+        "o11ySignalflowTemplate": "A = data('HealthyHostCount', filter= filter('namespace','AWS/ApplicationELB') and filter('stat','sum') , extrapolation='last_value', maxExtrapolations=2).count(by=['LoadBalancer']).count().publish(label='A')",
         "o11yTrendDisplayMode": "absolute",
         "propertyColumns": null,
         "proxyProperties": null,
