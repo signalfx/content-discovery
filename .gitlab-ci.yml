@@ -7,6 +7,7 @@ include:
 stages:
   - code_analysis
   - validate-content
+  - O11y-Out-of-the-Box-Inventory
 
 validate:
   stage: validate-content
@@ -14,3 +15,20 @@ validate:
     - schedules
   script:
     - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
+
+# We are still testing this CICD to update the OOTB content details on spreadsheet and as of now it will update
+# the "O11y Out of the Box Inventory Test" google spreadsheet. Once we complete 2-3 round of testing to update content
+#  based on changes on master branch after that we will update the actual spreadsheet name
+
+update-ootb-inventory:
+  image: python:3
+  stage: O11y-Out-of-the-Box-Inventory
+  # To run this job to just only on master branch
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
+  script:
+    - pip install -r requirement.txt
+    - python o11y_ootb_inventory.py -pki $PRIVATE_KEY_ID -ci $CLIENT_ID -ce $CLIENT_EMAIL -pi $PROJECT_ID -pk $PRIVATE_KEY -gpt $GITLAB_API_PRIVATE_TOKEN
+
