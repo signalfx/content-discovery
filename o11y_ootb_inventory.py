@@ -219,6 +219,7 @@ class GitlabInventory:
         headers = {
             'PRIVATE-TOKEN': cls.GITLAB_API_PRIVATE_TOKEN
         }
+        print("CI/CD JOB token", headers)
         response = requests.request("GET", cls.GITLAB_COMMIT_URL.format(url_encode_path), headers=headers,
                                     params=query_params)
         if len(response.json()) > 0:
