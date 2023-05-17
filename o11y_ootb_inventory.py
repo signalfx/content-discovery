@@ -21,9 +21,7 @@ class GitlabInventory:
     GITLAB_COMMIT_URL = "https://cd.splunkdev.com/api/v4/projects/9336/repository/files/{}/blame"
     NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
 
-    # Todo: While 2-3 interation of testing will keep this beta spreadsheet and after
-    #  that will update the actual spreadsheet
-    INVENTORY_G_SHEET_NAME = "O11y Out of the Box Inventory Test"
+    INVENTORY_G_SHEET_NAME = "O11y Out of the Box Content Inventory"
     G_SHEET_CONTENT = {
         'navigator':
             {
