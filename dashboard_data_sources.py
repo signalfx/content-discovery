@@ -61,6 +61,7 @@ def extract_next_method_call(text):
 				ptext = ''
 			elif text[i] == '(':
 				pcount += 1
+				ptext += text[i]
 			elif text[i] == ')':
 				pcount -= 1
 			else:
