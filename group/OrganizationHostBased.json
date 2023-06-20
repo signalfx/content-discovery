@@ -5270,7 +5270,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries')).sum(over='30d').top(count=15).sum(by=['projectId']).publish(label='A')",
+      "programText" : "A = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries', 'listBuckets')).sum(over='30d').top(count=15).sum(by=['projectId']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5408,7 +5408,7 @@
             "property" : "source_orgname"
           } ]
         },
-        "maximumPrecision" : 4,
+        "maximumPrecision" : 1,
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
@@ -5532,7 +5532,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics'), rollup='sum').sum(by=['orgId']).sum(over='1d').mean(over='7d').sum().publish(label='A', enable=False)\nB = (((A*30)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nF = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(over='1d').mean(over='7d').sum().publish(label='F', enable=False)\nH = (((F*30)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='H', enable=False)\nJ = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='J', enable=False)\nK = (((J)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='K', enable=False)\nL = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='L', enable=False)\nM = (((L)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='M', enable=False)\nN = (K+M).publish(label='N', enable=False)\nO = (P-N).publish(label='O')\nP = (B+H).publish(label='P')",
+      "programText" : "A = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics'), rollup='sum').sum(by=['orgId']).sum(over='1d').mean(over='7d').sum().publish(label='A', enable=False)\nB = (((A*30)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nF = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(over='1d').mean(over='7d').sum().publish(label='F', enable=False)\nH = (((F*30)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='H', enable=False)\nJ = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='J', enable=False)\nK = (((J)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='K', enable=False)\nL = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='L', enable=False)\nM = (((L)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='M', enable=False)\nN = ((K if K is not None else 0)+(M if M is not None else 0)).publish(label='N')\nO = ((P if P is not None else 0)-(N if N is not None else 0)).publish(label='O')\nP = ((B if B is not None else 0)+(H if H is not None else 0)).publish(label='P')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5623,7 +5623,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.gcpStackdriverClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'method', 'projectId']).sum(over='1d').publish(label='A')\nB = data('sf.org.num.gcpStackdriverClientCallCount', rollup='rate').sum(by=['orgId']).scale(60).publish(label='B', enable=False)\nC = data('sf.org.num.gcpStackdriverClientCallCountErrors', rollup='rate').sum(by=['orgId']).scale(60).publish(label='C', enable=False)",
+      "programText" : "A = data('sf.org.num.gcpServiceClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'method', 'projectId']).sum(over='1d').publish(label='A')\nB = data('sf.org.num.gcpServiceClientCallCount').sum(by=['orgId']).scale(60).publish(label='B', enable=False)\nC = data('sf.org.num.gcpServiceClientCallCountErrors').sum(by=['orgId']).scale(60).publish(label='C', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5640,7 +5640,7 @@
       "lastUpdatedBy" : null,
       "name" : "Azure monitor errors and throttles",
       "options" : {
-        "markdown" : "<code>sf.org.num.azureMonitorClientCallCountErrors</code> is the number of times Azure returned an error response to an API call based on [Azure Monitor REST API](https://docs.microsoft.com/en-us/rest/api/monitor/). <br />\n<code>sf.org.num.azureMonitorClientCallCountThrottles</code> is the number of times Azure rejected a specific API call as a result of exceeding quotas as documented in the [Azure Monitor Service quotas](https://docs.microsoft.com/en-us/azure/azure-monitor/service-limits). <br />\n<code>sf.org.num.azureMonitorClientCallCount</code> is the number of times the splunk cloud metric sync process called the Azure monitor API. <br />\n\nThe Ccoud metric sync process is designed to support retries and a low but non-zero percentage of API calls throttled is expected. If a particular integration is returning errors frequently the API service quotas can generally be adjusted by requesting a service quota increase as documented in [Azure Monitor Service quotas](https://docs.microsoft.com/en-us/azure/azure-monitor/service-limits) documentation.\n\nThere are a number of cases where exceptions may be generated by the Azure API.",
+        "markdown" : "<code>sf.org.num.azureServiceClientCallCountErrors</code> is the number of times Azure returned an error response to an API call based on [Azure Monitor REST API](https://docs.microsoft.com/en-us/rest/api/monitor/). <br />\n<code>sf.org.num.azureServiceClientCallCountThrottles</code> is the number of times Azure rejected a specific API call as a result of exceeding quotas as documented in the [Azure Monitor Service quotas](https://docs.microsoft.com/en-us/azure/azure-monitor/service-limits). <br />\n<code>sf.org.num.azureServiceClientCallCount</code> is the number of times the splunk cloud metric sync process called the Azure monitor API. <br />\n\nThe cloud metric sync process is designed to support retries and a low but non-zero percentage of API calls throttled is expected. If a particular integration is returning errors frequently the API service quotas can generally be adjusted by requesting a service quota increase as documented in [Azure Monitor Service quotas](https://docs.microsoft.com/en-us/azure/azure-monitor/service-limits) documentation.\n\nThere are a number of cases where exceptions may be generated by the Azure API.",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -6085,7 +6085,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.azureMonitorClientCallCount').sum(by=['integrationId']).sum(over='30d').top(count=15).publish(label='A')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCount').sum(by=['integrationId']).sum(over='30d').top(count=15).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6102,7 +6102,7 @@
       "lastUpdatedBy" : null,
       "name" : "Google cloud monitoring errors and throttles",
       "options" : {
-        "markdown" : "<code>sf.org.num.gcpStackdriverClientCallCountErrors</code> is the number of times GCP returned an error response to an API call based on Potential AWS CloudWatch error responses are documented in the [Google Cloud Monitoring REST API troubleshooting reference](https://cloud.google.com/monitoring/api/troubleshooting). <br />\n<code>sf.org.num.gcpStackdriverClientCallCountThrottles</code> is the number of times GCP rejected a specific API call due to exceeding quotas as defined in [Google Cloud Monitoring API Quotas and Limits](https://cloud.google.com/monitoring/quotas#quotas_and_limits). <br />\n<code>sf.org.num.gcpStackdriverClientCallCount</code> is the number of times the splunk cloud metric sync process called the Google cloud monitoring API. <br />\n\nThe cloud metric sync process is designed to support retries and a low but non-zero percentage of API calls throttled is expected. If a particular integration is returning errors frequently the API service quotas can generally be adjusted by requesting a service quota increase as documented in [Google Cloud Monitoring API Quotas and Limits](https://cloud.google.com/monitoring/quotas) documentation.\n\nThere are a number of cases where exceptions may be generated by the AWS API.",
+        "markdown" : "<code>sf.org.num.gcpServiceClientCallCountErrors</code> is the number of times GCP returned an error response to an API call based on Potential AWS CloudWatch error responses are documented in the [Google Cloud Monitoring REST API troubleshooting reference](https://cloud.google.com/monitoring/api/troubleshooting). <br />\n<code>sf.org.num.gcpServiceClientCallCountThrottles</code> is the number of times GCP rejected a specific API call due to exceeding quotas as defined in [Google Cloud Monitoring API Quotas and Limits](https://cloud.google.com/monitoring/quotas#quotas_and_limits). <br />\n<code>sf.org.num.gcpServiceClientCallCount</code> is the number of times the splunk cloud metric sync process called the Google cloud monitoring API. <br />\n\nThe cloud metric sync process is designed to support retries and a low but non-zero percentage of API calls throttled is expected. If a particular integration is returning errors frequently the API service quotas can generally be adjusted by requesting a service quota increase as documented in [Google Cloud Monitoring API Quotas and Limits](https://cloud.google.com/monitoring/quotas) documentation.\n\nThere are a number of cases where exceptions may be generated by the AWS API.",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -6162,7 +6162,7 @@
             "property" : "source_orgname"
           } ]
         },
-        "maximumPrecision" : 4,
+        "maximumPrecision" : 1,
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
@@ -6313,7 +6313,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics'), rollup='sum').sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nF = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='F', enable=False)\nH = (((F)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='H', enable=False)\nI = (B+H+P).publish(label='I')\nJ = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='J', enable=False)\nK = (((J)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='K', enable=False)\nL = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='L', enable=False)\nM = (((L)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='M', enable=False)\nN = (K+M+R).publish(label='N')\nO = data('sf.org.num.awsServiceCallCount', filter=filter('method', 'listMetrics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=True).sum().publish(label='O', enable=False)\nP = (((O)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='P', enable=False)\nQ = data('sf.org.num.awsServiceCallCount', filter=filter('method', 'listMetrics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='Q', enable=False)\nR = (((Q)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='R', enable=False)",
+      "programText" : "A = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics'), rollup='sum').sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nF = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='F', enable=False)\nH = (((F)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='H', enable=False)\nI = ((B if B is not None else 0)+(H if H is not None else 0)+(P if P is not None else 0)).publish(label='I')\nJ = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricStatistics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='J', enable=False)\nK = (((J)/1000)*0.02).above(0, inclusive=True, clamp=True).sum().publish(label='K', enable=False)\nL = data('sf.org.num.awsBillableMetricRequests', filter=filter('method', 'getMetricData')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='L', enable=False)\nM = (((L)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='M', enable=False)\nN = ((K if K is not None else 0)+(M if M is not None else 0)+(R if R is not None else 0)).publish(label='N')\nO = data('sf.org.num.awsServiceCallCount', filter=filter('method', 'listMetrics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=True).sum().publish(label='O', enable=False)\nP = (((O)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='P', enable=False)\nQ = data('sf.org.num.awsServiceCallCount', filter=filter('method', 'listMetrics')).sum(by=['orgId']).sum(cycle='month', cycle_start='1d', partial_values=False, shift_cycles=1).sum(over='32d').publish(label='Q', enable=False)\nR = (((Q)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='R', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6513,7 +6513,7 @@
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
-        "sortBy" : "-Errors / minute",
+        "sortBy" : "-Errors/minute",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -6610,7 +6610,7 @@
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
-        "sortBy" : "-24h Error Count",
+        "sortBy" : "-24h error count",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -6621,7 +6621,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.azureMonitorClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'subscription_id']).sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.num.azureMonitorClientCallCount', rollup='rate').sum(by=['orgId', 'subscription_id']).publish(label='B', enable=False)\nC = data('sf.org.num.azureMonitorClientCallCountErrors', rollup='sum').sum(by=['orgId', 'subscription_id', 'type']).sum(over='1d').publish(label='C')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'subscriptionId']).sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.num.azureServiceClientCallCount').sum(by=['orgId', 'subscriptionId']).publish(label='B', enable=False)\nC = data('sf.org.num.azureServiceClientCallCountErrors', rollup='sum').sum(by=['subscriptionId', 'orgId']).sum(over='1d').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -6884,7 +6884,7 @@
         },
         "maximumPrecision" : null,
         "programOptions" : {
-          "disableSampling" : false,
+          "disableSampling" : true,
           "maxDelay" : 0,
           "minimumResolution" : 0,
           "timezone" : null
@@ -6909,7 +6909,7 @@
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
-        "sortBy" : "-24h Exception Count",
+        "sortBy" : "-24h exception count",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -7037,7 +7037,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "E = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors'), rollup='sum').sum(over='1d').mean(over='7d').sum().publish(label='E', enable=False)\nA = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors'), rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nC = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors')).sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D', enable=False)\nF = (((E*30-1000000)/1000)/100).above(0, inclusive=True, clamp=True).sum().publish(label='F')\nG = (F-D).publish(label='G')",
+      "programText" : "E = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors', 'listBuckets'), rollup='sum').sum(over='1d').mean(over='7d').sum().publish(label='E', enable=False)\nA = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors', 'listBuckets'), rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nC = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors', 'listBuckets')).sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D', enable=False)\nF = (((E*30-1000000)/1000)/100).above(0, inclusive=True, clamp=True).sum().publish(label='F')\nG = (F-D).publish(label='G')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7172,7 +7172,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.azureMonitorClientCallCountThrottles', rollup='rate').sum(by=['orgId']).scale(60).publish(label='A')\nB = data('sf.org.num.azureMonitorClientCallCount', rollup='rate').sum(by=['orgId']).scale(60).publish(label='B')\nC = data('sf.org.num.azureMonitorClientCallCountErrors', rollup='rate').sum(by=['orgId']).scale(60).publish(label='C')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCountThrottles').sum(by=['orgId']).scale(60).publish(label='A')\nB = data('sf.org.num.azureServiceClientCallCount').sum(by=['orgId']).scale(60).publish(label='B')\nC = data('sf.org.num.azureServiceClientCallCountErrors').sum(by=['orgId']).scale(60).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7259,7 +7259,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries'), rollup='rate').sum().scale(60).publish(label='A')",
+      "programText" : "A = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries', 'listBuckets')).sum().scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7437,14 +7437,14 @@
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
-          "displayName" : "24h error count",
+          "displayName" : "24h error counts",
           "label" : "C",
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
-        "sortBy" : "-Errors",
+        "sortBy" : "-24h error counts",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -7455,7 +7455,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.gcpStackdriverClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'method', 'projectId']).sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.num.gcpStackdriverClientCallCount', rollup='rate').sum(by=['orgId']).scale(60).publish(label='B', enable=False)\nC = data('sf.org.num.gcpStackdriverClientCallCountErrors', rollup='sum').sum(by=['orgId', 'method', 'projectId']).sum(over='1d').publish(label='C')",
+      "programText" : "A = data('sf.org.num.gcpServiceClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'method', 'projectId']).sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.num.gcpServiceClientCallCount').sum(by=['orgId']).scale(60).publish(label='B', enable=False)\nC = data('sf.org.num.gcpServiceClientCallCountErrors', rollup='sum').sum(by=['orgId', 'method', 'projectId']).sum(over='1d').publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7578,6 +7578,9 @@
           }, {
             "enabled" : true,
             "property" : "azure_subscription_display_name"
+          }, {
+            "enabled" : true,
+            "property" : "subscriptionId"
           } ]
         },
         "maximumPrecision" : 4,
@@ -7614,7 +7617,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.azureMonitorClientCallCount').sum(by=['subscription_id']).sum(over='30d').top(count=15).publish(label='A')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCount').sum(by=['subscriptionId']).sum(over='30d').top(count=15).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7681,7 +7684,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Throttles",
+          "displayName" : "24h throttle count",
           "label" : "A",
           "valuePrefix" : "",
           "valueSuffix" : "",
@@ -7700,7 +7703,7 @@
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
-        "sortBy" : "-Throttles",
+        "sortBy" : "-24h throttle count",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -7711,7 +7714,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.azureMonitorClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'subscription_id']).sum(over='1d').publish(label='A')\nB = data('sf.org.num.azureMonitorClientCallCount', rollup='rate').sum(by=['orgId', 'subscription_id']).publish(label='B', enable=False)\nC = data('sf.org.num.azureMonitorClientCallCountErrors', rollup='rate').sum(by=['orgId']).scale(60).publish(label='C', enable=False)",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCountThrottles', rollup='sum').sum(by=['orgId', 'subscriptionId']).sum(over='1d').publish(label='A')\nB = data('sf.org.num.azureServiceClientCallCount').sum(by=['orgId', 'subscriptionId']).publish(label='B', enable=False)\nC = data('sf.org.num.azureServiceClientCallCountErrors').sum(by=['orgId']).scale(60).publish(label='C', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7798,7 +7801,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.azureMonitorClientCallCount', rollup='rate').sum(by=['orgId']).scale(60).publish(label='A')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCount').sum(by=['orgId']).scale(60).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -7840,15 +7843,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Calls per day with 7 days average",
-          "label" : "Calls per day with 7 days average",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "sf.org.num.azureMonitorClientCallCount - Sum(monthly) - Sum by subscription_id",
           "label" : "A",
           "paletteIndex" : null,
@@ -7902,6 +7896,15 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Calls per day with 7 days average",
+          "label" : "Calls per day with 7 days average",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
@@ -7915,7 +7918,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.azureMonitorClientCallCount', rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nC = data('sf.org.num.azureMonitorClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D', enable=False)\nF = (((E*30-1000000)/1000)/100).above(0, inclusive=True, clamp=True).sum().publish(label='F')\nG = (F-D).publish(label='G')\nE = data('sf.org.num.azureMonitorClientCallCount', rollup='sum').sum(over='1d').mean(over='7d').sum().publish(label='Calls per day with 7 days average', enable=False)",
+      "programText" : "E = data('sf.org.num.azureServiceClientCallCount', rollup='sum').sum(over='1d').mean(over='7d').sum().publish(label='Calls per day with 7 days average', enable=False)\nA = data('sf.org.num.azureServiceClientCallCount', rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nC = data('sf.org.num.azureServiceClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D', enable=False)\nF = (((E*30-1000000)/1000)/100).above(0, inclusive=True, clamp=True).sum().publish(label='F')\nG = (F-D).publish(label='G')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8071,7 +8074,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.gcpStackdriverClientCallCountThrottles', rollup='rate').sum(by=['orgId']).scale(60).publish(label='A')\nB = data('sf.org.num.gcpStackdriverClientCallCount', rollup='rate').sum(by=['orgId']).scale(60).publish(label='B')\nC = data('sf.org.num.gcpStackdriverClientCallCountErrors', rollup='rate').sum(by=['orgId']).scale(60).publish(label='C')",
+      "programText" : "A = data('sf.org.num.gcpServiceClientCallCountThrottles').sum(by=['orgId']).scale(60).publish(label='A')\nB = data('sf.org.num.gcpServiceClientCallCount').sum(by=['orgId']).scale(60).publish(label='B')\nC = data('sf.org.num.gcpServiceClientCallCountErrors').sum(by=['orgId']).scale(60).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8146,7 +8149,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors')).sum(by=['integrationId']).sum(over='30d').top(count=15).publish(label='A')",
+      "programText" : "A = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getTimeSeries', 'getMetricDescriptors', 'listBuckets')).sum(by=['integrationId']).sum(over='30d').top(count=15).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8203,7 +8206,16 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "sf.org.num.azureMonitorClientCallCount - Sum(monthly) - Sum by subscription_id",
+          "displayName" : "E",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "sf.org.num.azureServiceClientCallCount - Sum(monthly) - Sum by subscription_id",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -8221,7 +8233,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "sf.org.num.azureMonitorClientCallCount - Sum(monthly) - Sum by subscription_id - Sum(32d)",
+          "displayName" : "sf.org.num.azureServiceClientCallCount - Sum(monthly) - Sum by subscription_id - Sum(32d)",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -8238,15 +8250,6 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : "E",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
@@ -8260,7 +8263,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "E = data('sf.org.num.azureMonitorClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=True).delta().above(0, inclusive=True).mean(over='7d').publish(label='E', enable=False)\nA = data('sf.org.num.azureMonitorClientCallCount', rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B')\nC = data('sf.org.num.azureMonitorClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCount', rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B')\nC = data('sf.org.num.azureServiceClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D')\nE = data('sf.org.num.azureServiceClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=True).delta().above(0, inclusive=True).mean(over='7d').publish(label='E', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -8435,7 +8438,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries'), rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B')\nC = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries')).sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D')\nE = data('sf.org.num.gcpStackdriverClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries')).sum(cycle='month', cycle_start='1d', partial_values=True).delta().above(0, inclusive=True).mean(over='7d').publish(label='E', enable=False)",
+      "programText" : "A = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries', 'listBuckets'), rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B')\nC = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries', 'listBuckets')).sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D')\nE = data('sf.org.num.gcpServiceClientCallCount', filter=filter('method', 'getMetricDescriptors', 'getTimeSeries', 'listBuckets')).sum(cycle='month', cycle_start='1d', partial_values=True).delta().above(0, inclusive=True).mean(over='7d').publish(label='E', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -9614,7 +9617,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 677952549,
+  "hashCode" : 235129707,
   "id" : "DkmfEnuAYDk",
   "modelVersion" : 1,
   "packageType" : "GROUP"
