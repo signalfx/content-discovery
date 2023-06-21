@@ -37,6 +37,15 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "Calls per day with 7 days average",
+          "label" : "Calls per day with 7 days average",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "sf.org.num.azureMonitorClientCallCount - sum(monthly) - sum by subscription_id",
           "label" : "A",
           "paletteIndex" : null,
@@ -73,15 +82,6 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Calls per day with 7 days average",
-          "label" : "Calls per day with 7 days average",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "30 days forecast",
           "label" : "F",
           "paletteIndex" : null,
@@ -112,7 +112,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "E = data('sf.org.num.azureServiceClientCallCount', rollup='sum').sum(over='1d').mean(over='7d').sum().publish(label='Calls per day with 7 days average', enable=False)\nA = data('sf.org.num.azureServiceClientCallCount', rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nC = data('sf.org.num.azureServiceClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D', enable=False)\nF = (((E*30-1000000)/1000)/100).above(0, inclusive=True, clamp=True).sum().publish(label='F')\nG = (F-D).publish(label='G')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCount', filter=filter('api', 'AzureMonitor'), rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B', enable=False)\nC = data('sf.org.num.azureServiceClientCallCount', filter=filter('api', 'AzureMonitor')).sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D', enable=False)\nF = (((E*30-1000000)/1000)/100).above(0, inclusive=True, clamp=True).sum().publish(label='F')\nG = (F-D).publish(label='G')\nE = data('sf.org.num.azureServiceClientCallCount', filter=filter('api', 'AzureMonitor'), rollup='sum').sum(over='1d').mean(over='7d').sum().publish(label='Calls per day with 7 days average', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -300,7 +300,7 @@
       "lastUpdatedBy" : null,
       "name" : "Azure integration pricing",
       "options" : {
-        "markdown" : "#### This dashboard monitors calls made by Splunk Observability Cloud to Azure on your behalf based on the settings of your Azure integrations\n#### Cost estimation\nIn accordance with [standard Azure pricing](https://azure.microsoft.com/en-us/pricing/details/monitor/#pricing), we assume that the first 1M requests per subscription are free, and each additional 1K of standard API calls costs $0.01 USD.\n\n\nA standard API call might retrieve up to 1440 data points. This matches the total number of data points that can be stored per metric per day in Azure monitor.\nOur Azure integrations retrieve less data in each call, but issue calls more frequently to provide lower latency.\n\n\nIn addition to retrieving metrics metadata and data points, our integrations list your Azure resources and their tags, labels, and properties. These calls use the Azure resource management API, which is free.",
+        "markdown" : "#### This dashboard monitors calls made by Splunk Observability Cloud to Azure monitor API on your behalf based on the settings of your Azure integrations\n#### Cost estimation\nIn accordance with [standard Azure pricing](https://azure.microsoft.com/en-us/pricing/details/monitor/#pricing), we assume that the first 1M requests per subscription are free, and each additional 1K of standard API calls costs $0.01 USD.\n\n\nA standard API call might retrieve up to 1440 data points. This matches the total number of data points that can be stored per metric per day in Azure monitor.\nOur Azure integrations retrieve less data in each call, but issue calls more frequently to provide lower latency.\n\n\nIn addition to retrieving metrics metadata and data points, our integrations list your Azure resources and their tags, labels, and properties. These calls use the Azure resource management API, which is free.",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -766,6 +766,15 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "E",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "sf.org.num.azureMonitorClientCallCount - sum(monthly) - sum by subscription_id",
           "label" : "A",
           "paletteIndex" : null,
@@ -801,15 +810,6 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : "E",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
         } ],
         "refreshInterval" : null,
         "secondaryVisualization" : "None",
@@ -823,7 +823,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "E = data('sf.org.num.azureServiceClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=True).delta().above(0, inclusive=True).mean(over='7d').publish(label='E', enable=False)\nA = data('sf.org.num.azureServiceClientCallCount', rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B')\nC = data('sf.org.num.azureServiceClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D')",
+      "programText" : "A = data('sf.org.num.azureServiceClientCallCount', filter=filter('api', 'AzureMonitor'), rollup='sum').sum(cycle='month', cycle_start='1d', partial_values=True).publish(label='A', enable=False)\nB = (((A-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='B')\nC = data('sf.org.num.azureServiceClientCallCount', filter=filter('api', 'AzureMonitor')).sum(cycle='month', cycle_start='1d', partial_values=False).sum(over='32d').publish(label='C', enable=False)\nD = (((C-1000000)/1000)*0.01).above(0, inclusive=True, clamp=True).sum().publish(label='D')\nE = data('sf.org.num.azureServiceClientCallCount').sum(cycle='month', cycle_start='1d', partial_values=True).delta().above(0, inclusive=True).mean(over='7d').publish(label='E', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1207,7 +1207,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 907567184,
+  "hashCode" : -349706085,
   "id" : "FIMESXmAcAE",
   "modelVersion" : 1,
   "packageType" : "GROUP"
