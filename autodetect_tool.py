@@ -211,8 +211,10 @@ def fetch_plots_info(program_text, realm, token):
 
 def fetch_detector_sf_model(program_text, realm, token):
     endpoint = "v2/signalflow/_/getSignalFlowModel?parseDetectors=true"
+    headers = {'Content-Type': 'text/plain'}
     result = make_request(endpoint,
                           method='POST',
+                          headers=headers,
                           data=program_text,
                           token=token,
                           realm=realm)
