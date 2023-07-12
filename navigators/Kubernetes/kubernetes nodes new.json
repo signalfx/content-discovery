@@ -1,5 +1,5 @@
 {
-  "hashCode": 740390201,
+  "hashCode": -2138072179,
   "id": "FTByWHUAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -352,12 +352,12 @@
                 }
               ],
               "resolution": 60000,
-              "template": "MASTER_NODES = data(\"container.cpu.utilization\", filter=(filter(\"kubernetes_role\", \"master\") or filter(\"sf_tags\", \"node-role_kubernetes_io_master\")){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"k8s.cluster.name\", \"k8s.node.name\"])\nMASTER_NODES.publish(label=\"Master Node\")\nNODE_CONDITION = data(\"k8s.node.condition_*\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")",
+              "template": "MASTER_NODES = data(\"container_cpu_utilization\", filter=(filter(\"kubernetes_role\", \"master\") or filter(\"sf_tags\", \"node-role_kubernetes_io_master\")){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).scale(0.01).mean(by=[\"k8s.cluster.name\", \"k8s.node.name\"])\nMASTER_NODES.publish(label=\"Master Node\")\nNODE_CONDITION = data(\"k8s.node.condition_*\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")",
               "varName": "NODE_CONDITION"
             },
             "metricSelectors": [
               "k8s.node.condition_ready",
-              "container.cpu.utilization"
+              "container_cpu_utilization"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -423,8 +423,8 @@
           "defaultVisualization": true,
           "type": "hierarchical",
           "views": [
-            "aggregate",
-            "instance"
+            "instance",
+            "aggregate"
           ]
         },
         {
