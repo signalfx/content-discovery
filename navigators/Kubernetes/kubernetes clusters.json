@@ -1,5 +1,5 @@
 {
-  "hashCode" : 1985106687,
+  "hashCode" : 946002772,
   "id" : "FTwxEZhAcAA",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -26,13 +26,6 @@
           "values" : [ "k8s.pod.uid" ]
         } ],
         "metric" : "container.cpu.time"
-      }, {
-        "filters" : [ {
-          "not" : false,
-          "property" : "sf_key",
-          "values" : [ "k8s.pod.uid" ]
-        } ],
-        "metric" : "container.cpu.utilization"
       } ],
       "instanceDashboards" : [ "FY0_DOqAgAA" ],
       "instanceDisplayText" : null,
@@ -86,10 +79,10 @@
           "job" : {
             "filters" : [ ],
             "resolution" : 60000,
-            "template" : "CONTAINER_COUNT = data(\"container.cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(over=\"1m\").count(by=[\"k8s.cluster.name\"])",
+            "template" : "CONTAINER_COUNT = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).mean(over=\"1m\").count(by=[\"k8s.cluster.name\"])",
             "varName" : "CONTAINER_COUNT"
           },
-          "metricSelectors" : [ "container.cpu.utilization" ],
+          "metricSelectors" : [ "container_cpu_utilization" ],
           "type" : "metric",
           "valueFormat" : "Number",
           "valueLabel" : "Containers",
@@ -152,10 +145,10 @@
           "job" : {
             "filters" : [ ],
             "resolution" : 60000,
-            "template" : "CPU_UTILIZATION = data(\"container.cpu.utilization\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum()\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\") and filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container.cpu.utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\") and filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = union(CPU_USED_EKS, CPU_USED_MACHINE, CPU_USED_FARGATE)",
+            "template" : "CPU_UTILIZATION = data(\"container_cpu_utilization\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\", filter=filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum()\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\") and filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container_cpu_utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\") and filter(\"k8s.cluster.name\", \"*\") and filter(\"k8s.node.name\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = union(CPU_USED_EKS, CPU_USED_MACHINE, CPU_USED_FARGATE)",
             "varName" : "CPU_CAPACITY_USED"
           },
-          "metricSelectors" : [ "container.cpu.utilization", "cpu.num_processors", "machine_cpu_cores", "k8s.container.cpu_limit" ],
+          "metricSelectors" : [ "container_cpu_utilization", "cpu.num_processors", "machine_cpu_cores", "k8s.container.cpu_limit" ],
           "type" : "metric",
           "valueFormat" : "Percentage",
           "valueLabel" : "CPU capacity used",
