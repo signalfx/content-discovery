@@ -5,7 +5,7 @@ from o11y_ootb_inventory import GitlabInventory
 class OOTBDocAutomation:
 
     # Navigators in which dashboards are imported via dashboard query
-    ASSOCIATED_DASHBOARDS_TO_NAVIGATORS = {'Cloud functions':{'aggregate': "GCF overview", 'instance': "GCF function"}, 'Compute engine':{'aggregate': "Compute engine instances", 'instance': "Compute engine instance"}, 'Azure functions':{'aggregate': "Azure function apps", 'instance': "Azure function app"}, 'Virtual machines':{'aggregate': "Azure virtual machines", 'instance': "Azure virtual machine"}, 'Lambda functions':{'aggregate': "Lambda (AWS) overview", 'instance': "Lambda (AWS) function"}}
+    ASSOCIATED_DASHBOARDS_TO_NAVIGATORS = {'Cloud functions':{'aggregate': "GCF overview", 'instance': "GCF function"}, 'Compute engine':{'aggregate': "Compute engine instances", 'instance': "Compute engine instance"}, 'Azure functions':{'aggregate': "Azure function apps", 'instance': "Azure function app"}, 'Virtual machines':{'aggregate': "Azure virtual machines", 'instance': "Azure virtual machine"}, 'Lambda functions':{'aggregate': "Lambda (AWS) overview", 'instance': "Lambda (AWS) function"}, "DynamoDB": {'instance': "N/A"}}
 
     # Dashboards that are exported to navigators via dashboard query
     DASHBOARD_TYPE = {"Lambda (SignalFx) overview": "aggregated", "Lambda (SignalFx) function": "instance", "Lambda (AWS) overview": "aggregated", "Lambda (AWS) function": "instacne", "Compute engine instances": "aggregated", "Compute engine instance": "instance", "Compute engine instances (StackDriver)": "aggregated", "Compute engine instance (StackDriver)": "instance", "GCF (STACKDRIVER) FUNCTION": "instance", "GCF (STACKDRIVER) overview": "aggregated", "GCF (SIGNALFX) overview": "aggregated", "GCF (SIGNALFX) function": "instance", "(Azure) function app": "instance", "(Azure) function apps": "aggregated", "(SignalFx) azure function": "instance", "(SignalFx) azure functions": "aggregated", "Azure Virtual Machines": "aggregated", "Azure Virtual Machine": "instance", "Azure Virtual Machine (Azure monitor)": "instance", "Azure Virtual Machines (Azure monitor)": "aggregated"}
@@ -53,14 +53,14 @@ class OOTBDocAutomation:
                 if 'content-discovery/navigators/' in dest_path:
                     nav_json = data['navigatorExport']['navigator']
 
+                    # Collecting the associated dashboards(aggreagted, instacne) with the help of dashboard_mapping we created
                     collections[nav_json['uiModel']['o11yProductName']] = {
 
                         "category_display_name": nav_json.get('navigatorCategory') if nav_json.get(
                             'navigatorCategory') is not None else "Others",
-                        "associated_dashbords": {
 
+                        "associated_dashbords": {
                             "aggregated": [ dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("aggregateDashboards") ] if nav_json.get("aggregateDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["aggregate"], 
-                            
                             "instance": [ dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("instanceDashboards")  ] if nav_json.get("instanceDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["instance"]
                             }
                     }
@@ -69,6 +69,8 @@ class OOTBDocAutomation:
                     group_name = data['groupExport']['group']['name']
                     group_dashboards_ids = data['groupExport']['group']['dashboards']
                     for id in group_dashboards_ids:
+                        
+                        # Collecting view_support of a particular dashboard with help of dashboard_mapping
                         collections[dashboard_mapping[id]["name"]] = {
                             "dashboard_group": group_name,
                             "view_support": dashboard_mapping[id]["view_support"][0] if dashboard_mapping[id]["view_support"] else (cls.DASHBOARD_TYPE[dashboard_mapping[id]["name"]] if dashboard_mapping[id]["name"] in cls.DASHBOARD_TYPE.keys() else "N/A")
@@ -81,16 +83,21 @@ if __name__ == "__main__":
     collect_files = GitlabInventory()
     inventory = OOTBDocAutomation()
 
+    # Helps to create mapping between dashboard id to it's name and view support(aggregated, instance)
     dashboard_mapping = inventory.get_dashbaord_mapping(collect_files.collect_json_files('group/'), collect_files.collect_json_files('navigators/'))
 
+    # Create the navigator JSON with help of dashboard mapping
     collection_nav = inventory.collect_inventory_data(collect_files.collect_json_files('navigators/'), dashboard_mapping)
+
+    # Create the dashboard JSON with help of dashboard mapping
     collection_dash = inventory.collect_inventory_data(collect_files.collect_json_files('group/'), dashboard_mapping)
 
-    collection_nav = dict(sorted(collection_nav.items()))
-    collection_dash = dict(sorted(collection_dash.items()))
+    collection_nav = dict(sorted(collection_nav.items())) # Sort the navigator JSON on basis of navigator name
+    collection_dash = dict(sorted(collection_dash.items())) # Sort the dashboard JSON on basis of dashboard name
 
     collection = {"Navigators": collection_nav, "Dashbords": collection_dash}
 
+    # Built the YAML file
     with open('builtin_content.yaml', 'w') as yaml_file:
         yaml.dump(collection, yaml_file, sort_keys=False)
 
