@@ -59,7 +59,7 @@ class OOTBDocAutomation:
                         "category_display_name": nav_json.get('navigatorCategory') if nav_json.get(
                             'navigatorCategory') is not None else "Others",
 
-                        "associated_dashbords": {
+                        "associated_dashboards": {
                             "aggregated": [ dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("aggregateDashboards") ] if nav_json.get("aggregateDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["aggregate"], 
                             "instance": [ dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("instanceDashboards")  ] if nav_json.get("instanceDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["instance"]
                             }
@@ -95,10 +95,15 @@ if __name__ == "__main__":
     collection_nav = dict(sorted(collection_nav.items())) # Sort the navigator JSON on basis of navigator name
     collection_dash = dict(sorted(collection_dash.items())) # Sort the dashboard JSON on basis of dashboard name
 
-    collection = {"Navigators": collection_nav, "Dashbords": collection_dash}
+    nav_collection = {"Navigators": collection_nav}
+    dash_collection = {"Dashboards": collection_dash}
 
-    # Built the YAML file
-    with open('builtin_content.yaml', 'w') as yaml_file:
-        yaml.dump(collection, yaml_file, sort_keys=False)
+    # Create the YAML file for dashboards built-in content (OOTB)
+    with open('dashboards_builtin_content.yaml', 'w') as yaml_file:
+        yaml.dump(dash_collection, yaml_file, sort_keys=False)
+
+    # Create the YAML file for navigators built-in content (OOTB)
+    with open('navigators_builtin_content.yaml', 'w') as yaml_file:
+        yaml.dump(nav_collection, yaml_file, sort_keys=False)
 
 
