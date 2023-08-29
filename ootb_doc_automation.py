@@ -95,10 +95,15 @@ if __name__ == "__main__":
     collection_nav = dict(sorted(collection_nav.items())) # Sort the navigator JSON on basis of navigator name
     collection_dash = dict(sorted(collection_dash.items())) # Sort the dashboard JSON on basis of dashboard name
 
-    collection = {"Navigators": collection_nav, "Dashboards": collection_dash}
+    nav_collection = {"Navigators": collection_nav}
+    dash_collection = {"Dashboards": collection_dash}
 
-    # Built the YAML file
-    with open('builtin_content.yaml', 'w') as yaml_file:
-        yaml.dump(collection, yaml_file, sort_keys=False)
+    # Create the YAML file for dashboards built-in content (OOTB)
+    with open('dashboards_builtin_content.yaml', 'w') as yaml_file:
+        yaml.dump(dash_collection, yaml_file, sort_keys=False)
+
+    # Create the YAML file for navigators built-in content (OOTB)
+    with open('navigators_builtin_content.yaml', 'w') as yaml_file:
+        yaml.dump(nav_collection, yaml_file, sort_keys=False)
 
 
