@@ -2,6 +2,7 @@ import json
 import yaml
 from o11y_ootb_inventory import GitlabInventory
 
+
 class OOTBDocAutomation:
 
     # Navigators in which dashboards are imported via dashboard query
@@ -39,7 +40,6 @@ class OOTBDocAutomation:
                         [dashboard_mapping[dashboard]["view_support"].append('instance') for dashboard in nav_json.get('instanceDashboards')]  
         return dashboard_mapping
 
-
     def collect_inventory_data(cls, dest_list, dashboard_mapping):
         """
         Helper method to get the OOTB's inventory data.
@@ -60,25 +60,29 @@ class OOTBDocAutomation:
                             'navigatorCategory') is not None else "Others",
 
                         "associated_dashboards": {
-                            "aggregated": [ dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("aggregateDashboards") ] if nav_json.get("aggregateDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["aggregate"], 
-                            "instance": [ dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("instanceDashboards")  ] if nav_json.get("instanceDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["instance"]
-                            }
+                            "aggregated": [dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("aggregateDashboards")] if nav_json.get("aggregateDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["aggregate"],
+                            "instance": [dashboard_mapping[dashboard]["name"] for dashboard in nav_json.get("instanceDashboards")] if nav_json.get("instanceDashboards") is not None else cls.ASSOCIATED_DASHBOARDS_TO_NAVIGATORS[nav_json['uiModel']['o11yProductName']]["instance"]
+                            },
+
+                        "importQualifiers": GitlabInventory.prepare_import_qualifiers(nav_json['importQualifiers']).replace("\n", " ")
                     }
 
                 elif 'content-discovery/group/' in dest_path:
+                    # Todo: will reuse "data['groupExport']['group']" as that's being repetitive used
                     group_name = data['groupExport']['group']['name']
                     group_dashboards_ids = data['groupExport']['group']['dashboards']
-                    for id in group_dashboards_ids:
-                        
+                    for group_id in group_dashboards_ids:
                         # Collecting view_support of a particular dashboard with help of dashboard_mapping
-                        collections[dashboard_mapping[id]["name"]] = {
+                        collections[dashboard_mapping[group_id]["name"]] = {
                             "dashboard_group": group_name,
-                            "view_support": dashboard_mapping[id]["view_support"][0] if dashboard_mapping[id]["view_support"] else (cls.DASHBOARD_TYPE[dashboard_mapping[id]["name"]] if dashboard_mapping[id]["name"] in cls.DASHBOARD_TYPE.keys() else "N/A")
+                            "view_support": dashboard_mapping[group_id]["view_support"][0] if dashboard_mapping[group_id]["view_support"] else (cls.DASHBOARD_TYPE[dashboard_mapping[group_id]["name"]] if dashboard_mapping[group_id]["name"] in cls.DASHBOARD_TYPE.keys() else "N/A"),
+                            "importQualifiers": GitlabInventory.prepare_import_qualifiers(data['groupExport']['group']['importQualifiers']).replace("\n", " ")
                         }
                 else:
                     break
         return collections
-    
+
+
 if __name__ == "__main__":
     collect_files = GitlabInventory()
     inventory = OOTBDocAutomation()
@@ -100,10 +104,10 @@ if __name__ == "__main__":
 
     # Create the YAML file for dashboards built-in content (OOTB)
     with open('dashboards_builtin_content.yaml', 'w') as yaml_file:
-        yaml.dump(dash_collection, yaml_file, sort_keys=False)
+        yaml.dump(dash_collection, yaml_file, sort_keys=False, default_flow_style=False, default_style='')
 
     # Create the YAML file for navigators built-in content (OOTB)
     with open('navigators_builtin_content.yaml', 'w') as yaml_file:
-        yaml.dump(nav_collection, yaml_file, sort_keys=False)
+        yaml.dump(nav_collection, yaml_file, sort_keys=False, default_flow_style=False, default_style='')
 
 
