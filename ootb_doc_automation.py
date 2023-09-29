@@ -1,5 +1,7 @@
 import json
 import yaml
+import requests
+import base64
 from o11y_ootb_inventory import GitlabInventory
 
 
@@ -10,6 +12,9 @@ class OOTBDocAutomation:
 
     # Dashboards that are exported to navigators via dashboard query
     DASHBOARD_TYPE = {"Lambda (SignalFx) overview": "aggregated", "Lambda (SignalFx) function": "instance", "Lambda (AWS) overview": "aggregated", "Lambda (AWS) function": "instance", "Compute engine instances": "aggregated", "Compute engine instance": "instance", "Compute engine instances (StackDriver)": "aggregated", "Compute engine instance (StackDriver)": "instance", "GCF (STACKDRIVER) FUNCTION": "instance", "GCF (STACKDRIVER) overview": "aggregated", "GCF (SIGNALFX) overview": "aggregated", "GCF (SIGNALFX) function": "instance", "(Azure) function app": "instance", "(Azure) function apps": "aggregated", "(SignalFx) azure function": "instance", "(SignalFx) azure functions": "aggregated", "Azure Virtual Machines": "aggregated", "Azure Virtual Machine": "instance", "Azure Virtual Machine (Azure monitor)": "instance", "Azure Virtual Machines (Azure monitor)": "aggregated"}
+
+    # GitHub URL to create file
+    GITHUB_BASE_URL = "https://api.github.com/repos/bkanzariya/bits-test/"
 
     @classmethod
     def get_dashboard_mapping(cls, dashboard_paths, navigator_paths):
@@ -24,10 +29,10 @@ class OOTBDocAutomation:
             with open(dashboard_path, 'r') as file:
                 data = json.load(file)
                 if 'content-discovery/group' in dashboard_path:
-                    
+
                     for dashboard in data["dashboardExports"]:
                         dashboard_mapping[dashboard['dashboard']['id']] = {"name": dashboard['dashboard']['name'], "view_support":list()}
-        
+
         # Helps to add the appropriate view support(instance, aggregated) for a dashboard by traversing through navigators.
         for navigator_path in navigator_paths:
             with open(navigator_path, 'r') as file:
@@ -37,14 +42,14 @@ class OOTBDocAutomation:
                     if nav_json.get('aggregateDashboards'):
                         [dashboard_mapping[dashboard]["view_support"].append('aggregated') for dashboard in nav_json.get('aggregateDashboards')]
                     if nav_json.get('instanceDashboards'):
-                        [dashboard_mapping[dashboard]["view_support"].append('instance') for dashboard in nav_json.get('instanceDashboards')]  
+                        [dashboard_mapping[dashboard]["view_support"].append('instance') for dashboard in nav_json.get('instanceDashboards')]
         return dashboard_mapping
 
     def collect_inventory_data(cls, dest_list, dashboard_mapping):
         """
         Helper method to get the OOTB's inventory data.
         """
-        
+
         collections = dict()
 
         for dest_path in dest_list:
@@ -82,6 +87,63 @@ class OOTBDocAutomation:
                     break
         return collections
 
+    @classmethod
+    def get_github_branch_sha(cls, branch_name):
+        """
+
+        """
+        headers = {
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': 'token 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'
+        }
+        url = cls.GITHUB_BASE_URL + f"branches/{branch_name}"
+        # Make a GET request to the GitHub API
+        response = requests.get(url, headers=headers)
+        branch_info = response.json()
+        latest_commit_sha = branch_info["commit"]["sha"]
+        print(latest_commit_sha)
+        return latest_commit_sha
+
+    @classmethod
+    def upload_gitlab_file_to_github_repo(cls, file_path, branch):
+        """
+
+        """
+        # Get the sha code of branch
+        sha_code = cls.get_github_branch_sha(branch)
+
+        # Open and read the file in binary mode
+        with open(file_path, 'rb') as file:
+            # Read the file contents
+            file_contents = file.read()
+        # Encode the file contents as base64, here .decode('utf-8') to obtain a base64-encoded string which will
+        base64_encoded = base64.b64encode(file_contents).decode('utf-8')
+
+        # Following code will add file on github repo, will move it to function
+        endpoint = f"contents/ootb/{file_path}"
+        url = cls.GITHUB_BASE_URL + endpoint
+
+        # Todo: will add method to get sha of that branch on github
+        payload = json.dumps({
+            "message": f"Create/Update {file_path} from gitlab",
+            "content": base64_encoded,
+            "branch": branch,
+            "sha": sha_code
+        })
+
+        # Todo: will move token into gitlab cicd variable
+        headers = {
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': 'token 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',
+            'Content-Type': 'application/json'
+        }
+        try:
+            response = requests.put(url, headers=headers, data=payload)
+            print(response.status_code)
+            print(response.json())
+        except Exception as e:
+            print(f"Caught exception while GitHub API call: {e}")
+
 
 if __name__ == "__main__":
     collect_files = GitlabInventory()
@@ -102,12 +164,24 @@ if __name__ == "__main__":
     nav_collection = {"Navigators": collection_nav}
     dash_collection = {"Dashboards": collection_dash}
 
+    dashboard_file_path = "dashboards_builtin_content.yaml"
+    nav_file_path = "navigators_builtin_content.yaml"
+
     # Create the YAML file for dashboards built-in content (OOTB)
-    with open('dashboards_builtin_content.yaml', 'w') as yaml_file:
+    with open(dashboard_file_path, 'w') as yaml_file:
         yaml.dump(dash_collection, yaml_file, sort_keys=False, default_flow_style=False, default_style='')
 
     # Create the YAML file for navigators built-in content (OOTB)
-    with open('navigators_builtin_content.yaml', 'w') as yaml_file:
+    with open(nav_file_path, 'w') as yaml_file:
         yaml.dump(nav_collection, yaml_file, sort_keys=False, default_flow_style=False, default_style='')
+
+    # Commit dashboards builtin content yaml file
+    inventory.upload_gitlab_file_to_github_repo(file_path=dashboard_file_path, branch="bits_test")
+
+    # Commit navigators builtin content yaml file
+    inventory.upload_gitlab_file_to_github_repo(file_path=nav_file_path, branch="bits_test")
+
+
+
 
 
