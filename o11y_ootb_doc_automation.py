@@ -10,7 +10,7 @@ class OOTBDocAutomation:
     """
 
     """
-    def __init__(self, pat_token, user_or_org, repo_name, branch_name):
+    def __init__(self):
         """
 
         """
@@ -183,8 +183,7 @@ class OOTBDocAutomation:
 
 if __name__ == "__main__":
     collect_files = GitlabInventory()
-    inventory = OOTBDocAutomation(pat_token="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", user_or_org="bkanzariya",
-                                  repo_name="bits-test", branch_name="bits_test_1")
+    inventory = OOTBDocAutomation()
 
     # Helps to create mapping between dashboard id to it's name and view support(aggregated, instance)
     dashboard_mapping = inventory.get_dashboard_mapping(collect_files.collect_json_files('group/'), collect_files.collect_json_files('navigators/'))
