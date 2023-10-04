@@ -1,3 +1,4 @@
+import argparse
 import json
 import yaml
 import requests
@@ -13,19 +14,44 @@ class OOTBDocAutomation:
         """
 
         """
-        self.git_api_header = {
-            'Accept': 'application/vnd.github.v3+json',
-            'Authorization': f'token {pat_token}',
-            'Content-Type': 'application/json'
-        }
-        self.github_base_url = f"https://api.github.com/repos/{user_or_org}/{repo_name}/"
-        self.branch_name = branch_name
+        self.git_api_header = {}
+        self.github_base_url = ""
+        self.branch_name = ""
+
+        # Prepare the arguments
+        self.prepare_args()
 
     # Navigators in which dashboards are imported via dashboard query
     ASSOCIATED_DASHBOARDS_TO_NAVIGATORS = {'Cloud functions':{'aggregate': "GCF overview", 'instance': "GCF function"}, 'Compute engine':{'aggregate': "Compute engine instances", 'instance': "Compute engine instance"}, 'Azure functions':{'aggregate': "Azure function apps", 'instance': "Azure function app"}, 'Virtual machines':{'aggregate': "Azure virtual machines", 'instance': "Azure virtual machine"}, 'Lambda functions':{'aggregate': "Lambda (AWS) overview", 'instance': "Lambda (AWS) function"}, "DynamoDB": {'instance': "N/A"}}
 
     # Dashboards that are exported to navigators via dashboard query
     DASHBOARD_TYPE = {"Lambda (SignalFx) overview": "aggregated", "Lambda (SignalFx) function": "instance", "Lambda (AWS) overview": "aggregated", "Lambda (AWS) function": "instance", "Compute engine instances": "aggregated", "Compute engine instance": "instance", "Compute engine instances (StackDriver)": "aggregated", "Compute engine instance (StackDriver)": "instance", "GCF (STACKDRIVER) FUNCTION": "instance", "GCF (STACKDRIVER) overview": "aggregated", "GCF (SIGNALFX) overview": "aggregated", "GCF (SIGNALFX) function": "instance", "(Azure) function app": "instance", "(Azure) function apps": "aggregated", "(SignalFx) azure function": "instance", "(SignalFx) azure functions": "aggregated", "Azure Virtual Machines": "aggregated", "Azure Virtual Machine": "instance", "Azure Virtual Machine (Azure monitor)": "instance", "Azure Virtual Machines (Azure monitor)": "aggregated"}
+
+    def prepare_args(self):
+        """
+        To prepare argument parser.
+        """
+        # Create the parser
+        parser = argparse.ArgumentParser()
+
+        # Add an argument
+        parser.add_argument("-pat", "--github_private_access_token", help="Private Access Token for Github API")
+        parser.add_argument("-un", "--user_or_org_name")
+        parser.add_argument("-grn", "--github_repo_name")
+        parser.add_argument("-bn", "--branch_name")
+
+        # Parse the argument
+        args = parser.parse_args()
+        self.branch_name = args.branch_name
+        self.github_base_url = f"https://api.github.com/repos/{args.user_or_org_name}/{args.github_repo_name}/"
+        self.git_api_header = {
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': f'token {args.github_private_access_token}',
+            'Content-Type': 'application/json'
+        }
+        print(self.branch_name, self.github_base_url, self.git_api_header,)
+        args = parser.parse_args()
+        return args
 
     @classmethod
     def get_dashboard_mapping(cls, dashboard_paths, navigator_paths):
@@ -175,6 +201,7 @@ if __name__ == "__main__":
     nav_collection = {"Navigators": collection_nav}
     dash_collection = {"Dashboards": collection_dash}
 
+    # Todo: Above code can be moved class's method
     dashboard_file_path = "dashboards_builtin_content.yaml"
     nav_file_path = "navigators_builtin_content.yaml"
 

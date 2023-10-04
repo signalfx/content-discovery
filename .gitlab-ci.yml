@@ -1,101 +1,54 @@
-##include:
-##  - project: "observability/shared/gitlab-jobs"
-##    ref: 1.0.65
-##    file: "sast-scan-template.yml"
-##  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
-#
-#stages:
-##  - code_analysis
-##  - validate-content
-##  - O11y-Out-of-the-Box-Inventory
-#  - O11y-DOC-OOTB
-#
-##validate:
-##  stage: validate-content
-##  except:
-##    - schedules
-##  script:
-##    - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
-##
-### We are still testing this CICD to update the OOTB content details on spreadsheet and as of now it will update
-### the "O11y Out of the Box Inventory Test" google spreadsheet. Once we complete 2-3 round of testing to update content
-###  based on changes on master branch after that we will update the actual spreadsheet name
-##
-##update-ootb-inventory:
-##  image: python:3
-##  stage: O11y-Out-of-the-Box-Inventory
-##  # To run this job to just only on master branch
-##  rules:
-##    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-##      when: always
-##    - when: never
-##  script:
-##    - pip install -r requirement.txt
-##    - python o11y_ootb_inventory.py -pki $PRIVATE_KEY_ID -ci $CLIENT_ID -ce $CLIENT_EMAIL -pi $PROJECT_ID -pk $PRIVATE_KEY -gpt $GITLAB_API_PRIVATE_TOKEN
-#
-#update-o11y-doc-github:
-#  image: python:3
-#  stage: O11y-DOC-OOTB
-#  script:
-##    - git clone https://bkanzariya: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@github.com/splunk/o11y-gdi-metadata.git
-##    - cd o11y-gdi-metadata
-##    - ls
-#    - git config --global user.email "bkanzariya@splunk.com"
-#    - git config --global user.name "bkanzariya"
-#    - ls
-#    - cp dashboards_builtin_content.yaml test_dashboards_builtin_content.yaml
-#    - git add test_dashboards_builtin_content.yaml
-#    - git commit -m "Add dashboards_builtin_content to be transferred to GitHub"
-#    - git remote add github https://bkanzariya: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@github.com/bkanzariya/bits-test.git
-#    - git checkout -b test_bits_main
-#    - git push github test_bits_main
-#    - export FILE_NAME="file.txt" # Specify the name of the file you want to push
-#    - export GITHUB_TOKEN=$GITHUB_PAT # GITHUB_PAT should be a secret variable
-#
-#    # Get the content of the file from your GitLab repository
-#    - FILE_CONTENT=$(dashboards_builtin_content)
-#
-#    # Create or update the file on GitHub using the GitHub API
-#    - >
-#          curl -X PUT -H "Authorization: token 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" \
-#          -d '{"message": "Add file.txt via GitLab CI/CD", "content": "'$(echo -n "$FILE_CONTENT" | base64)'" }' \
-#          "https://api.github.com/repos/bkanzariya/bits-test/contents/$FILE_NAME"
-#
-#
-##    - git remote add github https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/yourusername/your-github-repo.git
-#    #- pip install -r requirement.txt
-#    #- python
-#  only:
-#    - web
-
-
-
-
-image: alpine:latest
-
-variables:
-  GITHUB_API_URL: https://api.github.com/repos/bkanzariya/bits-test
-  GITHUB_ACCESS_TOKEN: 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
-  FILE_PATH: ootb/bits.yaml
-  COMMIT_MESSAGE: "Update file via GitLab CI/CD"
+include:
+  - project: "observability/shared/gitlab-jobs"
+    ref: 1.0.65
+    file: "sast-scan-template.yml"
+#  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
 stages:
-  - create_or_update_file
+  - code_analysis
+  - validate-content
+  - O11y-Out-of-the-Box-Inventory
+  - O11y-DOC-OOTB
 
-create_or_update_file:
-  stage: create_or_update_file
+validate:
+  stage: validate-content
+  except:
+    - schedules
   script:
-    - apk --update add curl
-    - |
-      curl -X PUT "$GITHUB_API_URL/contents/$FILE_PATH" \
-        -H "Authorization: token $GITHUB_ACCESS_TOKEN" \
-        -H "Accept: application/vnd.github.v3+json" \
-        --data @- <<EOF
-        {
-          "message": "$COMMIT_MESSAGE",
-          "content": "$(base64 navigators_builtin_content.yaml)",
-          "branch": "bits_main"
-        }
-        EOF
-  only:
-    - web
+    - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
+
+update-ootb-inventory:
+  image: python:3
+  stage: O11y-Out-of-the-Box-Inventory
+  # To run this job to just only on master branch
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
+  script:
+    - pip install -r requirement.txt
+    - python o11y_ootb_inventory.py -pki $PRIVATE_KEY_ID -ci $CLIENT_ID -ce $CLIENT_EMAIL -pi $PROJECT_ID -pk $PRIVATE_KEY -gpt $GITLAB_API_PRIVATE_TOKEN
+
+
+variables:
+  USER_OR_ORG_NAME:
+    value: "bkanzariya"
+    description: "Provide user name for which we need to use in GitHub API calls. Default: bkanzariya"
+  GITHUB_REPO_NAME:
+    value: "bits-test"
+    description: "Provide GitHub repo name on which we need to commit yaml files. Default: bits-test"
+  BRANCH_NAME:
+    value: "bits_test"
+    description: "Provide Branch name on which yaml files needs to be committed. Default: bits-test"
+
+update-o11y-doc-github:
+  image: python:3
+  stage: O11y-DOC-OOTB
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: always
+
+  script:
+    - python o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME
+
