@@ -1,5 +1,7 @@
 import argparse
 import json
+import time
+
 import yaml
 import requests
 import base64
@@ -181,7 +183,9 @@ class OOTBDocAutomation:
             response = requests.post(url, headers=self.git_api_header, data=payload)
             if not response.json()['ref']:
                 raise Exception
-            print(f"Branch Create API: {response.status_code} and {response.json()}")
+            print(f"Branch Create API: {response.status_code} and {response.json()} and will be on sleep for 5 sec.")
+            # Keeping time.sleep for 5 sec as in some case just after creating branch, were not able to get SHA
+            time.sleep(5)
         except Exception as e:
             print("Failed API call related GitHub branch create", e)
             exit(1)
@@ -196,6 +200,7 @@ class OOTBDocAutomation:
             file_contents = file.read()
         # Encode the file contents as base64, here .decode('utf-8') to obtain a base64-encoded string which will
         base64_encoded = base64.b64encode(file_contents).decode('utf-8')
+        print(f"File: {file_path} and Base64 encoded Content {base64_encoded}")
 
         # Following code will add file on GitHub repo, will move it to function
         endpoint = f"contents/ootb/{file_path}"
@@ -203,10 +208,14 @@ class OOTBDocAutomation:
 
         # Get the sha code of file
         sha_code = self.get_existing_file_info(file_path)
+        print(f"For file: {file_path} SHA code: {sha_code}\n In case file does not exist "
+              f"into that branch sha code will be none")
         if not sha_code:
             # If file is not exist in branch it will get sha code of that branch and that sha code
             # will be used in commit file
             sha_code = self.get_github_branch_sha(branch_name=self.branch_name)
+            print(f"For branch: {self.branch_name} SHA code: {sha_code}\n "
+                  f"In case file does not exist into that branch sha code will be none")
         payload = json.dumps({
             "message": f"Create/Update {file_path} from gitlab",
             "content": base64_encoded,
@@ -217,8 +226,11 @@ class OOTBDocAutomation:
             response = requests.put(url, headers=self.git_api_header, data=payload)
             print(response.status_code)
             print(response.json())
+            if response.status_code not in [200, 201]:
+                raise Exception
         except Exception as e:
-            print(f"Caught exception while GitHub API call: {e}")
+            print(f"Caught exception while File create/update GitHub API call: {e}")
+            exit(1)
 
 
 if __name__ == "__main__":
@@ -233,9 +245,11 @@ if __name__ == "__main__":
 
     # Create the navigator JSON with help of dashboard mapping
     collection_nav = inventory.collect_inventory_data(collect_files.collect_json_files('navigators/'), dashboard_mapping)
+    print(f"Navigator ootb content: {collection_nav}")
 
     # Create the dashboard JSON with help of dashboard mapping
     collection_dash = inventory.collect_inventory_data(collect_files.collect_json_files('group/'), dashboard_mapping)
+    print(f"Dashboard ootb content: {collection_dash}")
 
     collection_nav = dict(sorted(collection_nav.items())) # Sort the navigator JSON on basis of navigator name
     collection_dash = dict(sorted(collection_dash.items())) # Sort the dashboard JSON on basis of dashboard name
