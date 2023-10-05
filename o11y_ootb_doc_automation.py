@@ -8,6 +8,17 @@ import base64
 from o11y_ootb_inventory import GitlabInventory
 
 
+def color_print(text, color_code):
+    return f"\033[{color_code}m{text}\033[0m"
+
+
+# Colors
+RED = 31
+GREEN = 32
+YELLOW = 33
+BLUE = 34
+
+
 class OOTBDocAutomation:
     """
 
@@ -163,6 +174,7 @@ class OOTBDocAutomation:
             if response.status_code != 200:
                 self.create_github_branch(branch_name=branch_name)
             else:
+
                 print(f"Branch: {branch_name} exist in the repo.")
         except Exception as e:
             print("Failed API call related GitHub branch", e)
@@ -183,11 +195,13 @@ class OOTBDocAutomation:
             response = requests.post(url, headers=self.git_api_header, data=payload)
             if not response.json()['ref']:
                 raise Exception
-            print(f"Branch Create API: {response.status_code} and {response.json()} and will be on sleep for 5 sec.")
+            print(color_print(f"Branch Create API: {response.status_code} and {response.json()} "
+                              f"and will be on sleep for 5 sec.", GREEN))
             # Keeping time.sleep for 5 sec as in some case just after creating branch, were not able to get SHA
             time.sleep(5)
         except Exception as e:
-            print("Failed API call related GitHub branch create", e)
+            print(color_print("Failed API call related GitHub branch create", RED))
+            print(e)
             exit(1)
 
     def upload_gitlab_file_to_github_repo(self, file_path):
@@ -200,7 +214,7 @@ class OOTBDocAutomation:
             file_contents = file.read()
         # Encode the file contents as base64, here .decode('utf-8') to obtain a base64-encoded string which will
         base64_encoded = base64.b64encode(file_contents).decode('utf-8')
-        print(f"File: {file_path} and Base64 encoded Content {base64_encoded}")
+        print(f"File: {file_path} and Base64 encoded.")
 
         # Following code will add file on GitHub repo, will move it to function
         endpoint = f"contents/ootb/{file_path}"
@@ -214,8 +228,7 @@ class OOTBDocAutomation:
             # If file is not exist in branch it will get sha code of that branch and that sha code
             # will be used in commit file
             sha_code = self.get_github_branch_sha(branch_name=self.branch_name)
-            print(f"For branch: {self.branch_name} SHA code: {sha_code}\n "
-                  f"In case file does not exist into that branch sha code will be none")
+            print(color_print(f"For branch: {self.branch_name} SHA code: {sha_code}", GREEN))
         payload = json.dumps({
             "message": f"Create/Update {file_path} from gitlab",
             "content": base64_encoded,
@@ -227,9 +240,10 @@ class OOTBDocAutomation:
             print(response.status_code)
             print(response.json())
             if response.status_code not in [200, 201]:
+                print(color_print("Caught exception while File create/update GitHub API call:", RED))
                 raise Exception
         except Exception as e:
-            print(f"Caught exception while File create/update GitHub API call: {e}")
+            print(e)
             exit(1)
 
 
