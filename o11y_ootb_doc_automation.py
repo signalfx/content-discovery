@@ -179,7 +179,7 @@ class OOTBDocAutomation:
             # Create branch with given branch name
             url = self.github_base_url + f"git/refs"
             response = requests.post(url, headers=self.git_api_header, data=payload)
-            if response.status_code != 200:
+            if not response.json()['ref']:
                 raise Exception
             print(f"Branch Create API: {response.status_code} and {response.json()}")
         except Exception as e:
