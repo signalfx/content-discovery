@@ -130,6 +130,7 @@ class OOTBDocAutomation:
         # Make a GET request to the GitHub API
         response = requests.get(url, headers=self.git_api_header)
         branch_info = response.json()
+        print(f"GitHub Branch SHA API Status Code: {response.status_code} and {branch_info}")
         latest_commit_sha = branch_info["commit"]["sha"]
         return latest_commit_sha
 
@@ -174,6 +175,7 @@ class OOTBDocAutomation:
             # Create branch with given branch name
             url = self.github_base_url + f"git/refs"
             response = requests.post(url, headers=self.git_api_header, data=payload)
+            print(f"Branch Create API: {response.status_code} and {response.json()}")
         except Exception as e:
             print("Failed API call related GitHub branch creat", e)
 
