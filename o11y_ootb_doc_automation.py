@@ -122,11 +122,11 @@ class OOTBDocAutomation:
                     break
         return collections
 
-    def get_github_branch_sha(self):
+    def get_github_branch_sha(self, branch_name):
         """
 
         """
-        url = self.github_base_url + f"branches/{self.branch_name}"
+        url = self.github_base_url + f"branches/{branch_name}"
         # Make a GET request to the GitHub API
         response = requests.get(url, headers=self.git_api_header)
         branch_info = response.json()
@@ -145,6 +145,37 @@ class OOTBDocAutomation:
             return response.json()['sha']
         else:
             return None
+
+    def create_branch_if_not_exist(self, branch_name):
+        """
+
+        """
+        url = self.github_base_url + f"branches/{branch_name}"
+        try:
+            response = requests.get(url, headers=self.git_api_header)
+            if response.status_code != 200:
+                self.create_github_branch(branch_name=branch_name)
+            else:
+                print(f"Branch: {branch_name} exist in the repo.")
+        except Exception as e:
+            print("Failed API call related GitHub branch", e)
+
+    def create_github_branch(self, branch_name):
+        """
+
+        """
+        try:
+            # Considering repo's main branch will have name:"main"
+            main_sha = self.get_github_branch_sha("main")
+            payload = json.dumps({
+                "ref": f"refs/heads/{branch_name}",
+                "sha": main_sha
+            })
+            # Create branch with given branch name
+            url = self.github_base_url + f"git/refs"
+            response = requests.post(url, headers=self.git_api_header, data=payload)
+        except Exception as e:
+            print("Failed API call related GitHub branch creat", e)
 
     def upload_gitlab_file_to_github_repo(self, file_path):
         """
@@ -166,7 +197,7 @@ class OOTBDocAutomation:
         if not sha_code:
             # If file is not exist in branch it will get sha code of that branch and that sha code
             # will be used in commit file
-            sha_code = self.get_github_branch_sha()
+            sha_code = self.get_github_branch_sha(branch_name=self.branch_name)
         payload = json.dumps({
             "message": f"Create/Update {file_path} from gitlab",
             "content": base64_encoded,
@@ -184,6 +215,9 @@ class OOTBDocAutomation:
 if __name__ == "__main__":
     collect_files = GitlabInventory()
     inventory = OOTBDocAutomation()
+
+    # Check GitHub APIs and create branch if not exist
+    inventory.create_branch_if_not_exist(branch_name=inventory.branch_name)
 
     # Helps to create mapping between dashboard id to it's name and view support(aggregated, instance)
     dashboard_mapping = inventory.get_dashboard_mapping(collect_files.collect_json_files('group/'), collect_files.collect_json_files('navigators/'))
