@@ -179,9 +179,12 @@ class OOTBDocAutomation:
             # Create branch with given branch name
             url = self.github_base_url + f"git/refs"
             response = requests.post(url, headers=self.git_api_header, data=payload)
+            if response.status_code != 200:
+                raise Exception
             print(f"Branch Create API: {response.status_code} and {response.json()}")
         except Exception as e:
-            print("Failed API call related GitHub branch creat", e)
+            print("Failed API call related GitHub branch create", e)
+            exit(1)
 
     def upload_gitlab_file_to_github_repo(self, file_path):
         """
