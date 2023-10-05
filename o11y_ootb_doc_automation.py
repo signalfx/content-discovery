@@ -126,13 +126,17 @@ class OOTBDocAutomation:
         """
 
         """
-        url = self.github_base_url + f"branches/{branch_name}"
-        # Make a GET request to the GitHub API
-        response = requests.get(url, headers=self.git_api_header)
-        branch_info = response.json()
-        print(f"GitHub Branch SHA API Status Code: {response.status_code} and {branch_info}")
-        latest_commit_sha = branch_info["commit"]["sha"]
-        return latest_commit_sha
+        try:
+            url = self.github_base_url + f"branches/{branch_name}"
+            # Make a GET request to the GitHub API
+            response = requests.get(url, headers=self.git_api_header)
+            branch_info = response.json()
+            print(f"GitHub Branch SHA API Status Code: {response.status_code} and {branch_info}")
+            latest_commit_sha = branch_info["commit"]["sha"]
+            return latest_commit_sha
+        except Exception as e:
+            print(f"Got exception while fetching sha code of branch: {response.status_code} and {response.json()}")
+            return None
 
     def get_existing_file_info(self, file_name):
         """
