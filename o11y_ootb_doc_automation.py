@@ -30,6 +30,8 @@ class OOTBDocAutomation:
         self.git_api_header = {}
         self.github_base_url = ""
         self.branch_name = ""
+        self.github_repo_name = ""
+        self.github_user = ""
 
         # Prepare the arguments
         self.prepare_args()
@@ -56,7 +58,9 @@ class OOTBDocAutomation:
         # Parse the argument
         args = parser.parse_args()
         self.branch_name = args.branch_name
-        self.github_base_url = f"https://api.github.com/repos/{args.user_or_org_name}/{args.github_repo_name}/"
+        self.github_repo_name =  args.github_repo_name
+        self.github_user = args.user_or_org_name
+        self.github_base_url = f"https://api.github.com/repos/{args.user_or_org_name}/{args.github_repo_name}"
         self.git_api_header = {
             'Accept': 'application/vnd.github.v3+json',
             'Authorization': f'token {args.github_private_access_token}',
@@ -135,12 +139,26 @@ class OOTBDocAutomation:
                     break
         return collections
 
+    def check_if_token_has_repo_access(self):
+        """
+
+        """
+        try:
+            response = requests.get(url=self.github_base_url, headers=self.git_api_header)
+            if response.status_code != 200:
+                raise Exception
+
+            print(color_print(f"Given Access Token has access to repo: {self.github_repo_name}", GREEN))
+        except Exception as e:
+            print(color_print(f"Access Token has not access on repo:{self.github_repo_name}", RED))
+            print(color_print(e, RED))
+            exit(1)
     def get_github_branch_sha(self, branch_name):
         """
 
         """
         try:
-            url = self.github_base_url + f"branches/{branch_name}"
+            url = self.github_base_url + f"/branches/{branch_name}"
             # Make a GET request to the GitHub API
             response = requests.get(url, headers=self.git_api_header)
             branch_info = response.json()
@@ -155,7 +173,7 @@ class OOTBDocAutomation:
         """
 
         """
-        url = self.github_base_url + f'contents/ootb/{file_name}?ref={self.branch_name}'
+        url = self.github_base_url + f'/contents/ootb/{file_name}?ref={self.branch_name}'
 
         # Get the file details and find SHA information for that file
         response = requests.get(url, headers=self.git_api_header)
@@ -164,18 +182,18 @@ class OOTBDocAutomation:
         else:
             return None
 
-    def create_branch_if_not_exist(self, branch_name):
+    def create_branch_if_not_exist(self):
         """
 
         """
-        url = self.github_base_url + f"branches/{branch_name}"
+        url = self.github_base_url + f"/branches/{self.branch_name}"
         try:
             response = requests.get(url, headers=self.git_api_header)
             if response.status_code != 200:
-                self.create_github_branch(branch_name=branch_name)
+                self.create_github_branch(branch_name=self.branch_name)
             else:
 
-                print(f"Branch: {branch_name} exist in the repo.")
+                print(f"Branch: {self.branch_name} exist in the repo.")
         except Exception as e:
             print("Failed API call related GitHub branch", e)
 
@@ -191,7 +209,7 @@ class OOTBDocAutomation:
                 "sha": main_sha
             })
             # Create branch with given branch name
-            url = self.github_base_url + f"git/refs"
+            url = self.github_base_url + f"/git/refs"
             response = requests.post(url, headers=self.git_api_header, data=payload)
             if not response.json()['ref']:
                 raise Exception
@@ -217,7 +235,7 @@ class OOTBDocAutomation:
         print(f"File: {file_path} and Base64 encoded.")
 
         # Following code will add file on GitHub repo, will move it to function
-        endpoint = f"contents/ootb/{file_path}"
+        endpoint = f"/contents/ootb/{file_path}"
         url = self.github_base_url + endpoint
 
         # Get the sha code of file
@@ -251,8 +269,11 @@ if __name__ == "__main__":
     collect_files = GitlabInventory()
     inventory = OOTBDocAutomation()
 
-    # Check GitHub APIs and create branch if not exist
-    inventory.create_branch_if_not_exist(branch_name=inventory.branch_name)
+    # Check if user token has access to repo
+    inventory.check_if_token_has_repo_access()
+
+    # Create GitHub branch if that doesn't exist
+    inventory.create_branch_if_not_exist()
 
     # Helps to create mapping between dashboard id to it's name and view support(aggregated, instance)
     dashboard_mapping = inventory.get_dashboard_mapping(collect_files.collect_json_files('group/'), collect_files.collect_json_files('navigators/'))
