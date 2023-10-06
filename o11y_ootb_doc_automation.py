@@ -150,7 +150,7 @@ class OOTBDocAutomation:
 
             print(color_print(f"Given Access Token has access to repo: {self.github_repo_name}", GREEN))
         except Exception as e:
-            print(color_print(f"Access Token has not access on repo:{self.github_repo_name}", RED))
+            print(color_print(f"GitHub Private Access Token(PAT or API token) has not access on GitHub repo:{self.github_repo_name}", RED))
             print(color_print(e, RED))
             exit(1)
     def get_github_branch_sha(self, branch_name):
