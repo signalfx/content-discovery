@@ -32,6 +32,7 @@ class OOTBDocAutomation:
         self.branch_name = ""
         self.github_repo_name = ""
         self.github_user = ""
+        self.github_folder_name = ""
 
         # Prepare the arguments
         self.prepare_args()
@@ -54,12 +55,14 @@ class OOTBDocAutomation:
         parser.add_argument("-un", "--user_or_org_name")
         parser.add_argument("-grn", "--github_repo_name")
         parser.add_argument("-bn", "--branch_name")
+        parser.add_argument("-fn", "--github_folder_name")
 
         # Parse the argument
         args = parser.parse_args()
         self.branch_name = args.branch_name
-        self.github_repo_name =  args.github_repo_name
+        self.github_repo_name = args.github_repo_name
         self.github_user = args.user_or_org_name
+        self.github_folder_name = args.github_folder_name
         self.github_base_url = f"https://api.github.com/repos/{args.user_or_org_name}/{args.github_repo_name}"
         self.git_api_header = {
             'Accept': 'application/vnd.github.v3+json',
@@ -153,6 +156,7 @@ class OOTBDocAutomation:
             print(color_print(f"GitHub Private Access Token(PAT or API token) has not access on GitHub repo:{self.github_repo_name}", RED))
             print(color_print(e, RED))
             exit(1)
+
     def get_github_branch_sha(self, branch_name):
         """
 
@@ -173,7 +177,10 @@ class OOTBDocAutomation:
         """
 
         """
-        url = self.github_base_url + f'/contents/ootb/{file_name}?ref={self.branch_name}'
+        if self.github_folder_name:
+            url = self.github_base_url + f'/contents/{self.github_folder_name}/{file_name}?ref={self.branch_name}'
+        else:
+            url = self.github_base_url + f'/contents/{file_name}?ref={self.branch_name}'
 
         # Get the file details and find SHA information for that file
         response = requests.get(url, headers=self.git_api_header)
