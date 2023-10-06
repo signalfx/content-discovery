@@ -55,7 +55,7 @@ class OOTBDocAutomation:
         parser.add_argument("-un", "--user_or_org_name")
         parser.add_argument("-grn", "--github_repo_name")
         parser.add_argument("-bn", "--branch_name")
-        parser.add_argument("-fn", "--github_folder_name", default="")
+        parser.add_argument("-fn", "--github_folder_name")
 
         # Parse the argument
         args = parser.parse_args()
@@ -177,7 +177,7 @@ class OOTBDocAutomation:
         """
 
         """
-        if self.github_folder_name:
+        if self.github_folder_name != "-":
             url = self.github_base_url + f'/contents/{self.github_folder_name}/{file_name}?ref={self.branch_name}'
         else:
             url = self.github_base_url + f'/contents/{file_name}?ref={self.branch_name}'
@@ -242,7 +242,10 @@ class OOTBDocAutomation:
         print(f"File: {file_path} and Base64 encoded.")
 
         # Following code will add file on GitHub repo, will move it to function
-        endpoint = f"/contents/ootb/{file_path}"
+        if self.github_folder_name != "-":
+            endpoint = f"/contents/{self.github_folder_name}/{file_path}"
+        else:
+            endpoint = f"/contents/{file_path}"
         url = self.github_base_url + endpoint
 
         # Get the sha code of file
