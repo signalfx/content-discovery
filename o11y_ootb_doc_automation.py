@@ -55,7 +55,7 @@ class OOTBDocAutomation:
         parser.add_argument("-un", "--user_or_org_name")
         parser.add_argument("-grn", "--github_repo_name")
         parser.add_argument("-bn", "--branch_name")
-        parser.add_argument("-fn", "--github_folder_name")
+        parser.add_argument("-fn", "--github_folder_name", default="")
 
         # Parse the argument
         args = parser.parse_args()
