@@ -2,7 +2,7 @@ include:
   - project: "observability/shared/gitlab-jobs"
     ref: 1.0.65
     file: "sast-scan-template.yml"
-#  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
 stages:
   - code_analysis
@@ -47,10 +47,13 @@ variables:
 update-o11y-doc-github:
   image: python:3
   stage: O11y-DOC-OOTB
+  # To run this job to just only on master branch and schedule
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - when: always
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
 
   script:
     - pip install -r requirement.txt
