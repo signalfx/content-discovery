@@ -1331,7 +1331,7 @@
       "importOf" : "EyZG8bnAIAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Disk used %",
+      "name" : "Disk used (%)",
       "options" : {
         "colorBy" : "Scale",
         "colorScale" : null,
@@ -1349,7 +1349,11 @@
           "paletteIndex" : 16
         } ],
         "maximumPrecision" : 3,
-        "noDataOptions" : null,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -1357,7 +1361,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "disk.summary_utilization :)",
+          "displayName" : "Disk used",
           "label" : "A",
           "paletteIndex" : 1,
           "plotType" : null,
@@ -1379,7 +1383,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=(not filter('cloud.platform', '*')) and filter('host', '*')).publish(label='A')",
+      "programText" : "A = data('disk.summary_utilization', filter=(not filter('cloud.provider', '*')) and filter('host', '*') and (not filter('k8s.node.name', '*')) and (not filter('k8s.cluster.name', '*')) and (not filter('gcp_id', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('azure_resource_id', '*'))).publish(label='A')\nAB = alerts(autodetect_id='F8Tz6l9AcAQ').publish(label='Autodetect alerts')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -3224,6 +3228,106 @@
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "F8oTIxCAcA4",
+      "importOf" : "EyZG8bnAIAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Disk used (%)",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ {
+          "displayName" : "Autodetect alerts",
+          "label" : "Autodetect alerts",
+          "paletteIndex" : null
+        } ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "host"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Disk used",
+          "label" : "A",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('disk.summary_utilization', filter=(not filter('cloud.provider', '*')) and filter('host', '*') and (not filter('k8s.node.name', '*')) and (not filter('k8s.cluster.name', '*')) and (not filter('gcp_id', '*')) and (not filter('AWSUniqueId', '*')) and (not filter('azure_resource_id', '*'))).mean(by=['host']).publish(label='A')\nAB = alerts(autodetect_id='F8Tz6l9AcAQ').publish(label='Autodetect alerts')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
   } ],
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
@@ -3273,14 +3377,14 @@
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "EybVCgCAcAA",
-        "column" : 4,
+        "chartId" : "EybVFw1AgAA",
+        "column" : 8,
         "height" : 1,
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "EybVFw1AgAA",
-        "column" : 8,
+        "chartId" : "EybVCgCAcAA",
+        "column" : 4,
         "height" : 1,
         "row" : 2,
         "width" : 4
@@ -3309,16 +3413,22 @@
         "row" : 4,
         "width" : 4
       }, {
+        "chartId" : "EybVD5LAYAA",
+        "column" : 8,
+        "height" : 1,
+        "row" : 4,
+        "width" : 4
+      }, {
         "chartId" : "EybVCRtAYAA",
         "column" : 4,
         "height" : 1,
         "row" : 4,
         "width" : 4
       }, {
-        "chartId" : "EybVD5LAYAA",
-        "column" : 8,
+        "chartId" : "F8oTIxCAcA4",
+        "column" : 4,
         "height" : 1,
-        "row" : 4,
+        "row" : 5,
         "width" : 4
       }, {
         "chartId" : "EybVF26AYAA",
@@ -3525,7 +3635,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -331467314,
+  "hashCode" : -1282660989,
   "id" : "ExyV0UQAYAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
