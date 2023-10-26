@@ -277,7 +277,13 @@ class GitlabInventory:
     @classmethod
     def collect_unique_metric_data(cls, dest_list):
         """
-        Helper method to get the list of unique metrics from OOTB content
+        Retrieve and return unique metrics from OOTB content data.
+
+        Args:
+            dest_list (list): List of file paths to OOTB content data.
+
+        Returns:
+            list: List of lists (["o11y_product_name", "metric_selector_1\nmetric_selector_2\n..."],)
         """
         collections_metrics = []
         for dest_path in dest_list:
@@ -303,14 +309,14 @@ class GitlabInventory:
 
                     for chart in chart_json:
                         p_text = chart.get("chart").get("programText")
-                        data_matches = re.findall(r"data\('(.*?)'", p_text)
-                        metrics_set.update(data_matches)
+                        metrics = re.findall(r"data\('(.*?)'", p_text)
+                        metrics_set.update(metrics)
 
-                    formatted_output = '\n'.join(sorted(item for item in metrics_set if item != ''))
+                    final_metrics_str = '\n'.join(sorted(item for item in metrics_set if item != ''))
 
                     collections_metrics.append([
                         o11y_product_name,
-                        formatted_output
+                        final_metrics_str
                     ])
                 elif 'content-discovery/detector/' in dest_path:
                     sf_metrics = data['detectorExport']['detector'].get('sf_metricsInObjectProgramText', None) 
