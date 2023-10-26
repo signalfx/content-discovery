@@ -4,6 +4,7 @@ import argparse
 import base64
 import os
 import requests
+import re
 
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
@@ -27,17 +28,20 @@ class GitlabInventory:
     G_SHEET_CONTENT = {
         'navigator':
             {
-                'gsheet_name': 'Navigators',
+                'gsheet_name_content': 'Navigators',
+                'gsheet_name_unique_metrics': 'Metrics in Navigators',
                 'area': 'A2:E500'
             },
         'dashboard':
             {
-                'gsheet_name': 'Dashboards',
+                'gsheet_name_content': 'Dashboards',
+                'gsheet_name_unique_metrics': 'Metrics in Dashboard groups',
                 'area': 'A2:C500'
             },
         'detector':
             {
-                'gsheet_name': 'Detectors',
+                'gsheet_name_content': 'Detectors',
+                'gsheet_name_unique_metrics': 'Metrics in Detectors',
                 'area': 'A2:C500'
             },
 
@@ -148,7 +152,7 @@ class GitlabInventory:
         return sorted(content_list, key=lambda x: x[0].lower())
 
     @classmethod
-    def write_to_gsheet_file(cls, content_type, data_list, creds):
+    def write_to_gsheet_file(cls, content_type, data_list, unique_mertic_list, creds):
         """
         Helper method to write the content on google spread sheet.
         """
@@ -156,16 +160,21 @@ class GitlabInventory:
         workbook = file.open(cls.INVENTORY_G_SHEET_NAME)
 
         gsheet_info = cls.G_SHEET_CONTENT[content_type]
-        sheet = workbook.worksheet(gsheet_info['gsheet_name'])
+        sheet_iqs = workbook.worksheet(gsheet_info['gsheet_name_content'])
+        sheet_uni_metrics = workbook.worksheet(gsheet_info['gsheet_name_unique_metrics'])
+
 
         # Clearing the Cells
-        sheet.batch_clear([gsheet_info['area']])
+        sheet_iqs.batch_clear([gsheet_info['area']])
+        sheet_uni_metrics.batch_clear([gsheet_info['area']])
 
         # Sort the list alphabetically
         data_list = cls.sort_list(data_list)
+        unique_mertic_list = cls.sort_list(unique_mertic_list)
 
         # Writing into GSheet
-        sheet.update(gsheet_info['area'], data_list)
+        sheet_iqs.update(gsheet_info['area'], data_list)
+        sheet_uni_metrics.update(gsheet_info['area'], unique_mertic_list)
 
     @classmethod
     def get_pi_from_date(cls, date):
@@ -266,6 +275,61 @@ class GitlabInventory:
                 else:
                     break
         return collections
+    
+    @classmethod
+    def collect_unique_metric_data(cls, dest_list):
+        """
+        Retrieve and return unique metrics from OOTB content data.
+
+        Args:
+            dest_list (list): List of file paths to OOTB content data.
+
+        Returns:
+            list: List of lists (["o11y_product_name", "metric_selector_1\nmetric_selector_2\n..."],)
+        """
+        collections_metrics = []
+        for dest_path in dest_list:
+            with open(dest_path, 'r') as nav_file:
+                data = json.load(nav_file)
+                if 'content-discovery/navigators/' in dest_path:
+                    nav_json = data['navigatorExport']['navigator']
+                    metric_selectors_set = {""}
+
+                    for metric in nav_json['uiModel']['metrics']:
+                        metric_selectors = metric.get("metricSelectors")
+                        metric_selectors_set.update(metric_selectors)
+
+                    metric_selector_str = '\n'.join(sorted(item for item in metric_selectors_set if item != ''))
+                    collections_metrics.append([
+                        nav_json['uiModel']['o11yProductName'],
+                        metric_selector_str
+                    ])
+                elif 'content-discovery/group/' in dest_path:
+                    o11y_product_name = data['groupExport']['group']['name']
+                    chart_json = data.get("chartExports")
+                    metrics_set = {""}
+
+                    for chart in chart_json:
+                        p_text = chart.get("chart").get("programText")
+                        metrics = re.findall(r"data\('(.*?)'", p_text)
+                        metrics_set.update(metrics)
+
+                    final_metrics_str = '\n'.join(sorted(item for item in metrics_set if item != ''))
+
+                    collections_metrics.append([
+                        o11y_product_name,
+                        final_metrics_str
+                    ])
+                elif 'content-discovery/detector/' in dest_path:
+                    sf_metrics = data['detectorExport']['detector'].get('sf_metricsInObjectProgramText', None) 
+                    sf_metrics_str = '\n'.join([str(metric) for metric in sf_metrics]) if sf_metrics is not None else "No metrics available"
+                    collections_metrics.append([
+                        data['detectorExport']['detector']['name'],
+                        sf_metrics_str
+                    ])
+                else:
+                    break
+        return collections_metrics
 
     @staticmethod
     def parse_args():
@@ -318,7 +382,8 @@ class GitlabInventory:
         for content in cls.INVENTORY_CONTENTS:
             content_files = cls.collect_json_files(content["path"])
             content_list = cls.collect_inventory_data(content_files)
-            cls.write_to_gsheet_file(content["content_type"], content_list, creds)
+            unique_mertic_list = cls.collect_unique_metric_data(content_files)
+            cls.write_to_gsheet_file(content["content_type"], content_list, unique_mertic_list, creds)
 
 
 if __name__ == "__main__":
