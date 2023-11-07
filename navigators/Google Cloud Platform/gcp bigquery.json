@@ -1,5 +1,5 @@
 {
-  "hashCode" : -2024837040,
+  "hashCode" : -594361838,
   "id" : "F9xRP-OAYAE",
   "modelVersion" : 1,
   "navigatorExport" : {
@@ -17,8 +17,23 @@
           "not" : false,
           "property" : "service",
           "values" : [ "bigquery" ]
+        }, {
+          "not" : false,
+          "property" : "project_id",
+          "values" : [ ]
         } ],
         "metric" : "query/count"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "service",
+          "values" : [ "bigquery" ]
+        }, {
+          "not" : false,
+          "property" : "project_id",
+          "values" : [ ]
+        } ],
+        "metric" : "job/num_in_flight"
       } ],
       "instanceDashboards" : [ "F-PYLvuAgCs" ],
       "instanceDisplayText" : null,
@@ -60,6 +75,28 @@
           "sortable" : null
         } ],
         "metrics" : [ {
+          "coloring" : {
+            "limits" : null,
+            "maxValue" : null,
+            "method" : "quantile",
+            "minValue" : 0,
+            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
+          },
+          "description" : "This metric shows the total number of jobs in a BigQuery project. Darker colors indicate higher relative values.",
+          "displayName" : "# Jobs",
+          "id" : "bigquery_jobs",
+          "job" : {
+            "filters" : [ ],
+            "resolution" : 300000,
+            "template" : "JOB_COUNT = data(\"job/num_in_flight\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"])",
+            "varName" : "JOB_COUNT"
+          },
+          "metricSelectors" : [ "job/num_in_flight" ],
+          "type" : "metric",
+          "valueFormat" : "Number",
+          "valueLabel" : "Jobs",
+          "valueType" : null
+        }, {
           "coloring" : {
             "limits" : null,
             "maxValue" : null,
@@ -111,35 +148,13 @@
             "minValue" : 0,
             "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
           },
-          "description" : "This metric shows the total number of jobs in a BigQuery project. Darker colors indicate higher relative values.",
-          "displayName" : "# Jobs",
-          "id" : "bigquery_jobs",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "JOB_COUNT = data(\"job/num_in_flight\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"])",
-            "varName" : "JOB_COUNT"
-          },
-          "metricSelectors" : [ "job/num_in_flight" ],
-          "type" : "metric",
-          "valueFormat" : "Number",
-          "valueLabel" : "Jobs",
-          "valueType" : null
-        }, {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#bfd3e6", "#9ebcda", "#8c96c6", "#8856a7", "#810f7c" ]
-          },
           "description" : "This metric shows the total number of slots allocated. Darker colors indicate higher relative values.",
           "displayName" : "# Slots allocated",
           "id" : "bigquery_slots_allocated_count",
           "job" : {
             "filters" : [ ],
             "resolution" : 300000,
-            "template" : "SLOTS_ALLOCATED = data(\"slots/allocated\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"]).mean(over=\"15m\")",
+            "template" : "SLOTS_ALLOCATED = data(\"slots/allocated\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"]).sum(over=\"15m\")",
             "varName" : "SLOTS_ALLOCATED"
           },
           "metricSelectors" : [ "slots/allocated" ],
@@ -161,7 +176,7 @@
           "job" : {
             "filters" : [ ],
             "resolution" : 300000,
-            "template" : "SLOTS_ALLOCATED_PROJECT_QUERY_JOBS = data(\"slots/allocated_for_project\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"]).mean(over=\"15m\")",
+            "template" : "SLOTS_ALLOCATED_PROJECT_QUERY_JOBS = data(\"slots/allocated_for_project\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"]).sum(over=\"15m\")",
             "varName" : "SLOTS_ALLOCATED_PROJECT_QUERY_JOBS"
           },
           "metricSelectors" : [ "slots/allocated_for_project" ],
@@ -183,7 +198,7 @@
           "job" : {
             "filters" : [ ],
             "resolution" : 300000,
-            "template" : "SLOTS_ALLOCATED_RESERVATION = data(\"slots/allocated_for_reservation\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"]).mean(over=\"15m\")",
+            "template" : "SLOTS_ALLOCATED_RESERVATION = data(\"slots/allocated_for_reservation\", filter=filter(\"service\", \"bigquery\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"project_id\"]).sum(over=\"15m\")",
             "varName" : "SLOTS_ALLOCATED_RESERVATION"
           },
           "metricSelectors" : [ "slots/allocated_for_reservation" ],
