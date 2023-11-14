@@ -2372,7 +2372,7 @@
       "lastUpdatedBy" : null,
       "name" : ".",
       "options" : {
-        "markdown" : "<table width=\"100%\" height=\"10%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Azure VM Scale Sets logs</font>\n</td></tr></table>\n<p align=\"center\" >These charts refer to the Activity logs. To configure Activity logs follow this <a href=\"https://github.com/splunk/azure-functions-splunk/blob/master/event-hubs-hec/docs/activity_log_diagnostic_settings.md\" target=\"_blank\">documentation</a>. For more information on sending Azure logs to Splunk Log observer, see <a href=\"https://quickdraw.splunk.com/redirect/?product=Observability&location=azurescalesets.dashboard.LO&version=current\" target=\"_blank\">Send Azure logs to Splunk Log Observer</a>.</p>\n<p align=\"center\" ><i>These charts only populate with logs from Log Observer (LO) not Log Observer Connect (LOC).<br>See the <a href='https://quickdraw.splunk.com/redirect/?product=Observability&location=azurescalesets.dashboard.LO&version=current' target='_blank'>Log Observer documentation</a> and the <a href='https://quickdraw.splunk.com/redirect/?product=Observability&location=azurescalesets.dashboard.LOC&version=current' target='_blank'>Log Observer Connect documentation</a> for more info.</i></p>",
+        "markdown" : "<table width=\"100%\" height=\"10%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Azure VM Scale Sets logs</font>\n</td></tr></table>\n<p align=\"center\" >These charts refer to the Activity logs. To configure Activity logs follow this <a href=\"https://github.com/splunk/azure-functions-splunk/blob/master/event-hubs-hec/docs/activity_log_diagnostic_settings.md\" target=\"_blank\">documentation</a>. For more information on sending Azure logs to Splunk Log Observer Connect, see <a href='https://quickdraw.splunk.com/redirect/?product=Observability&location=azurescalesets.dashboard.LOC&version=current' target='_blank'>Log Observer Connect documentation</a>.</p>",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -2398,21 +2398,29 @@
         }, {
           "name" : "category"
         }, {
+          "name" : "level"
+        }, {
           "name" : "operationName"
         }, {
-          "name" : "_raw"
+          "name" : "resource_provider"
+        }, {
+          "name" : "resultType"
+        }, {
+          "name" : "source"
+        }, {
+          "name" : "sourcetype"
         } ],
-        "defaultConnection" : null,
+        "defaultConnection" : "*",
         "sortOptions" : null,
         "time" : {
-          "range" : 10800000,
+          "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
         "type" : "LogsChart"
       },
       "packageSpecifications" : "",
-      "programText" : "logs(filter=(field('sourcetype') == 'azure:compute:virtualmachinescalesets:administrative' or field('sourcetype') == 'azure:compute:virtualmachinescalesets:policy' or field('sourcetype') == 'azure:compute:virtualmachinescalesets:security' or field('sourcetype') == 'azure:compute:virtualmachinescalesets:servicehealth' or field('sourcetype') == 'azure:compute:virtualmachinescalesets:alert' or field('sourcetype') == 'azure:compute:virtualmachinescalesets:recommendation' or field('sourcetype') == 'azure:compute:virtualmachinescalesets:autoscale' or field('sourcetype') == 'azure:compute:virtualmachinescalesets:resourcehealth')).publish()",
+      "programText" : "logs(filter=(field('category') == 'Administrative' or field('category') == 'Security' or field('category') == 'ServiceHealth' or field('category') == 'Alert' or field('category') == 'Recommendation' or field('category') == 'Policy' or field('category') == 'Autoscale' or field('category') == 'ResourceHealth') and field('resourceId') == '/SUBSCRIPTIONS/*/RESOURCEGROUPS/*/PROVIDERS/MICROSOFT.COMPUTE/VIRTUALMACHINESCALESETS/*').publish()",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2761,7 +2769,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 1674506439,
+  "hashCode" : 794990480,
   "id" : "DiVWV8DAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
