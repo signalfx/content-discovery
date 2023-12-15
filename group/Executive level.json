@@ -662,27 +662,6 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
-      "id" : "GApfIBSAcAk",
-      "importOf" : "GALT_RtAYAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "LO events query",
-      "options" : {
-        "markdown" : "###_Log Observer events charts require this query_\n        \nSetup Log Pipeline Management Metric:\n##### -Matching Condition: Match All\n##### -Operation: count\n##### -Dimensions: [\"severity\",\"deployment.environment\"]\n###### (Replace \"deployment.environment\" with your environment dimension)\n##### -Field: null\n##### -Metric Name: logs.events.count\n##### -Metric Type: COUNTER",
-        "type" : "Text"
-      },
-      "packageSpecifications" : "",
-      "programText" : "",
-      "relatedDetectorIds" : [ ],
-      "tags" : null
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
       "description" : "Top and bottom 5 service saturation of CPU/MEM/DISK over 12 weeks",
       "id" : "GApfIBSAcAo",
       "importOf" : "GALUEKbAcAE",
@@ -4220,6 +4199,1317 @@
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in resource metrics by token (MTS) over 4 weeks using 7 days average",
+      "id" : "GBSQfHSAgAk",
+      "importOf" : "GBSXDypAcAI",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in resource metrics By Token (MTS) (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 0.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 0
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 0.0,
+          "paletteIndex" : 15
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total",
+          "label" : "total",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total 4 weeks",
+          "label" : "total4w",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Top change",
+          "label" : "topChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in profiling logs received per day by token over 4 weeks using 7 days",
+      "id" : "GBSQfHSAgAo",
+      "importOf" : "GBSXDoBAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in profiling logs received per day by token",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale2" : null,
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 2,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "C",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "D",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "E",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.profiling.numLogsReceivedByToken').sum(by=['tokenName']).mean(over='7d').sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.profiling.numLogsReceivedByToken').sum(by=['tokenName']).timeshift('4w').mean(over='7d').sum(over='1d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).top(5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).bottom(5).publish(label='D', enable=False)\nE = union(C, D).publish(label='E', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in logs received per day by token over 4 weeks using 7 days average",
+      "id" : "GBSQfHSAgAs",
+      "importOf" : "GBSXDohAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in logs received per day by token (%)",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale2" : null,
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "tokenName"
+          } ]
+        },
+        "maximumPrecision" : 2,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "C",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "D",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "E",
+          "label" : "E",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numLogsReceivedByToken').sum(by=['tokenName']).mean(over='7d').sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.numLogsReceivedByToken').sum(by=['tokenName']).timeshift('4w').mean(over='7d').sum(over='1d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).top(5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).bottom(5).publish(label='D', enable=False)\nE = union(C, D).publish(label='E', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in synthetics metrics by token (MTS) over 4 weeks using 7 days average",
+      "id" : "GBSQfHSAgAw",
+      "importOf" : "GBSXE4XAYAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in synthetics metrics by token (MTS) (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 0.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 0
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 0.0,
+          "paletteIndex" : 15
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total",
+          "label" : "total",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total 4 weeks",
+          "label" : "total4w",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Top change",
+          "label" : "topChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in custom metrics by token (MTS) over 4 weeks using 7 days average",
+      "id" : "GBSQfHSAgA0",
+      "importOf" : "GBSXEIDAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in custom metrics By Token (MTS) (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 0.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 0
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 0.0,
+          "paletteIndex" : 15
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total",
+          "label" : "total",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total 4 weeks",
+          "label" : "total4w",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Top change",
+          "label" : "topChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in token usage over 4 and 12 weeks using 1 day sum",
+      "id" : "GBSQfHSAgA4",
+      "importOf" : "GBSXFCQAgAI",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in token usage (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 0.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 100.0,
+          "paletteIndex" : 0
+        }, {
+          "gt" : null,
+          "gte" : -100.0,
+          "lt" : null,
+          "lte" : 0.0,
+          "paletteIndex" : 15
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Today",
+          "label" : "C",
+          "paletteIndex" : 11,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "-4w",
+          "label" : "D",
+          "paletteIndex" : 11,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "-12w",
+          "label" : "E",
+          "paletteIndex" : 11,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% 4 week change",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "% 12 week change",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Radial",
+        "sortBy" : "-sf_metric",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "C = data('sf.org.numBundledMetricsByToken', rollup='sum').sum(over='1d').sum().publish(label='C')\nD = data('sf.org.numBundledMetricsByToken', rollup='sum').sum(over='1d').sum().timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.numBundledMetricsByToken', rollup='sum').sum(over='1d').sum().timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/C)*100).publish(label='F')\nG = (((C-E)/C)*100).publish(label='G')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in high resolution metrics by token (MTS) over 4 weeks using 7 days average",
+      "id" : "GBSQfHSAgA8",
+      "importOf" : "GBSXFOkAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in high resolution metrics by token (MTS) (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 0.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 0
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 0.0,
+          "paletteIndex" : 15
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total",
+          "label" : "total",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total 4 weeks",
+          "label" : "total4w",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Top change",
+          "label" : "topChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numHighResolutionMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numHighResolutionMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in bundled metrics by token (MTS) over 4 weeks using 7 days average",
+      "id" : "GBSQfHSAgBA",
+      "importOf" : "GBSXD_dAcAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in bundled metrics by token (MTS) (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 0.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 0
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 0.0,
+          "paletteIndex" : 15
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Bundled total",
+          "label" : "bundledTotal",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Bundled total 4 weeks",
+          "label" : "bundledTotal4w",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Top change",
+          "label" : "topChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \nbundledTotal = (A.sum() if A.count() > 0 else 0).publish(label='bundledTotal', enable=False)\nbundledTotal4w = (B.sum() if B.count() > 0 else 0).publish(label='bundledTotal4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in APM bundled metrics by token (MTS) over 4 weeks using 7 days average",
+      "id" : "GBSQfHSAgBE",
+      "importOf" : "GBSXDy7AYAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in APM bundled metrics by token (MTS) (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 0.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 0
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 0.0,
+          "paletteIndex" : 15
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "tokenName"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total",
+          "label" : "total",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total 4 weeks",
+          "label" : "total4w",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Top change",
+          "label" : "topChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 60000,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Change in token usage of top and bottom 5 over 12 weeks of 7 days average",
+      "id" : "GBSQfHSAgBI",
+      "importOf" : "GBSXEm2AYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Change in token usage (%)",
+      "options" : {
+        "colorBy" : "Metric",
+        "colorScale2" : null,
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Token usage",
+          "label" : "A",
+          "paletteIndex" : 11,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Token usage (-4w)",
+          "label" : "B",
+          "paletteIndex" : 11,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "sf.org.numCustomMetricsByToken",
+          "label" : "AA",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A1",
+          "label" : "A1",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Num synthetics metrics by token",
+          "label" : "AB",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A2",
+          "label" : "A2",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Num Apm bundled metrics by token",
+          "label" : "AC",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A3",
+          "label" : "A3",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Num resource metrics by token",
+          "label" : "AD",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A4",
+          "label" : "A4",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Synthetics",
+          "label" : "synthetics",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "total",
+          "label" : "total",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Top 5 change",
+          "label" : "topChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Bottom 5 change",
+          "label" : "bottomChange",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "% change",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Change %",
+          "label" : "Change %",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 3600000,
+        "secondaryVisualization" : "None",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\n        \nAA = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AA', enable=False)\nA1 = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A1', enable=False)\n        \nAB = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AB', enable=False)\nA2 = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A2', enable=False)\n        \nAC = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AC', enable=False)\nA3 = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A3', enable=False)\n        \nAD = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AD', enable=False)\nA4 = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A4', enable=False)\n        \nsyntheticsTotal = (AB.sum() if AB.count() > 0 else 0).publish(label='synthetics', enable=False)\nsyntheticsTotal12w = (A2.sum() if A2.count() > 0 else 0).publish(label='synthetics', enable=False)\n        \ntotal = (A + AA + syntheticsTotal + AC + AD).publish(label='total', enable=False)\ntotal12w = (B + A1 + syntheticsTotal12w + A3 + A4).publish(label='total', enable=False)\n        \n        \ntopChange = (((total-total12w)/total12w)*100).mean(by=['tokenName']).mean(over='7d').top(count=5).publish(label='topChange', enable=False)\nbottomChange = (((total-total12w)/total12w)*100).mean(by=['tokenName']).mean(over='7d').bottom(count=5).publish(label='bottomChange', enable=False)\n\nC = union(topChange, bottomChange).publish(label=\"Change %\", enable=True)\n\n\n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "MTS usage by token name over 7 days average",
+      "id" : "GBSQfHSAgBM",
+      "importOf" : "GBSXEW6AcAI",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "MTS usage by token name",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 1.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 20
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 1.0,
+          "paletteIndex" : 16
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "tokenName"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : null,
+          "timezone" : "UTC"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : 11,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "AA",
+          "label" : "AA",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "AB",
+          "label" : "AB",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "AC",
+          "label" : "AC",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "AD",
+          "label" : "AD",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "synthetics",
+          "label" : "synthetics",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "total",
+          "label" : "total",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "MTS",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : 3600000,
+        "secondaryVisualization" : "None",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\n        \nAA = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AA', enable=False)\n        \nAB = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AB', enable=False)\n        \nAC = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AC', enable=False)\n        \nAD = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AD', enable=False)\n        \nsyntheticsTotal = (AB.sum() if AB.count() > 0 else 0).publish(label='synthetics', enable=False)\n        \ntotal = (A + AA + syntheticsTotal + AC + AD).publish(label='total', enable=True)\n        \n",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
   } ],
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
@@ -4352,12 +5642,6 @@
         "row" : 0,
         "width" : 3
       }, {
-        "chartId" : "GApfIBSAcAk",
-        "column" : 0,
-        "height" : 1,
-        "row" : 2,
-        "width" : 6
-      }, {
         "chartId" : "GApfIBSAcB8",
         "column" : 6,
         "height" : 2,
@@ -4372,8 +5656,8 @@
       }, {
         "chartId" : "GApfIBSAcAQ",
         "column" : 0,
-        "height" : 1,
-        "row" : 3,
+        "height" : 2,
+        "row" : 2,
         "width" : 6
       } ],
       "created" : 0,
@@ -4504,6 +5788,125 @@
       "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
+        "chartId" : "GBSQfHSAgA4",
+        "column" : 4,
+        "height" : 2,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "GBSQfHSAgBI",
+        "column" : 0,
+        "height" : 2,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "GBSQfHSAgBM",
+        "column" : 8,
+        "height" : 2,
+        "row" : 0,
+        "width" : 4
+      }, {
+        "chartId" : "GBSQfHSAgBA",
+        "column" : 0,
+        "height" : 2,
+        "row" : 2,
+        "width" : 3
+      }, {
+        "chartId" : "GBSQfHSAgA0",
+        "column" : 3,
+        "height" : 2,
+        "row" : 2,
+        "width" : 3
+      }, {
+        "chartId" : "GBSQfHSAgBE",
+        "column" : 9,
+        "height" : 2,
+        "row" : 2,
+        "width" : 3
+      }, {
+        "chartId" : "GBSQfHSAgAk",
+        "column" : 6,
+        "height" : 2,
+        "row" : 2,
+        "width" : 3
+      }, {
+        "chartId" : "GBSQfHSAgA8",
+        "column" : 0,
+        "height" : 2,
+        "row" : 4,
+        "width" : 3
+      }, {
+        "chartId" : "GBSQfHSAgAw",
+        "column" : 3,
+        "height" : 2,
+        "row" : 4,
+        "width" : 3
+      }, {
+        "chartId" : "GBSQfHSAgAo",
+        "column" : 9,
+        "height" : 2,
+        "row" : 4,
+        "width" : 3
+      }, {
+        "chartId" : "GBSQfHSAgAs",
+        "column" : 6,
+        "height" : 2,
+        "row" : 4,
+        "width" : 3
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "",
+      "discoveryOptions" : null,
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : [ ],
+        "time" : {
+          "end" : "Now",
+          "start" : "-15w"
+        },
+        "variables" : [ {
+          "alias" : "Token name",
+          "applyIfExists" : false,
+          "description" : "Token Name",
+          "preferredSuggestions" : [ ],
+          "property" : "tokenName",
+          "propertyMappings" : [ "tokenName" ],
+          "replaceOnly" : true,
+          "required" : true,
+          "restricted" : false,
+          "value" : ""
+        }, {
+          "alias" : "Environment",
+          "applyIfExists" : false,
+          "description" : "APM Environment Name",
+          "preferredSuggestions" : [ ],
+          "property" : "sf_environment",
+          "propertyMappings" : [ "sf_environment" ],
+          "replaceOnly" : true,
+          "required" : true,
+          "restricted" : false,
+          "value" : [ "*" ]
+        } ]
+      },
+      "groupId" : "GApfIBSAcAI",
+      "groupName" : "Executive Level",
+      "id" : "GBSQfHSAgBQ",
+      "importOf" : "GBSXGxgAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "maxDelayOverride" : null,
+      "name" : "Token usage",
+      "permissions" : null,
+      "selectedEventOverlays" : null,
+      "tags" : null
+    }
+  }, {
+    "dashboard" : {
+      "authorizedWriters" : null,
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
         "chartId" : "GApfIBSAcCI",
         "column" : 3,
         "height" : 2,
@@ -4591,7 +5994,7 @@
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
-      "name" : "Billing",
+      "name" : "License usage overview",
       "permissions" : null,
       "selectedEventOverlays" : null,
       "tags" : null
@@ -4621,13 +6024,19 @@
         "filtersOverride" : null,
         "nameOverride" : null
       }, {
+        "configId" : "GBSQfHSAgBU",
+        "dashboardId" : "GBSQfHSAgBQ",
+        "descriptionOverride" : null,
+        "filtersOverride" : null,
+        "nameOverride" : null
+      }, {
         "configId" : "FTcsAe-AcAE",
         "dashboardId" : "GApfIBSAcCw",
         "descriptionOverride" : null,
         "filtersOverride" : null,
         "nameOverride" : null
       } ],
-      "dashboards" : [ "GApfIBSAcCk", "GApfIBSAcCo", "GApfIBSAcCs", "GApfIBSAcCw" ],
+      "dashboards" : [ "GApfIBSAcCk", "GApfIBSAcCo", "GApfIBSAcCs", "GBSQfHSAgBQ", "GApfIBSAcCw" ],
       "description" : "Executive Level Dashboards",
       "email" : null,
       "id" : "GApfIBSAcAI",
@@ -4672,7 +6081,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -426978825,
+  "hashCode" : -651944974,
   "id" : "GApfIBSAcAI",
   "modelVersion" : 1,
   "packageType" : "GROUP"
