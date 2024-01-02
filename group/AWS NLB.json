@@ -10,7 +10,7 @@
       "importOf" : "GBxQl8SAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Active flow",
+      "name" : "# Active flow count",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -40,7 +40,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Active flow",
+          "displayName" : "Active flow count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -61,7 +61,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('ActiveFlowCount', filter=filter('stat', 'sum') and filter('namespace', 'AWS/NetworkELB') and filter('AvailabilityZone', '*')).sum(by=['LoadBalancer']).publish(label='A')",
+      "programText" : "A = data('ActiveFlowCount', filter=filter('stat', 'mean') and filter('namespace', 'AWS/NetworkELB') and filter('AvailabilityZone', '*')).mean(by=['LoadBalancer']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -584,7 +584,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('ActiveFlowCount', filter=filter('stat', 'mean') and filter('namespace', 'AWS/NetworkELB')).sum(by=['LoadBalancer']).count().publish(label='A')",
+      "programText" : "A = data('ActiveFlowCount', filter=filter('stat', 'mean') and filter('namespace', 'AWS/NetworkELB') and filter('AvailabilityZone', '*')).sum(by=['LoadBalancer']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -788,23 +788,11 @@
       "importOf" : "GBxQl8SAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Active flow",
+      "name" : "# Active flow count",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "LoadBalancer"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          } ]
-        },
         "maximumPrecision" : 4,
         "noDataOptions" : {
           "linkText" : null,
@@ -828,14 +816,15 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -857,11 +846,8 @@
       "name" : "# New flow count",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : null
-        },
         "maximumPrecision" : null,
         "noDataOptions" : {
           "linkText" : null,
@@ -885,18 +871,19 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : null,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('NewFlowCount', filter=filter('namespace', 'AWS/NetworkELB') and filter('stat', 'sum') and filter('AvailabilityZone', '*')).sum(by=['LoadBalancer']).top(count=10).publish(label='A')",
+      "programText" : "A = data('NewFlowCount', filter=filter('namespace', 'AWS/NetworkELB') and filter('stat', 'sum') and filter('AvailabilityZone', '*')).sum(by=['LoadBalancer']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -913,9 +900,34 @@
       "lastUpdatedBy" : null,
       "name" : "Processed bytes (bytes)",
       "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "hideMissingValues" : false,
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
@@ -928,11 +940,17 @@
             "property" : "sf_metric"
           } ]
         },
-        "maximumPrecision" : 4,
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
           "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -950,15 +968,14 @@
           "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
-        "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "showEventLines" : false,
+        "stacked" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -979,9 +996,34 @@
       "lastUpdatedBy" : null,
       "name" : "# Processed packets",
       "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "hideMissingValues" : false,
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
@@ -994,11 +1036,17 @@
             "property" : "sf_metric"
           } ]
         },
-        "maximumPrecision" : 6,
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
           "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -1016,15 +1064,14 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "showEventLines" : false,
+        "stacked" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -1046,20 +1093,8 @@
       "name" : "# Target TLS negotiation error",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "LoadBalancer"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          } ]
-        },
         "maximumPrecision" : 4,
         "noDataOptions" : {
           "linkText" : null,
@@ -1083,14 +1118,15 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -1111,9 +1147,34 @@
       "lastUpdatedBy" : null,
       "name" : "# Consumed LCUs",
       "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "hideMissingValues" : false,
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
@@ -1126,11 +1187,17 @@
             "property" : "sf_metric"
           } ]
         },
-        "maximumPrecision" : 4,
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
           "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -1148,15 +1215,14 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "showEventLines" : false,
+        "stacked" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -1178,35 +1244,8 @@
       "name" : "# Healthy host",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "LoadBalancer"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : true,
-            "property" : "stat"
-          }, {
-            "enabled" : true,
-            "property" : "AvailabilityZone"
-          }, {
-            "enabled" : true,
-            "property" : "AWSUniqueId"
-          }, {
-            "enabled" : true,
-            "property" : "TargetGroup"
-          }, {
-            "enabled" : true,
-            "property" : "namespace"
-          } ]
-        },
         "maximumPrecision" : 4,
         "noDataOptions" : {
           "linkText" : null,
@@ -1230,14 +1269,15 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -1259,20 +1299,8 @@
       "name" : "# Port allocation error",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "LoadBalancer"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          } ]
-        },
         "maximumPrecision" : 4,
         "noDataOptions" : {
           "linkText" : null,
@@ -1296,14 +1324,15 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -1324,17 +1353,48 @@
       "lastUpdatedBy" : null,
       "name" : "# Peak packets (/sec)",
       "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
         "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "hideMissingValues" : false,
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
         "legendOptions" : {
           "fields" : null
         },
-        "maximumPrecision" : 4,
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
           "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -1352,15 +1412,14 @@
           "valueUnit" : null,
           "yAxis" : 0
         } ],
-        "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "showEventLines" : false,
+        "stacked" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -1382,20 +1441,8 @@
       "name" : "# Unhealthy host",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "LoadBalancer"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          } ]
-        },
         "maximumPrecision" : 4,
         "noDataOptions" : {
           "linkText" : null,
@@ -1419,14 +1466,15 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
@@ -1448,20 +1496,8 @@
       "name" : "# TCP client reset",
       "options" : {
         "colorBy" : "Dimension",
+        "colorScale" : null,
         "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : true,
-            "property" : "LoadBalancer"
-          }, {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          } ]
-        },
         "maximumPrecision" : 4,
         "noDataOptions" : {
           "linkText" : null,
@@ -1485,18 +1521,78 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "Sparkline",
-        "sortBy" : "-value",
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
       "programText" : "A = data('TCP_Client_Reset_Count', filter=filter('stat', 'sum') and filter('namespace', 'AWS/NetworkELB') and filter('AvailabilityZone', '*')).sum(by=['LoadBalancer']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "GCvLuNrAgAQ",
+      "importOf" : "Fxm3MKtAgAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : ".",
+      "options" : {
+        "markdown" : "<table width=\"100%\" height=\"10%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">NLB logs</font>\n</td></tr></table>\n<p align=\"center\" >These charts refer to the Network load balancer logs. To configure Network load balancer logs follow this <a href=\"https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-access-logs.html\">AWS documentation</a>.\nTo configure the logs on Splunk Enterprise/Cloud follow <a href='https://quickdraw.splunk.com/redirect/?product=Observability&location=ootb.cloudwatch' target='_blank'> this Splunk Add-on for AWS documentation</a>.\nFor more information on sending logs to Splunk Log Observer Connect, see <a href='https://quickdraw.splunk.com/redirect/?product=Observability&location=azurescalesets.dashboard.LOC&version=current' target='_blank'>Log Observer Connect documentation</a>.\n</p>",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "GCvyrz5AcAA",
+      "importOf" : "FxmyR32AcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "NLB logs",
+      "options" : {
+        "columns" : [ {
+          "name" : "_time"
+        }, {
+          "name" : "elb"
+        }, {
+          "name" : "source"
+        }, {
+          "name" : "sourcetype"
+        }, {
+          "name" : "_raw"
+        } ],
+        "defaultConnection" : "*",
+        "sortOptions" : null,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "LogsChart"
+      },
+      "packageSpecifications" : "",
+      "programText" : "logs(filter=field('sourcetype') == 'aws:elb:accesslogs' and field('elb_type') == 'NLB').publish()",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1507,38 +1603,38 @@
       "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
-        "chartId" : "GCbGxxmAgCs",
-        "column" : 2,
-        "height" : 1,
-        "row" : 0,
-        "width" : 5
-      }, {
         "chartId" : "GCbGxxmAgC0",
         "column" : 0,
         "height" : 1,
         "row" : 0,
         "width" : 2
       }, {
-        "chartId" : "GCbGxxmAgCo",
+        "chartId" : "GCbGxxmAgCU",
+        "column" : 2,
+        "height" : 1,
+        "row" : 0,
+        "width" : 5
+      }, {
+        "chartId" : "GCbGxxmAgCY",
         "column" : 7,
         "height" : 1,
         "row" : 0,
         "width" : 5
       }, {
-        "chartId" : "GCbGxxmAgCU",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgCY",
+        "chartId" : "GCbGxxmAgCs",
         "column" : 0,
         "height" : 1,
         "row" : 1,
         "width" : 4
       }, {
-        "chartId" : "GCbGxxmAgCc",
+        "chartId" : "GCbGxxmAgC8",
         "column" : 4,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "GCbGxxmAgCo",
+        "column" : 8,
         "height" : 1,
         "row" : 1,
         "width" : 4
@@ -1549,32 +1645,32 @@
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "GCbGxxmAgCg",
+        "chartId" : "GCbGxxmAgCc",
         "column" : 4,
         "height" : 1,
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "GCbGxxmAgCk",
+        "chartId" : "GCbGxxmAgCg",
         "column" : 8,
         "height" : 1,
         "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgCw",
-        "column" : 0,
-        "height" : 1,
-        "row" : 3,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgC8",
-        "column" : 4,
-        "height" : 1,
-        "row" : 3,
         "width" : 4
       }, {
         "chartId" : "GCbGxxmAgDA",
         "column" : 8,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "GCbGxxmAgCk",
+        "column" : 4,
+        "height" : 1,
+        "row" : 3,
+        "width" : 4
+      }, {
+        "chartId" : "GCbGxxmAgCw",
+        "column" : 0,
         "height" : 1,
         "row" : 3,
         "width" : 4
@@ -1591,13 +1687,13 @@
         "variables" : null
       },
       "groupId" : "GCbF8kTAgC8",
-      "groupName" : "Network load balancer",
+      "groupName" : "AWS NLB",
       "id" : "GCbGxxmAgDE",
       "importOf" : "GBoF6-QAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
-      "name" : "Network LB overview",
+      "name" : "AWS NLB instances",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
       "tags" : null
@@ -1607,71 +1703,122 @@
       "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
-        "chartId" : "GCbGxxmAgDk",
+        "chartId" : "GCbGxxmAgDM",
         "column" : 0,
         "height" : 1,
         "row" : 0,
+        "width" : 3
+      }, {
+        "chartId" : "GCbGxxmAgDQ",
+        "column" : 3,
+        "height" : 1,
+        "row" : 0,
+        "width" : 3
+      }, {
+        "chartId" : "GCbGxxmAgDk",
+        "column" : 6,
+        "height" : 1,
+        "row" : 0,
+        "width" : 3
+      }, {
+        "chartId" : "GCbGxxmAgD0",
+        "column" : 9,
+        "height" : 1,
+        "row" : 0,
+        "width" : 3
+      }, {
+        "chartId" : "GCbGxxmAgDc",
+        "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "GCbGxxmAgD4",
+        "column" : 4,
+        "height" : 1,
+        "row" : 1,
+        "width" : 4
+      }, {
+        "chartId" : "GCbGxxmAgDo",
+        "column" : 8,
+        "height" : 1,
+        "row" : 1,
         "width" : 4
       }, {
         "chartId" : "GCbGxxmAgDg",
-        "column" : 4,
+        "column" : 9,
         "height" : 1,
-        "row" : 0,
-        "width" : 4
+        "row" : 2,
+        "width" : 3
       }, {
-        "chartId" : "GCbGxxmAgDM",
-        "column" : 8,
+        "chartId" : "GCbGxxmAgDY",
+        "column" : 6,
         "height" : 1,
-        "row" : 0,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgDQ",
-        "column" : 0,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgDU",
-        "column" : 4,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgDc",
-        "column" : 8,
-        "height" : 1,
-        "row" : 1,
-        "width" : 4
+        "row" : 2,
+        "width" : 3
       }, {
         "chartId" : "GCbGxxmAgDw",
         "column" : 0,
         "height" : 1,
         "row" : 2,
-        "width" : 4
+        "width" : 3
       }, {
-        "chartId" : "GCbGxxmAgDY",
-        "column" : 4,
+        "chartId" : "GCbGxxmAgDU",
+        "column" : 3,
         "height" : 1,
         "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgD4",
-        "column" : 8,
-        "height" : 1,
-        "row" : 2,
-        "width" : 4
-      }, {
-        "chartId" : "GCbGxxmAgDo",
+        "width" : 3
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "",
+      "discoveryOptions" : null,
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : null,
+        "time" : null,
+        "variables" : [ {
+          "alias" : "Load balancer",
+          "applyIfExists" : false,
+          "description" : "",
+          "preferredSuggestions" : [ ],
+          "property" : "LoadBalancer",
+          "propertyMappings" : [ "LoadBalancer" ],
+          "replaceOnly" : false,
+          "required" : true,
+          "restricted" : false,
+          "value" : [ "Choose load balancer" ]
+        } ]
+      },
+      "groupId" : "GCbF8kTAgC8",
+      "groupName" : "AWS NLB",
+      "id" : "GCbGxxmAgD8",
+      "importOf" : "GBoF6-QAcAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "maxDelayOverride" : null,
+      "name" : "AWS NLB instance",
+      "permissions" : null,
+      "selectedEventOverlays" : [ ],
+      "tags" : null
+    }
+  }, {
+    "dashboard" : {
+      "authorizedWriters" : null,
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
+        "chartId" : "GCvLuNrAgAQ",
         "column" : 0,
         "height" : 1,
-        "row" : 3,
-        "width" : 6
+        "row" : 0,
+        "width" : 12
       }, {
-        "chartId" : "GCbGxxmAgD0",
-        "column" : 6,
-        "height" : 1,
-        "row" : 3,
-        "width" : 6
+        "chartId" : "GCvyrz5AcAA",
+        "column" : 0,
+        "height" : 3,
+        "row" : 1,
+        "width" : 12
       } ],
       "created" : 0,
       "creator" : null,
@@ -1685,13 +1832,12 @@
         "variables" : null
       },
       "groupId" : "GCbF8kTAgC8",
-      "groupName" : "Network load balancer",
-      "id" : "GCbGxxmAgD8",
-      "importOf" : "GBoF6-QAcAA",
+      "groupName" : "AWS NLB",
+      "id" : "GCvyl4iAYAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
-      "name" : "Network LB",
+      "name" : "AWS NLB logs",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
       "tags" : null
@@ -1714,19 +1860,37 @@
         "descriptionOverride" : null,
         "filtersOverride" : null,
         "nameOverride" : null
+      }, {
+        "configId" : "GCvyl4iAYAI",
+        "dashboardId" : "GCvyl4iAYAE",
+        "descriptionOverride" : null,
+        "filtersOverride" : null,
+        "nameOverride" : null
       } ],
-      "dashboards" : [ "GCbGxxmAgDE", "GCbGxxmAgD8" ],
+      "dashboards" : [ "GCbGxxmAgDE", "GCbGxxmAgD8", "GCvyl4iAYAE" ],
       "description" : "",
       "email" : null,
       "id" : "GCbF8kTAgC8",
+      "importQualifiers" : [ {
+        "filters" : [ {
+          "not" : false,
+          "property" : "namespace",
+          "values" : [ "AWS/NetworkELB" ]
+        }, {
+          "not" : false,
+          "property" : "stat",
+          "values" : [ "mean" ]
+        } ],
+        "metric" : "ActiveFlowCount"
+      } ],
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Network load balancer",
+      "name" : "AWS NLB",
       "permissions" : null,
       "teams" : null
     }
   },
-  "hashCode" : -608240541,
+  "hashCode" : 332740662,
   "id" : "GCbF8kTAgC8",
   "modelVersion" : 1,
   "packageType" : "GROUP"
