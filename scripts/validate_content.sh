@@ -81,7 +81,6 @@ while read new_file; do
   .json)
     echo -n "validating $new_file "
 
-    # retrieve the json id from the content
     set -e # fail if any json parse errors
 
     if [[ $new_file =~ ^navigators ]]; then
