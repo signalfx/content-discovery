@@ -37,6 +37,9 @@ while read file; do
     if [[ $file =~ ^navigators ]]; then
       id=$(jq -r '.navigatorExport.navigator.id' "$file")
       id_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.navigatorExport.navigator.id')
+      # get the uiModel.id from the current version and the previous version in git
+      navigator_code=$(jq -r '.navigatorExport.navigator.uiModel.id' "$file")
+      navigator_code_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.navigatorExport.navigator.uiModel.id')
     elif [[ $file =~ ^group ]]; then
       id=$(jq -r '.groupExport.group.id' "$file")
       id_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.groupExport.group.id')
@@ -52,6 +55,10 @@ while read file; do
       echo
       echo "  ERROR: Id has changed in $file: \"$id\" (previous id: \"$id_prev\"); navigator/group/detector ids should be immutable. Please correct."
       VALIDATION_FAILED=true
+    # for navigators, check if the uiModel.id has changed
+    elif [ "$navigator_code" != "$navigator_code_prev" ]; then
+      echo
+      echo "  ERROR: uiModel.id has changed in $file: \"$navigator_code\" (previous id: \"$navigator_code_prev\"); navigator uiModel.id should be immutable. Please correct."
     else
       echo " ... success"
     fi
@@ -64,6 +71,41 @@ while read file; do
     ;;
   esac
 done < <(git diff $DIFF_BRANCH --name-only --diff-filter=M | grep -E "^($CONTENT_DIRECTORIES)/") # get paths of modified files only
+
+# go through newly added git files
+while read new_file; do
+
+  # only run on json files
+  extension=${new_file: -5}
+  case $extension in
+  .json)
+    echo -n "validating $new_file "
+
+    set -e # fail if any json parse errors
+
+    if [[ $new_file =~ ^navigators ]]; then
+      navigator_code=$(jq -r '.navigatorExport.navigator.uiModel.id' "$new_file")
+    fi
+
+    set +e
+
+    # for navigators, check if the uiModel.id is null/empty
+    if [[ $new_file =~ ^navigators ]] && ([ "$navigator_code" = "null" ] || [ "$navigator_code" = "" ]); then
+      echo
+      echo "  ERROR: new navigator in $new_file has null or empty uiModel.id. Please correct."
+      VALIDATION_FAILED=true
+    else
+      echo " ... success"
+    fi
+
+    ;;
+
+  *)
+    # ignore any non-json files
+    echo "ignoring: $new_file "
+    ;;
+  esac
+done < <(git diff $DIFF_BRANCH --name-only --diff-filter=A | grep -E "^($CONTENT_DIRECTORIES)/") # get paths of new files only
 
 if [ $VALIDATION_FAILED == true ]; then
   echo
