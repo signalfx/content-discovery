@@ -1946,7 +1946,7 @@
       "options" : {
         "groupBy" : [ "k8s.deployment.name" ],
         "groupBySort" : "Descending",
-        "hideMissingValues" : false,
+        "hideMissingValues" : true,
         "legendOptions" : {
           "fields" : [ {
             "enabled" : false,
@@ -2009,6 +2009,18 @@
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
+          "displayName" : "Desired pods",
+          "label" : "D",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Available pods",
+          "label" : "E",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
           "displayName" : "Mismatch",
           "label" : "C",
           "valuePrefix" : "",
@@ -2016,7 +2028,7 @@
           "valueUnit" : null
         } ],
         "refreshInterval" : 5000,
-        "sortBy" : "-Miss match",
+        "sortBy" : "",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -2027,7 +2039,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.deployment.desired').sum(by=['k8s.deployment.name']).publish(label='A')\nB = data('k8s.deployment.available').sum(by=['k8s.deployment.name']).publish(label='B')\nC = (A-B).above(0, inclusive=True).sum(by=['k8s.deployment.name']).publish(label='C')",
+      "programText" : "A = data('k8s.deployment.desired').sum(by=['k8s.deployment.name']).publish(label='A', enable=False)\nB = data('k8s.deployment.available').sum(by=['k8s.deployment.name']).publish(label='B', enable=False)\nD = ((A-C)+C).publish(label='D')\nE = ((B-C)+C).publish(label='E')\nC = (A-B).above(0).sum(by=['k8s.deployment.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -15831,7 +15843,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 104552580,
+  "hashCode" : -1575569988,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
