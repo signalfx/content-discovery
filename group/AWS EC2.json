@@ -1693,28 +1693,31 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Percent of disk used on volume. Mount point | AWSUniqueId",
       "id" : "EybTWaUAgAA",
       "importOf" : "EyPoGHVAIAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Disk utilization %",
       "options" : {
-        "colorBy" : "Scale",
-        "colorScale" : null,
-        "colorScale2" : [ {
-          "gt" : 0.0,
-          "gte" : null,
-          "lt" : null,
-          "lte" : null,
-          "paletteIndex" : 1
-        }, {
-          "gt" : null,
-          "gte" : null,
-          "lt" : null,
-          "lte" : 0.0,
-          "paletteIndex" : 16
-        } ],
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : true,
+            "property" : "mountpoint"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          } ]
+        },
         "maximumPrecision" : 4,
         "noDataOptions" : {
           "linkText" : "Get started with the OpenTelemetry Collector",
@@ -1738,19 +1741,18 @@
           "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "None",
-        "showSparkLine" : false,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "timestampHidden" : false,
-        "type" : "SingleValue",
+        "type" : "List",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.utilization', filter=filter('cloud.platform', 'aws_ec2')).publish(label='A')\nAB = alerts(autodetect_id='F6cykK5AYAA').publish(label='Autodetect alerts')",
+      "programText" : "A = data('disk.utilization', filter=filter('cloud.platform', 'aws_ec2')).mean(by=['mountpoint', 'AWSUniqueId']).publish(label='A')\nAB = alerts(autodetect_id='F6cykK5AYAA').publish(label='Autodetect alerts')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -5229,9 +5231,9 @@
         } ],
         "groupBy" : [ "aws_availability_zone" ],
         "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Follow this - https://docs.splunk.com/observability/en/gdi/get-data-in/connect/aws/aws-troubleshooting.html#status-check-metrics-are-missing"
+          "linkText" : "Follow this",
+          "linkUrl" : "https://docs.splunk.com/observability/en/gdi/get-data-in/connect/aws/aws-troubleshooting.html#status-check-metrics-are-missing",
+          "noDataMessage" : null
         },
         "programOptions" : {
           "disableSampling" : false,
@@ -5240,19 +5242,19 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "A",
+          "displayName" : "Status check failed system",
           "label" : "A",
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
-          "displayName" : "B",
+          "displayName" : "Status check failed instance",
           "label" : "B",
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
-          "displayName" : "C",
+          "displayName" : "Status check",
           "label" : "C",
           "valuePrefix" : "",
           "valueSuffix" : "",
@@ -5521,6 +5523,133 @@
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Percent of disk space utilized on all volumes on active hosts with agent installed. Instance id | Host",
+      "id" : "GHZ-PZUAcAE",
+      "importOf" : "EyPoGHVAIAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Disk summary utilization (%)",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale2" : null,
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "aws_instance_id"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : "Get started with the OpenTelemetry Collector",
+          "linkUrl" : "https://quickdraw.splunk.com/redirect/?product=Observability&location=awsec2.dashboard&version=current",
+          "noDataMessage" : "No active metrics found. This chart requires the OpenTelemetry collector to be installed on your EC2 instances."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Disk summary utilization",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Sparkline",
+        "sortBy" : "-value",
+        "time" : {
+          "range" : 3600000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('disk.summary_utilization', filter=filter('cloud.platform', 'aws_ec2')).mean(by=['host.name', 'AWSUniqueId']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Percent of disk space utilized on all volumes on active hosts with agent installed.",
+      "id" : "GHZ-zttAcAA",
+      "importOf" : "EyPoGHVAIAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Disk summary utilization (%)",
+      "options" : {
+        "colorBy" : "Dimension",
+        "colorScale" : null,
+        "colorScale2" : null,
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : "Get started with the OpenTelemetry Collector",
+          "linkUrl" : "https://quickdraw.splunk.com/redirect/?product=Observability&location=awsec2.dashboard&version=current",
+          "noDataMessage" : "No active metrics found. This chart requires the OpenTelemetry collector to be installed on your EC2 instances."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Disk summary utilization",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "None",
+        "showSparkLine" : false,
+        "time" : {
+          "range" : 3600000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "timestampHidden" : false,
+        "type" : "SingleValue",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('disk.summary_utilization', filter=filter('cloud.platform', 'aws_ec2')).mean(by=['host.name', 'AWSUniqueId']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : null
+    }
   } ],
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
@@ -5613,43 +5742,49 @@
         "width" : 3
       }, {
         "chartId" : "EybTarcAgAA",
-        "column" : 8,
+        "column" : 9,
         "height" : 1,
         "row" : 4,
-        "width" : 4
+        "width" : 3
+      }, {
+        "chartId" : "GHZ-PZUAcAE",
+        "column" : 0,
+        "height" : 2,
+        "row" : 4,
+        "width" : 5
       }, {
         "chartId" : "EybTbwuAcAA",
-        "column" : 4,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "EybTci5AgAA",
-        "column" : 0,
+        "column" : 5,
         "height" : 1,
         "row" : 4,
         "width" : 4
       }, {
         "chartId" : "EybTcWZAYAA",
-        "column" : 8,
+        "column" : 9,
+        "height" : 1,
+        "row" : 5,
+        "width" : 3
+      }, {
+        "chartId" : "EybTbQpAYAA",
+        "column" : 5,
         "height" : 1,
         "row" : 5,
         "width" : 4
       }, {
-        "chartId" : "EybTbQpAYAA",
-        "column" : 4,
+        "chartId" : "EybTci5AgAA",
+        "column" : 0,
         "height" : 1,
-        "row" : 5,
+        "row" : 6,
         "width" : 4
       }, {
         "chartId" : "EybTZtNAcAA",
-        "column" : 0,
+        "column" : 8,
         "height" : 1,
-        "row" : 5,
+        "row" : 6,
         "width" : 4
       }, {
         "chartId" : "EybTZNYAgAA",
-        "column" : 0,
+        "column" : 4,
         "height" : 1,
         "row" : 6,
         "width" : 4
@@ -5697,7 +5832,7 @@
         "row" : 0,
         "width" : 3
       }, {
-        "chartId" : "EybTWaUAgAA",
+        "chartId" : "GHZ-zttAcAA",
         "column" : 6,
         "height" : 1,
         "row" : 0,
@@ -5709,6 +5844,12 @@
         "row" : 0,
         "width" : 3
       }, {
+        "chartId" : "EybTWaUAgAA",
+        "column" : 6,
+        "height" : 1,
+        "row" : 1,
+        "width" : 6
+      }, {
         "chartId" : "EybTXCGAYAA",
         "column" : 0,
         "height" : 1,
@@ -5718,7 +5859,7 @@
         "chartId" : "EybTXEcAcAA",
         "column" : 6,
         "height" : 1,
-        "row" : 1,
+        "row" : 2,
         "width" : 6
       }, {
         "chartId" : "EybTWbKAYAA",
@@ -5730,7 +5871,7 @@
         "chartId" : "EybTXJhAcAQ",
         "column" : 6,
         "height" : 1,
-        "row" : 2,
+        "row" : 3,
         "width" : 6
       }, {
         "chartId" : "EybTW7IAcAA",
@@ -5742,7 +5883,7 @@
         "chartId" : "EybTXFuAgAA",
         "column" : 6,
         "height" : 1,
-        "row" : 3,
+        "row" : 4,
         "width" : 6
       }, {
         "chartId" : "EybTXJDAYAI",
@@ -5754,7 +5895,7 @@
         "chartId" : "EybTWm6AgAA",
         "column" : 6,
         "height" : 1,
-        "row" : 4,
+        "row" : 5,
         "width" : 6
       }, {
         "chartId" : "EybTWcbAcAA",
@@ -5766,7 +5907,7 @@
         "chartId" : "EybTWquAcAU",
         "column" : 6,
         "height" : 1,
-        "row" : 5,
+        "row" : 6,
         "width" : 6
       }, {
         "chartId" : "EybTWwQAgAA",
@@ -6110,7 +6251,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -2128019374,
+  "hashCode" : -1601478839,
   "id" : "DiVWVMuAgAE",
   "modelVersion" : 1,
   "packageType" : "GROUP"
