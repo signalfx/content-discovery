@@ -1,261 +1,347 @@
 {
-  "hashCode" : 1335687712,
-  "id" : "DiVVN4WAgAA",
-  "modelVersion" : 1,
-  "navigatorExport" : {
-    "navigator" : {
-      "aggregateDashboards" : [ "EO1EXw_AgAA", "FzS2w-6AgAA" ],
-      "connectedCategory" : null,
-      "created" : 0,
-      "creator" : null,
-      "defaultGroupBy" : null,
-      "description" : "",
-      "id" : "DiVVN4WAgAA",
-      "idDisplayName" : null,
-      "importQualifiers" : [ {
-        "filters" : [ {
-          "not" : false,
-          "property" : "sf_key",
-          "values" : [ "FunctionName" ]
-        } ],
-        "metric" : "Invocations"
-      }, {
-        "filters" : [ {
-          "not" : false,
-          "property" : "sf_key",
-          "values" : [ "FunctionName" ]
-        } ],
-        "metric" : "Errors"
-      }, {
-        "filters" : [ {
-          "not" : false,
-          "property" : "sf_key",
-          "values" : [ "FunctionName" ]
-        } ],
-        "metric" : "Throttles"
-      }, {
-        "filters" : [ {
-          "not" : false,
-          "property" : "sf_key",
-          "values" : [ "aws_function_name" ]
-        } ],
-        "metric" : "function.invocations"
-      } ],
-      "instanceDashboards" : [ "EO1EfQiAcAA" ],
-      "instanceDisplayText" : null,
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Lambda functions",
-      "navigatorCategory" : "Amazon Web Services",
-      "navigatorCategoryDisplayName" : "Amazon Web Services",
-      "navigatorCategoryGroupDisplayName" : "Public Clouds",
-      "navigatorCategoryInstancesName" : "service",
-      "navigatorType" : "list",
-      "ownerScope" : "splunk",
-      "relationships" : [ ],
-      "sites" : "o11y",
-      "systemTypes" : [ ],
-      "uiModel" : {
-        "alertQuery" : "_exists_:aws_function_name",
-        "alwaysGroupBy" : "aws_function_name",
-        "category" : "Amazon Web Services",
-        "categoryPriority" : 0,
-        "discoveryQuery" : [ ],
-        "displayName" : "Lambda functions",
-        "filterProperties" : null,
-        "id" : "lambda",
-        "idName" : "Function",
-        "idProperties" : [ {
-          "displayName" : "FunctionName",
-          "id" : "FunctionName"
-        }, {
-          "displayName" : "lambda_arn",
-          "id" : "lambda_arn"
-        } ],
-        "idTemplate" : "{{aws_function_name}} | {{aws_function_version}} | {{aws_region}} | {{aws_account_id}}",
-        "listColumns" : [ {
-          "aggregate" : null,
-          "displayName" : "Function",
-          "format" : null,
-          "metric" : null,
-          "property" : "id",
-          "sortable" : null
-        }, {
-          "aggregate" : "sum",
-          "displayName" : "Invocations",
-          "format" : "Number",
-          "metric" : "Invocations",
-          "property" : null,
-          "sortable" : null
-        }, {
-          "aggregate" : "sum",
-          "displayName" : "Throttles",
-          "format" : "Number",
-          "metric" : "Throttles",
-          "property" : null,
-          "sortable" : null
-        }, {
-          "aggregate" : "sum",
-          "displayName" : "Errors",
-          "format" : "Number",
-          "metric" : "Errors",
-          "property" : null,
-          "sortable" : null
-        }, {
-          "aggregate" : "mean",
-          "displayName" : "Duration (avg ms)",
-          "format" : "Number",
-          "metric" : "Duration",
-          "property" : null,
-          "sortable" : null
-        }, {
-          "aggregate" : "sum",
-          "displayName" : "Cold starts",
-          "format" : "Number",
-          "metric" : "Cold starts",
-          "property" : null,
-          "sortable" : null
-        } ],
-        "metrics" : [ {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#6bd37e", "#acef7f", "#e2ed6a", "#eac24b", "#ea1849" ]
-          },
-          "description" : "",
-          "displayName" : "Invocations",
-          "id" : "Invocations",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "invocations_from_cw = data(\"Invocations\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\ninvocations_from_wrapper = data(\"function.invocations\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nINVOCATIONS = union(invocations_from_cw, invocations_from_wrapper)",
-            "varName" : "INVOCATIONS"
-          },
-          "metricSelectors" : [ "Invocations" ],
-          "type" : "metric",
-          "valueFormat" : "Number",
-          "valueLabel" : "",
-          "valueType" : null
-        }, {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#6bd37e", "#acef7f", "#e2ed6a", "#eac24b", "#ea1849" ]
-          },
-          "description" : "",
-          "displayName" : "Throttles",
-          "id" : "Throttles",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "THROTTLES = data(\"Throttles\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\", \"aws_function_memory_size\", \"aws_function_runtime\", \"aws_function_timeout\", \"FunctionName\"]).sum(over=\"{{{timeRange}}}\")",
-            "varName" : "THROTTLES"
-          },
-          "metricSelectors" : [ "Throttles" ],
-          "type" : "metric",
-          "valueFormat" : "Number",
-          "valueLabel" : "",
-          "valueType" : null
-        }, {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#6bd37e", "#acef7f", "#e2ed6a", "#eac24b", "#ea1849" ]
-          },
-          "description" : "",
-          "displayName" : "Errors",
-          "id" : "Errors",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "errors_from_cw = data(\"Errors\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nerrors_from_wrapper = data(\"function.errors\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nERRORS = union(errors_from_cw, errors_from_wrapper)",
-            "varName" : "ERRORS"
-          },
-          "metricSelectors" : [ "Errors" ],
-          "type" : "metric",
-          "valueFormat" : "Number",
-          "valueLabel" : "",
-          "valueType" : null
-        }, {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#6bd37e", "#acef7f", "#e2ed6a", "#eac24b", "#ea1849" ]
-          },
-          "description" : "",
-          "displayName" : "Duration",
-          "id" : "Duration",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "duration_from_cw = data(\"Duration\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).mean(over=\"{{{timeRange}}}\")\nduration_from_wrapper = data(\"function.duration\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nDURATION = union(duration_from_cw, duration_from_wrapper)",
-            "varName" : "DURATION"
-          },
-          "metricSelectors" : [ "Duration" ],
-          "type" : "metric",
-          "valueFormat" : "Number",
-          "valueLabel" : "",
-          "valueType" : null
-        }, {
-          "coloring" : {
-            "limits" : null,
-            "maxValue" : null,
-            "method" : "quantile",
-            "minValue" : 0,
-            "range" : [ "#6bd37e", "#acef7f", "#e2ed6a", "#eac24b", "#ea1849" ]
-          },
-          "description" : "",
-          "displayName" : "Cold starts",
-          "id" : "function.cold_starts",
-          "job" : {
-            "filters" : [ ],
-            "resolution" : 300000,
-            "template" : "COLD_STARTS = data(\"function.cold_starts\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\", \"lambda_arn\"]).sum(over=\"{{{timeRange}}}\")",
-            "varName" : "COLD_STARTS"
-          },
-          "metricSelectors" : [ "function.cold_starts" ],
-          "type" : "metric",
-          "valueFormat" : "Number",
-          "valueLabel" : "",
-          "valueType" : null
-        } ],
-        "mtsQuery" : null,
-        "o11yMetricName" : "Active functions",
-        "o11yMetricUnit" : null,
-        "o11yProductName" : "Lambda functions",
-        "o11ySignalflowTemplate" : "A = data('Duration', filter=filter('namespace', 'AWS/Lambda') and filter('stat', 'mean') and filter('Resource', '*'), rollup='count', extrapolation='zero').count(by=['Resource']).count().publish(label='A')",
-        "o11yTrendDisplayMode" : null,
-        "propertyColumns" : null,
-        "requiredProperties" : [ ],
-        "singleHostSystemDashboardName" : null,
-        "systemDashboardName" : null,
-        "systemDashboardPrefix" : "Lambda (AWS)",
-        "tooltipKeyList" : [ ],
-        "type" : "list",
-        "unreleased" : false
-      },
-      "visualizations" : [ {
-        "configuration" : {
-          "actions" : {
-            "showColorBy" : false,
-            "showGroupBy" : true,
-            "showNavigatorSettings" : false,
-            "showOutliers" : false
-          }
+  "hashCode": 258913112,
+  "id": "DiVVN4WAgAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "EO1EXw_AgAA",
+        "FzS2w-6AgAA"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "DiVVN4WAgAA",
+      "idDisplayName": null,
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "FunctionName"
+              ]
+            }
+          ],
+          "metric": "Invocations"
         },
-        "defaultVisualization" : true,
-        "type" : "list",
-        "views" : [ "aggregate" ]
-      } ]
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "FunctionName"
+              ]
+            }
+          ],
+          "metric": "Errors"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "FunctionName"
+              ]
+            }
+          ],
+          "metric": "Throttles"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "aws_function_name"
+              ]
+            }
+          ],
+          "metric": "function.invocations"
+        }
+      ],
+      "instanceDashboards": [
+        "EO1EfQiAcAA"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Lambda functions",
+      "navigatorCategory": "Amazon Web Services",
+      "navigatorCategoryDisplayName": "Amazon Web Services",
+      "navigatorCategoryGroupDisplayName": "Public Clouds",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "list",
+      "ownerScope": "splunk",
+      "relationships": [],
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": "_exists_:aws_function_name",
+        "alwaysGroupBy": "aws_function_name",
+        "category": "Amazon Web Services",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "Lambda functions",
+        "filterProperties": null,
+        "id": "lambda",
+        "idName": "Function",
+        "idProperties": [
+          {
+            "displayName": "FunctionName",
+            "id": "FunctionName"
+          },
+          {
+            "displayName": "lambda_arn",
+            "id": "lambda_arn"
+          }
+        ],
+        "idTemplate": "{{aws_function_name}} | {{aws_function_version}} | {{aws_region}} | {{aws_account_id}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Function",
+            "format": null,
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "Invocations",
+            "format": "Number",
+            "metric": "Invocations",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "Throttles",
+            "format": "Number",
+            "metric": "Throttles",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "Errors",
+            "format": "Number",
+            "metric": "Errors",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": "mean",
+            "displayName": "Duration (avg ms)",
+            "format": "Number",
+            "metric": "Duration",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "Cold starts",
+            "format": "Number",
+            "metric": "Cold starts",
+            "property": null,
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Invocations",
+            "id": "Invocations",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "invocations_from_cw = data(\"Invocations\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\ninvocations_from_wrapper = data(\"function.invocations\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nINVOCATIONS = union(invocations_from_cw, invocations_from_wrapper)",
+              "varName": "INVOCATIONS"
+            },
+            "metricSelectors": [
+              "Invocations"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Throttles",
+            "id": "Throttles",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "THROTTLES = data(\"Throttles\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\", \"aws_function_memory_size\", \"aws_function_runtime\", \"aws_function_timeout\", \"FunctionName\"]).sum(over=\"{{{timeRange}}}\")",
+              "varName": "THROTTLES"
+            },
+            "metricSelectors": [
+              "Throttles"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Errors",
+            "id": "Errors",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "errors_from_cw = data(\"Errors\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nerrors_from_wrapper = data(\"function.errors\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nERRORS = union(errors_from_cw, errors_from_wrapper)",
+              "varName": "ERRORS"
+            },
+            "metricSelectors": [
+              "Errors"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Duration",
+            "id": "Duration",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "duration_from_cw = data(\"Duration\", filter=filter(\"FunctionName\", \"*\") and filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).mean(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).mean(over=\"{{{timeRange}}}\")\nduration_from_wrapper = data(\"function.duration\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\"]).sum(over=\"{{{timeRange}}}\")\nDURATION = union(duration_from_cw, duration_from_wrapper)",
+              "varName": "DURATION"
+            },
+            "metricSelectors": [
+              "Duration"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Cold starts",
+            "id": "function.cold_starts",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "COLD_STARTS = data(\"function.cold_starts\", filter=filter(\"lambda_arn\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"null\", maxExtrapolations=-1).sum(by=[\"aws_function_name\", \"aws_function_version\", \"aws_region\", \"aws_account_id\", \"lambda_arn\"]).sum(over=\"{{{timeRange}}}\")",
+              "varName": "COLD_STARTS"
+            },
+            "metricSelectors": [
+              "function.cold_starts"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Active functions",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Lambda functions",
+        "o11ySignalflowTemplate": "A = data('Duration', filter=filter('namespace', 'AWS/Lambda') and filter('stat', 'mean') and filter('Resource', '*'), rollup='count', extrapolation='zero').count(by=['Resource']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "requiredProperties": [],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": "Lambda (AWS)",
+        "tooltipKeyList": [],
+        "type": "list",
+        "unreleased": false
+      },
+      "visualizations": [
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": false,
+              "showGroupBy": true,
+              "showNavigatorSettings": false,
+              "showOutliers": false
+            }
+          },
+          "defaultVisualization": true,
+          "type": "list",
+          "views": [
+            "aggregate"
+          ]
+        }
+      ]
     }
   },
-  "packageType" : "NAVIGATOR"
+  "packageType": "NAVIGATOR"
 }
