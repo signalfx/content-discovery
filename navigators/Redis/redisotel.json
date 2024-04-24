@@ -1,0 +1,294 @@
+{
+  "hashCode": 1938027304,
+  "id": "GL1EoW7AgAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "GHZREgQAgAo"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "GL1EoW7AgAA",
+      "idDisplayName": "{{host.name}}",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "redis.version",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "host.name",
+              "values": []
+            }
+          ],
+          "metric": "redis.keyspace.hits"
+        }
+      ],
+      "instanceDashboards": [
+        "GHZtsoiAcBE"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Redis instances(OTEL)",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": "Others",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "splunk",
+      "relationships": [],
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": "_exists_:redis.version",
+        "category": "Datastores",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "Redis instances(OTEL)",
+        "filterProperties": null,
+        "id": "redisinstanceotel",
+        "idName": "Host",
+        "idTemplate": "{{host.name}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Host name",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of commands processed per second. Darker colors indicate higher relative values.",
+            "displayName": "# Commands",
+            "id": "redisinstances_commands_count",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_COMMANDS = data(\"redis.commands\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_COMMANDS"
+            },
+            "metricSelectors": [
+              "redis.commands"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Commands",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the current number of evicted keys due to max memory limit. Darker colors indicate higher relative values.",
+            "displayName": "# Keys evicted",
+            "id": "redisinstances_keys_evicted",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_KEYS_EVICTED = data(\"redis.keys.evicted\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_KEYS_EVICTED"
+            },
+            "metricSelectors": [
+              "redis.keys.evicted"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Keys evicted",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the current redis cache hit ratio of hosts. Darker colors indicate higher relative values.",
+            "displayName": "Hit ratio (%)",
+            "id": "redisinstances_hit_ratio",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_HIT = data(\"redis.keyspace.hits\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=[\"host.name\"])\nREDIS_MISS = data(\"redis.keyspace.misses\", rollup=\"sum\"){{#filter}}, filter={{{filter}}}{{/filter}}.sum(by=[\"host.name\"])\nREDIS_HIT_RATIO = (((REDIS_HIT+1)/(REDIS_HIT+1+REDIS_MISS))*100)",
+              "varName": "REDIS_HIT_RATIO"
+            },
+            "metricSelectors": [
+              "redis.keyspace.hits",
+              "redis.keyspace.misses"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Hit ratio",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of bytes used by host. Darker colors indicate higher relative values.",
+            "displayName": "Memory used (bytes)",
+            "id": "redisinstances_memory_used",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_MEMORY_USED = data(\"redis.memory.used\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_MEMORY_USED"
+            },
+            "metricSelectors": [
+              "redis.memory.used"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Memory used",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of bytes read from the network. Darker colors indicate higher relative values.",
+            "displayName": "Network byte read (bytes)",
+            "id": "redisinstances_network_read",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_NETWORK_READ = data(\"redis.net.input\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_NETWORK_READ"
+            },
+            "metricSelectors": [
+              "redis.net.input"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Network byte read",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of bytes written to the network. Darker colors indicate higher relative values.",
+            "displayName": "Network byte write (bytes)",
+            "id": "redisinstances_network_write",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_NETWORK_WRITE = data(\"redis.net.output\", filter=filter(\"redis.version\", \"*\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_NETWORK_WRITE"
+            },
+            "metricSelectors": [
+              "redis.net.output"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Network byte write",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Active hosts",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Redis instances(OTEL)",
+        "o11ySignalflowTemplate": "A = data(\"redis.uptime\").sum(by=[\"host.name\"]).count().publish(label=\"A\")",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": []
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
