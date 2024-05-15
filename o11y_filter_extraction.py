@@ -11,12 +11,10 @@ def collect_json_files(path):
         """
         dest_list = []
         if path == "navigators/AWS/":
-            print(os.walk(path))
             for dir, _, files in os.walk(path):
                 for filename in files:
                     if filename.endswith('.json'):
                         dest_list.append(os.path.abspath(os.path.join(dir, filename)))
-        print(dest_list)
         return dest_list
                                 
 
@@ -26,6 +24,8 @@ def extract_filters(navigator_paths):
     """
 
     filter_file = {}
+    multiple_signal_flow_dict = {}
+    navigator_file_name = set()
     for navigator_path in navigator_paths:
         data = {}
         with open(navigator_path, 'r') as file:
@@ -34,7 +34,8 @@ def extract_filters(navigator_paths):
                 nav_json = data['navigatorExport']['navigator']
                 metric_list = nav_json['uiModel']['metrics']
                 filter_array_object= {}
-
+                multiple_signal_flow = []
+                
                 for index, metric in enumerate(metric_list):
                     template = metric['job']['template']
                     varname = metric['job']['varName']
@@ -46,7 +47,7 @@ def extract_filters(navigator_paths):
                         matches = re.findall(filters_regex, template)
                         filter_object_array = []
                         for match in matches:
-                            filter_exists = "false"
+                            filter_exists = False
                             filters = re.findall(regex, match)
                             if filters:
                                 split_matches = [filter.strip().replace("'", '') for filter in filters[0].split(',')]
@@ -64,7 +65,7 @@ def extract_filters(navigator_paths):
                                 propertyValue = split_matches[1].strip().replace("\"", '')
 
                             if match.count("not"):
-                                filter_exists = "true"
+                                filter_exists = True
 
                             filter_object_array.append({
                                 "type": "property",
@@ -82,12 +83,16 @@ def extract_filters(navigator_paths):
                             updated_template = re.sub(r"data\(([^,]+)", "data("+updated_template_regex[0]+"{{#filter}}", updated_template)
                         filter_array_object[varname] = {"template": updated_template, "original_template": template,  "filters": filter_object_array}
 
+                        if not data['navigatorExport']['navigator']['uiModel']['metrics'][index]['job']['filters']:
+                            data['navigatorExport']['navigator']['uiModel']['metrics'][index]['job']['template'] = updated_template
+                            data['navigatorExport']['navigator']['uiModel']['metrics'][index]['job']['filters'] = filter_object_array
+                            navigator_file_name.add(navigator_path)
 
-                        data['navigatorExport']['navigator']['uiModel']['metrics'][index]['job']['template'] = updated_template
-                        data['navigatorExport']['navigator']['uiModel']['metrics'][index]['job']['filters'] = filter_object_array
 
                     else:
-                        pass
+                        multiple_signal_flow.append(data['navigatorExport']['navigator']['uiModel']['metrics'][index]["id"])
+
+                        
                         # matches = re.findall(filters_regex, template)
                         # filter_object_array = []
                         # filter_string = "filter=.*?{{\/filter}}.*?"
@@ -151,18 +156,27 @@ def extract_filters(navigator_paths):
 
                         # data['navigatorExport']['navigator']['uiModel']['metrics'][index]['job']['template'] = updated_template
                         # data['navigatorExport']['navigator']['uiModel']['metrics'][index]['job']['filters'] = filter_object_array
-                                
+
+                if multiple_signal_flow:
+                    multiple_signal_flow_dict[navigator_path] = multiple_signal_flow
 
                                 
                             
 
                 filter_file[navigator_path] = filter_array_object
+
+        
         with open(navigator_path, 'w') as file:
             json.dump(data, file, indent = 2)
+        with open("multiple_signal_flow.json", 'w') as file:
+            json.dump(multiple_signal_flow_dict, file, indent = 2)
+        with open("navigator_file.json", "w") as file:
+            json.dump({"paths": list(navigator_file_name)}, file, indent=2)
 
     # with open("data.json", "w") as json_file:
     #     json.dump(filter_file, json_file, indent = 2)
 
 
 if __name__ == "__main__":
+    
     extract_filters(collect_json_files('navigators/AWS/'))
