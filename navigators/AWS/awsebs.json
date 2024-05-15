@@ -1,5 +1,5 @@
 {
-  "hashCode": 1620654677,
+  "hashCode": 257156976,
   "id": "DiVU_CpAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -91,9 +91,28 @@
             "displayName": "Total IOPS",
             "id": "aws.ebs.totaliops",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/EBS",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "VolumeId",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 300000,
-              "template": "EBS_READOPS1 = data(\"VolumeReadOps\", filter=filter(\"namespace\", \"AWS/EBS\") and filter(\"stat\", \"sum\") and filter(\"VolumeId\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"VolumeId\"]).scale(60)\nEBS_WRITEOPS1 = data(\"VolumeWriteOps\", filter=filter(\"namespace\", \"AWS/EBS\") and filter(\"stat\", \"sum\") and filter(\"VolumeId\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"VolumeId\"]).scale(60)\nTOTAL_IOPS = (EBS_READOPS1 + EBS_WRITEOPS1)",
+              "template": "EBS_READOPS1 = data(\"VolumeReadOps\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"VolumeId\"]).scale(60)\nEBS_WRITEOPS1 = data(\"VolumeWriteOps\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"VolumeId\"]).scale(60)\nTOTAL_IOPS = (EBS_READOPS1 + EBS_WRITEOPS1)",
               "varName": "TOTAL_IOPS"
             },
             "metricSelectors": [

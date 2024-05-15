@@ -1,5 +1,5 @@
 {
-  "hashCode": -1191670651,
+  "hashCode": -453588296,
   "id": "DiVVE8tAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -293,9 +293,22 @@
             "displayName": "Consumed provisioned reads",
             "id": "aws.dynamodb.consumed_read_capacity",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 300000,
-              "template": "CONSUMED_READ_CAP = data(\"ConsumedReadCapacityUnits\", filter=filter(\"namespace\", \"AWS/DynamoDB\") and filter(\"stat\", \"sum\") and filter(\"TableName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nPROVISIONED_READ_CAP = data(\"ProvisionedReadCapacityUnits\", filter=filter(\"namespace\", \"AWS/DynamoDB\") and filter(\"stat\", \"mean\") and filter(\"TableName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nCONSUMED_PERCENT = (CONSUMED_READ_CAP / PROVISIONED_READ_CAP) * 100",
+              "template": "CONSUMED_READ_CAP = data(\"ConsumedReadCapacityUnits\", filter=filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nPROVISIONED_READ_CAP = data(\"ProvisionedReadCapacityUnits\", filter=filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nCONSUMED_PERCENT = (CONSUMED_READ_CAP / PROVISIONED_READ_CAP) * 100",
               "varName": "CONSUMED_PERCENT"
             },
             "metricSelectors": [
@@ -325,9 +338,22 @@
             "displayName": "Consumed provisioned writes",
             "id": "aws.dynamodb.consumed_write_capacity",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 300000,
-              "template": "CONSUMED_WRITE_CAP = data(\"ConsumedWriteCapacityUnits\", filter=filter(\"namespace\", \"AWS/DynamoDB\") and filter(\"stat\", \"sum\") and filter(\"TableName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nPROVISIONED_WRITE_CAP = data(\"ProvisionedWriteCapacityUnits\", filter=filter(\"namespace\", \"AWS/DynamoDB\") and filter(\"stat\", \"mean\") and filter(\"TableName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nCONSUMED_WRITE_PERCENT = (CONSUMED_WRITE_CAP / PROVISIONED_WRITE_CAP) * 100",
+              "template": "CONSUMED_WRITE_CAP = data(\"ConsumedWriteCapacityUnits\", filter=filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nPROVISIONED_WRITE_CAP = data(\"ProvisionedWriteCapacityUnits\", filter=filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nCONSUMED_WRITE_PERCENT = (CONSUMED_WRITE_CAP / PROVISIONED_WRITE_CAP) * 100",
               "varName": "CONSUMED_WRITE_PERCENT"
             },
             "metricSelectors": [

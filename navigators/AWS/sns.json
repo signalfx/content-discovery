@@ -1,5 +1,5 @@
 {
-  "hashCode": -363532967,
+  "hashCode": 1062944248,
   "id": "DiVVEqDAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -98,9 +98,28 @@
             "displayName": "Delivery success %",
             "id": "aws.sns.delivery_success_percent",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/SNS",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TopicName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 300000,
-              "template": "NOTIFICATIONS_DELIVERED1 = data(\"NumberOfNotificationsDelivered\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"sum\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TopicName\"])\nNOTIFICATIONS_FAILED1 = data(\"NumberOfNotificationsFailed\", filter=filter(\"namespace\", \"AWS/SNS\") and filter(\"stat\", \"sum\") and filter(\"TopicName\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TopicName\"])\nDELIVERY_SUCCESS = ((NOTIFICATIONS_DELIVERED1 / (NOTIFICATIONS_DELIVERED1 + NOTIFICATIONS_FAILED1)) * 100)",
+              "template": "NOTIFICATIONS_DELIVERED1 = data(\"NumberOfNotificationsDelivered\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TopicName\"])\nNOTIFICATIONS_FAILED1 = data(\"NumberOfNotificationsFailed\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TopicName\"])\nDELIVERY_SUCCESS = ((NOTIFICATIONS_DELIVERED1 / (NOTIFICATIONS_DELIVERED1 + NOTIFICATIONS_FAILED1)) * 100)",
               "varName": "DELIVERY_SUCCESS"
             },
             "metricSelectors": [

@@ -1,5 +1,5 @@
 {
-  "hashCode": 155870362,
+  "hashCode": -1820955924,
   "id": "FThcAVwAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -45,7 +45,7 @@
       "sites": "o11y",
       "systemTypes": [],
       "uiModel": {
-        "alertQuery": "namespace:\"AWS/KinesisAnalytics\"",
+        "alertQuery": "namespace:AWS/KinesisAnalytics",
         "category": "Amazon Web Services",
         "categoryPriority": 0,
         "discoveryQuery": [],
@@ -549,9 +549,22 @@
             "displayName": "Lambda delivery success rate (%)",
             "id": "kinesisanalytics_lambda_delivery_success_rate",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/KinesisAnalytics",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "DELIVERY_OK = data(\"LambdaDelivery.OkRecords\", filter= filter(\"namespace\",\"AWS/KinesisAnalytics\")and filter(\"stat\",\"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=\"Application\")\nDELIVERY_FAILED = data(\"LambdaDelivery.DeliveryFailedRecords\", filter= filter(\"namespace\",\"AWS/KinesisAnalytics\")and filter(\"stat\",\"sum\"){{#filter}} and{{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=\"Application\")\nRATE = (DELIVERY_OK/(DELIVERY_OK+DELIVERY_FAILED)) *100",
+              "template": "DELIVERY_OK = data(\"LambdaDelivery.OkRecords\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=\"Application\")\nDELIVERY_FAILED = data(\"LambdaDelivery.DeliveryFailedRecords\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=\"Application\")\nRATE = (DELIVERY_OK/(DELIVERY_OK+DELIVERY_FAILED)) *100",
               "varName": "RATE"
             },
             "metricSelectors": [

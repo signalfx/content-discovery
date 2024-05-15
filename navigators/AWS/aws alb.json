@@ -1,5 +1,5 @@
 {
-  "hashCode": 1074605276,
+  "hashCode": -1899741464,
   "id": "FWV48S9AYAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -96,9 +96,34 @@
             "displayName": "Unhealthy hosts (%)",
             "id": "awsalbinstances_unhealthy_hosts",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TargetGroup",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "HEALTHY = data(\"HealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nUNHEALTHY = data(\"UnHealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nPERCENTAGE =(UNHEALTHY/(HEALTHY +UNHEALTHY)).scale(100)",
+              "template": "HEALTHY = data(\"HealthyHostCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nUNHEALTHY = data(\"UnHealthyHostCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nPERCENTAGE =(UNHEALTHY/(HEALTHY +UNHEALTHY)).scale(100)",
               "varName": "PERCENTAGE"
             },
             "metricSelectors": [
