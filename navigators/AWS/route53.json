@@ -1,5 +1,5 @@
 {
-  "hashCode": 1623696738,
+  "hashCode": 817238523,
   "id": "Fa2B6n5AcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -101,9 +101,22 @@
             "displayName": "Healthcheck status",
             "id": "route53_healthcheck_status",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/Route53",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "lower",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "STATUS = data(\"HealthCheckStatus\", filter=filter(\"namespace\", \"AWS/Route53\") and filter(\"stat\", \"lower\") {{#filter}} and {{{filter}}}{{/filter}})",
+              "template": "STATUS = data(\"HealthCheckStatus\"{{#filter}}, filter={{{filter}}}{{/filter}})",
               "varName": "STATUS"
             },
             "metricSelectors": [
@@ -139,9 +152,22 @@
             "displayName": "Healthcheck health (%)",
             "id": "route53_healthcheck_health",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/Route53",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "HEALTH = data(\"HealthCheckPercentageHealthy\", filter=filter(\"namespace\", \"AWS/Route53\") and filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"HealthCheckId\"])",
+              "template": "HEALTH = data(\"HealthCheckPercentageHealthy\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"HealthCheckId\"])",
               "varName": "HEALTH"
             },
             "metricSelectors": [

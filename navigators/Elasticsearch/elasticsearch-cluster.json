@@ -1,5 +1,5 @@
 {
-  "hashCode": -901216690,
+  "hashCode": 474743088,
   "id": "FYQ84mRAcAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -43,9 +43,7 @@
       "ownerScope": "organization",
       "relationships": [],
       "sites": "o11y",
-      "systemTypes": [
-        "elasticsearch"
-      ],
+      "systemTypes": [],
       "uiModel": {
         "alertQuery": "_exists_:host.name AND _exists_:cluster AND plugin:elasticsearch",
         "category": "Datastores",
@@ -105,10 +103,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "ACTIVE_MERGES =data(\"*.indices.merges.current\" ,filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
+              "template": "ACTIVE_MERGES =data(\"*.indices.merges.current\" {{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
               "varName": "ACTIVE_MERGES"
             },
             "metricSelectors": [
@@ -149,10 +153,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "FILE_DESCRIPTOR = data(\"*.process.open_file_descriptors\",filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "FILE_DESCRIPTOR = data(\"*.process.open_file_descriptors\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "FILE_DESCRIPTOR"
             },
             "metricSelectors": [
@@ -193,10 +203,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "SEGMENTS =data(\"*.indices.segments.count\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "SEGMENTS =data(\"*.indices.segments.count\",filter=(not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "SEGMENTS"
             },
             "metricSelectors": [
@@ -237,10 +253,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "THREAD_POOL_REJECTION =data(\"*.thread_pool.rejected\",filter=filter('plugin', 'elasticsearch'){{#filter}} and {{{filter}}}{{/filter}}, rollup='rate', extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
+              "template": "THREAD_POOL_REJECTION =data(\"*.thread_pool.rejected\"{{#filter}},filter={{{filter}}}{{/filter}}, rollup='rate', extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
               "varName": "THREAD_POOL_REJECTION"
             },
             "metricSelectors": [
@@ -281,10 +303,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "A = data(\"*.indices.search.query-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB = data(\"*.indices.search.query-time\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC=(A).timeshift(\"5m\")\nD = (B).timeshift(\"5m\")\nAVERAGE_QUERY_LATENCY = ((B-D)/(A-C))",
+              "template": "A = data(\"*.indices.search.query-total\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB = data(\"*.indices.search.query-time\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC=(A).timeshift(\"5m\")\nD = (B).timeshift(\"5m\")\nAVERAGE_QUERY_LATENCY = ((B-D)/(A-C))",
               "varName": "AVERAGE_QUERY_LATENCY"
             },
             "metricSelectors": [
@@ -326,10 +354,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "CACHE_SIZE =data(\"*.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "CACHE_SIZE =data(\"*.indices.fielddata.memory-size\",filter=(not filter(\"aggregation\", '*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "CACHE_SIZE"
             },
             "metricSelectors": [
@@ -370,10 +404,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "A = data(\"*.indices.docs.count\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).mean()\nB = data(\"*.indices.docs.count\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).timeshift(\"1h\")\nDOC_GROWTH_RATE = ((A-B)*100/B).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "A = data(\"*.indices.docs.count\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).mean()\nB = data(\"*.indices.docs.count\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}},extrapolation=\"last_value\", maxExtrapolations=2).timeshift(\"1h\")\nDOC_GROWTH_RATE = ((A-B)*100/B).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "DOC_GROWTH_RATE"
             },
             "metricSelectors": [
@@ -414,10 +454,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "A=data(\"*.jvm.gc.time\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB=data(\"*.jvm.uptime\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC = (A).timeshift(\"1h\")\nD = (B).timeshift(\"1h\")\nGC_TIME = ((A-C)*100/(B-D))",
+              "template": "A=data(\"*.jvm.gc.time\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nB=data(\"*.jvm.uptime\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])\nC = (A).timeshift(\"1h\")\nD = (B).timeshift(\"1h\")\nGC_TIME = ((A-C)*100/(B-D))",
               "varName": "GC_TIME"
             },
             "metricSelectors": [
@@ -459,10 +505,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "INDEXING_REQUEST = data(\"*.indices.indexing.index-total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "INDEXING_REQUEST = data(\"*.indices.indexing.index-total\",(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "INDEXING_REQUEST"
             },
             "metricSelectors": [
@@ -503,10 +555,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "HEAP_MEMORY_USED =data(\"*.jvm.mem.heap-used\", filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "HEAP_MEMORY_USED =data(\"*.jvm.mem.heap-used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "HEAP_MEMORY_USED"
             },
             "metricSelectors": [
@@ -547,10 +605,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "MERGES =data(\"*.indices.merges.total\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='rate',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
+              "template": "MERGES =data(\"*.indices.merges.total\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='rate',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host.name\",\"cluster\"])",
               "varName": "MERGES"
             },
             "metricSelectors": [
@@ -591,10 +655,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "GET_REQUEST =data(\"*.indices.get.total\", filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
+              "template": "GET_REQUEST =data(\"*.indices.get.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host.name\",\"cluster\"])",
               "varName": "GET_REQUEST"
             },
             "metricSelectors": [

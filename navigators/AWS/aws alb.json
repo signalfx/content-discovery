@@ -1,5 +1,5 @@
 {
-  "hashCode": 100269571,
+  "hashCode": 1524788270,
   "id": "FWV48S9AYAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -96,9 +96,34 @@
             "displayName": "Unhealthy hosts (%)",
             "id": "awsalbinstances_unhealthy_hosts",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TargetGroup",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "HEALTHY = data(\"HealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nUNHEALTHY = data(\"UnHealthyHostCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nPERCENTAGE =(UNHEALTHY/(HEALTHY +UNHEALTHY)).scale(100)",
+              "template": "HEALTHY = data(\"HealthyHostCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nUNHEALTHY = data(\"UnHealthyHostCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"LoadBalancer\"])\nPERCENTAGE =(UNHEALTHY/(HEALTHY +UNHEALTHY)).scale(100)",
               "varName": "PERCENTAGE"
             },
             "metricSelectors": [
@@ -128,9 +153,28 @@
             "displayName": "# LCU usage",
             "id": "awsalbinstances_lcu_usage",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "LCU_USAGE = data(\"ConsumedLCUs\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\",\"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "LCU_USAGE = data(\"ConsumedLCUs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "LCU_USAGE"
             },
             "metricSelectors": [
@@ -159,9 +203,28 @@
             "displayName": "# Active connections",
             "id": "awsalbinstances_active_connections",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "ACTIVE_CONNECTIONS = data(\"ActiveConnectionCount\",filter=filter(\"stat\",\"sum\") and filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"AvailabilityZone\",\"*\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"latest\").sum(by=[\"LoadBalancer\"])",
+              "template": "ACTIVE_CONNECTIONS = data(\"ActiveConnectionCount\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"latest\").sum(by=[\"LoadBalancer\"])",
               "varName": "ACTIVE_CONNECTIONS"
             },
             "metricSelectors": [
@@ -190,9 +253,34 @@
             "displayName": "# Requests",
             "id": "awsalbinstances_requests",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TargetGroup",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "REQUESTS = data(\"RequestCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"TargetGroup\", \"*\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "REQUESTS = data(\"RequestCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "REQUESTS"
             },
             "metricSelectors": [
@@ -221,9 +309,28 @@
             "displayName": "# Client TLS negotiation errors",
             "id": "awsalbinstances_client_tls_negotiation_errors",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 180000,
-              "template": "TLS_ERR = data(\"ClientTLSNegotiationErrorCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "TLS_ERR = data(\"ClientTLSNegotiationErrorCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "TLS_ERR"
             },
             "metricSelectors": [
@@ -252,9 +359,28 @@
             "displayName": "# HTTP client errors",
             "id": "awsalbinstances_http_client_errors",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "HTTP_ERR = data(\"HTTPCode_ELB*XX*\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "HTTP_ERR = data(\"HTTPCode_ELB*XX*\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "HTTP_ERR"
             },
             "metricSelectors": [
@@ -283,9 +409,34 @@
             "displayName": "# HTTP target response codes",
             "id": "awsalbinstances_http_target_response_codes",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TargetGroup",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "HTTP_TARGET_ERR = data(\"HTTPCode_T*\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "HTTP_TARGET_ERR = data(\"HTTPCode_T*\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "HTTP_TARGET_ERR"
             },
             "metricSelectors": [
@@ -314,9 +465,34 @@
             "displayName": "# Target connection errors",
             "id": "awsalbinstances_target_connection_errors",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TargetGroup",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "ERRORS = data(\"TargetConnectionErrorCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "ERRORS = data(\"TargetConnectionErrorCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "ERRORS"
             },
             "metricSelectors": [
@@ -345,9 +521,34 @@
             "displayName": "# Target TLS negotiation errors",
             "id": "awsalbinstances_target_tls_negotiation_errors",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TargetGroup",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 180000,
-              "template": "NEGO_ERR = data(\"TargetTLSNegotiationErrorCount\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"sum\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"LoadBalancer\"])",
+              "template": "NEGO_ERR = data(\"TargetTLSNegotiationErrorCount\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"LoadBalancer\"])",
               "varName": "NEGO_ERR"
             },
             "metricSelectors": [
@@ -376,9 +577,34 @@
             "displayName": "Target response time (ms)",
             "id": "awsalbinstances_target_response_time",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/ApplicationELB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "AvailabilityZone",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TargetGroup",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "RESPONSE_TIME = data(\"TargetResponseTime\", filter=filter(\"namespace\",\"AWS/ApplicationELB\") and filter(\"stat\",\"mean\") and filter(\"AvailabilityZone\", \"*\") and filter(\"TargetGroup\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
+              "template": "RESPONSE_TIME = data(\"TargetResponseTime\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"average\").sum(by=[\"LoadBalancer\"])",
               "varName": "RESPONSE_TIME"
             },
             "metricSelectors": [
@@ -394,7 +620,7 @@
         "o11yMetricName": "Running instances",
         "o11yMetricUnit": null,
         "o11yProductName": "ALB instances",
-        "o11ySignalflowTemplate": "A = data('HealthyHostCount', filter= filter('namespace','AWS/ApplicationELB') and filter('stat','sum') and filter('AvailabilityZone', '*'), extrapolation='last_value', maxExtrapolations=2).count(by=['LoadBalancer']).count().publish(label='A')",
+        "o11ySignalflowTemplate": "A = data('HealthyHostCount', filter= filter('namespace','AWS/ApplicationELB') and filter('stat','mean') and filter('AvailabilityZone', '*'), extrapolation='last_value', maxExtrapolations=2).count(by=['LoadBalancer']).count().publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,

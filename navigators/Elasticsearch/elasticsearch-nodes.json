@@ -1,5 +1,5 @@
 {
-  "hashCode": -905216241,
+  "hashCode": -1495573053,
   "id": "FYQ88wjAcAE",
   "modelVersion": 1,
   "navigatorExport": {
@@ -272,9 +272,16 @@
             "displayName": "Deleted documents (%)",
             "id": "elasticsearch_nodes_deleted_documents",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "INDEX_DELETED = data(\"*.indices.docs.deleted\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",' * OR aggregation: total', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nINDEX_COUNT = data(\"*.indices.docs.count\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",' * OR aggregation: total', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nINDEX_DELETED_PCT = (INDEX_DELETED*100/INDEX_COUNT).mean(by=[\"host\"])",
+              "template": "INDEX_DELETED = data(\"*.indices.docs.deleted\",filter=( not filter(\"aggregation\",' * OR aggregation: total', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nINDEX_COUNT = data(\"*.indices.docs.count\",filter=(not filter(\"aggregation\",' * OR aggregation: total', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nINDEX_DELETED_PCT = (INDEX_DELETED*100/INDEX_COUNT).mean(by=[\"host\"])",
               "varName": "INDEX_DELETED_PCT"
             },
             "metricSelectors": [
@@ -304,9 +311,16 @@
             "displayName": "Field-data cache (bytes)",
             "id": "elasticsearch_nodes_field_data_cache",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "FIELDDATA_CACHE_SIZE = data(\"elasticsearch.indices.fielddata.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"*\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
+              "template": "FIELDDATA_CACHE_SIZE = data(\"elasticsearch.indices.fielddata.memory-size\",filter=(not filter(\"aggregation\",\"*\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
               "varName": "FIELDDATA_CACHE_SIZE"
             },
             "metricSelectors": [
@@ -335,9 +349,16 @@
             "displayName": "Filter cache (bytes)",
             "id": "elasticsearch_nodes_filter_cache",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "FILTER_CACHE_SIZE = data(\"elasticsearch.indices.filter-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and (not filter(\"aggregation\",\"*\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
+              "template": "FILTER_CACHE_SIZE = data(\"elasticsearch.indices.filter-cache.memory-size\",filter=(not filter(\"aggregation\",\"*\", match_missing=True)){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\",\"index\",\"cluster\"])",
               "varName": "FILTER_CACHE_SIZE"
             },
             "metricSelectors": [
@@ -378,10 +399,16 @@
                   "property": "_exists_",
                   "propertyValue": "cluster",
                   "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
                 }
               ],
               "resolution": 60000,
-              "template": "GC_TIME=data(\"*.jvm.gc.time\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nGC_UPTIME=data(\"*.jvm.uptime\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nGC_TIME_LAST_HOUR = (GC_TIME).timeshift(\"1h\")\nGC_UPTIME_LAST_HOUR = (GC_UPTIME).timeshift(\"1h\")\nGC_TIME_PCT = ((GC_TIME-GC_TIME_LAST_HOUR)/(GC_UPTIME-GC_UPTIME_LAST_HOUR)*100)",
+              "template": "GC_TIME=data(\"*.jvm.gc.time\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nGC_UPTIME=data(\"*.jvm.uptime\",filter=(not filter(\"aggregation\",'*', match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup='max',extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nGC_TIME_LAST_HOUR = (GC_TIME).timeshift(\"1h\")\nGC_UPTIME_LAST_HOUR = (GC_UPTIME).timeshift(\"1h\")\nGC_TIME_PCT = ((GC_TIME-GC_TIME_LAST_HOUR)/(GC_UPTIME-GC_UPTIME_LAST_HOUR)*100)",
               "varName": "GC_TIME_PCT"
             },
             "metricSelectors": [
@@ -411,9 +438,16 @@
             "displayName": "Heap size (%)",
             "id": "elasticsearch_nodes_heap_size",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "HEAP_MEMORY_USED=data(\"*.jvm.mem.heap-used\", filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nHEAP_MEMORY_COMMITED=data(\"*.jvm.mem.heap-committed\", filter=filter(\"plugin\", \"elasticsearch\") {{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nHEAP_MEMORY_PCT=(HEAP_MEMORY_USED*100/HEAP_MEMORY_COMMITED).mean(by=['host'])",
+              "template": "HEAP_MEMORY_USED=data(\"*.jvm.mem.heap-used\", filter={{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nHEAP_MEMORY_COMMITED=data(\"*.jvm.mem.heap-committed\", filter={{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nHEAP_MEMORY_PCT=(HEAP_MEMORY_USED*100/HEAP_MEMORY_COMMITED).mean(by=['host'])",
               "varName": "HEAP_MEMORY_PCT"
             },
             "metricSelectors": [
@@ -443,9 +477,16 @@
             "displayName": "Query cache (bytes)",
             "id": "elasticsearch_nodes_query_cache",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "elasticsearch",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "QUERY_CACHE_SIZE = data(\"elasticsearch.indices.query-cache.memory-size\",filter=filter(\"plugin\", \"elasticsearch\") and ( not filter(\"aggregation\",\"*\", match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
+              "template": "QUERY_CACHE_SIZE = data(\"elasticsearch.indices.query-cache.memory-size\",filter=(not filter(\"aggregation\",\"*\", match_missing=True)) {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\",extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "QUERY_CACHE_SIZE"
             },
             "metricSelectors": [

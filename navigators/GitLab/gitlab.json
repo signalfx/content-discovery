@@ -1,5 +1,5 @@
 {
-  "hashCode": -2092486026,
+  "hashCode": 139791796,
   "id": "FnyjJuDAgAI",
   "modelVersion": 1,
   "navigatorExport": {
@@ -192,9 +192,16 @@
             "displayName": "Sidekiq build queue latency (s)",
             "id": "gitlab_sidekiq_build_queue_latency",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "name",
+                  "propertyValue": "pipeline_processing:build_queue",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "BUILD_QUEUE_LATENCY = data('sidekiq_queue_latency_seconds', filter = filter('name', 'pipeline_processing:build_queue') {{#filter}} and {{filter}}{{/filter}}, rollup='latest').mean(by=['host.name'])",
+              "template": "BUILD_QUEUE_LATENCY = data('sidekiq_queue_latency_seconds'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').mean(by=['host.name'])",
               "varName": "BUILD_QUEUE_LATENCY"
             },
             "metricSelectors": [

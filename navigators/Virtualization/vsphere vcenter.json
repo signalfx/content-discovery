@@ -1,5 +1,5 @@
 {
-  "hashCode": -878557532,
+  "hashCode": 1418291472,
   "id": "FMG__sOAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -91,9 +91,22 @@
             "displayName": "# Clusters",
             "id": "vsphere_vcenter_cluster",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "cluster",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "CLUSTER = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('cluster', '*') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['cluster', 'datacenter'])\nCLUSTER_BY_VCENTER = (CLUSTER).count(by=['datacenter'])",
+              "template": "CLUSTER = data(\"vsphere.cpu_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['cluster', 'datacenter'])\nCLUSTER_BY_VCENTER = (CLUSTER).count(by=['datacenter'])",
               "varName": "CLUSTER_BY_VCENTER"
             },
             "metricSelectors": [
@@ -122,9 +135,22 @@
             "displayName": "# Hosts",
             "id": "vsphere_vcenter_hosts",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "HOSTS = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['esx_ip', 'datacenter'])\nHOST_BY_VCENTER = (HOSTS).count(by=['datacenter'])",
+              "template": "HOSTS = data(\"vsphere.cpu_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['esx_ip', 'datacenter'])\nHOST_BY_VCENTER = (HOSTS).count(by=['datacenter'])",
               "varName": "HOST_BY_VCENTER"
             },
             "metricSelectors": [
@@ -153,9 +179,22 @@
             "displayName": "# VMs",
             "id": "vsphere_vcenter_vms",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "VirtualMachine",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "VM = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'VirtualMachine') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['vm_ip', 'datacenter'])\nVM_BY_VCENTER = (VM).count(by=['datacenter'])",
+              "template": "VM = data(\"vsphere.cpu_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=['vm_ip', 'datacenter'])\nVM_BY_VCENTER = (VM).count(by=['datacenter'])",
               "varName": "VM_BY_VCENTER"
             },
             "metricSelectors": [
@@ -215,9 +254,22 @@
             "displayName": "CPU (%)",
             "id": "vsphere_vcenter_cpu_usage",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"datacenter\"])",
+              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"datacenter\"])",
               "varName": "CPU_PCT"
             },
             "metricSelectors": [
@@ -246,9 +298,16 @@
             "displayName": "Memory (%)",
             "id": "vsphere_vcenter_memory_usage",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "USED_MEMORY = data(\"vsphere.mem_usage_percent\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).sum(by=[\"datacenter\"])",
+              "template": "USED_MEMORY = data(\"vsphere.mem_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"datacenter\"])",
               "varName": "USED_MEMORY"
             },
             "metricSelectors": [

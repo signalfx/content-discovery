@@ -1,5 +1,5 @@
 {
-  "hashCode": 937554321,
+  "hashCode": -177670204,
   "id": "FIVD_EwAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -43,9 +43,7 @@
       "ownerScope": "organization",
       "relationships": [],
       "sites": "o11y",
-      "systemTypes": [
-        "redis"
-      ],
+      "systemTypes": [],
       "uiModel": {
         "alertQuery": "plugin:redis_info",
         "category": "Datastores",
@@ -93,9 +91,16 @@
             "displayName": "# Connections",
             "id": "redis_connections",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "CONNECTED_CLIENTS= data(\"gauge.connected_clients\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"])",
+              "template": "CONNECTED_CLIENTS= data(\"gauge.connected_clients\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"])",
               "varName": "CONNECTED_CLIENTS"
             },
             "metricSelectors": [
@@ -124,9 +129,16 @@
             "displayName": "# Followers",
             "id": "redis_followers",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "FOLLOWER = data(\"gauge.slave_repl_offset\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])",
+              "template": "FOLLOWER = data(\"gauge.slave_repl_offset\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])",
               "varName": "FOLLOWER"
             },
             "metricSelectors": [
@@ -155,9 +167,16 @@
             "displayName": "# Leaders",
             "id": "redis_leaders",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "MASTER_REPL_OFFSET = data(\"gauge.master_repl_offset\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nSLAVE_REPL_OFFSET = data(\"gauge.slave_repl_offset\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nTOTAL_OFFSET = (SLAVE_REPL_OFFSET+MASTER_REPL_OFFSET)\nLEADER = union(TOTAL_OFFSET ,MASTER_REPL_OFFSET).max(by=[\"plugin_instance\"]).between(0.5, 1.5, clamp=False)",
+              "template": "MASTER_REPL_OFFSET = data(\"gauge.master_repl_offset\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nSLAVE_REPL_OFFSET = data(\"gauge.slave_repl_offset\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nTOTAL_OFFSET = (SLAVE_REPL_OFFSET+MASTER_REPL_OFFSET)\nLEADER = union(TOTAL_OFFSET ,MASTER_REPL_OFFSET).max(by=[\"plugin_instance\"]).between(0.5, 1.5, clamp=False)",
               "varName": "LEADER"
             },
             "metricSelectors": [
@@ -187,9 +206,16 @@
             "displayName": "Blocked & rejected clients",
             "id": "redis_blocked_clients_and_rejected_connections",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "BLOCKED_CLIENTS = data(\"gauge.blocked_clients\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nREJECTED_CONNECTIONS = data(\"counter.rejected_connections\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nREDIS_BLOCKED_CLIENTS_AND_REJECTED_CONNECTIONS = (BLOCKED_CLIENTS + REJECTED_CONNECTIONS)",
+              "template": "BLOCKED_CLIENTS = data(\"gauge.blocked_clients\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nREJECTED_CONNECTIONS = data(\"counter.rejected_connections\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nREDIS_BLOCKED_CLIENTS_AND_REJECTED_CONNECTIONS = (BLOCKED_CLIENTS + REJECTED_CONNECTIONS)",
               "varName": "REDIS_BLOCKED_CLIENTS_AND_REJECTED_CONNECTIONS"
             },
             "metricSelectors": [
@@ -226,9 +252,16 @@
             "displayName": "Cache hit rate (%)",
             "id": "redis_cache_hit_rate",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "CACHE_HITS = data(\"derive.keyspace_hits\",filter=filter(\"plugin\", \"redis_info\"){{#filter}}, {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nCACHE_MISSES = data(\"derive.keyspace_misses\",filter=filter(\"plugin\", \"redis_info\"){{#filter}}, {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nCACHE_RATIO = ( (CACHE_HITS+1) / ((CACHE_HITS+1) + CACHE_MISSES) * 100)",
+              "template": "CACHE_HITS = data(\"derive.keyspace_hits\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nCACHE_MISSES = data(\"derive.keyspace_misses\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nCACHE_RATIO = ( (CACHE_HITS+1) / ((CACHE_HITS+1) + CACHE_MISSES) * 100)",
               "varName": "CACHE_RATIO"
             },
             "metricSelectors": [
@@ -258,9 +291,16 @@
             "displayName": "CPU utilization (%)",
             "id": "redis_used_cpu_user",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "USED_CPU_SYS = data(\"counter.used_cpu_sys\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).scale(100)\nUSED_CPU_USER = data(\"counter.used_cpu_user\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).scale(100)\nREDIS_USED_CPU_USER= (USED_CPU_SYS+USED_CPU_USER)",
+              "template": "USED_CPU_SYS = data(\"counter.used_cpu_sys\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).scale(100)\nUSED_CPU_USER = data(\"counter.used_cpu_user\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).scale(100)\nREDIS_USED_CPU_USER= (USED_CPU_SYS+USED_CPU_USER)",
               "varName": "REDIS_USED_CPU_USER"
             },
             "metricSelectors": [
@@ -290,9 +330,16 @@
             "displayName": "Evicted & expired (keys/sec)",
             "id": "redis_evicted_and_expired_keys_per_sec",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "EVICTED_KEYS = data(\"counter.evicted_keys\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nEXPIRED_KEYS = data(\"counter.expired_keys\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nREDIS_EVICTED_AND_EXPIRED_KEYS_PER_SEC = (EVICTED_KEYS + EXPIRED_KEYS)",
+              "template": "EVICTED_KEYS = data(\"counter.evicted_keys\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nEXPIRED_KEYS = data(\"counter.expired_keys\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nREDIS_EVICTED_AND_EXPIRED_KEYS_PER_SEC = (EVICTED_KEYS + EXPIRED_KEYS)",
               "varName": "REDIS_EVICTED_AND_EXPIRED_KEYS_PER_SEC"
             },
             "metricSelectors": [
@@ -322,9 +369,16 @@
             "displayName": "Follower replication offsets",
             "id": "redis_follower_repl_offset",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "FOLLOWER = data(\"gauge.slave_repl_offset\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"])",
+              "template": "FOLLOWER = data(\"gauge.slave_repl_offset\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"])",
               "varName": "FOLLOWER"
             },
             "metricSelectors": [
@@ -353,9 +407,16 @@
             "displayName": "Leader replication offsets",
             "id": "redis_leader_repl_offset",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "LEADER_REPL_OFFSET = data(\"gauge.master_repl_offset\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"]).sum(by=[\"plugin_instance\"])",
+              "template": "LEADER_REPL_OFFSET = data(\"gauge.master_repl_offset\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"]).sum(by=[\"plugin_instance\"])",
               "varName": "LEADER_REPL_OFFSET"
             },
             "metricSelectors": [
@@ -384,9 +445,16 @@
             "displayName": "Memory used (bytes)",
             "id": "redis_used_memory",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "USED_MEMORY = data(\"bytes.used_memory\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)",
+              "template": "USED_MEMORY = data(\"bytes.used_memory\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)",
               "varName": "USED_MEMORY"
             },
             "metricSelectors": [
@@ -415,9 +483,16 @@
             "displayName": "Network (bytes/sec)",
             "id": "redis_network_bytes_per_sec",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "TOTAL_NET_OUTPUT_BYTES = data(\"counter.total_net_output_bytes\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nTOTAL_NET_INPUT_BYTES = data(\"counter.total_net_input_bytes\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nREDIS_NETWORK_BYTES_PER_SEC = (TOTAL_NET_OUTPUT_BYTES+TOTAL_NET_INPUT_BYTES)",
+              "template": "TOTAL_NET_OUTPUT_BYTES = data(\"counter.total_net_output_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nTOTAL_NET_INPUT_BYTES = data(\"counter.total_net_input_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nREDIS_NETWORK_BYTES_PER_SEC = (TOTAL_NET_OUTPUT_BYTES+TOTAL_NET_INPUT_BYTES)",
               "varName": "REDIS_NETWORK_BYTES_PER_SEC"
             },
             "metricSelectors": [
@@ -447,9 +522,16 @@
             "displayName": "Operations/sec ",
             "id": "redis_commands_processed",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "plugin",
+                  "propertyValue": "redis_info",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "COMMAND_PROCESSED = data(\"counter.commands_processed\",filter=filter(\"plugin\", \"redis_info\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])",
+              "template": "COMMAND_PROCESSED = data(\"counter.commands_processed\"{{#filter}},filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])",
               "varName": "COMMAND_PROCESSED"
             },
             "metricSelectors": [

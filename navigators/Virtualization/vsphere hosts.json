@@ -1,5 +1,5 @@
 {
-  "hashCode": 631773410,
+  "hashCode": -665964631,
   "id": "FMHAeo5AcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -93,9 +93,22 @@
             "displayName": "CPU (%)",
             "id": "vsphere_host_cpu_pct",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"esx_ip\"])",
+              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"esx_ip\"])",
               "varName": "CPU_PCT"
             },
             "metricSelectors": [
@@ -124,9 +137,16 @@
             "displayName": "Disk I/O (bytes)",
             "id": "vsphere_host_disk_io",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "DISK_USAGE = data(\"vsphere.disk_usage_kbs\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average')\nDISK_USAGE_MEAN = (DISK_USAGE).mean(by=['esx_ip']).mean(over='15m')",
+              "template": "DISK_USAGE = data(\"vsphere.disk_usage_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average')\nDISK_USAGE_MEAN = (DISK_USAGE).mean(by=['esx_ip']).mean(over='15m')",
               "varName": "DISK_USAGE_MEAN"
             },
             "metricSelectors": [
@@ -155,9 +175,16 @@
             "displayName": "Disk latency (ms)",
             "id": "vsphere_host_disk_latency",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "DISK_LATENCY = data(\"vsphere.disk_max_total_latency_ms\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}})\nDISK_LATENCY_MEAN = (DISK_LATENCY).mean(by=['esx_ip']).mean(over='15m')",
+              "template": "DISK_LATENCY = data(\"vsphere.disk_max_total_latency_ms\"{{#filter}}, filter={{{filter}}}{{/filter}})\nDISK_LATENCY_MEAN = (DISK_LATENCY).mean(by=['esx_ip']).mean(over='15m')",
               "varName": "DISK_LATENCY_MEAN"
             },
             "metricSelectors": [
@@ -186,9 +213,16 @@
             "displayName": "Disk max queue depth",
             "id": "vsphere_host_max_disk_queue_depth",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "DISK_MAX_QUEUE_DEPTH = data(\"vsphere.disk_max_queue_depth\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])",
+              "template": "DISK_MAX_QUEUE_DEPTH = data(\"vsphere.disk_max_queue_depth\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])",
               "varName": "DISK_MAX_QUEUE_DEPTH"
             },
             "metricSelectors": [
@@ -217,9 +251,16 @@
             "displayName": "Memory (%)",
             "id": "vsphere_host_mem_pct",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "USED_MEMORY = data(\"vsphere.mem_usage_percent\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).sum(by=[\"esx_ip\"])",
+              "template": "USED_MEMORY = data(\"vsphere.mem_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"esx_ip\"])",
               "varName": "USED_MEMORY"
             },
             "metricSelectors": [
@@ -248,9 +289,22 @@
             "displayName": "Network I/O (bytes)",
             "id": "vsphere_host_net_io",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "NET_SENT = data(\"vsphere.net_transmitted_kbs\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nNET_RECEIVED = data(\"vsphere.net_received_kbs\", filter=(not filter('object', '*')) and filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nNET_IO = (NET_SENT + NET_RECEIVED)",
+              "template": "NET_SENT = data(\"vsphere.net_transmitted_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nNET_RECEIVED = data(\"vsphere.net_received_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nNET_IO = (NET_SENT + NET_RECEIVED)",
               "varName": "NET_IO"
             },
             "metricSelectors": [
@@ -280,9 +334,16 @@
             "displayName": "Swap rate",
             "id": "vsphere_host_swap_rate",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "HostSystem",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "SWAP_IN = data(\"vsphere.mem_swapin_rate_kbs\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nSWAP_OUT = data(\"vsphere.mem_swapout_rate_kbs\", filter=filter('object_type', 'HostSystem') {{#filter}} filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nSWAP_TOTAL = (SWAP_IN + SWAP_OUT)",
+              "template": "SWAP_IN = data(\"vsphere.mem_swapin_rate_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nSWAP_OUT = data(\"vsphere.mem_swapout_rate_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=['esx_ip'])\nSWAP_TOTAL = (SWAP_IN + SWAP_OUT)",
               "varName": "SWAP_TOTAL"
             },
             "metricSelectors": [

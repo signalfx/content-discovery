@@ -1,5 +1,5 @@
 {
-  "hashCode": 1769551858,
+  "hashCode": -2107195399,
   "id": "GL1EoW7AgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -46,7 +46,9 @@
           "ownerScope": "splunk",
           "relationships": [],
           "sites": "o11y",
-          "systemTypes": [],
+          "systemTypes": [
+              "redis"
+          ],
           "uiModel": {
               "alertQuery": "_exists_:redis.version",
               "category": "Datastores",
@@ -250,9 +252,16 @@
                       "displayName": "Network byte write (bytes)",
                       "id": "redisinstances_network_write",
                       "job": {
-                          "filters": [],
+                          "filters": [
+                              {
+                                  "not": false,
+                                  "property": "redis.version",
+                                  "propertyValue": "*",
+                                  "type": "property"
+                              }
+                          ],
                           "resolution": 300000,
-                          "template": "REDIS_NETWORK_WRITE = data(\"redis.net.output\", filter=filter(\"redis.version\", \"*\"){{#filter}}and{{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+                          "template": "REDIS_NETWORK_WRITE = data(\"redis.net.output\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
                           "varName": "REDIS_NETWORK_WRITE"
                       },
                       "metricSelectors": [

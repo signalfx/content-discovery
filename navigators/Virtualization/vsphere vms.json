@@ -1,5 +1,5 @@
 {
-  "hashCode": -721983638,
+  "hashCode": -903220509,
   "id": "FMHAiPEAYAQ",
   "modelVersion": 1,
   "navigatorExport": {
@@ -122,9 +122,16 @@
             "displayName": "CPU (%)",
             "id": "vsphere_vm_cpu_pct",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\", filter=(not filter('object', '*')) {{#filter}} filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"vm_ip\"])",
+              "template": "CPU_PCT = data(\"vsphere.cpu_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}} ,rollup='average').mean(by=[\"vm_ip\"])",
               "varName": "CPU_PCT"
             },
             "metricSelectors": [
@@ -153,9 +160,16 @@
             "displayName": "Disk I/O (bytes)",
             "id": "vsphere_vm_disk_io",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "DISK_READ = data(\"vsphere.disk_read_kbs\", filter=filter('object_type', '*') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nDISK_WRITE = data(\"vsphere.disk_read_kbs\", filter=filter('object_type', '*') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nDISK_IO = (DISK_READ + DISK_WRITE)",
+              "template": "DISK_READ = data(\"vsphere.disk_read_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nDISK_WRITE = data(\"vsphere.disk_read_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nDISK_IO = (DISK_READ + DISK_WRITE)",
               "varName": "DISK_IO"
             },
             "metricSelectors": [
@@ -185,9 +199,16 @@
             "displayName": "Disk latency (ms)",
             "id": "vsphere_vm_disk_latency",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "DISK_LATENCY = data(\"vsphere.disk_max_total_latency_ms\", filter=filter('object_type', '*') {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nDISK_LATENCY_MEAN = (DISK_LATENCY).mean(over='15m')",
+              "template": "DISK_LATENCY = data(\"vsphere.disk_max_total_latency_ms\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nDISK_LATENCY_MEAN = (DISK_LATENCY).mean(over='15m')",
               "varName": "DISK_LATENCY_MEAN"
             },
             "metricSelectors": [
@@ -216,9 +237,16 @@
             "displayName": "Memory (%)",
             "id": "vsphere_vm_mem_pct",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "object_type",
+                  "propertyValue": "VirtualMachine",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "USED_MEMORY = data(\"vsphere.mem_usage_percent\", filter=filter('object_type', 'VirtualMachine') {{#filter}} filter={{{filter}}}{{/filter}}).sum(by=[\"vm_ip\"])",
+              "template": "USED_MEMORY = data(\"vsphere.mem_usage_percent\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"vm_ip\"])",
               "varName": "USED_MEMORY"
             },
             "metricSelectors": [
@@ -247,9 +275,16 @@
             "displayName": "Network I/O (bytes)",
             "id": "vsphere_vm_net_io",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": true,
+                  "property": "object",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 60000,
-              "template": "NET_SENT = data(\"vsphere.net_transmitted_kbs\", filter=(not filter('object', '*')) {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nNET_RECEIVED = data(\"vsphere.net_received_kbs\", filter=(not filter('object', '*')) {{#filter}} filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nNET_IO = (NET_SENT + NET_RECEIVED)",
+              "template": "NET_SENT = data(\"vsphere.net_transmitted_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nNET_RECEIVED = data(\"vsphere.net_received_kbs\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').mean(by=['vm_ip'])\nNET_IO = (NET_SENT + NET_RECEIVED)",
               "varName": "NET_IO"
             },
             "metricSelectors": [
