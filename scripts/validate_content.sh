@@ -63,10 +63,12 @@ while read file; do
     elif [ "$navigator_code" != "$navigator_code_prev" ]; then
       echo
       echo "  ERROR: uiModel.id has changed in $file: \"$navigator_code\" (previous id: \"$navigator_code_prev\"); navigator uiModel.id should be immutable. Please correct."
+      VALIDATION_FAILED=true
     # check if hashcode is changed
     elif [ "$hash_code" == "$hash_code_prev" ]; then
       echo
       echo "  ERROR: hashCode is not changed in $file: Current hash code \"$hash_code\", previous hash code \"$hash_code_prev\". Please correct. "
+      VALIDATION_FAILED=true
     else
       echo " ... success"
     fi
