@@ -33,6 +33,10 @@ while read file; do
     # retrieve the json id from the content
     set -e # fail if any json parse errors
 
+    # get hash code from the current version and the previous version in git
+    hash_code=$(jq -r '.hashCode' "$file")
+    hash_code_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.hashCode')
+
     # get the id from the current version and the previous version in git
     if [[ $file =~ ^navigators ]]; then
       id=$(jq -r '.navigatorExport.navigator.id' "$file")
@@ -59,6 +63,10 @@ while read file; do
     elif [ "$navigator_code" != "$navigator_code_prev" ]; then
       echo
       echo "  ERROR: uiModel.id has changed in $file: \"$navigator_code\" (previous id: \"$navigator_code_prev\"); navigator uiModel.id should be immutable. Please correct."
+    # check if hashcode is changed
+    elif [ "$hash_code" == "$hash_code_prev" ]; then
+      echo
+      echo "  ERROR: hashCode is not changed in $file: Current hash code \"$hash_code\", previous hash code \"$hash_code_prev\". Please correct. "
     else
       echo " ... success"
     fi
