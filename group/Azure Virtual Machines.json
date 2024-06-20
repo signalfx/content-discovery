@@ -3666,7 +3666,7 @@
       "importOf" : "EyU6gQBAIAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Disk utilization %",
+      "name" : "Disk summary utilization (%)",
       "options" : {
         "colorBy" : "Scale",
         "colorScale" : null,
@@ -3696,8 +3696,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "disk.utilization",
+          "displayName" : "Disk used",
           "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Disk total",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Disk utilization",
+          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -3718,7 +3736,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.utilization').publish(label='A')",
+      "programText" : "A = data('system.filesystem.usage', filter=filter('cloud.platform', 'azure_vm') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.filesystem.usage', filter=filter('cloud.platform', 'azure_vm') and filter('state', 'free', 'used')).sum(by=['host.name']).publish(label='B', enable=False)\nC = ((A/(B))*100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4015,7 +4033,7 @@
       "importOf" : "EyU6gMoAAAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Memory used %",
+      "name" : "Memory utilization (%)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -4033,9 +4051,27 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "memory.utilization",
+          "displayName" : "Used memory",
           "label" : "A",
           "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total memory",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "C",
+          "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
@@ -4055,7 +4091,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.utilization').publish(label='A')",
+      "programText" : "A = data('system.memory.usage', filter=filter('cloud.platform', 'azure_vm') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.memory.usage', filter=filter('cloud.platform', 'azure_vm') and filter('state', 'cached', 'free', 'used', 'buffered')).sum(by=['host.name']).publish(label='B', enable=False)\nC = ((A/B)*100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4370,7 +4406,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu.utilization - count",
+          "displayName" : "Hosts with agent installed",
           "label" : "A",
           "paletteIndex" : 1,
           "plotType" : null,
@@ -4392,7 +4428,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.utilization', filter=filter('cloud.platform', 'azure_vm'), rollup='average').count().publish(label='A')",
+      "programText" : "A = data('system.memory.usage', filter=filter('cloud.platform', 'azure_vm'), rollup='average').sum(by=['azure_resource_id']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5510,7 +5546,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "A",
+          "displayName" : "Active hosts per instance type",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -5531,7 +5567,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.utilization', extrapolation='last_value', maxExtrapolations=5).count(by=['azure.vm.size']).publish(label='A')",
+      "programText" : "A = data('system.memory.usage', extrapolation='last_value', maxExtrapolations=5).sum(by=['azure_resource_id', 'azure.vm.size']).count(by=['azure.vm.size']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -6097,7 +6133,7 @@
       "importOf" : "EyUZYX6AEX4",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Memory used %",
+      "name" : "Memory utilization (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -6149,7 +6185,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "memory.utilization",
+          "displayName" : "Used memory",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -6158,48 +6194,66 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Min",
+          "displayName" : "Total memory",
           "label" : "B",
-          "paletteIndex" : 14,
+          "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Min",
+          "label" : "D",
+          "paletteIndex" : 14,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "P10",
-          "label" : "C",
+          "label" : "E",
           "paletteIndex" : 15,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "Median",
-          "label" : "D",
+          "label" : "F",
           "paletteIndex" : 2,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "P90",
-          "label" : "E",
+          "label" : "G",
           "paletteIndex" : 9,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "Max",
-          "label" : "F",
+          "label" : "H",
           "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -6214,7 +6268,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.utilization', filter=(not filter('agent', '*')) and filter('cloud.platform', 'azure_vm')).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "A = data('system.memory.usage', filter=filter('cloud.platform', 'azure_vm') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.memory.usage', filter=filter('cloud.platform', 'azure_vm') and filter('state', 'used', 'cached', 'free', 'buffered')).sum(by=['host.name']).publish(label='B', enable=False)\nC = ((A/B)*100).publish(label='C', enable=False)\nD = (C).min().publish(label='D')\nE = (C).percentile(pct=10).publish(label='E')\nF = (C).percentile(pct=50).publish(label='F')\nG = (C).percentile(pct=90).publish(label='G')\nH = (C).max().publish(label='H')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7130,7 +7184,7 @@
           "property" : "cloud.provider",
           "values" : [ "azure" ]
         } ],
-        "metric" : "cpu.utilization"
+        "metric" : "system.memory.usage"
       } ],
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -7139,7 +7193,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -684441408,
+  "hashCode" : -93155908,
   "id" : "DiVWc-rAcAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"

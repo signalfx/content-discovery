@@ -1716,6 +1716,57 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "host.image.id"
+          }, {
+            "enabled" : true,
+            "property" : "os.type"
+          }, {
+            "enabled" : true,
+            "property" : "type"
+          }, {
+            "enabled" : true,
+            "property" : "host.type"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.availability_zone"
+          }, {
+            "enabled" : true,
+            "property" : "mode"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "state"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.platform"
+          }, {
+            "enabled" : true,
+            "property" : "host.id"
+          }, {
+            "enabled" : true,
+            "property" : "deployment.environment"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.region"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.provider"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.account.id"
+          }, {
+            "enabled" : true,
+            "property" : "device"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -1731,8 +1782,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "Used disk",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total disk",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "Disk utilization",
-          "label" : "A",
+          "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -1752,7 +1821,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.utilization', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks')).mean(by=['mountpoint', 'AWSUniqueId']).publish(label='A')\nAB = alerts(autodetect_id='F6cykK5AYAA').publish(label='Autodetect alerts')",
+      "programText" : "B = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_eks', 'aws_ec2') and filter('state', 'used')).publish(label='B', enable=False)\nC = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_eks', 'aws_ec2') and filter('state', 'free')).publish(label='C', enable=False)\nD = ((B/(B+C))*100).mean(by=['mountpoint', 'AWSUniqueId']).publish(label='D')\nA = alerts(autodetect_id='F6cykK5AYAA').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2127,9 +2196,27 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Memory utilization",
+          "displayName" : "Used memory",
           "label" : "A",
           "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total memory",
+          "label" : "B",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "C",
+          "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
@@ -2149,7 +2236,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.utilization', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks')).publish(label='A')\nAB = alerts(autodetect_id='F7vC_VlAYAI').publish(label='Autodetect alerts')",
+      "programText" : "A = data('system.memory.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.memory.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'used', 'cached', 'free', 'buffered')).sum(by=['host.name']).publish(label='B', enable=False)\nC = ((A/B)*100).publish(label='C')\nD = alerts(autodetect_id='F7vC_VlAYAI').publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4120,7 +4207,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.utilization', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks'), rollup='average').sum(by=['AWSUniqueId']).count().publish(label='A')",
+      "programText" : "A = data('system.memory.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks'), rollup='average').sum(by=['AWSUniqueId']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4162,7 +4249,7 @@
         "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ {
           "displayName" : "Autodetect alerts",
-          "label" : "Autodetect alerts",
+          "label" : "A",
           "paletteIndex" : null
         } ],
         "histogramChartOptions" : {
@@ -4176,6 +4263,81 @@
           }, {
             "enabled" : true,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.region"
+          }, {
+            "enabled" : true,
+            "property" : "host.image.id"
+          }, {
+            "enabled" : true,
+            "property" : "os.type"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : true,
+            "property" : "host.type"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.availability_zone"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.provider"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.account.id"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "state"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.platform"
+          }, {
+            "enabled" : true,
+            "property" : "host.id"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "deployment.environment"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
+          }, {
+            "enabled" : true,
+            "property" : "azure.resourcegroup.name"
+          }, {
+            "enabled" : true,
+            "property" : "azure.vm.name"
+          }, {
+            "enabled" : true,
+            "property" : "azure.vm.size"
+          }, {
+            "enabled" : true,
+            "property" : "azure_resource_id"
+          }, {
+            "enabled" : true,
+            "property" : "azure.vm.scaleset.name"
+          }, {
+            "enabled" : true,
+            "property" : "gcp_id"
+          }, {
+            "enabled" : true,
+            "property" : "telemetry.sdk.name"
+          }, {
+            "enabled" : true,
+            "property" : "telemetry.sdk.language"
+          }, {
+            "enabled" : true,
+            "property" : "telemetry.sdk.version"
+          }, {
+            "enabled" : true,
+            "property" : "service.name"
           } ]
         },
         "lineChartOptions" : {
@@ -4197,8 +4359,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "Memory usage",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory total",
+          "label" : "I",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "Memory utilization",
-          "label" : "A",
+          "label" : "J",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -4207,47 +4387,47 @@
           "yAxis" : 0
         }, {
           "displayName" : "Min",
-          "label" : "B",
+          "label" : "C",
           "paletteIndex" : 14,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "P10",
-          "label" : "C",
+          "label" : "D",
           "paletteIndex" : 15,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "Median",
-          "label" : "D",
+          "label" : "E",
           "paletteIndex" : 2,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "P90",
-          "label" : "E",
+          "label" : "F",
           "paletteIndex" : 9,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "Max",
-          "label" : "F",
+          "label" : "G",
           "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -4262,7 +4442,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "AB = alerts(autodetect_id='F7vC_VlAYAI').publish(label='Autodetect alerts')\nA = data('memory.utilization', filter=(not filter('agent', '*')) and filter('cloud.platform', 'aws_ec2', 'aws_eks')).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "H = data('system.memory.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'used')).sum(by=['host.name']).publish(label='H', enable=False)\nI = data('system.memory.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'used', 'free', 'cached', 'buffered')).sum(by=['host.name']).publish(label='I', enable=False)\nJ = ((H/I)*100).publish(label='J', enable=False)\nC = (J).min().publish(label='C')\nD = (J).percentile(pct=10).publish(label='D')\nE = (J).percentile(pct=50).publish(label='E')\nF = (J).percentile(pct=90).publish(label='F')\nG = (J).max().publish(label='G')\nA = alerts(autodetect_id='F7vC_VlAYAI').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5094,7 +5274,7 @@
         "defaultPlotType" : "AreaChart",
         "eventPublishLabelOptions" : [ {
           "displayName" : "Autodetect alerts",
-          "label" : "Autodetect alerts",
+          "label" : "A",
           "paletteIndex" : null
         } ],
         "histogramChartOptions" : {
@@ -5111,6 +5291,81 @@
           }, {
             "enabled" : true,
             "property" : "aws_instance_id"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "host.image.id"
+          }, {
+            "enabled" : true,
+            "property" : "os.type"
+          }, {
+            "enabled" : true,
+            "property" : "type"
+          }, {
+            "enabled" : true,
+            "property" : "AWSUniqueId"
+          }, {
+            "enabled" : true,
+            "property" : "host.type"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.availability_zone"
+          }, {
+            "enabled" : true,
+            "property" : "mountpoint"
+          }, {
+            "enabled" : true,
+            "property" : "mode"
+          }, {
+            "enabled" : true,
+            "property" : "host.name"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.platform"
+          }, {
+            "enabled" : true,
+            "property" : "host.id"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.region"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.provider"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.account.id"
+          }, {
+            "enabled" : true,
+            "property" : "device"
+          }, {
+            "enabled" : true,
+            "property" : "deployment.environment"
+          }, {
+            "enabled" : true,
+            "property" : "state"
+          }, {
+            "enabled" : true,
+            "property" : "azure.resourcegroup.name"
+          }, {
+            "enabled" : true,
+            "property" : "azure.vm.name"
+          }, {
+            "enabled" : true,
+            "property" : "azure.vm.size"
+          }, {
+            "enabled" : true,
+            "property" : "azure_resource_id"
+          }, {
+            "enabled" : true,
+            "property" : "azure.vm.scaleset.name"
+          }, {
+            "enabled" : true,
+            "property" : "gcp_id"
           } ]
         },
         "lineChartOptions" : {
@@ -5132,8 +5387,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "Used disk",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Free disk",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "Disk utilization",
-          "label" : "A",
+          "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5142,7 +5415,7 @@
           "yAxis" : 0
         }, {
           "displayName" : "Min",
-          "label" : "B",
+          "label" : "E",
           "paletteIndex" : 14,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5151,7 +5424,7 @@
           "yAxis" : 0
         }, {
           "displayName" : "P10",
-          "label" : "C",
+          "label" : "F",
           "paletteIndex" : 15,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5160,7 +5433,7 @@
           "yAxis" : 0
         }, {
           "displayName" : "P50",
-          "label" : "D",
+          "label" : "G",
           "paletteIndex" : 2,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5169,7 +5442,7 @@
           "yAxis" : 0
         }, {
           "displayName" : "P90",
-          "label" : "E",
+          "label" : "H",
           "paletteIndex" : 9,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5178,7 +5451,7 @@
           "yAxis" : 0
         }, {
           "displayName" : "Max",
-          "label" : "F",
+          "label" : "I",
           "paletteIndex" : 8,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5197,7 +5470,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "AB = alerts(autodetect_id='F6cykK5AYAA').publish(label='Autodetect alerts')\nA = data('disk.utilization', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks')).mean(by=['aws_instance_id']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "B = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'used')).publish(label='B', enable=False)\nC = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'free')).publish(label='C', enable=False)\nD = ((B/(B+C))*100).mean(by=['AWSUniqueId']).publish(label='D', enable=False)\nE = (D).min().publish(label='E')\nF = (D).percentile(pct=10).publish(label='F')\nG = (D).percentile(pct=50).publish(label='G')\nH = (D).percentile(pct=90).publish(label='H')\nI = (D).max().publish(label='I')\nA = alerts(autodetect_id='F6cykK5AYAA').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5555,6 +5828,57 @@
           }, {
             "enabled" : true,
             "property" : "AWSUniqueId"
+          }, {
+            "enabled" : true,
+            "property" : "host.image.id"
+          }, {
+            "enabled" : true,
+            "property" : "os.type"
+          }, {
+            "enabled" : true,
+            "property" : "type"
+          }, {
+            "enabled" : true,
+            "property" : "host.type"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.availability_zone"
+          }, {
+            "enabled" : true,
+            "property" : "mountpoint"
+          }, {
+            "enabled" : true,
+            "property" : "mode"
+          }, {
+            "enabled" : true,
+            "property" : "state"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.platform"
+          }, {
+            "enabled" : true,
+            "property" : "host.id"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.region"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.provider"
+          }, {
+            "enabled" : true,
+            "property" : "cloud.account.id"
+          }, {
+            "enabled" : true,
+            "property" : "device"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
+          }, {
+            "enabled" : true,
+            "property" : "deployment.environment"
           } ]
         },
         "maximumPrecision" : 4,
@@ -5570,8 +5894,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Disk summary utilization",
+          "displayName" : "Disk used",
           "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Disk free",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Disk summary urilzation",
+          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5591,7 +5933,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks')).mean(by=['host.name', 'AWSUniqueId']).publish(label='A')",
+      "programText" : "A = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'used')).publish(label='A', enable=False)\nB = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks') and filter('state', 'free')).publish(label='B', enable=False)\nC = ((A/(A+B))*100).mean(by=['host.name', 'AWSUniqueId']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5624,8 +5966,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "Used disk",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total disk",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "Disk summary utilization",
-          "label" : "A",
+          "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -5646,7 +6006,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=filter('cloud.platform', 'aws_ec2', 'aws_eks')).mean(by=['host.name', 'AWSUniqueId']).publish(label='A')",
+      "programText" : "B = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_eks', 'aws_ec2') and filter('state', 'used')).sum(by=['host.name']).publish(label='B', enable=False)\nC = data('system.filesystem.usage', filter=filter('cloud.platform', 'aws_eks', 'aws_ec2') and filter('state', 'used', 'free')).sum(by=['host.name']).publish(label='C', enable=False)\nD = ((B/C)*100).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -6343,7 +6703,7 @@
           "property" : "cloud.provider",
           "values" : [ "aws" ]
         } ],
-        "metric" : "cpu.utilization"
+        "metric" : "system.memory.usage"
       } ],
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -6352,7 +6712,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -1830219458,
+  "hashCode" : -202970246,
   "id" : "DiVWVMuAgAE",
   "modelVersion" : 1,
   "packageType" : "GROUP"
