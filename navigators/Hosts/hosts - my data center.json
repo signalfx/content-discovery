@@ -1,5 +1,5 @@
 {
-  "hashCode": 1046073435,
+  "hashCode": -944583540,
   "id": "ExtGXIGAgDI",
   "modelVersion": 1,
   "navigatorExport": {
@@ -53,7 +53,7 @@
               ]
             }
           ],
-          "metric": "system.memory.usage"
+          "metric": "cpu.utilization"
         }
       ],
       "instanceDashboards": [
@@ -176,7 +176,7 @@
                 }
               ],
               "resolution": 60000,
-              "template": "CPU_UTILIZATION_POST = data(\"cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])\nCPU_USED = data(\"system.cpu.time\", filter=(not filter('state', 'idle')){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['host'])\nCPU_TOTAL = data(\"system.cpu.time\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host'])\nCPU_UTILIZATION_PRE=((CPU_USED/CPU_TOTAL)*100).mean(by=['host'])\nCPU_UTILIZATION=union(CPU_UTILIZATION_POST, CPU_UTILIZATION_PRE)",
+              "template": "CPU_UTILIZATION = data(\"cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
@@ -238,7 +238,7 @@
                 }
               ],
               "resolution": 60000,
-              "template": "MEMORY_USED = data(\"system.memory.usage\", filter=filter('state', 'used'){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\"])\nMEMORY_TOTAL = data(\"system.memory.usage\", filter=filter('state', 'used', 'free', 'cached', 'buffered'){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\"])\nMEMORY_UTILIZATION=((MEMORY_USED/MEMORY_TOTAL)*100).mean(by=['host'])",
+              "template": "MEMORY_UTILIZATION = data(\"memory.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "MEMORY_UTILIZATION"
             },
             "metricSelectors": [
@@ -300,7 +300,7 @@
                 }
               ],
               "resolution": 60000,
-              "template": "DISK_USED = data(\"system.filesystem.usage\", filter=filter('state', 'used'){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\"])\nDISK_TOTAL = data(\"system.filesystem.usage\", filter=filter('state', 'used', 'free'){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\"])\nDISK_UTILIZATION=((DISK_USED/DISK_TOTAL)*100).mean(by=['host'])",
+              "template": "DISK_UTILIZATION = data(\"disk.summary_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "DISK_UTILIZATION"
             },
             "metricSelectors": [
@@ -362,7 +362,7 @@
                 }
               ],
               "resolution": 60000,
-              "template": "NETWORK_TOTAL = data(\"system.network.io\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\"])",
+              "template": "NETWORK_TOTAL = data(\"network.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "NETWORK_TOTAL"
             },
             "metricSelectors": [
@@ -424,7 +424,7 @@
                 }
               ],
               "resolution": 60000,
-              "template": "DISK_OPS_TOTAL = data(\"system.disk.operations\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"host\"])",
+              "template": "DISK_OPS_TOTAL = data(\"disk_ops.total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"host\"])",
               "varName": "DISK_OPS_TOTAL"
             },
             "metricSelectors": [
@@ -440,7 +440,7 @@
         "o11yMetricName": "Running hosts",
         "o11yMetricUnit": null,
         "o11yProductName": "Hosts",
-        "o11ySignalflowTemplate": "A = data('system.memory.usage', filter=filter('host', '*') and not filter('cloud.provider', '*') and (not filter('AWSUniqueId', '*')) and (not filter('azure_resource_id', '*')) and (not filter('gcp_id', '*')), extrapolation='last_value', maxExtrapolations=2).mean(by=['host']).count().publish(label='A')",
+        "o11ySignalflowTemplate": "A = data('cpu.utilization', filter=filter('host', '*') and not filter('cloud.provider', '*') and (not filter('AWSUniqueId', '*')) and (not filter('azure_resource_id', '*')) and (not filter('gcp_id', '*')), extrapolation='last_value', maxExtrapolations=2).mean(by=['host']).count().publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
