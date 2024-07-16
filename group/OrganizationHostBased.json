@@ -1707,7 +1707,7 @@
       "lastUpdatedBy" : null,
       "name" : "Custom MTS explanation",
       "options" : {
-        "markdown" : "<code>sf.org.limit.customMetricTimeSeries</code> is maximum number of active custom MTS, within a moving window of the previous 60 minutes, that can send data to your organization. If you exceed this limit, Infrastructure Monitoring drops data points for the custom MTS that exceeded the limit, but it continues to accept data points for custom MTS that already existed. you’ve defined, use the metric <code>sf.org.numCustomMetrics</code>. The number of custom MTS that can be monitored according to your subscription entitlement <code>sf.org.subscription.customMetrics</code>. To learn more about custom MTS, see <a href=\"https://quickdraw.splunk.com/redirect/?product=Observability&location=orgmetrics.dashboard.immentitlements.customMTS&version=current\" target=\"_blank\">Metrics in Infrastructure</a> in Splunk documentation for more information.\n\nThis chart might be blank because some subscription types do not rely on a host or custom metric entitlement.",
+        "markdown" : "<code>sf.org.limit.customMetricTimeSeries</code> is a maximum number of active custom MTS within a moving window of the previous 60 minutes that can send data to your organization. If you exceed this limit, Infrastructure Monitoring drops data points for the custom MTS that exceeded the limit, but it continues to accept data points for custom MTS that already existed. Use <code>sf.org.numCustomMetrics</code> to track your usage, which includes usage for real-time, archived, and histogram custom metrics. The number of custom MTS that can be monitored according to your subscription entitlement <code>sf.org.subscription.customMetrics</code>. To learn more about custom MTS, see <a href=\"https://quickdraw.splunk.com/redirect/?product=Observability&location=orgmetrics.dashboard.immentitlements.customMTS&version=current\" target=\"_blank\">Metrics in Infrastructure</a> in Splunk documentation for more information.\n\nThis chart might be blank because some subscription types do not rely on a host or custom metric entitlement.",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -3165,7 +3165,7 @@
       "lastUpdatedBy" : null,
       "name" : "Custom MTS explanation",
       "options" : {
-        "markdown" : "<code>sf.org.limit.customMetricTimeSeries</code> is maximum number of active custom MTS, within a moving window of the previous 60 minutes, that can send data to your organization. If you exceed this limit, infrastructure monitoring drops data points for the custom MTS that exceeded the limit, but it continues to accept data points for custom MTS that already existed. you’ve defined, use the metric <code>sf.org.numCustomMetrics</code>. The number of custom MTS that can be monitored according to your subscription entitlement <code>sf.org.subscription.customMetrics</code>. To learn more about custom MTS, see <a href=\"https://quickdraw.splunk.com/redirect/?product=Observability&location=orgmetrics.dashboard.immsyslimits.customMTS&version=current\" target=\"_blank\">Metrics in Infrastructure</a> in Splunk documentation for more information.",
+        "markdown" : "<code>sf.org.limit.customMetricTimeSeries</code> is a maximum number of active custom MTS within a moving window of the previous 60 minutes that can send data to your organization. If you exceed this limit, infrastructure monitoring drops data points for the custom MTS that exceeded the limit, but it continues to accept data points for custom MTS that already existed. Use <code>sf.org.numCustomMetrics</code> to track your usage, which includes usage of custom metrics for real-time, archived, and histogram metrics. The number of custom MTS that can be monitored according to your subscription entitlement <code>sf.org.subscription.customMetrics</code>. To learn more about custom MTS, see <a href=\"https://quickdraw.splunk.com/redirect/?product=Observability&location=orgmetrics.dashboard.immsyslimits.customMTS&version=current\" target=\"_blank\">Metrics in Infrastructure</a> in Splunk documentation for more information.",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -3207,7 +3207,7 @@
       "lastUpdatedBy" : null,
       "name" : "DPM metrics and explanation",
       "options" : {
-        "markdown" : "<code>sf.org.numDatapointsReceived</code> is the total number of datapoints received in this organization.",
+        "markdown" : "<code>sf.org.numDatapointsReceived</code> is the total number of raw data points received in this organization. Use <code>sf.org.numBillableDatapoints</code> to track billing data points usage which includes usage for real-time, archived, and histogram data points for customers on DPM-usage subscription.",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -3391,6 +3391,15 @@
           "valueSuffix" : "",
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "# Billable datapoints received",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -3403,7 +3412,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "B = data('sf.org.numDatapointsReceived', rollup='rate').sum(by=['orgId']).scale(60).publish(label='B')",
+      "programText" : "B = data('sf.org.numDatapointsReceived', rollup='rate').sum(by=['orgId']).scale(60).publish(label='B')\nC = data('sf.org.numBillableDatapoints', rollup='rate').sum(by=['orgId']).scale(60).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3670,7 +3679,7 @@
       "lastUpdatedBy" : null,
       "name" : "Active MTS",
       "options" : {
-        "markdown" : "<code>sf.org.numCustomMetrics</code> is the number of MTS that have received a datapoint in the past hour and <code>sf.org.limit.customMetricTimeSeries</code> is the limit. Hitting this limit results in no new MTS being created until active MTS go inactive by not receiving a datapoint for an hour.",
+        "markdown" : "<code>sf.org.numActiveTimeSeries</code> is the number of MTS that have received a data point in the past 24 hours and\n<code>sf.org.limit.activeTimeSeries</code> is the limit. Hitting this limit results in no new MTS being created until active MTS go inactive by not receiving a datapoint for 24 hours.",
         "type" : "Text"
       },
       "packageSpecifications" : "",
@@ -9475,6 +9484,121 @@
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "GRDzQx9AcAQ",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Archived metrics",
+      "options" : {
+        "markdown" : "<code>sf.org.numArchivedCustomMetrics</code> indicates the number of raw custom metrics received by the Archived metrics tier. <code>sf.org.numBillableArchivedCustomMetrics</code> tracks Archived metrics usage that has been converted to real-time billing metrics usage: 10 archived metrics are converted into 1 real-time billable metric.",
+        "type" : "Text"
+      },
+      "packageSpecifications" : "",
+      "programText" : "",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "",
+      "id" : "GRDz77OAYAA",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Archived metrics",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "A",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numArchivedCustomMetrics', rollup='average').publish(label='A')\nB = data('sf.org.numBillableArchivedCustomMetrics', rollup='average').publish(label='B')",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
+    }
   } ],
   "crossLinkExports" : [ ],
   "dashboardExports" : [ {
@@ -9952,6 +10076,18 @@
         "height" : 1,
         "row" : 5,
         "width" : 7
+      }, {
+        "chartId" : "GRDz77OAYAA",
+        "column" : 5,
+        "height" : 1,
+        "row" : 6,
+        "width" : 7
+      }, {
+        "chartId" : "GRDzQx9AcAQ",
+        "column" : 0,
+        "height" : 1,
+        "row" : 6,
+        "width" : 5
       } ],
       "created" : 0,
       "creator" : null,
@@ -10689,7 +10825,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -582248893,
+  "hashCode" : 1820712428,
   "id" : "DkmfEnuAYDk",
   "modelVersion" : 1,
   "packageType" : "GROUP"
