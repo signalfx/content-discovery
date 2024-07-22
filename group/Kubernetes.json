@@ -255,7 +255,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = ((A*100)/B).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='L')\nA = data('container_cpu_utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).scale(0.01).publish(label='A', enable=False)\nH = ((F*100)/G).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='H')\nF = data('container_cpu_utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).scale(0.01).publish(label='F', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='G1', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum().publish(label='G', enable=False)\nE = ((A*100)/D).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='N')\nI = data('container.cpu.time').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='I', enable=False)\nJ = data('system.cpu.time', rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='J', enable=False)\nK = ((I*100)/J).publish(label='K')",
+      "programText" : "C = ((A*100)/B).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='L')\nA = data('container_cpu_utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).scale(0.01).publish(label='A', enable=False)\nH = ((F*100)/G).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='H')\nF = data('container_cpu_utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).scale(0.01).publish(label='F', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.node.name', '*') and filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='G1', enable=False)\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='M', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='G', enable=False)\nE = ((A*100)/D).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name']).publish(label='N')\nI = data('container.cpu.time').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='I', enable=False)\nJ = data('system.cpu.time', rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='J', enable=False)\nK = ((I*100)/J).publish(label='K')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -843,14 +843,40 @@
       "lastUpdatedBy" : null,
       "name" : "CPU capacity used per node (%)",
       "options" : {
-        "colorBy" : "Range",
-        "colorRange" : {
-          "color" : null,
-          "max" : null,
-          "min" : null
-        },
+        "colorBy" : "Scale",
+        "colorRange" : null,
         "colorScale" : null,
-        "colorScale2" : null,
+        "colorScale2" : [ {
+          "gt" : 80.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : null,
+          "paletteIndex" : 16
+        }, {
+          "gt" : 60.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 80.0,
+          "paletteIndex" : 17
+        }, {
+          "gt" : 40.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 60.0,
+          "paletteIndex" : 18
+        }, {
+          "gt" : 20.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 40.0,
+          "paletteIndex" : 19
+        }, {
+          "gt" : null,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 20.0,
+          "paletteIndex" : 20
+        } ],
         "groupBy" : [ "k8s.cluster.name" ],
         "noDataOptions" : {
           "linkText" : null,
@@ -4574,7 +4600,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.num_processors').sum().mean(over='1m').fill(0).publish(label='A', enable=False)\nB = data('machine_cpu_cores').sum().mean(over='1m').fill(0).publish(label='B', enable=False)\nD = data('system.cpu.time').sum().mean(over='1m').fill(0).publish(label='D', enable=False)\nC = max(A, B, D).publish(label='C')",
+      "programText" : "A = data('cpu.num_processors').sum().mean(over='1m').fill(0).publish(label='A', enable=False)\nB = data('machine_cpu_cores').sum().mean(over='1m').fill(0).publish(label='B', enable=False)\nD = data('system.cpu.time', filter('state', 'idle')).size(by=['cpu']).size().fill(0).publish(label='D', enable=False)\nC = max(A, B, D).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5683,7 +5709,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.pod.name', '*'), rollup='latest').sum(by=['k8s.container.name']).publish(label='A')",
+      "programText" : "A = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.pod.name', '*'), rollup='latest').sum(by=['k8s.container.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -6357,6 +6383,9 @@
           }, {
             "enabled" : true,
             "property" : "k8s.pod.uid"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.node.name"
           } ]
         },
         "lineChartOptions" : {
@@ -6398,7 +6427,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.memory.usage', filter=filter('k8s.node.name', '*')).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.pod.name']).publish(label='A')",
+      "programText" : "A = data('container.memory.usage', filter=filter('k8s.node.name', '*')).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.pod.name', 'k8s.node.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9828,7 +9857,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Number of bytes consumed on filesystem",
+          "displayName" : "Filesystem usage",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -9848,7 +9877,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.filesystem.usage', rollup='average').sum(by=['container.id', 'k8s.container.name', 'k8s.pod.uid', 'k8s.node.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('container.filesystem.usage', rollup='average').sum(by=['container.id', 'k8s.container.name', 'k8s.pod.uid', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9936,7 +9965,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "A",
+          "displayName" : "CPU usage (pre translation)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -9945,7 +9974,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "B",
+          "displayName" : "CPU usage (post translation)",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -16043,7 +16072,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 210025536,
+  "hashCode" : -1199683207,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
