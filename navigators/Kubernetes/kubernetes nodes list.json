@@ -1,0 +1,344 @@
+{
+  "crossLinkExports": null,
+  "hashCode": -568217978,
+  "id": "GTpdkwbAYAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "FY0-gyCAgAA",
+        "Fs3DxPxAYAE"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "GTpdkwbAYAA",
+      "idDisplayName": "{{k8s.node.name}}",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "k8s.node.name"
+              ]
+            }
+          ],
+          "metric": "k8s.node.condition_ready"
+        }
+      ],
+      "instanceDashboards": [
+        "FY0-rNBAYAA"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "K8s nodes list",
+      "navigatorCategory": "Kubernetes",
+      "navigatorCategoryDisplayName": "Kubernetes",
+      "navigatorCategoryGroupDisplayName": "Containers",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "list",
+      "ownerScope": "splunk",
+      "pinnedFilters": [
+        {
+          "applyIfExists": true,
+          "displayName": "Environment",
+          "fieldName": "sf_environment"
+        },
+        {
+          "applyIfExists": true,
+          "displayName": "Service",
+          "fieldName": "sf_service"
+        },
+        {
+          "applyIfExists": false,
+          "displayName": "Cluster",
+          "fieldName": "k8s.cluster.name"
+        },
+        {
+          "applyIfExists": true,
+          "displayName": "Namespace",
+          "fieldName": "k8s.namespace.name"
+        }
+      ],
+      "relationships": [],
+      "requiresFilter": false,
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": "_exists_:k8s.node.name",
+        "alwaysGroupBy": null,
+        "category": "Kubernetes",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "K8s nodes list",
+        "filterProperties": null,
+        "id": "k8snodeslist",
+        "idName": "Node",
+        "idProperties": [
+          {
+            "displayName": "condition",
+            "id": "condition"
+          }
+        ],
+        "idTemplate": "{{k8s.node.name}} | {{k8s.cluster.name}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Node",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Cluster",
+            "format": null,
+            "metric": null,
+            "property": "k8s.cluster.name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Node condition",
+            "format": null,
+            "metric": null,
+            "property": "condition",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Total CPU Percentage",
+            "format": "Percentage",
+            "metric": "total_cpu_percentage",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Total Memory Percentage",
+            "format": "Percentage",
+            "metric": "total_memory_percentage",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "File system utilization",
+            "format": "Percentage",
+            "metric": "file_system_utilization",
+            "property": null,
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "node_condition",
+            "id": "node_condition",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "READY = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(1).promote(by='condition', allow_missing={'condition':'Ready'})\nNOT_READY = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(0).promote(by='condition', allow_missing={'condition':'Not ready'})\nUNKNOWN = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(-1).promote(by='condition', allow_missing={'condition':'Unknown'})\nNA = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='condition', allow_missing={'condition':'n/a'})\nNODE_CONDITION = union(READY,NOT_READY,UNKNOWN,NA)",
+              "varName": "NODE_CONDITION"
+            },
+            "metricSelectors": [
+              "k8s.node.condition_ready"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "total_cpu_percentage",
+            "id": "total_cpu_percentage",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.node.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "OTEL_CPU_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).scale(0.01)\nOTEL_CPU_PROCESSORS = data('cpu.num_processors'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_USAGE = ((OTEL_CPU_USAGE*100)/OTEL_CPU_PROCESSORS)\nCPU_TIME = data('cotainer.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name'])\nSYSTEM_CPU_TIME = data('system.cpu.time', filter('state', 'idle'){{#filter}} and {{{filter}}}{{/filter}}).count(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_PRE_USAGE = ((CPU_TIME/SYSTEM_CPU_TIME)*100)\nCPU_UTILIZATION = union(CPU_USAGE, CPU_PRE_USAGE)",
+              "varName": "CPU_UTILIZATION"
+            },
+            "metricSelectors": [
+              "container_cpu_utilization",
+              "cpu.num_processors",
+              "cotainer.cpu.time",
+              "system.cpu.time"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "total_memory_percentage",
+            "id": "total_memory_percentage",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.node.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nMEMORY_LIMIT = data('k8s.container.memory_limit'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nNODE_MEMORY_USAGE = (MEMORY_USAGE/MEMORY_LIMIT*100)",
+              "varName": "NODE_MEMORY_USAGE"
+            },
+            "metricSelectors": [
+              "container.memory.usage",
+              "k8s.container.memory_limit"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "file_system_utilization",
+            "id": "file_system_utilization",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.node.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "CAPACITY = data('container.filesystem.capacity', filter('sf_tags', '*',  match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nUTILIZATION = data('container.filesystem.usage', filter('sf_tags', '*',  match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nFILE_SYSTEM_UTILIZATION = ((UTILIZATION/CAPACITY)*100)",
+              "varName": "FILE_SYSTEM_UTILIZATION"
+            },
+            "metricSelectors": [
+              "container.filesystem.usage",
+              "container.filesystem.capacity"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Running nodes",
+        "o11yMetricUnit": null,
+        "o11yProductName": "K8s nodes list",
+        "o11ySignalflowTemplate": "TEMPLATE = data('k8s.node.condition_ready', filter=filter('k8s.cluster.name', '*', match_missing=True)).sum(by=['k8s.node.name']).mean(over='1m').count().publish(label='TEMPLATE')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "requiredProperties": [],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [],
+        "type": "list",
+        "unreleased": false
+      },
+      "visualizations": [
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": false,
+              "showGroupBy": true,
+              "showNavigatorSettings": false,
+              "showOutliers": false
+            }
+          },
+          "defaultVisualization": true,
+          "type": "list",
+          "views": [
+            "aggregate"
+          ]
+        }
+      ]
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
