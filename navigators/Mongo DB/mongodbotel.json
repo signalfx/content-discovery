@@ -1,5 +1,6 @@
 {
-  "hashCode": -1171050002,
+  "crossLinkExports": null,
+  "hashCode": 360748825,
   "id": "GOBQRPyAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -13,13 +14,13 @@
       "defaultGroupBy": null,
       "description": "",
       "id": "GOBQRPyAYAA",
-      "idDisplayName": "{{host.name}}",
+      "idDisplayName": "{{server.address}}",
       "importQualifiers": [
         {
           "filters": [
             {
               "not": false,
-              "property": "host.name",
+              "property": "server.address",
               "values": []
             }
           ],
@@ -29,7 +30,7 @@
           "filters": [
             {
               "not": false,
-              "property": "host.name",
+              "property": "server.address",
               "values": []
             },
             {
@@ -47,32 +48,34 @@
       "instanceDisplayText": null,
       "lastUpdated": 0,
       "lastUpdatedBy": null,
-      "name": "MongoDB hosts (OTel)",
+      "name": "MongoDB instances (OTel)",
       "navigatorCategory": "Datastores",
       "navigatorCategoryDisplayName": "Datastores",
       "navigatorCategoryGroupDisplayName": "Others",
       "navigatorCategoryInstancesName": "entity",
       "navigatorType": "elemental",
       "ownerScope": "splunk",
+      "pinnedFilters": [],
       "relationships": [],
+      "requiresFilter": false,
       "sites": "o11y",
       "systemTypes": [
         "mongodb"
       ],
       "uiModel": {
-        "alertQuery": "sf_key:host.name AND (sf_metric:mongodb.operation.count OR sf_metric:mongodb.memory.usage OR sf_metric:mongodb.connection.count)",
+        "alertQuery": "sf_key:server.address AND (sf_metric:mongodb.operation.count OR sf_metric:mongodb.memory.usage OR sf_metric:mongodb.connection.count)",
         "category": "Datastores",
         "categoryPriority": 0,
         "discoveryQuery": [],
-        "displayName": "MongoDB hosts (OTel)",
+        "displayName": "MongoDB instances (OTel)",
         "filterProperties": null,
         "id": "mongodb",
         "idName": "Host",
-        "idTemplate": "{{host.name}}",
+        "idTemplate": "{{server.address}}",
         "listColumns": [
           {
             "aggregate": null,
-            "displayName": "Host",
+            "displayName": "Instance",
             "format": "id",
             "metric": null,
             "property": "id",
@@ -115,7 +118,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "CONNECTIONS = data('mongodb.connection.count'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').sum(by=['host.name'])",
+              "template": "CONNECTIONS = data('mongodb.connection.count'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').sum(by=['server.address'])",
               "varName": "CONNECTIONS"
             },
             "metricSelectors": [
@@ -146,7 +149,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "DATA_SIZE = data('mongodb.data.size'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').sum(by=['host.name'])",
+              "template": "DATA_SIZE = data('mongodb.data.size'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').sum(by=['server.address'])",
               "varName": "DATA_SIZE"
             },
             "metricSelectors": [
@@ -184,7 +187,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "CACHE_HIT = data('mongodb.cache.operations', filter=filter('type', 'hit'){{#filter}}and{{{filter}}}{{/filter}}).sum(by=['host.name'])\nCACHE_MISS = data('mongodb.cache.operations', filter=filter('type', 'miss'){{#filter}}and{{{filter}}}{{/filter}}).sum(by=['host.name'])\nHIT_RATIO = ((CACHE_HIT+1)/(CACHE_HIT+CACHE_MISS+1)).scale(100)",
+              "template": "CACHE_HIT = data('mongodb.cache.operations', filter=filter('type', 'hit'){{#filter}}and{{{filter}}}{{/filter}}).sum(by=['server.address'])\nCACHE_MISS = data('mongodb.cache.operations', filter=filter('type', 'miss'){{#filter}}and{{{filter}}}{{/filter}}).sum(by=['server.address'])\nHIT_RATIO = ((CACHE_HIT+1)/(CACHE_HIT+CACHE_MISS+1)).scale(100)",
               "varName": "HIT_RATIO"
             },
             "metricSelectors": [
@@ -215,7 +218,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "MEMORY_USAGE = data('mongodb.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "template": "MEMORY_USAGE = data('mongodb.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['server.address'])",
               "varName": "MEMORY_USAGE"
             },
             "metricSelectors": [
@@ -246,7 +249,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "NETWORK_RECEIVE = data('mongodb.network.io.receive'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=['host.name'])",
+              "template": "NETWORK_RECEIVE = data('mongodb.network.io.receive'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=['server.address'])",
               "varName": "NETWORK_RECEIVE"
             },
             "metricSelectors": [
@@ -277,7 +280,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "NETWORK_SENT = data('mongodb.network.io.transmit'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=['host.name'])",
+              "template": "NETWORK_SENT = data('mongodb.network.io.transmit'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=['server.address'])",
               "varName": "NETWORK_SENT"
             },
             "metricSelectors": [
@@ -290,10 +293,10 @@
           }
         ],
         "mtsQuery": null,
-        "o11yMetricName": "Running hosts",
+        "o11yMetricName": "Running instances",
         "o11yMetricUnit": null,
-        "o11yProductName": "MongoDB hosts (OTel)",
-        "o11ySignalflowTemplate": "A = data('mongodb.storage.size').sum(by=['host.name']).count().publish(label='A')",
+        "o11yProductName": "MongoDB instances (OTel)",
+        "o11ySignalflowTemplate": "A = data('mongodb.storage.size').sum(by=['server.address']).count().publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
