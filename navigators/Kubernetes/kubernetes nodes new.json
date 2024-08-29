@@ -322,6 +322,66 @@
             "isDefault": false,
             "name": "k8s cluster",
             "type": "INTERNAL_NAVIGATOR_LINK"
+          },
+          {
+            "navigatorId": "FTByWHUAYAA",
+            "navigatorView": "INSTANCE",
+            "conditions": [
+              {
+                "not": false,
+                "property": "k8s.cluster.name",
+                "values": []
+              }
+            ],
+            "isDefault": false,
+            "name": "K8s nodes",
+            "type": "INTERNAL_NAVIGATOR_LINK"
+          }
+        ]
+      }
+    },
+    {
+      "crossLink": {
+        "aliases": {
+          "k8s.pod.uid": [
+            "k8s.pod.uid",
+            "kubernetes_pod_uid"
+          ]
+        },
+        "created": 0,
+        "creator": null,
+        "id": "GSLn6jVAYAk",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "propertyName": "k8s.pod.uid",
+        "targets": [
+          {
+            "navigatorId": "FTByWHUAYAA",
+            "navigatorView": "AGGREGATE",
+            "conditions": [
+              {
+                "not": false,
+                "property": "k8s.cluster.name",
+                "values": []
+              }
+            ],
+            "isDefault": false,
+            "name": "K8s cluster",
+            "type": "INTERNAL_NAVIGATOR_LINK"
+          },
+          {
+            "navigatorId": "FTByWHUAYAA",
+            "navigatorView": "INSTANCE",
+            "conditions": [
+              {
+                "not": false,
+                "property": "k8s.cluster.name",
+                "values": []
+              }
+            ],
+            "isDefault": false,
+            "name": "K8s node",
+            "type": "INTERNAL_NAVIGATOR_LINK"
           }
         ]
       }
@@ -470,14 +530,6 @@
             "metric": "file_system_utilization",
             "property": null,
             "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Value",
-            "format": "Number",
-            "metric": null,
-            "property": "value",
-            "sortable": null
           }
         ],
         "metrics": [
@@ -549,8 +601,8 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "READY = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(1).promote(by='condition', allow_missing={'condition':'Ready'})\nNOT_READY = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(0).promote(by='condition', allow_missing={'condition':'Not ready'})\nUNKNOWN = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(-1).promote(by='condition', allow_missing={'condition':'Unknown'})\nNA = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='condition', allow_missing={'condition':'n/a'})\nNODE_CONDITION = union(READY,NOT_READY,UNKNOWN,NA)",
-              "varName": "NODE_CONDITION"
+              "template": "READY = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(1).promote(by='condition', allow_missing={'condition':'Ready'})\nNOT_READY = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(0).promote(by='condition', allow_missing={'condition':'Not ready'})\nUNKNOWN = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).equals(-1).promote(by='condition', allow_missing={'condition':'Unknown'})\nNA = data('k8s.node.condition_ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.node.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='condition', allow_missing={'condition':'n/a'})\nCONDITION = union(READY,NOT_READY,UNKNOWN,NA)",
+              "varName": "CONDITION"
             },
             "metricSelectors": [
               "k8s.node.condition_ready"
@@ -744,6 +796,10 @@
             },
             "groupBy": "k8s.node.name",
             "hierarchicalFilter": "removeChildAllowEmptyMatch",
+            "panel": {
+              "collapsible": true,
+              "defaultOpen": false
+            },
             "preferredRoot": true,
             "replaceOnlyFilters": [
               "k8s.cluster.name",
@@ -753,8 +809,7 @@
           "defaultVisualization": true,
           "type": "hierarchical",
           "views": [
-            "instance",
-            "aggregate"
+            "instance"
           ]
         },
         {
