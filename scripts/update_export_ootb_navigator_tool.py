@@ -4,12 +4,33 @@
 """
 import json
 import os
+import subprocess
 import requests
 import argparse
 
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent.parent
+
+# Execute the first command
+nav_folders = subprocess.check_output(
+    "cd navigators && git diff --relative --name-only | awk -F/ '{print $1}' | uniq | sed -n -e 'H;${x;s/\\n/,/g;s/^,//;p;}'",
+    shell=True,
+    text=True
+).strip()
+
+# Set the NAV_FOLDERS environment variable
+os.environ['NAV_FOLDERS'] = nav_folders
+
+# Execute the second command
+nav_files = subprocess.check_output(
+    "cd navigators && git diff --relative --name-only | awk -F/ '{print $2}' | uniq | sed -n -e 'H;${x;s/\\n/,/g;s/^,//;p;}'",
+    shell=True,
+    text=True
+).strip()
+
+# Set the NAV_FILES environment variable
+os.environ['NAV_FILES'] = nav_files
 
 
 def get_token_from_file():
@@ -89,7 +110,6 @@ class NavigatorUpdateExport:
                 # Get list of json file
                 self.abs_path = os.path.join(self.dir_path, folder_name)
                 json_files = self.list_json_files()
-                print("JSON files under current folder:", json_files)
                 # Go through each navigator json
                 for file_name in json_files:
                     if file_name in self.file_names_list or self.file_names_list[0] == '':
@@ -135,8 +155,7 @@ class NavigatorUpdateExport:
         if response.status_code != 200:
             raise RuntimeError(
                 f"Failed to update navigator {self.NAVIGATOR_ID}: {response.text} {response.status_code}")
-
-        print(response.text)
+        print("Successfully updated navigator: ", self.file_name)
 
     def export_navigator_api(self):
         """
@@ -150,8 +169,7 @@ class NavigatorUpdateExport:
         response = requests.request("GET", url, headers=headers)
         if response.status_code != 200:
             raise RuntimeError(f"Failed to update navigator {self.NAVIGATOR_ID}: {response.text}")
-        # print(response.json())
-        print(response.status_code)
+        print("Successfully exported navigator: ", self.file_name)
         with open(os.path.join(self.abs_path, self.file_name), 'w') as f:
             json.dump(response.json(), f, indent=2)
 
@@ -180,12 +198,12 @@ class NavigatorUpdateExport:
                             help="Name of the folder ','(comma ,) separated.(Please don't keep space between , "
                                  "and next folder name) e.g \"MySQL,AWS,Azure\" or \"Azure\" and By default will use "
                                  "AWS folder.",
-                            default="AWS", nargs="?")
+                            default=os.getenv("NAV_FOLDERS", "AWS"), nargs="?")
         parser.add_argument("--file-name-list",
                             '-fil',
                             help="Name of the file with extension. e.g \"Mysql.json\" or \"sns.json,elb.json\" \t By "
-                                 "Default will be all files under given folder.",
-                            default="", nargs="?")
+                                 "Default will be all files under the given folder.",
+                            default=os.getenv("NAV_FILES", ""), nargs="?")
 
         args = parser.parse_args()
         print(args)
@@ -195,7 +213,8 @@ class NavigatorUpdateExport:
         folder_list = [value.strip() for value in args.folder_name_list.split(',')]
         self.folder_names_list = folder_list
         self.update_nav = args.update_nav
-
+        print(self.folder_names_list)
+        print(self.file_names_list)
         # Export or Update+Export Navigator json.
         self.update_export_navigator()
 
