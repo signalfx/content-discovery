@@ -80,7 +80,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.buffer.totalBufferedTraces').sum(by=['host', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -163,7 +163,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.processedTraces', rollup='rate').sum(by=['cluster', 'host']).publish(label='B')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -212,7 +212,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : null,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -224,12 +228,30 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "disk.summary_utilization",
+          "displayName" : "Disk utilization",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Disk usage",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total disk",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -244,9 +266,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=filter('source', 'gateway')).publish(label='A')",
+      "programText" : "C = ((A/B)*100).publish(label='C')\nA = data('system.filesystem.usage', filter=filter('source', 'gateway') and filter('state', 'used')).sum(by=['host', 'cluster']).publish(label='A', enable=False)\nB = data('system.filesystem.usage', filter=filter('source', 'gateway') and filter('state', 'free', 'used')).sum(by=['host', 'cluster']).publish(label='B', enable=False)",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -267,7 +289,7 @@
       "packageSpecifications" : "",
       "programText" : "",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -359,7 +381,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.buffer.lateSpansSeen', rollup='rate').sum(by=['cluster']).publish(label='A')\nB = data('gateway.tracing.buffer.lateSpansSent', rollup='rate').sum(by=['cluster']).scale(-1).publish(label='B')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -442,7 +464,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.buffer.totalBufferedSpans').sum(by=['host', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -491,7 +513,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : null,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -503,7 +529,34 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "cpu.utilization",
+          "displayName" : "CPU utilization (Pre translation)",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU usage",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total CPU",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU utilization (Post translation)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -523,9 +576,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.utilization', filter=filter('source', 'gateway')).publish(label='A')",
+      "programText" : "D = ((B/C)*100).publish(label='D')\nB = data('system.cpu.time', filter=filter('source', 'gateway') and (not filter('state', 'idle'))).sum(by=['host', 'cluster']).publish(label='B', enable=False)\nC = data('system.cpu.time', filter=filter('source', 'gateway')).sum(by=['host', 'cluster']).publish(label='C', enable=False)\nA = data('cpu.utilization', filter=filter('source', 'gateway')).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -617,7 +670,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.tracing.sampler.buffer_entries_received', rollup='rate').publish(label='B')\nC = data('gateway.tracing.sampler.buffer_entries_sent', rollup='rate').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -666,7 +719,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : null,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -678,8 +735,26 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "memory.utilization",
+          "displayName" : "Memory usage",
           "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Total memory",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -698,9 +773,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.utilization', filter=filter('source', 'gateway')).publish(label='A')",
+      "programText" : "A = data('system.memory.usage', filter=filter('source', 'gateway') and filter('state', 'used')).sum(by=['host', 'cluster']).publish(label='A', enable=False)\nB = data('system.memory.usage', filter=filter('source', 'gateway') and filter('state', 'used', 'free', 'buffered', 'cached')).sum(by=['host', 'cluster']).publish(label='B', enable=False)\nC = ((A/B)*100).publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -792,7 +867,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.tracing.sampler.expired_buffer_entries_received', rollup='rate').publish(label='B')\nC = data('gateway.tracing.sampler.expired_buffer_entries_sent', rollup='rate').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -875,7 +950,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.processedTraces', rollup='rate').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='B')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -944,7 +1019,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('traces.totalUnique').max(by=['cluster']).sum().publish(label='A', enable=False)\nB = data('spans.totalUnique').max(by=['cluster']).sum().publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1045,7 +1120,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.sentTraces', rollup='rate').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='B', enable=False)\nC = data('gateway.debugTraces', rollup='rate').sum(by=['cluster']).mean(over='1m').scale(60).publish(label='C')\nD = (B-C).publish(label='D')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1094,7 +1169,11 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : null,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1126,9 +1205,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('network.total', filter=filter('source', 'gateway'),rollup='rate').publish(label='A')",
+      "programText" : "A = data('system.network.io', filter=filter('source', 'gateway')).sum(by=['host', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1179,7 +1258,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.processedTraces', rollup='rate').sum().mean(over='1m').scale(60).publish(label='B')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1200,7 +1279,7 @@
       "packageSpecifications" : "",
       "programText" : "",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1301,7 +1380,7 @@
       "packageSpecifications" : "",
       "programText" : "E = data('dropped_spans', filter=filter('source', 'gateway'), rollup='rate').sum(by=['reason']).publish(label='E')\nF = data('dropped_spans', filter=(not filter('reason', '*')) and filter('source', 'gateway'), rollup='delta').sum().publish(label='F')\nG = data('gateway.dropped_spans', filter=filter('source', 'gateway'), rollup='rate').sum(by=['reason']).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1366,7 +1445,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.commit',rollup='rate').count(by=['samplerCommit', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1449,7 +1528,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.sentSpans', rollup='rate').sum(by=['cluster', 'host']).publish(label='B')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1550,7 +1629,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('traces.totalUnique').max(by=['cluster']).publish(label='A', enable=False)\nB = data('spans.totalUnique').max(by=['cluster']).publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1633,7 +1712,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.sentTraces', rollup='rate').sum(by=['cluster', 'host']).publish(label='B')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1752,7 +1831,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.sampler.spans', rollup='rate').sum(by=['cluster']).publish(label='A')\nB = data('gateway.tracing.sampler.traces', rollup='rate').sum(by=['cluster']).publish(label='B')\nC = data('gateway.tracing.sampler.errs', rollup='rate').sum(by=['cluster']).publish(label='C')\nD = data('gateway.tracing.sampler.bothSelected', rollup='rate').scale(-1).sum(by=['cluster']).publish(label='D')\nE = data('gateway.debugTraces', rollup='rate').sum(by=['cluster']).publish(label='E')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1844,7 +1923,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.processedSpans', rollup='rate').sum(by=['cluster', 'host']).publish(label='B')\nC = data('gateway.processedSpans', rollup='rate').sum().scale(60).publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1945,7 +2024,7 @@
       "packageSpecifications" : "",
       "programText" : "E = data('dropped_traces', filter=filter('source', 'gateway'), rollup='delta').sum(by=['reason']).publish(label='E')\nF = data('gateway.dropped_traces', filter=filter('source', 'gateway'), rollup='rate').sum(by=['reason']).publish(label='F')\nG = data('gateway.debugTracesOverLimit', rollup='rate').sum(by=['source']).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1989,7 +2068,11 @@
           "paletteIndex" : 20
         } ],
         "groupBy" : [ ],
-        "noDataOptions" : null,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -2020,6 +2103,54 @@
           "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null
+        }, {
+          "displayName" : "E",
+          "label" : "E",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "F",
+          "label" : "F",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "G",
+          "label" : "G",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "H",
+          "label" : "H",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "I",
+          "label" : "I",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "J",
+          "label" : "J",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "K",
+          "label" : "K",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "L",
+          "label" : "L",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
         } ],
         "refreshInterval" : null,
         "sortDirection" : "Ascending",
@@ -2034,9 +2165,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.utilization', filter=filter('source', 'gateway')).publish(label='A', enable=False)\nB = data('memory.utilization', filter=filter('source', 'gateway')).publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=filter('source', 'gateway')).publish(label='C', enable=False)\nD = max(A, B, C).sum(by=['host','cluster']).publish(label='D')",
+      "programText" : "A = data('cpu.utilization', filter=filter('source', 'gateway')).sum(by=['host','cluster']).publish(label='A', enable=False)\nB = data('system.cpu.time', filter=filter('source', 'gateway') and (not filter('state', 'idle'))).sum(by=['host','cluster']).publish(label='B', enable=False)\nC = data('system.cpu.time', filter=filter('source', 'gateway')).sum(by=['host','cluster']).publish(label='C', enable=False)\nD = ((B/C)*100).publish(label='D', enable=False)\nE = union(A, D).publish(label=\"E\", enable=False)\nF = data('system.memory.usage', filter=filter('source', 'gateway') and filter('state', 'used')).sum(by=['host','cluster']).publish(label='F', enable=False)\nG = data('system.memory.usage', filter=filter('source', 'gateway') and filter('state', 'used', 'free', 'buffered', 'cached')).sum(by=['host','cluster']).publish(label='G', enable=False)\nH = ((F/G)*100).publish(label='H', enable=False)\nI = data('system.filesystem.usage', filter=filter('source', 'gateway') and filter('state', 'free', 'used')).sum(by=['host','cluster']).publish(label='I', enable=False)\nJ = data('system.filesystem.usage',filter=filter('source', 'gateway') and filter('state', 'used')).sum(by=['host','cluster']).publish(label='J', enable=False)\nK = ((I/J)*100).publish(label='K', enable=False)\nL = max(E, H, K).sum(by=['host','cluster']).publish(label='L')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2087,7 +2218,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('gateway.sentTraces', rollup='rate').sum().mean(over='1m').scale(60).publish(label='B')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2108,7 +2239,7 @@
       "packageSpecifications" : "",
       "programText" : "",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2191,7 +2322,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.buffer.numSpansAgedOut', rollup='rate').sum(by=['host', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2274,7 +2405,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.buffer.numTracesAgedOut', rollup='rate').sum(by=['host', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2356,7 +2487,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('Alloc', filter=filter('source', 'gateway')).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2438,7 +2569,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.buffer.totalBufferedExpiredTraces').sum(by=['host', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2520,7 +2651,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('num_goroutine', filter=filter('source', 'gateway')).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2737,7 +2868,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('trace_chan_backup_size').sum(by=['host', 'cluster']).publish(label='A')\nB = data('trace_backup_size').sum(by=['host', 'cluster']).publish(label='B')\nE = data('gateway.tracing.buffer.size').sum(by=['host', 'cluster']).publish(label='E')\nC = data('spans.bufferSize').sum(by=['host', 'cluster']).publish(label='C')\nD = data('traces.bufferSize').sum(by=['host', 'cluster']).publish(label='D')\nF = data('gateway.tracing.sampler.sample.bufferSize').sum(by=['host', 'cluster']).publish(label='F')\nG = data('gateway.tracing.sampler.span.bufferSize').sum(by=['host', 'cluster']).publish(label='G')\nH = data('gateway.tracing.sampler.err.bufferSize').sum(by=['host', 'cluster']).publish(label='H')\nI = data('gateway.tracing.buffer.totalBufferedBufferEntries').sum(by=['host', 'cluster']).publish(label='I')\nJ = data('gateway.tracing.buffer.totalBufferedExpiredBufferEntries').sum(by=['host', 'cluster']).publish(label='J')\nK = data('spans.entryBufferSize').sum(by=['host', 'cluster']).publish(label='K')\nL = data('traces.entryBufferSize').sum(by=['host', 'cluster']).publish(label='L')\nM = data('spans.uberEntryBufferSize').sum(by=['host', 'cluster']).publish(label='M')\nN = data('traces.uberEntryBufferSize').sum(by=['host', 'cluster']).publish(label='N')\nO = data('datapoint_chan_backup_size').sum(by=['host', 'cluster']).publish(label='O')\nP = data('datapoint_backup_size').sum(by=['host', 'cluster']).publish(label='P')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2789,7 +2920,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('gateway.tracing.sampler.clusterSize').sum(by=['host', 'cluster']).publish(label='A')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   } ],
   "crossLinkExports" : [ ],
@@ -3133,7 +3264,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -845175051,
+  "hashCode" : -1120855698,
   "id" : "DzaUStBAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
