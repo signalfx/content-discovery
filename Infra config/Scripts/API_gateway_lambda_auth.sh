@@ -1,0 +1,2 @@
+curl --location 'https://90zz27y76g.execute-api.us-west-1.amazonaws.com/Prod/check'  --header 'auth-token: bits-sec-token'
+for i in {1..1000}; do curl ae1f09b7883014bc9adb519a11b880dd-127313268.us-west-1.elb.amazonaws.com:80/productpage -IL; done

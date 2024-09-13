@@ -1,0 +1,2 @@
+#!/bin/bash
+ab -n 2000 -c 300 -H "Accept-Encoding: gzip, deflate" -rk -A adminuser:****** https://search-product-catalogue-y7dxzvazmia2drv6fob2fzpnzu.us-west-1.es.amazonaws.com/kibana_sample_data_logs/_search?pretty

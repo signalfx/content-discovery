@@ -1,0 +1,100 @@
+clusterName: bits-env-test
+splunkObservability:
+  realm: lab0
+  accessToken: ""
+  ingestUrl: "https://external-ingest.lab0.signalfx.com"
+  apiUrl: "https://external-api.lab0.signalfx.com"
+  metricsEnabled: true
+  tracesEnabled: true
+  infrastructureMonitoringEventsEnabled: true
+  profilingEnabled: false
+  logsEnabled: true
+environment: bits-env-test-cldprpt
+cloudProvider: "aws"
+distribution: "eks"
+logsEngine: otel
+logsCollection:
+  extraFileLogs:
+    filelog/journal-log:
+      include: [/var/log/messages]
+      start_at: beginning
+      include_file_path: true
+      include_file_name: false
+      resource:
+        com.splunk.source: /var/log/messages
+        host.name: 'EXPR(env("K8S_NODE_NAME"))'
+    filelog/audit:
+      include: [/var/log/audit/audit.log]
+      start_at: beginning
+      include_file_path: true
+      include_file_name: false
+      resource:
+        com.splunk.source: /var/log/audit
+        host.name: 'EXPR(env("K8S_NODE_NAME"))'
+    filelog/secure:
+      include: [/var/log/secure]
+      start_at: beginning
+      include_file_path: true
+      include_file_name: false
+      resource:
+        com.splunk.source: /var/log/secure
+        host.name: 'EXPR(env("K8S_NODE_NAME"))'
+    filelog/boot:
+      include: [/var/log/boot.log]
+      start_at: beginning
+      include_file_path: true
+      include_file_name: false
+      resource:
+        com.splunk.source: /var/log/boot
+        host.name: 'EXPR(env("K8S_NODE_NAME"))'
+    filelog/cron:
+      include: [/var/log/cron]
+      start_at: beginning
+      include_file_path: true
+      include_file_name: false
+      resource:
+        com.splunk.source: /var/log/cron
+        host.name: 'EXPR(env("K8S_NODE_NAME"))'
+clusterReceiver:
+  enabled: true
+  config:
+#    processors:
+#      resourcedetection:
+#        detectors: [env, ec2, system]
+    service:
+      pipelines:
+         metrics:
+           receivers: [k8s_cluster]
+           processors:
+             - memory_limiter
+             - resource/k8s_cluster
+             - batch
+             - resourcedetection
+             - resource
+           exporters:
+             - signalfx
+agent:
+  config:
+    service:
+      pipelines:
+         logs:
+           exporters:
+             - splunk_hec/o11y
+           processors:
+             - memory_limiter
+             - k8sattributes
+             - filter/logs
+             - batch
+             - resource/logs
+             - resourcedetection
+             - resource
+             - resource/add_environment
+           receivers:
+             - filelog
+             - fluentforward
+             - otlp
+             - filelog/journal-log
+             - filelog/cron
+             - filelog/boot
+             - filelog/secure
+             - filelog/audit

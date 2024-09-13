@@ -1,0 +1,12 @@
+source ~/.bash_profile
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "CREATE table emp999(empno char(4),ename varchar2(30),sal number(10,2),city varchar2(30),dob date);"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "INSERT INTO emp999(empno, ename, sal, city, dob) values('1', 'Amit', 5000, 'Mumbai','23-DEC-1982');"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "INSERT INTO emp999(empno, ename, sal, city, dob) values('2', 'Kiran', 6000, 'Pune','20-Mar-1985');"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "INSERT INTO emp999 (empno, ename, sal, city, dob) values('3', 'Ganesh', 4000, 'Delhi','11-Oct-1990');"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "INSERT INTO emp999(empno, ename, sal, city, dob) values('4', 'Ganesh2', 4000, 'Delhi','11-Oct-1990');"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "commit emp999;"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "UPDATE emp999 SET sal=10000 WHERE empno=1;"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "SELECT * from emp999;"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "DELETE from emp999 where empno='1';"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "SELECT * from emp999;"
+sqlplus bitsjb/bitsjb123@localhost:1521/ORCLCDB <<< "DELETE FROM emp999;"

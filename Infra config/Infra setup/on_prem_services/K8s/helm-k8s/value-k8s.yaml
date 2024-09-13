@@ -1,0 +1,174 @@
+clusterName: kubernetes-bits-production
+splunkObservability:
+  realm: lab0
+  accessToken: 
+  ingestUrl: "https://external-ingest.lab0.signalfx.com"
+  apiUrl: "https://external-api.lab0.signalfx.com"
+  metricsEnabled: true
+  tracesEnabled: true
+  infrastructureMonitoringEventsEnabled: true
+  profilingEnabled: true
+gateway:
+  enabled: true
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 150m
+      memory: 200Mi
+environment: k8s-bits-production
+cloudProvider: "aws"
+distribution: "eks"
+autodetect:
+  prometheus: true
+  istio: true
+clusterReceiver:
+  enabled: true
+agent:
+  config:
+    processors:
+      memory_limiter:
+        check_interval: 2s
+        limit_mib: 600 #${SPLUNK_MEMORY_LIMIT_MIB}
+      resource/add_collector_k8s:
+        attributes:
+        - action: insert
+          key: k8s.node.name
+          value: ${K8S_NODE_NAME}
+        - action: insert
+          key: k8s.pod.name
+          value: ${K8S_POD_NAME}
+        - action: insert
+          key: k8s.pod.uid
+          value: ${K8S_POD_UID}
+        - action: insert
+          key: k8s.namespace.name
+          value: ${K8S_NAMESPACE}
+      resource/add_environment:
+        attributes:
+        - action: insert
+          value: api_test
+          key: deployment.environment
+        - action: insert
+          value: trickerapp_java
+          key: sf_service
+        - action: insert
+          value: api_test
+          key: sf_environment
+    extensions:
+      health_check:
+      k8s_observer:
+        auth_type: serviceAccount
+        node: ${K8S_NODE_NAME}
+      zpages:
+      memory_ballast:
+        size_in_percentage: 30
+    receivers:
+      smartagent/kubernetes-apiserver:
+        type: kubernetes-apiserver
+        host: 172.31.37.134
+        port: 6443
+        useHTTPS: true
+        skipVerify: true
+        extraDimensions:
+          metric_source: kubernetes-apiserver
+      smartagent/etcd:
+        type: etcd
+        host: 127.0.0.1
+        port: 2381
+        extraMetrics:
+        - '*'
+      smartagent/kubernetes-scheduler:
+        type: kubernetes-scheduler
+        host: 127.0.0.1
+        port: 10259
+        useHTTPS: true
+        skipVerify: true
+        extraMetrics:
+        - '*'
+      smartagent/kube-controller-manager:
+        type: kube-controller-manager
+        host: 127.0.0.1
+        port: 10257
+        useHTTPS: true
+        skipVerify: true
+      k8s_cluster:
+        auth_type: serviceAccount
+        collection_interval: 30s
+        node_conditions_to_report: ["Ready", "MemoryPressure"]
+        allocatable_types_to_report: ["cpu","memory"]
+        metadata_exporters: [signalfx]
+      smartagent/kubernetes-events:
+        type: kubernetes-events
+        alwaysClusterReporter: true
+        whitelistedEvents:
+          - reason: Created
+            involvedObjectKind: Pod
+          - reason: SuccessfulCreate
+            involvedObjectKind: ReplicaSet
+      smartagent/kubernetes-cluster:
+        type: kubernetes-cluster
+        alwaysClusterReporter: true
+        kubernetesAPI:
+          authType: serviceAccount
+          clientKeyPath: /etc/kubernetes/pki/apiserver.key
+          clientCertPath: /etc/kubernetes/pki/apiserver.crt
+          caCertPath: /etc/kubernetes/pki/ca.crt
+        extraDimensions:
+          service.name: k8s-cluster
+        extraMetrics:
+        - '*'
+      kubeletstats:
+        collection_interval: 10s
+        auth_type: serviceAccount
+        endpoint: "${K8S_NODE_NAME}:10250"
+        insecure_skip_verify: true
+      hostmetrics:
+        collection_interval: 10s
+        scrapers:
+          cpu:
+          disk:
+          filesystem:
+          memory:
+          network:
+      # System load average metrics https://en.wikipedia.org/wiki/Load_(computing)
+          load:
+      # Paging/Swap space utilization and I/O metrics
+          paging:
+      # Aggregated system process count metrics
+          processes:
+      # System processes metrics, disabled by default
+      # process:
+    exporters:
+      logging:
+        logLevel: debug
+    service:
+      extensions:
+      - health_check
+      - k8s_observer
+      - zpages
+      - memory_ballast
+      pipelines:
+         traces:
+             receivers: [otlp, jaeger, smartagent/signalfx-forwarder, zipkin]
+             processors:
+               - memory_limiter
+               - k8sattributes
+               - batch
+               - resourcedetection
+               - resource
+               - resource/add_environment
+             exporters:
+               - signalfx
+               - logging
+         metrics:
+             receivers: [otlp, smartagent/signalfx-forwarder, k8s_cluster, smartagent/kubernetes-cluster, smartagent/kubernetes-events, kubeletstats, hostmetrics, smartagent/kubernetes-apiserver, smartagent/kubernetes-scheduler, smartagent/etcd, smartagent/kube-controller-manager]
+             processors:
+               - memory_limiter
+               - k8sattributes
+               - batch
+               - resourcedetection
+               - resource
+               - resource/add_environment
+             exporters:
+               - signalfx
+               - logging

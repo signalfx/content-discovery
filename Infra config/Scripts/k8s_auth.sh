@@ -1,0 +1,1 @@
+sshpass -p dsjhahsdk ssh  ec2-user@ip-172-31-37-98.us-west-1.compute.internal

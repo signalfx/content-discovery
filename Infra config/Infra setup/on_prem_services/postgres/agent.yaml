@@ -1,0 +1,456 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  http_forwarder:
+    ingress:
+      endpoint: 0.0.0.0:6060
+    egress:
+      endpoint: "${SPLUNK_API_URL}"
+      # Use instead when sending to gateway
+      #endpoint: "${SPLUNK_GATEWAY_URL}"
+  smartagent:
+    bundleDir: "${SPLUNK_BUNDLE_DIR}"
+    collectd:
+      configDir: "${SPLUNK_COLLECTD_DIR}"
+  zpages:
+    #endpoint: 0.0.0.0:55679
+  memory_ballast:
+    # In general, the ballast should be set to 1/3 of the collector's memory, the limit
+    # should be 90% of the collector's memory.
+    # The simplest way to specify the ballast size is set the value of SPLUNK_BALLAST_SIZE_MIB env variable.
+    size_mib: ${SPLUNK_BALLAST_SIZE_MIB}
+
+receivers:
+#  smartagent/postgresql:
+#    host: 127.0.0.1
+#    type: postgresql
+#    port: 5432
+#    databases: [mydb, postgres]
+#    masterDBName: postgres
+#    params: &psqlParams
+    #    connectionString: 'sslmode=disable'
+#    connectionString: "sslmode=disable user=postgres password=Crest@123"
+
+  smartagent/sql:
+    type: sql
+    host: 172.31.33.78
+    port: 5432
+    dbDriver: postgres
+    params:
+      user: "postgres"
+      password: "Crest@123"
+    connectionString: "sslmode=disable user=postgres password=Crest@123"
+
+    #    connectionString: 'user={{.user}} password={{.password}} sslmode=disable'
+    queries:
+      #postgres_database
+      #postgres_database
+      - query: "select oid, datname as database from pg_database;"
+        metrics:
+          - metricName: "postgres_database"
+            valueColumn: "database"
+            dimensionColumns: ["oid"] 
+            isCumulative: false
+      #postgres_table_size
+      - query: "SELECT I.table_catalog as database, C.relname AS 'table', pg_size_pretty(pg_table_size(C.oid)) AS 'table_size' FROM information_schema.tables I, pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace) WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND nspname !~ '^pg_toast' AND relkind IN ('r') AND I.table_name = C.relname ORDER BY pg_table_size(C.oid) DESC;"
+        metrics:
+          - metricName: "postgres_table_size"
+            valueColumn: "table_size"
+            dimensionColumns: ["database, table"]
+            isCumulative: false
+      #postgres_query_count
+       #postgres_query_time
+      - query: "SELECT datname as database, usename as user, SUM(calls) as total_calls, total_exec_time + total_plan_time as total_time FROM pg_stat_statements INNER JOIN pg_stat_database ON pg_stat_statements.dbid = pg_stat_database.datid INNER JOIN pg_user ON pg_stat_statements.userid = pg_user.usesysid GROUP BY pg_stat_database.datname, pg_user.usename, pg_stat_statements.total_exec_time, pg_stat_statements.total_plan_time;"
+        metrics:
+          - metricName: "postgres_user_query_count"
+            valueColumn: "total_calls"
+            dimensionColumns: ["database", "user"]
+          - metricName: "postgres_user_query_time"
+            valueColumn: "total_time"
+            dimensionColumns: ["database", "user"]
+      #postgres_sessions
+      #postgres_longest_running_queries
+      - query: "select datid as database_id, state, datname as database, pid, sessions, query_id, query, state_change - query_start as time_taken FROM pg_stat_activity WHERE state IS NOT NULL  and query IS NOT NULL GROUP BY pg_stat_activity.state, pg_stat_activity.datname, datid,pid,query_id,query, state_change, query_start;"
+        metrics:
+          - metricName: "postgres_sessions"
+            valueColumn: "sessions"
+            dimensionColumns: ["database_id", "database", "query_id", "query"]
+            isCumulative: false
+          - metricName: "postgres_longest_running_queries"
+            valueColumn: "time_taken"
+            dimensionColumns: ["database_id", "database","sessions", "query_id", "query"]
+            isCumulative: false
+      #postgres_database_size
+      - query: "select d.datname AS database, pg_size_pretty(pg_database_size(d.datname)) as database_size from pg_database d;"
+        metrics:
+          - metricName: "postgres_database_size"
+            valueColumn: "database_size"
+      #postgres_rows_inserted
+      #postgres_rows_updated
+      #postgres__rows_deleted
+      #postgres_sequential_scans
+      #postgres_index_scans
+      #postgres_table_size
+      #postgres_live_rows
+      #postgres_dead_rows
+      - query: "SELECT relname as table, pg_stat_all_tables.schemaname, n_tup_ins, n_tup_upd, n_tup_del, n_live_tup, n_dead_tup, n_tup_hot_upd, seq_scan, COALESCE(idx_scan, 0) as idx_scan, pg_relation_size(relid) as size, 'user' as type from pg_stat_all_tables WHERE idx_scan IS NOT NULL and pg_stat_all_tables.schemaname = 'public';"
+        metrics:
+          - metricName: "postgres_rows_inserted"
+            valueColumn: "n_tup_ins"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_rows_updated"
+            valueColumn: "n_tup_upd"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_rows_hot_updated"
+            valueColumn: "n_tup_hot_upd"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_rows_deleted"
+            valueColumn: "n_tup_del"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_sequential_scans"
+            valueColumn: "seq_scan"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_index_scans"
+            valueColumn: "idx_scan"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_table_size"
+            valueColumn: "size"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_live_rows"
+            valueColumn: "n_live_tup"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+          - metricName: "postgres_dead_rows"
+            valueColumn: "n_dead_tup"
+            dimensionColumns: ["schemaname", "table", "type"]
+            isCumulative: true
+      #postgres_scheduled_checkpoints
+      #postgres_requested_checkpoints
+      #postgres_buffers_checkpoints
+      #postgres_buffers_backend
+      #postgres_buffers_clean
+      - query: "select checkpoints_timed as scheduled_checkpoint, checkpoints_req as requested_checkpoint, buffers_checkpoint, buffers_backend, buffers_clean from pg_stat_bgwriter;"
+        metrics:
+          - metricName: "postgres_scheduled_checkpoints"
+            valueColumn: "scheduled_checkpoint"
+            dimensionColumns: null
+            isCumulative: false
+          - metricName: "postgres_requested_checkpoints"
+            valueColumn: "requested_checkpoint"
+            dimensionColumns: null
+            isCumulative: false
+          - metricName: "postgres_buffers_checkpoints"
+            valueColumn: "buffers_checkpoint"
+            dimensionColumns: null
+            isCumulative: false
+          - metricName: "postgres_buffers_backend"
+            valueColumn: "buffers_backend"
+            dimensionColumns: null
+            isCumulative: false
+          - metricName: "postgres_buffers_clean"
+            valueColumn: "buffers_clean"
+            dimensionColumns: null
+            isCumulative: false
+
+      #postgres_database_locks
+      - query: "select count(pid) as locks, database as database_id, relation, a.relname as database, mode, locktype from pg_locks as l, pg_class as a where l.relation = a.oid  and a.relname ='search_hit' group by database, relation, a.relname, mode, locktype;"
+        metrics:
+          - metricName: "postgres_database_locks"
+            valueColumn: "locks"
+            dimensionColumns: ["locktype", "relation", "database_id","database", "mode"]
+            isCumulative: false
+
+      #postgres_locks_queries
+      - query: "select pid, state, usename as user, query, query_start, datname as database, datid as database_id from pg_stat_activity where pid in (select pid from pg_locks l join pg_class t on l.relation = t.oid and t.relkind = 'r' where t.relname = 'search_hit');"
+        metrics:
+          - metricName: "postgres_database_locks_queries"
+            valueColumn: "pid"
+            dimensionColumns: ["database_id", "database", "query", "state", "user"]
+            isCumulative: false
+       #postgres_backends
+       #postgres_total_transactions
+       #postgres_total_sessions
+       #postgres_rollbacks
+       #postgres_conflicts
+       #postgres_deadlocks
+       #postgres_temporary_files
+       #postgres_temporary_bytes
+      - query: "select datid as database_id, datname as database, sessions, numbackends as backends, xact_commit as commits, xact_rollback as rollbacks, conflicts as conflicts, deadlocks, temp_files as temporary_files, temp_bytes as temporary_bytes, xact_commit + xact_rollback as total_transactions from pg_stat_database as d where d.datname <> '';"
+        metrics:
+          - metricName: "postgres_backends"
+            valueColumn: "backends"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+       #   - metricName: "postgres_total_transactions"
+       #     valueColumn: "total_transactions"
+       #     dimensionColumns: ["database_id", "database","commits","rollbacks"]
+       #     isCumulative: false
+          - metricName: "postgres_total_sessions"
+            valueColumn: "sessions"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_rollbacks"
+            valueColumn: "rollbacks"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_conflicts"
+            valueColumn: "conflicts"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_deadlocks"
+            valueColumn: "deadlocks"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_temporary_files"
+            valueColumn: "temporary_files"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_temporary_bytes"
+            valueColumn: "temporary_bytes"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+      #postgres_database_returned
+      #postgres_database_fetched
+      #postgres_database_inserted
+      #postgres_database_updated
+      #postgres_database_deleted
+      - query: "Select datid as database_id, datname as database, tup_returned as returned, tup_fetched as fetched, tup_inserted as inserted, tup_updated as updated, tup_deleted as deleted from pg_stat_database;"
+        metrics:
+          - metricName: "postgres_database_returned"
+            valueColumn: "returned"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_database_fetched"
+            valueColumn: "fetched"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_database_inserted"
+            valueColumn: "inserted"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_database_updated"
+            valueColumn: "updated"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_database_deleted"
+            valueColumn: "deleted"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+#postgres_commit_ratio
+#postgres_cache_hit_ratio
+      - query: "SELECT datid as database_id, datname as database, 100 * blks_hit / (blks_hit + blks_read) as cache_hit_ratio, 100 * xact_commit / (xact_commit + xact_rollback) as commit_ratio FROM pg_stat_database WHERE (xact_commit + xact_rollback) > 0 and (blks_hit + blks_read) > 0 and datname <> '';"
+        metrics:
+          - metricName: "postgres_commit_ratio"
+            valueColumn: "commit_ratio"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+          - metricName: "postgres_cache_hit_ratio"
+            valueColumn: "cache_hit_ratio"
+            dimensionColumns: ["database_id", "database"]
+            isCumulative: false
+    #postgres_table_block_hit_ratio
+      - query: "SELECT schemaname, relname as table, indexrelname as index, (idx_blks_hit*1.0 / GREATEST(idx_blks_hit + idx_blks_read, 1)) as hit_ratio, 'user' as type FROM pg_statio_user_indexes;"
+        metrics:
+          - metricName: "postgres_table_block_hit_ratio"
+            valueColumn: "hit_ratio"
+            dimensionColumns: ["index", "table", "schemaname", "type"]
+            isCumulative: false
+         #postgres_queries_calls
+      - query: "SELECT datname as database, usename as user, queryid, query, calls FROM (SELECT * FROM (SELECT ROW_NUMBER() OVER (PARTITION BY dbid ORDER BY calls DESC) AS r, s.* FROM pg_stat_statements s) q WHERE q.r <= 1) p, pg_stat_database d, pg_user u WHERE p.dbid = d.datid AND p.userid = u.usesysid;"
+        metrics:
+          - metricName: "postgres_queries_calls"
+            valueColumn: "calls"
+            dimensionColumns: ["database", "queryid", "user", "query"]
+            isCumulative: true
+      #postgres_queries_average_time
+      - query: "SELECT datname as database, usename as user, queryid, query, ((total_exec_time + total_plan_time) / calls) AS average_time FROM (SELECT * FROM (SELECT ROW_NUMBER() OVER (PARTITION BY dbid ORDER BY ((total_exec_time + total_plan_time) / calls) DESC) AS r, s.* FROM pg_stat_statements s) q WHERE q.r <= 1) p, pg_stat_database d, pg_user u WHERE p.dbid = d.datid AND p.userid = u.usesysid;"
+        metrics:
+          - metricName: "postgres_queries_average_time"
+            valueColumn: "average_time"
+            dimensionColumns: ["database", "queryid", "query"]
+            isCumulative: true
+      #postgres_queries_total_time
+      - query: " SELECT datname as database, usename as user, queryid, query, (total_exec_time + total_plan_time) as total_time FROM (SELECT * FROM (SELECT ROW_NUMBER() OVER (PARTITION BY dbid ORDER BY (total_exec_time + total_plan_time) DESC) AS r, s.* FROM pg_stat_statements s) q WHERE q.r <= 1) p, pg_stat_database d, pg_user u WHERE p.dbid = d.datid AND p.userid = u.usesysid;"
+        metrics:
+          - metricName: "postgres_queries_total_time"
+            valueColumn: "total_time"
+            dimensionColumns: ["database", "queryid", "user", "query"]
+            isCumulative: true
+      #postgres_database_sessions
+      #postgres_database_sessions_fatal
+      #postgres_database_sessions_abandoned
+      #postgres_sessions_killed
+      #postgres_session_time
+      - query: "select datname as database, sessions, sessions_abandoned, sessions_fatal, sessions_killed,session_time from pg_stat_database;"
+        metrics:
+          - metricName: "postgres_sessions"
+            valueColumn: "sessions"
+            dimensionColumns: [ "database"]
+            isCumulative: false
+          - metricName: "postgres_sessions_fatal"
+            valueColumn:  "sessions_fatal"
+            dimensionColumns: ["database"]
+            isCumulative: false
+          - metricName: "postgres_sessions_abandoned"
+            valueColumn:  "sessions_abandoned"
+            dimensionColumns: ["database"]
+            isCumulative: false
+          - metricName: "postgres_sessions_killed"
+            valueColumn:  "sessions_killed"
+            dimensionColumns: ["database"]
+            isCumulative: false
+          - metricName: "postgres_session_time"
+            valueColumn:  "session_time"
+            dimensionColumns: ["database"]
+            isCumulative: false    
+      - query: "select  pid as process_id, usename as username ,datname as database, client_addr as client_address,query_start, application_name, backend_start, case when state = 'active' then 1 when state = 'idle' then 2 when state = 'idle in transaction' then 3 when state = 'idle in transaction (aborted)' then 4  else 0 end as state , state_change ,query_id, backend_type from pg_stat_activity;"
+        metrics:
+          - metricName: "postgres_sessions_state"
+            valueColumn: "state"
+            dimensionColumns: [ "database" , "process_id"]
+            isCumulative: true
+    #      - metricName: "postgres_sessions_wait_event" 
+    #        valueColumn:  "wait_event"
+    #        dimensionColumns: [ "database", "process_id"]
+    #        isCumulative: false 
+      - query: "select  pid as process_id, usename as username ,datname as database, client_addr as client_address,query_start, application_name, backend_start, case  when backend_type  = 'autovacuum launcher' then 1  when backend_type  = 'autovacuum worker' then 2 when backend_type  = 'logical replication launcher' then 3 when backend_type  = 'logical replication worker' then 4 when backend_type  = 'parallel worker' then 5 when backend_type  = 'background writer' then 6 when backend_type  = 'client backend' then 7 when backend_type  = 'checkpointer' then 8 when backend_type  = 'archiver' then 9 when backend_type  = 'startup' then 10 when backend_type  = 'walreceiver' then 11  when backend_type  = 'walsender' then 12 when backend_type  = 'walwriter' then 13  else 0 end as backend_type , state_change ,query_id   from pg_stat_activity;"
+        metrics:  
+          - metricName: "postgres_sessions_backend_type"
+            valueColumn:  "backend_type"
+            dimensionColumns: [ "database", "process_id"]
+            isCumulative: true 
+      - query: "select  pid as process_id, usename as username ,datname as database, client_addr as client_address,query_start, application_name, backend_start, case  when wait_event_type = 'Activity' then 1 when wait_event_type = 'BufferPin' then 2 when wait_event_type = 'Client' then 3 when wait_event_type = 'Extension' then 4 when wait_event_type = 'IO' then 5 when wait_event_type = 'IPC' then 6 when wait_event_type = 'Lock' then 7 when wait_event_type = 'LWLock' then 8 when wait_event_type = 'Timeout' then 9  else 0 end as wait_event_type,  state_change ,query_id  from pg_stat_activity;"
+        metrics:
+          - metricName: "postgres_sessions_wait_event_type"
+            valueColumn:  "wait_event_type"
+            dimensionColumns: [ "database", "process_id"]
+            isCumulative: false
+processors:
+  batch:
+  # Enabling the memory_limiter is strongly recommended for every pipeline.
+  # Configuration is based on the amount of memory allocated to the collector.
+  # For more information about memory limiter, see
+  # https://github.com/open-telemetry/opentelemetry-collector/blob/main/processor/memorylimiter/README.md
+  memory_limiter:
+    check_interval: 2s
+    limit_mib: ${SPLUNK_MEMORY_LIMIT_MIB}
+
+  # Detect if the collector is running on a cloud system, which is important for creating unique cloud provider dimensions.
+  # Detector order is important: the `system` detector goes last so it can't preclude cloud detectors from setting host/os info.
+  # Resource detection processor is configured to override all host and cloud attributes because instrumentation
+  # libraries can send wrong values from container environments.
+  # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor#ordering
+  resourcedetection:
+    detectors: [gce, ecs, ec2, azure, system]
+    override: true
+
+  # Optional: The following processor can be used to add a default "deployment.environment" attribute to the logs and
+  # traces when it's not populated by instrumentation libraries.
+  # If enabled, make sure to enable this processor in the pipeline below.
+  #resource/add_environment:
+  #attributes:
+  #- action: insert
+  #value: staging/production/...
+  #key: deployment.environment
+
+exporters:
+  # Traces
+  sapm:
+    access_token: "${SPLUNK_ACCESS_TOKEN}"
+    endpoint: "${SPLUNK_TRACE_URL}"
+  # Metrics + Events
+  # lab0 exporter
+  signalfx/lab:
+    access_token: "${SPLUNK_ACCESS_TOKEN}"
+    api_url: "${SPLUNK_API_URL}"
+    ingest_url: "${SPLUNK_INGEST_URL}"
+    #Use instead when sending to gateway
+    #api_url: http://${SPLUNK_GATEWAY_URL}:6060
+    #ingest_url: http://${SPLUNK_GATEWAY_URL}:9943
+    sync_host_metadata: true
+    correlation:
+    # SFDEMO####################
+  signalfx:
+    access_token: "${SF_SPLUNK_ACCESS_TOKEN}"
+    api_url: "${SF_SPLUNK_API_URL}"
+    ingest_url: "${SF_SPLUNK_INGEST_URL}"
+
+    # Use instead when sending to gateway
+    #api_url: http://${SPLUNK_GATEWAY_URL}:6060
+    #ingest_url: http://${SPLUNK_GATEWAY_URL}:9943
+  signalfx/us1:
+    access_token: "${US1_SPLUNK_ACCESS_TOKEN}"
+    api_url: "${US1_SPLUNK_API_URL}"
+    ingest_url: "${US1_SPLUNK_INGEST_URL}"
+    #Use instead when sending to gateway
+    #api_url: http://${SPLUNK_GATEWAY_URL}:6060
+    #ingest_url: http://${SPLUNK_GATEWAY_URL}:9943
+    sync_host_metadata: true
+    correlation:
+
+  # Logs
+  splunk_hec:
+    token: "${SPLUNK_HEC_TOKEN}"
+    endpoint: "${SPLUNK_HEC_URL}"
+    source: "otel"
+    sourcetype: "otel"
+  # Send to gateway
+  otlp:
+    endpoint: "${SPLUNK_GATEWAY_URL}:4317"
+    tls:
+      insecure: true
+  # Debug
+  logging:
+    loglevel: debug
+
+service:
+  extensions: [health_check, http_forwarder, zpages, memory_ballast]
+  pipelines:
+    traces:
+      receivers: [jaeger, otlp, smartagent/signalfx-forwarder, zipkin]
+      processors:
+        - memory_limiter
+        - batch
+        - resourcedetection
+      #- resource/add_environment
+      exporters: [sapm, signalfx]
+      # Use instead when sending to gateway
+      #exporters: [otlp, signalfx]
+    metrics:
+      receivers:
+        [
+          smartagent/sql
+        ]
+      processors: [memory_limiter, batch, resourcedetection]
+      exporters: [signalfx, signalfx/lab, signalfx/us1]
+      # Use instead when sending to gateway
+      #exporters: [otlp]
+    metrics/internal:
+      receivers: [prometheus/internal]
+      processors: [memory_limiter, batch, resourcedetection]
+      exporters: [signalfx]
+      # Use instead when sending to gateway
+      #exporters: [otlp]
+    logs/signalfx:
+      receivers: [signalfx]
+      processors: [memory_limiter, batch]
+      exporters: [signalfx]
+      # Use instead when sending to gateway
+      #exporters: [otlp]
+    logs:
+      receivers: [fluentforward, otlp]
+      processors:
+        - memory_limiter
+        - batch
+        - resourcedetection
+      #- resource/add_environment
+      exporters: [splunk_hec]
+      # Use instead when sending to gateway
+      #exporters: [otlp]

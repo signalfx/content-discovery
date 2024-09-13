@@ -1,0 +1,46 @@
+
+# Oracle setup with prometheous
+
+```
+Step1: Oracle docker setup
+
+```
+
+docker pull oracleinanutshell/oracle-xe-11g
+docker run -d --name oracle -p 49161:1521 -p 8080:8080 -e ORACLE_ALLOW_REMOTE=true oracleinanutshell/oracle-xe-11g
+
+# Login http://localhost:8080/apex/apex_admin with following credential:
+
+username: ADMIN
+password: admin
+
+Oracle Database XE 11.2
+http://18.144.50.166:8888/apex/f?p=4950:2:3609163862143417::NO
+http://18.144.50.166:8888/apex/apex_admin
+system
+oracle
+
+Application Express
+
+Workspace name:INTERNAL, PRODDB
+
+
+http://18.144.50.166:8888/apex/f?p=4050:3:2337631073222165
+ADMIN
+Crest#123456
+
+
+
+# Steps 2: Oracle exporter setup
+
+git clone https://github.com/iamseth/oracledb_exporter.git
+cd oracledb_exporter
+docker pull iamseth/oracledb_exporter
+docker run -d --name oracledb_exporter --link=oracle -p 9161:9161 -e DATA_SOURCE_NAME=system/oracle@oracle/xe -e CUSTOM_METRICS=etc/oracledb_exporter/custom-metrics.toml -v "${PWD}/custom-metrics-example/custom-metrics.toml":/etc/oracledb_exporter/custom-metrics.toml:ro iamseth/oracledb_exporter
+
+# Step 3:
+
+https://docs.splunk.com/Observability/gdi/opentelemetry/install-linux.html#linux-docker
+docker pull quay.io/signalfx/splunk-otel-collector:latest
+
+docker run -d --rm -e SPLUNK_ACCESS_TOKEN=L1c90vbrfaVhWdRaoSU15A -e SPLUNK_REALM=us0 -v "${PWD}/config/agent_config.yaml":/etc/collector.yaml:ro -e SPLUNK_CONFIG=/etc/collector.yaml --network host --name otelcol quay.io/signalfx/splunk-otel-collector:latest
