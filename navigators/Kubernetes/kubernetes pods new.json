@@ -3,17 +3,54 @@
     {
       "crossLink": {
         "aliases": {
-          "container.id": [
-            "container.id",
-            "container_id"
+          "k8s.pod.uid": [
+            "k8s.pod.uid",
+            "kubernetes_pod_uid"
           ]
         },
         "created": 0,
         "creator": null,
-        "id": "GSLxCW4AgAU",
+        "id": "GSLn6jVAYAk",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "propertyName": "container.id",
+        "propertyName": "k8s.pod.uid",
+        "targets": [
+          {
+            "navigatorId": "FTBzcwtAYAA",
+            "navigatorView": "INSTANCE",
+            "conditions": [
+              {
+                "not": false,
+                "property": "k8s.cluster.name",
+                "values": []
+              },
+              {
+                "not": false,
+                "property": "k8s.node.name",
+                "values": []
+              }
+            ],
+            "isDefault": true,
+            "name": "K8s pod",
+            "type": "INTERNAL_NAVIGATOR_LINK"
+          }
+        ]
+      }
+    },
+    {
+      "crossLink": {
+        "aliases": {
+          "k8s.container.name": [
+            "k8s.container.name",
+            "container_spec_name"
+          ]
+        },
+        "created": 0,
+        "creator": null,
+        "id": "GSL5w9TAYAQ",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "propertyName": "k8s.container.name",
         "targets": [
           {
             "navigatorId": "FTBzcwtAYAA",
@@ -40,17 +77,17 @@
     {
       "crossLink": {
         "aliases": {
-          "k8s.container.name": [
-            "k8s.container.name",
-            "container_spec_name"
+          "container.id": [
+            "container.id",
+            "container_id"
           ]
         },
         "created": 0,
         "creator": null,
-        "id": "GSL5w9TAYAQ",
+        "id": "GSLxCW4AgAU",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "propertyName": "k8s.container.name",
+        "propertyName": "container.id",
         "targets": [
           {
             "navigatorId": "FTBzcwtAYAA",
@@ -110,46 +147,9 @@
           }
         ]
       }
-    },
-    {
-      "crossLink": {
-        "aliases": {
-          "k8s.pod.uid": [
-            "k8s.pod.uid",
-            "kubernetes_pod_uid"
-          ]
-        },
-        "created": 0,
-        "creator": null,
-        "id": "GSLn6jVAYAk",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "propertyName": "k8s.pod.uid",
-        "targets": [
-          {
-            "navigatorId": "FTBzcwtAYAA",
-            "navigatorView": "INSTANCE",
-            "conditions": [
-              {
-                "not": false,
-                "property": "k8s.cluster.name",
-                "values": []
-              },
-              {
-                "not": false,
-                "property": "k8s.node.name",
-                "values": []
-              }
-            ],
-            "isDefault": true,
-            "name": "K8s pod",
-            "type": "INTERNAL_NAVIGATOR_LINK"
-          }
-        ]
-      }
     }
   ],
-  "hashCode": -1780781758,
+  "hashCode": 1605639107,
   "id": "FTBzcwtAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -245,6 +245,14 @@
           },
           {
             "aggregate": null,
+            "displayName": "Node",
+            "format": null,
+            "metric": null,
+            "property": "k8s.node.name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
             "displayName": "Cluster",
             "format": null,
             "metric": null,
@@ -253,34 +261,10 @@
           },
           {
             "aggregate": null,
-            "displayName": "Pod phases",
-            "format": null,
+            "displayName": "Value",
+            "format": "Number",
             "metric": null,
-            "property": "phase",
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Total cpu percentage",
-            "format": "Percentage",
-            "metric": "total_cpu_usage",
-            "property": null,
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Total mem percentage",
-            "format": "Percentage",
-            "metric": "total_mem_usage",
-            "property": null,
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "File system utilization",
-            "format": "Percentage",
-            "metric": "filesystem_usage",
-            "property": null,
+            "property": "value",
             "sortable": null
           }
         ],
@@ -347,20 +331,33 @@
               ]
             },
             "description": "",
-            "displayName": "pod_phases",
-            "id": "pod_phases",
+            "displayName": "Available deployments",
+            "id": "k8s.deployment.available",
             "job": {
-              "filters": [],
-              "resolution": 300000,
-              "template": "PENDING = data('k8s.pod.phase', filter=(not filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(1).promote(by='phase', allow_missing={'phase':'Pending'})\nRUNNING = data('k8s.pod.phase', filter=(not filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(2).promote(by='phase', allow_missing={'phase':'Running'})\nSUCCEEDED = data('k8s.pod.phase', filter=(not filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(3).promote(by='phase', allow_missing={'phase':'Succeeded'})\nFAIL = data('k8s.pod.phase',filter=(not filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(4).promote(by='phase', allow_missing={'phase':'Failed'})\nUNKNOWN = data('k8s.pod.phase',filter=(not filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(5).promote(by='phase', allow_missing={'phase':'Unknown'})\nNA = data('k8s.pod.phase',filter=(not filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).map(lambda x: 6 if x is None else x).equals(6).promote(by='phase', allow_missing={'phase':'n/a'})\nPENDING_JOB = data('k8s.pod.phase', filter=(filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(1).promote(by='phase', allow_missing={'phase':'Pending'})\nRUNNING_JOB = data('k8s.pod.phase', filter=(filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(2).promote(by='phase', allow_missing={'phase':'Running'})\nSUCCEED_JOB = data('k8s.pod.phase', filter=(filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(3).promote(by='phase', allow_missing={'phase':'Succeeded'})\nFAIL_JOB = data('k8s.pod.phase',filter=(filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(4).promote(by='phase', allow_missing={'phase':'Failed'})\nUNKNOWN_JOB = data('k8s.pod.phase',filter=(filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).equals(5).promote(by='phase', allow_missing={'phase':'Unknown'})\nNA_JOB = data('k8s.pod.phase',filter=(filter('k8s.workload.kind', 'Job', 'CronJob')){{#filter}} and {{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).map(lambda x: 6 if x is None else x).equals(6).promote(by='phase', allow_missing={'phase':'n/a'})\nPOD_PHASE = union(PENDING,RUNNING,SUCCEEDED,FAIL,UNKNOWN,NA,PENDING_JOB,RUNNING_JOB,SUCCEED_JOB,FAIL_JOB,UNKNOWN_JOB,NA_JOB)",
-              "varName": "POD_PHASE"
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "AVAILABLE_DEPLOYMENTS = data(\"k8s.deployment.available\"{{#filter}}, filter={{{filter}}}{{/filter}})",
+              "varName": "AVAILABLE_DEPLOYMENTS"
             },
             "metricSelectors": [
-              "k8s.pod.phase"
+              "k8s.deployment.available"
             ],
             "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "",
+            "valueFormat": null,
+            "valueLabel": null,
             "valueType": null
           },
           {
@@ -378,36 +375,33 @@
               ]
             },
             "description": "",
-            "displayName": "total_cpu_usage",
-            "id": "Total cpu percentage",
+            "displayName": "Desired deployments",
+            "id": "k8s.deployment.desired",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "k8s.node.name",
-                  "propertyValue": "*",
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
                   "type": "property"
                 },
                 {
                   "not": false,
-                  "property": "k8s.cluster.name",
-                  "propertyValue": "*",
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
                   "type": "property"
                 }
               ],
-              "resolution": 300000,
-              "template": "OTEL_CPU_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).scale(0.01)\nOTEL_CPU_PROCESSORS = data('cpu.num_processors'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_USAGE = (OTEL_CPU_USAGE*100)/OTEL_CPU_PROCESSORS\nCPU_TIME = data('cotainer.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid'])\nSYSTEM_CPU_TIME = data('system.cpu.time', filter('state', 'idle'){{#filter}} and {{{filter}}}{{/filter}}).count(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_PRE_USAGE = (CPU_TIME/SYSTEM_CPU_TIME)*100\nCPU_UTILIZATION = union(CPU_USAGE, CPU_PRE_USAGE)",
-              "varName": "CPU_UTILIZATION"
+              "resolution": 60000,
+              "template": "DESIRED_DEPLOYMENTS = data(\"k8s.deployment.desired\"{{#filter}}, filter={{{filter}}}{{/filter}})",
+              "varName": "DESIRED_DEPLOYMENTS"
             },
             "metricSelectors": [
-              "container_cpu_utilization",
-              "container.cpu.time",
-              "system.cpu.time",
-              "cpu.num_processors"
+              "k8s.deployment.desired"
             ],
             "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "",
+            "valueFormat": null,
+            "valueLabel": null,
             "valueType": null
           },
           {
@@ -425,34 +419,77 @@
               ]
             },
             "description": "",
-            "displayName": "total_mem_usage",
-            "id": "Total mem percentage",
+            "displayName": "Container memory usage",
+            "id": "container.memory.usage",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "k8s.node.name",
-                  "propertyValue": "*",
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
                   "type": "property"
                 },
                 {
                   "not": false,
-                  "property": "k8s.cluster.name",
-                  "propertyValue": "*",
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
                   "type": "property"
                 }
               ],
-              "resolution": 300000,
-              "template": "USAGE = data('container.memory.usage', filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nLIMIT = data('k8s.container.memory_limit', filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).above(0, inclusive=True)\nMEMORY_USAGE = (USAGE/LIMIT*100)",
-              "varName": "MEMORY_USAGE"
+              "resolution": 60000,
+              "template": "CONTAINER_MEMORY_USAGE = data(\"container.memory.usage\"{{#filter}}, filter={{{filter}}}{{/filter}}).mean(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\"])",
+              "varName": "CONTAINER_MEMORY_USAGE"
             },
             "metricSelectors": [
-              "container.memory.usage",
+              "container.memory.usage"
+            ],
+            "type": "metric",
+            "valueFormat": null,
+            "valueLabel": null,
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Container memory limit",
+            "id": "k8s.container.memory_limit",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "CONTAINER_MEMORY_LIMIT = data(\"k8s.container.memory_limit\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\"])",
+              "varName": "CONTAINER_MEMORY_LIMIT"
+            },
+            "metricSelectors": [
               "k8s.container.memory_limit"
             ],
             "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "",
+            "valueFormat": null,
+            "valueLabel": null,
             "valueType": null
           },
           {
@@ -470,34 +507,121 @@
               ]
             },
             "description": "",
-            "displayName": "filesystem_usage",
-            "id": "File system utilization",
+            "displayName": "Container cpu utilization",
+            "id": "container.cpu.utilization",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "k8s.node.name",
-                  "propertyValue": "*",
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
                   "type": "property"
                 },
                 {
                   "not": false,
-                  "property": "k8s.cluster.name",
-                  "propertyValue": "*",
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
                   "type": "property"
                 }
               ],
-              "resolution": 300000,
-              "template": "CAPACITY = data('container.filesystem.capacity', filter('sf_tags', '*',  match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.node.name'])\nUTILIZATION = data('container.filesystem.usage', filter('sf_tags', '*',  match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.node.name'])\nFILE_SYSTEM_UTILIZATION = (UTILIZATION/CAPACITY).scale(100)",
-              "varName": "FILE_SYSTEM_UTILIZATION"
+              "resolution": 60000,
+              "template": "CONTAINER_CPU_UTILIZATION = data(\"container.cpu.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}})",
+              "varName": "CONTAINER_CPU_UTILIZATION"
             },
             "metricSelectors": [
-              "container.filesystem.usage",
-              "container.filesystem.capacity"
+              "container.cpu.utilization"
             ],
             "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "",
+            "valueFormat": null,
+            "valueLabel": null,
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Network errors",
+            "id": "k8s.pod.network.errors",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "NETWORK_ERRORS = data(\"k8s.pod.network.errors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\"])",
+              "varName": "NETWORK_ERRORS"
+            },
+            "metricSelectors": [
+              "k8s.pod.network.errors"
+            ],
+            "type": "metric",
+            "valueFormat": null,
+            "valueLabel": null,
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Network io",
+            "id": "k8s.pod.network.io",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "NETWORK_IO = data(\"k8s.pod.network.io\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\"])",
+              "varName": "NETWORK_IO"
+            },
+            "metricSelectors": [
+              "k8s.pod.network.io"
+            ],
+            "type": "metric",
+            "valueFormat": null,
+            "valueLabel": null,
             "valueType": null
           }
         ],
@@ -562,10 +686,6 @@
             },
             "groupBy": "k8s.pod.name",
             "hierarchicalFilter": "colorChildAllowEmptyMatch",
-            "panel": {
-              "collapsible": true,
-              "defaultOpen": false
-            },
             "preferredRoot": false,
             "replaceOnlyFilters": [
               "k8s.cluster.name",
@@ -575,7 +695,8 @@
           "defaultVisualization": true,
           "type": "hierarchical",
           "views": [
-            "instance"
+            "instance",
+            "aggregate"
           ]
         },
         {
