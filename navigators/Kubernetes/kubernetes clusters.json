@@ -1,6 +1,6 @@
 {
   "crossLinkExports": null,
-  "hashCode": 782765943,
+  "hashCode": 1370737988,
   "id": "FTwxEZhAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -22,7 +22,7 @@
               "not": false,
               "property": "sf_key",
               "values": [
-                "kubernetes_pod_uid"
+                "k8s.cluster.name"
               ]
             }
           ],
@@ -34,7 +34,7 @@
               "not": false,
               "property": "sf_key",
               "values": [
-                "k8s.pod.uid"
+                "k8s.cluster.name"
               ]
             }
           ],
@@ -52,9 +52,9 @@
       "navigatorCategoryDisplayName": "Kubernetes",
       "navigatorCategoryGroupDisplayName": "Containers",
       "navigatorCategoryInstancesName": "entity",
-      "navigatorType": "elemental",
+      "navigatorType": "list",
       "ownerScope": "organization",
-      "pinnedFilters": null,
+      "pinnedFilters": [],
       "relationships": [],
       "requiresFilter": false,
       "sites": "o11y",
@@ -63,6 +63,7 @@
       ],
       "uiModel": {
         "alertQuery": "_exists_:k8s.cluster.name",
+        "alwaysGroupBy": null,
         "category": "Kubernetes",
         "categoryPriority": 0,
         "discoveryQuery": [],
@@ -70,6 +71,7 @@
         "filterProperties": null,
         "id": "k8sclusters",
         "idName": "Cluster",
+        "idProperties": [],
         "idTemplate": "{{k8s.cluster.name}}",
         "listColumns": [
           {
@@ -82,10 +84,66 @@
           },
           {
             "aggregate": null,
-            "displayName": "Value",
+            "displayName": "Containers",
             "format": "Number",
-            "metric": null,
-            "property": "value",
+            "metric": "Containers",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Nodes",
+            "format": "Number",
+            "metric": "Nodes",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Namespace",
+            "format": "Number",
+            "metric": "Namespace",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Network errors",
+            "format": "Number",
+            "metric": "Network errors",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "CPU utilization",
+            "format": "Percentage",
+            "metric": "CPU utilization",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Memory utilization",
+            "format": "Percentage",
+            "metric": "Memory utilization",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Memory usage",
+            "format": "Bytes",
+            "metric": "Memory usage",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "File system utilization",
+            "format": "Percentage",
+            "metric": "File system utilization",
+            "property": null,
             "sortable": null
           }
         ],
@@ -105,8 +163,8 @@
               ]
             },
             "description": "This metric shows the total number of containers present in the cluster. Darker colors indicate higher relative values.",
-            "displayName": "# Containers",
-            "id": "k8sclusters_containers",
+            "displayName": "Containers",
+            "id": "Containers",
             "job": {
               "filters": [],
               "resolution": 60000,
@@ -135,40 +193,9 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the cumulative count of network errors encountered while receiving and transmitting data. Darker colors indicate higher relative values.",
-            "displayName": "# Network errors",
-            "id": "k8sclusters_network_errors",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "NET_ERROR_PER_CLUSTER = data(\"k8s.pod.network.errors\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"k8s.cluster.name\"])",
-              "varName": "NET_ERROR_PER_CLUSTER"
-            },
-            "metricSelectors": [
-              "k8s.pod.network.errors"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Network errors",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
             "description": "This metric shows the total number of nodes present in the cluster. Darker colors indicate higher relative values.",
-            "displayName": "# Nodes",
-            "id": "k8sclusters_nodes",
+            "displayName": "Nodes",
+            "id": "Nodes",
             "job": {
               "filters": [],
               "resolution": 60000,
@@ -186,6 +213,68 @@
           {
             "coloring": {
               "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of namespaces present in the cluster. Darker colors indicate higher relative values.",
+            "displayName": "Namespace",
+            "id": "Namespace",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "NAMESPACE = data('k8s.namespace.phase').count(by=['k8s.cluster.name'])",
+              "varName": "NAMESPACE"
+            },
+            "metricSelectors": [
+              "k8s.namespace.phase"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Namespace",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the cumulative count of network errors encountered while receiving and transmitting data. Darker colors indicate higher relative values.",
+            "displayName": "Network errors",
+            "id": "Network errors",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "NET_ERROR_PER_CLUSTER = data(\"k8s.pod.network.errors\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"k8s.cluster.name\"])",
+              "varName": "NET_ERROR_PER_CLUSTER"
+            },
+            "metricSelectors": [
+              "k8s.pod.network.errors"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Network errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
               "maxValue": 100,
               "method": "quantile",
               "minValue": 0,
@@ -198,8 +287,8 @@
               ]
             },
             "description": "This metric shows the amount of CPU used from the assigned CPU limit in percentage. Under 20% green, over 80% red.",
-            "displayName": "CPU capacity used (%)",
-            "id": "k8sclusters_cpu_capacity_used",
+            "displayName": "CPU utilization",
+            "id": "CPU utilization",
             "job": {
               "filters": [
                 {
@@ -245,8 +334,8 @@
               ]
             },
             "description": "This metric shows the amount of memory used from the assigned memory limit in percentage. Under 20% green, over 80% red.",
-            "displayName": "Memory capacity used (%)",
-            "id": "k8sclusters_memory_capacity_used",
+            "displayName": "Memory utilization",
+            "id": "Memory utilization",
             "job": {
               "filters": [],
               "resolution": 60000,
@@ -277,8 +366,8 @@
               ]
             },
             "description": "This metric shows the current memory usage in bytes. Darker colors indicate higher relative values.",
-            "displayName": "Memory usage (bytes)",
-            "id": "k8sclusters_memory_usage",
+            "displayName": "Memory usage",
+            "id": "Memory usage",
             "job": {
               "filters": [],
               "resolution": 60000,
@@ -292,6 +381,38 @@
             "valueFormat": "Bytes",
             "valueLabel": "Memory usage",
             "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "File system utilization",
+            "id": "File system utilization",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "CAPACITY = data('container.filesystem.capacity'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name'])\nUSAGE = data('container.filesystem.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name'])\nFILE_SYSTEM_UTILIZATION= ((USAGE/CAPACITY)*100)",
+              "varName": "FILE_SYSTEM_UTILIZATION"
+            },
+            "metricSelectors": [
+              "container.filesystem.capacity",
+              "container.filesystem.usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "",
+            "valueType": null
           }
         ],
         "mtsQuery": null,
@@ -301,7 +422,6 @@
         "o11ySignalflowTemplate": "D = data('k8s.node.condition_ready').sum(by=['k8s.cluster.name']).mean(over='1m').count().publish(label='D')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
-        "proxyProperties": null,
         "requiredProperties": [],
         "singleHostSystemDashboardName": "K8s cluster",
         "systemDashboardName": "K8s clusters",
@@ -320,7 +440,7 @@
             "property": "value"
           }
         ],
-        "type": "elemental",
+        "type": "list",
         "unreleased": true
       },
       "visualizations": [
