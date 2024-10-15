@@ -213,7 +213,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).sum().publish(label='A')",
+      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -268,7 +268,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.job.max_parallel_pods', filter=filter('k8s.workload.kind', 'Job')).sum(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.job.max_parallel_pods', filter=filter('k8s.workload.kind', 'Job')).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -367,7 +367,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.container.memory_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.namespace.name','k8s.daemonset.uid','k8s.cluster.name']).above(0).publish(label='F')",
+      "programText" : "D = data('k8s.container.memory_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\n\r\n# if memory limit not set then set mts value to 0 that show that memory limit is not set otherwise it has value as 1\r\n# if memory utilization is not reported or memory utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.namespace.name','k8s.daemonset.uid','k8s.cluster.name']).above(0).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -848,7 +848,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.network.errors', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.deployment.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.deployment.uid']).above(0.5).publish(label='A')",
+      "programText" : "A = data('k8s.pod.network.errors', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.deployment.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.deployment.uid']).above(0).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1021,7 +1021,7 @@
       "lastUpdatedBy" : null,
       "name" : "# Desired and current scheduled nodes",
       "options" : {
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
         "colorScale2" : null,
         "hideMissingValues" : true,
         "legendOptions" : {
@@ -1082,7 +1082,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).sum().publish(label='A')\nB = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).sum().publish(label='B')",
+      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*') and filter('k8s.workload.kind', 'DaemonSet')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).sum().publish(label='A')\nB = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*') and filter('k8s.workload.kind', 'DaemonSet')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).sum().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1591,8 +1591,8 @@
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
-          "displayName" : "running",
-          "label" : "running",
+          "displayName" : "failed",
+          "label" : "failed",
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
@@ -1622,7 +1622,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase').equals(1).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.statefulset.name\", \"k8s.statefulset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).publish(label='pending', enable=False)\nD = data('k8s.pod.phase').equals(4).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.statefulset.name\", \"k8s.statefulset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+2).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).publish(label='running', enable=False)\nE = data('k8s.pod.phase').equals(5).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.statefulset.name\", \"k8s.statefulset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+3).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).publish(label='unknown', enable=False)\nF = union(A, D, E).publish(label=\"combined\", enable=True)",
+      "programText" : "# map fundtion is used to assign color schema to specific phase\n# Always for specific pod 1 MTS value is there and by map function we assign due to that it get a specific value\n\nA = data('k8s.pod.phase').equals(1).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.statefulset.name\", \"k8s.statefulset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).publish(label='pending', enable=False)\nD = data('k8s.pod.phase').equals(4).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.statefulset.name\", \"k8s.statefulset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+2).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).publish(label='failed', enable=False)\nE = data('k8s.pod.phase').equals(5).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.statefulset.name\", \"k8s.statefulset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+3).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).publish(label='unknown', enable=False)\nF = union(A, D, E).publish(label=\"combined\", enable=True)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2372,89 +2372,13 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "GZmMGz9AgCU",
-      "importOf" : "GY8X3-ZAcAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Statefulsets at update deficit details",
-      "options" : {
-        "groupBy" : [ "k8s.statefulset.name" ],
-        "groupBySort" : "Descending",
-        "hideMissingValues" : true,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "k8s.statefulset.uid"
-          } ]
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Desired pods",
-          "label" : "A",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Update pods",
-          "label" : "B",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Update deficit",
-          "label" : "C",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Desired pods",
-          "label" : "D",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Current pods",
-          "label" : "E",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        } ],
-        "refreshInterval" : 60000,
-        "sortBy" : "-Readiness deficit",
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "timestampHidden" : false,
-        "type" : "TableChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.desired_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.statefulset.updated_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = (A-B).above(0).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')\nD = ((A-C)+C).publish(label='D')\nE = ((B-C)+C).publish(label='E')",
-      "relatedDetectorIds" : [ ],
-      "tags" : [ ]
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
       "id" : "GZmMGz9AgCY",
       "importOf" : "GXRQCdsAcAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "# Available replicas",
       "options" : {
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 4,
@@ -2563,15 +2487,6 @@
           "valueSuffix" : null,
           "valueUnit" : "Byte",
           "yAxis" : 0
-        }, {
-          "displayName" : "A",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : "Byte",
-          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -2585,7 +2500,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "D = (A).publish(label='D')\nA = data('container.filesystem.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*'), rollup='delta').sum(by=['k8s.pod.uid', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.workload.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
+      "programText" : "A = data('container.filesystem.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*'), rollup='delta').sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2634,7 +2549,7 @@
             "enabled" : false,
             "property" : "k8s.replicaset.uid"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "k8s.daemonset.uid"
           }, {
             "enabled" : true,
@@ -2645,7 +2560,7 @@
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
-          "noDataMessage" : null
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "programOptions" : {
           "disableSampling" : true,
@@ -2654,7 +2569,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "k8s.container.restarts - Maximum by k8s.pod.name,k8s.pod.uid,k8s.cluster.name,k8s.namespace.name,k8s.replicaset.name,k8s.replicaset.uid - Maximum(Dashboard window)",
+          "displayName" : "Pod restarts",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2663,7 +2578,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "k8s.container.restarts - Minimum(Dashboard window)",
+          "displayName" : "Pod restarts",
           "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2672,7 +2587,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "A-B - Exclude x < 0.5 - Sum by k8s.replicaset.name,k8s.namespace.name,k8s.cluster.name,k8s.replicaset.uid",
+          "displayName" : "Recent restarts",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2773,7 +2688,7 @@
             "enabled" : true,
             "property" : "k8s.daemonset.name"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "k8s.daemonset.uid"
           }, {
             "enabled" : false,
@@ -2781,6 +2696,12 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.namespace.name"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -2817,7 +2738,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.daemonset.misscheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).above(1, inclusive=True).publish(label='D')",
+      "programText" : "D = data('k8s.daemonset.misscheduled_nodes', filter=filter('k8s.daemonset.name', '*') and filter('k8s.workload.kind', 'DaemonSet')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).above(1, inclusive=True).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2925,7 +2846,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.statefulset.name','k8s.statefulset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
+      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.statefulset.name','k8s.statefulset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3464,8 +3385,8 @@
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
-          "displayName" : "running",
-          "label" : "running",
+          "displayName" : "failed",
+          "label" : "failed",
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
@@ -3495,7 +3416,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase').equals(1).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.replicaset.name\", \"k8s.replicaset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).publish(label='pending', enable=False)\nD = data('k8s.pod.phase').equals(4).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.replicaset.name\", \"k8s.replicaset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+2).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).publish(label='running', enable=False)\nE = data('k8s.pod.phase').equals(5).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.replicaset.name\", \"k8s.replicaset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+3).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).publish(label='unknown', enable=False)\nF = union(A, D, E).publish(label=\"combined\", enable=True)",
+      "programText" : "# map fundtion is used to assign color schema to specific phase\n# Always for specific pod 1 MTS value is there and by map function we assign due to that it get a specific value\nA = data('k8s.pod.phase').equals(1).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.replicaset.name\", \"k8s.replicaset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).publish(label='pending', enable=False)\nD = data('k8s.pod.phase').equals(4).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.replicaset.name\", \"k8s.replicaset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+2).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).publish(label='failed', enable=False)\nE = data('k8s.pod.phase').equals(5).count(by=[\"k8s.cluster.name\", \"k8s.namespace.name\", \"k8s.replicaset.name\", \"k8s.replicaset.uid\", \"k8s.pod.name\", \"k8s.pod.uid\"]).above(1, inclusive=True).map(lambda x:x+3).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).publish(label='unknown', enable=False)\nF = union(A, D, E).publish(label=\"combined\", enable=True)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4126,7 +4047,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).sum().publish(label='A')",
+      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4181,7 +4102,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.current_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.statefulset.current_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4247,7 +4168,7 @@
         "noDataOptions" : {
           "linkText" : null,
           "linkUrl" : null,
-          "noDataMessage" : null
+          "noDataMessage" : "Currently, no data is available for this chart."
         },
         "programOptions" : {
           "disableSampling" : true,
@@ -4637,7 +4558,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU usage",
+          "displayName" : "CPU usage (OTel post translated)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -4858,7 +4779,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.daemonset.misscheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).above(1, inclusive=True).publish(label='D')",
+      "programText" : "D = data('k8s.daemonset.misscheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).above(1, inclusive=True).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5025,7 +4946,7 @@
       "lastUpdatedBy" : null,
       "name" : "Volume overview (bytes)",
       "options" : {
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
         "colorScale2" : null,
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -5283,11 +5204,14 @@
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "k8s.replicaset.name"
           }, {
             "enabled" : false,
             "property" : "k8s.workload.name"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.daemonset.name"
           }, {
             "enabled" : true,
             "property" : "k8s.namespace.name"
@@ -5304,10 +5228,7 @@
             "enabled" : false,
             "property" : "k8s.replicaset.uid"
           }, {
-            "enabled" : true,
-            "property" : "k8s.daemonset.name"
-          }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "k8s.daemonset.uid"
           } ]
         },
@@ -5332,15 +5253,6 @@
           "valueSuffix" : null,
           "valueUnit" : "Byte",
           "yAxis" : 0
-        }, {
-          "displayName" : "A",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : "Byte",
-          "yAxis" : 0
         } ],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
@@ -5354,7 +5266,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "D = (A).publish(label='D')\nA = data('container.filesystem.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*'), rollup='delta').sum(by=['k8s.pod.uid', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.workload.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
+      "programText" : "A = data('container.filesystem.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*'), rollup='delta').sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5515,6 +5427,12 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.namespace.name"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -5569,7 +5487,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).publish(label='A', enable=False)\nB = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).publish(label='B', enable=False)\nC = (A-B).above(1, inclusive=True).publish(label='C')",
+      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = (A-B).above(1, inclusive=True).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -6154,10 +6072,10 @@
             "enabled" : true,
             "property" : "k8s.deployment.name"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.namespace.name"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.cluster.name"
           }, {
             "enabled" : false,
@@ -6499,10 +6417,10 @@
             "enabled" : true,
             "property" : "k8s.deployment.name"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.namespace.name"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.cluster.name"
           }, {
             "enabled" : false,
@@ -6609,7 +6527,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).count().publish(label='A')",
+      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*') and filter('k8s.workload.kind', 'DaemonSet')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -6700,6 +6618,12 @@
           }, {
             "enabled" : false,
             "property" : "sf_metric"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.namespace.name"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -6754,7 +6678,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).publish(label='A', enable=False)\nB = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name']).publish(label='B', enable=False)\nC = (A-B).above(1, inclusive=True).publish(label='C')",
+      "programText" : "A = data('k8s.daemonset.desired_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = (A-B).above(1, inclusive=True).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -6787,7 +6711,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Failed Cronjobs",
+          "displayName" : "Failed cronjobs",
           "label" : "A",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -6809,7 +6733,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.job.failed_pods').sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.job.failed_pods').sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).above(0).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7114,7 +7038,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase').equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase').equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase').equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase').equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase').equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
+      "programText" : "# map fundtion is used to assign color schema to specific phase\n# Always for specific pod 1 MTS value is there and by map function we assign due to that it get a specific value\n\nA = data('k8s.pod.phase').equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase').equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase').equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase').equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase').equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7169,7 +7093,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.job.active_pods', filter=filter('k8s.workload.kind', 'Job')).sum(by=['k8s.job.uid', 'k8s.job.name', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='A')",
+      "programText" : "A = data('k8s.job.active_pods', filter=filter('k8s.workload.kind', 'Job')).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7277,7 +7201,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# Convert the cpu limit to 0 if not set and add with cpu utilization that will convert to 2 if no cpu utilization \r\n# Exclude greter 1 count because to get only cpu utilization MTS\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.replicaset.name','k8s.replicaset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
+      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.replicaset.name','k8s.replicaset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7403,83 +7327,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# Convert the cpu limit to 0 if not set and add with cpu utilization that will convert to 2 if no cpu utilization \r\n# Exclude greter 1 count because to get only cpu utilization MTS\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
-      "relatedDetectorIds" : [ ],
-      "tags" : [ ]
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "",
-      "id" : "GZmews-AcBQ",
-      "importOf" : "GY8YGLhAgAA",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "# Statefulsets at readiness deficit details",
-      "options" : {
-        "groupBy" : [ "k8s.statefulset.name" ],
-        "groupBySort" : "Descending",
-        "hideMissingValues" : true,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "k8s.statefulset.uid"
-          } ]
-        },
-        "maximumPrecision" : 4,
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 0,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "Desired pods",
-          "label" : "A",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Ready pods",
-          "label" : "B",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Readiness deficit",
-          "label" : "C",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Desired pods",
-          "label" : "D",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        }, {
-          "displayName" : "Current pods",
-          "label" : "E",
-          "valuePrefix" : "",
-          "valueSuffix" : "",
-          "valueUnit" : null
-        } ],
-        "refreshInterval" : 60000,
-        "sortBy" : "",
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "timestampHidden" : false,
-        "type" : "TableChart",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.desired_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.statefulset.ready_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = (A-B).above(0).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')\nD = ((A-C)+C).publish(label='D')\nE = ((B-C)+C).publish(label='E')",
+      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7644,7 +7492,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pods desired but not available",
+          "displayName" : "Deployment not at spec",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -7774,7 +7622,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.deployment.name','k8s.deployment.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
+      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.deployment.name','k8s.deployment.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7789,7 +7637,7 @@
       "importOf" : "GXv9qR7AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Containers without memory limit set by deployment",
+      "name" : "# Containers without memory limit by deployment",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -7864,7 +7712,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.container.memory_limit', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.deployment.name','k8s.deployment.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='F')",
+      "programText" : "D = data('k8s.container.memory_limit', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\n\r\n# if memory limit not set then set mts value to 0 that show that memory limit is not set otherwise it has value as 1\r\n# if memory utilization is not reported or memory utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.deployment.name','k8s.deployment.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7971,7 +7819,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
+      "programText" : "# map fundtion is used to assign color schema to specific phase\n# Always for specific pod 1 MTS value is there and by map function we assign due to that it get a specific value\n\nA = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase', filter = filter('k8s.workload.kind', 'CronJob')).equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -8568,7 +8416,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.container.memory_limit', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.statefulset.name','k8s.statefulset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='F')",
+      "programText" : "D = data('k8s.container.memory_limit', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\n\r\n# if memory limit not set then set mts value to 0 that show that memory limit is not set otherwise it has value as 1\r\n# if memory utilization is not reported or memory utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.statefulset.name','k8s.statefulset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -8711,7 +8559,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.updated_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.statefulset.updated_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -8850,7 +8698,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.ready_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.statefulset.ready_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -8940,7 +8788,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.container.memory_limit').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.replicaset.name','k8s.namespace.name','k8s.replicaset.uid','k8s.cluster.name']).above(0).publish(label='F')",
+      "programText" : "D = data('k8s.container.memory_limit').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\n\r\n# if memory limit not set then set mts value to 0 that show that memory limit is not set otherwise it has value as 1\r\n# if memory utilization is not reported or memory utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.replicaset.name','k8s.namespace.name','k8s.replicaset.uid','k8s.cluster.name']).above(0).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9070,10 +8918,10 @@
             "enabled" : false,
             "property" : "sf_metric"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "k8s.statefulset.name"
           }, {
-            "enabled" : true,
+            "enabled" : false,
             "property" : "k8s.statefulset.uid"
           } ]
         },
@@ -9218,7 +9066,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase').equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase').equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase').equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase').equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase').equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
+      "programText" : "# map fundtion is used to assign color schema to specific phase\n# Always for specific pod 1 MTS value is there and by map function we assign due to that it get a specific value\n\nA = data('k8s.pod.phase').equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase').equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase').equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase').equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase').equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9375,7 +9223,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.network.io', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.daemonset.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.daemonset.uid', 'k8s.daemonset.name']).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
+      "programText" : "A = data('k8s.pod.network.io', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.daemonset.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9498,13 +9346,13 @@
         "legendOptions" : {
           "fields" : [ {
             "enabled" : true,
-            "property" : "k8s.cluster.name"
-          }, {
-            "enabled" : false,
             "property" : "k8s.deployment.name"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.namespace.name"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
           }, {
             "enabled" : false,
             "property" : "sf_originatingMetric"
@@ -9746,7 +9594,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase').equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase').equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase').equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase').equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase').equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
+      "programText" : "# map fundtion is used to assign color schema to specific phase\n# Always for specific pod 1 MTS value is there and by map function we assign due to that it get a specific value\n\nA = data('k8s.pod.phase').equals(1).promote(by=\"phase\", allow_missing={\"phase\":\"Pending\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+1).publish(label='A')\nB = data('k8s.pod.phase').equals(2).promote(by=\"phase\", allow_missing={\"phase\":\"Running\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+2).publish(label='B')\nC = data('k8s.pod.phase').equals(3).promote(by=\"phase\", allow_missing={\"phase\":\"Succeeded\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+3).publish(label='C')\nD = data('k8s.pod.phase').equals(4).promote(by=\"phase\", allow_missing={\"phase\":\"Failed\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+4).publish(label='D')\nE = data('k8s.pod.phase').equals(5).promote(by=\"phase\", allow_missing={\"phase\":\"Unknown\"}).count(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).above(1, inclusive=True).map(lambda x:x+5).publish(label='E')\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9763,7 +9611,7 @@
       "lastUpdatedBy" : null,
       "name" : "# Desired replicas",
       "options" : {
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 4,
@@ -9818,7 +9666,7 @@
       "lastUpdatedBy" : null,
       "name" : "Volume overview (bytes)",
       "options" : {
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
         "colorScale2" : null,
         "hideMissingValues" : true,
         "legendOptions" : {
@@ -9885,7 +9733,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.volume.capacity').sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')\nB = data('k8s.volume.available').sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
+      "programText" : "A = data('k8s.volume.capacity', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')\nB = data('k8s.volume.available', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -10066,7 +9914,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# Convert the cpu limit to 0 if not set and add with cpu utilization that will convert to 2 if no cpu utilization \r\n# Exclude greter 1 count because to get only cpu utilization MTS\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
+      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -10314,10 +10162,10 @@
             "enabled" : true,
             "property" : "k8s.deployment.name"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.namespace.name"
           }, {
-            "enabled" : false,
+            "enabled" : true,
             "property" : "k8s.cluster.name"
           }, {
             "enabled" : false,
@@ -10672,7 +10520,7 @@
       "importOf" : "GY8XsCkAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Statefulsets at count deficit details",
+      "name" : "# Statefulsets at deficit details",
       "options" : {
         "groupBy" : [ "k8s.statefulset.name" ],
         "groupBySort" : "Descending",
@@ -10703,8 +10551,8 @@
           "valueSuffix" : "",
           "valueUnit" : null
         }, {
-          "displayName" : "Count deficit",
-          "label" : "C",
+          "displayName" : "Updatd pods",
+          "label" : "G",
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
@@ -10720,9 +10568,45 @@
           "valuePrefix" : "",
           "valueSuffix" : "",
           "valueUnit" : null
+        }, {
+          "displayName" : "Ready pods",
+          "label" : "I",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Updated pods",
+          "label" : "K",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Count deficit",
+          "label" : "C",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Ready pods",
+          "label" : "F",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Rediness deficit",
+          "label" : "H",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Update deficit",
+          "label" : "J",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
         } ],
         "refreshInterval" : 60000,
-        "sortBy" : "",
+        "sortBy" : "-Update deficit",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
@@ -10733,7 +10617,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.desired_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.statefulset.current_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = (A-B).above(0).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')\nD = ((A-C)+C).publish(label='D')\nE = ((B-C)+C).publish(label='E')",
+      "programText" : "A = data('k8s.statefulset.desired_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.statefulset.current_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nG = data('k8s.statefulset.updated_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='G', enable=False)\nD = ((A-C)+C).publish(label='D')\nE = ((B-C)+C).publish(label='E')\nI = ((F-H)+H).publish(label='I')\nK = ((G-J)+J).publish(label='K')\nC = (A-B).above(0).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')\nF = data('k8s.statefulset.ready_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='F', enable=False)\nH = (A-F).above(0).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='H')\nJ = (A-G).above(0).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='J')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -10838,7 +10722,7 @@
       "lastUpdatedBy" : null,
       "name" : "# Replicas overview",
       "options" : {
-        "colorBy" : "Dimension",
+        "colorBy" : "Metric",
         "colorScale2" : null,
         "hideMissingValues" : false,
         "legendOptions" : {
@@ -10948,7 +10832,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.desired_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.statefulset.desired_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -11247,7 +11131,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.job.failed_pods').sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.job.failed_pods').sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -11302,7 +11186,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.job.active_pods').sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')",
+      "programText" : "A = data('k8s.job.active_pods').sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -11823,7 +11707,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='C')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -12042,7 +11926,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Memory usage (bytes)",
+          "displayName" : "Memory usage",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -12108,6 +11992,9 @@
           }, {
             "enabled" : false,
             "property" : "k8s.daemonset.uid"
+          }, {
+            "enabled" : true,
+            "property" : "k8s.cluster.name"
           } ]
         },
         "maximumPrecision" : 4,
@@ -12144,7 +12031,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.daemonset.name', '*')).sum(by=['k8s.node.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
+      "programText" : "A = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.daemonset.name', '*')).sum(by=['k8s.node.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.cluster.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -12414,7 +12301,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.network.io', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.daemonset.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.daemonset.uid', 'k8s.daemonset.name']).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
+      "programText" : "A = data('k8s.pod.network.io', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.daemonset.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.daemonset.name', 'k8s.daemonset.uid']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -12588,7 +12475,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.container.memory_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.namespace.name','k8s.daemonset.uid','k8s.cluster.name']).above(0).publish(label='F')",
+      "programText" : "D = data('k8s.container.memory_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='D', enable=False)\r\nE = data('container.memory.usage').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='E', enable=False)\r\n\r\n# if memory limit not set then set mts value to 0 that show that memory limit is not set otherwise it has value as 1\r\n# if memory utilization is not reported or memory utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nF = combine((0 if D is None else D)+(2 if E is None or E == 0 else E)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.namespace.name','k8s.daemonset.uid','k8s.cluster.name']).above(0).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -12684,8 +12571,11 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : [ ],
-        "time" : null,
+        "sources" : null,
+        "time" : {
+          "end" : "Now",
+          "start" : "-15m"
+        },
         "variables" : [ ]
       },
       "groupId" : "GZmMGz9AgAc",
@@ -12697,7 +12587,7 @@
       "maxDelayOverride" : null,
       "name" : "K8s deployments",
       "permissions" : null,
-      "selectedEventOverlays" : null,
+      "selectedEventOverlays" : [ ],
       "tags" : null
     }
   }, {
@@ -13395,14 +13285,8 @@
         "row" : 3,
         "width" : 9
       }, {
-        "chartId" : "GZmews-AcBQ",
+        "chartId" : "GZmMGz9AgCs",
         "column" : 0,
-        "height" : 1,
-        "row" : 4,
-        "width" : 6
-      }, {
-        "chartId" : "GZmMGz9AgCU",
-        "column" : 6,
         "height" : 1,
         "row" : 4,
         "width" : 6
@@ -13410,10 +13294,10 @@
         "chartId" : "GZmews-AcB8",
         "column" : 6,
         "height" : 1,
-        "row" : 5,
+        "row" : 4,
         "width" : 6
       }, {
-        "chartId" : "GZmMGz9AgCs",
+        "chartId" : "GZmMGz9AgC0",
         "column" : 0,
         "height" : 1,
         "row" : 5,
@@ -13422,25 +13306,19 @@
         "chartId" : "GZmews-AcAc",
         "column" : 6,
         "height" : 1,
-        "row" : 6,
-        "width" : 6
-      }, {
-        "chartId" : "GZmMGz9AgC0",
-        "column" : 0,
-        "height" : 1,
-        "row" : 6,
+        "row" : 5,
         "width" : 6
       }, {
         "chartId" : "GZmews-AcD0",
         "column" : 8,
         "height" : 1,
-        "row" : 7,
+        "row" : 6,
         "width" : 4
       }, {
         "chartId" : "GZmMGz9AgBw",
         "column" : 0,
         "height" : 1,
-        "row" : 7,
+        "row" : 6,
         "width" : 8
       } ],
       "created" : 0,
@@ -14228,7 +14106,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 655360044,
+  "hashCode" : -93066646,
   "id" : "GZmMGz9AgAc",
   "modelVersion" : 1,
   "packageType" : "GROUP"
