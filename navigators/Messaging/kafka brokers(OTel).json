@@ -1,0 +1,282 @@
+{
+    "crossLinkExports": null,
+    "hashCode": 1567104811,
+    "id": "Gafbgk2AcAA",
+    "modelVersion": 1,
+    "navigatorExport": {
+      "navigator": {
+        "aggregateDashboards": [
+          "GZ1J8MgAcCY"
+        ],
+        "connectedCategory": null,
+        "created": 0,
+        "creator": null,
+        "defaultGroupBy": null,
+        "description": "",
+        "id": "Gafbgk2AcAA",
+        "idDisplayName": "{{host.name}}",
+        "importQualifiers": [
+          {
+            "filters": [
+              {
+                "not": false,
+                "property": "host.name",
+                "values": []
+              }
+            ],
+            "metric": "kafka.brokers"
+          },
+          {
+            "filters": [
+              {
+                "not": false,
+                "property": "host.name",
+                "values": []
+              },
+              {
+                "not": false,
+                "property": "topic",
+                "values": []
+              },
+              {
+                "not": false,
+                "property": "partition",
+                "values": []
+              }
+            ],
+            "metric": "kafka.topic.partitions"
+          }
+        ],
+        "instanceDashboards": [
+          "GZ1J8MgAcCc"
+        ],
+        "instanceDisplayText": null,
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Kafka brokers (OTel)",
+        "navigatorCategory": "Messaging",
+        "navigatorCategoryDisplayName": "Messaging",
+        "navigatorCategoryGroupDisplayName": null,
+        "navigatorCategoryInstancesName": "entity",
+        "navigatorType": "elemental",
+        "ownerScope": "splunk",
+        "pinnedFilters": [],
+        "relationships": [],
+        "requiresFilter": false,
+        "sites": "o11y",
+        "systemTypes": [],
+        "uiModel": {
+          "alertQuery": "_exists_:host.name AND _exists_:topic AND _exists_:partition AND sf_metric:kafka.brokers",
+          "category": "Messaging",
+          "categoryPriority": 0,
+          "discoveryQuery": [],
+          "displayName": "Kafka brokers (OTel)",
+          "filterProperties": null,
+          "id": "kafkabrokersotel",
+          "idName": "Host",
+          "idTemplate": "{{host.name}}",
+          "listColumns": [
+            {
+              "aggregate": null,
+              "displayName": "Host",
+              "format": "id",
+              "metric": null,
+              "property": "id",
+              "sortable": null
+            },
+            {
+              "aggregate": null,
+              "displayName": "Value",
+              "format": "Number",
+              "metric": null,
+              "property": "value",
+              "sortable": null
+            }
+          ],
+          "metrics": [
+            {
+              "coloring": {
+                "limits": null,
+                "maxValue": null,
+                "method": "quantile",
+                "minValue": 0,
+                "range": [
+                  "#bfd3e6",
+                  "#9ebcda",
+                  "#8c96c6",
+                  "#8856a7",
+                  "#810f7c"
+                ]
+              },
+              "description": "This metric shows the current number of available messages on a kafka host. Darker colors indicate higher relative values.",
+              "displayName": "# Available messages",
+              "id": "kafkaotel_available_messages",
+              "job": {
+                "filters": [],
+                "resolution": 300000,
+                "template": "OLDEST_OFFSET = data('kafka.partition.oldest_offset'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').sum(by=['host.name'])\nCURRENT_OFFSET = data('kafka.partition.current_offset'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').sum(by=['host.name'])\nAVAILABLE_MESSAGES = (CURRENT_OFFSET - OLDEST_OFFSET)",
+                "varName": "AVAILABLE_MESSAGES"
+              },
+              "metricSelectors": [
+                "kafka.partition.oldest_offset",
+                "kafka.partition.current_offset"
+              ],
+              "type": "metric",
+              "valueFormat": "Number",
+              "valueLabel": "Available messages",
+              "valueType": null
+            },
+            {
+              "coloring": {
+                "limits": null,
+                "maxValue": null,
+                "method": "quantile",
+                "minValue": 0,
+                "range": [
+                  "#bfd3e6",
+                  "#9ebcda",
+                  "#8c96c6",
+                  "#8856a7",
+                  "#810f7c"
+                ]
+              },
+              "description": "This metric shows the current number of replicas in the kafka host. Darker colors indicate higher relative values.",
+              "displayName": "# Replicas",
+              "id": "kafkaotel_replicas",
+              "job": {
+                "filters": [],
+                "resolution": 300000,
+                "template": "REPLICAS = data('kafka.partition.replicas'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+                "varName": "REPLICAS"
+              },
+              "metricSelectors": [
+                "kafka.partition.replicas"
+              ],
+              "type": "metric",
+              "valueFormat": "Number",
+              "valueLabel": "Replicas",
+              "valueType": null
+            },
+            {
+              "coloring": {
+                "limits": null,
+                "maxValue": null,
+                "method": "quantile",
+                "minValue": 0,
+                "range": [
+                  "#bfd3e6",
+                  "#9ebcda",
+                  "#8c96c6",
+                  "#8856a7",
+                  "#810f7c"
+                ]
+              },
+              "description": "This metric shows the current number of replicas that are not in sync. Darker colors indicate higher relative values.",
+              "displayName": "# Replicas not in sync",
+              "id": "kafkaotel_replicas_not_in_sync",
+              "job": {
+                "filters": [],
+                "resolution": 300000,
+                "template": "TOTAL_REPLICAS = data('kafka.partition.replicas'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])\nREPLICAS_IN_SYNC = data('kafka.partition.replicas_in_sync'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])\nREPLICAS_NOT_IN_SYNC = (TOTAL_REPLICAS-REPLICAS_IN_SYNC).sum(by=['host.name'])",
+                "varName": "REPLICAS_NOT_IN_SYNC"
+              },
+              "metricSelectors": [
+                "kafka.partition.replicas",
+                "kafka.partition.replicas_in_sync"
+              ],
+              "type": "metric",
+              "valueFormat": "Number",
+              "valueLabel": "Replicas not in sync",
+              "valueType": null
+            },
+            {
+              "coloring": {
+                "limits": null,
+                "maxValue": null,
+                "method": "quantile",
+                "minValue": 0,
+                "range": [
+                  "#bfd3e6",
+                  "#9ebcda",
+                  "#8c96c6",
+                  "#8856a7",
+                  "#810f7c"
+                ]
+              },
+              "description": "This metric shows the current consumer group lag of a kafka host. Darker colors indicate higher relative values.",
+              "displayName": "Consumer group lag",
+              "id": "kafkaotel_consumer_group_lag",
+              "job": {
+                "filters": [],
+                "resolution": 300000,
+                "template": "CONSUMER_GROUP_LAG = data('kafka.consumer_group.lag'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+                "varName": "CONSUMER_GROUP_LAG"
+              },
+              "metricSelectors": [
+                "kafka.consumer_group.lag"
+              ],
+              "type": "metric",
+              "valueFormat": "Number",
+              "valueLabel": "Consumer group lag",
+              "valueType": null
+            },
+            {
+              "coloring": {
+                "limits": null,
+                "maxValue": null,
+                "method": "quantile",
+                "minValue": 0,
+                "range": [
+                  "#bfd3e6",
+                  "#9ebcda",
+                  "#8c96c6",
+                  "#8856a7",
+                  "#810f7c"
+                ]
+              },
+              "description": "This metric shows the current consumer group offset of a kafka host. Darker colors indicate higher relative values.",
+              "displayName": "Consumer group offset",
+              "id": "kafkaotel_consumer_group_offset",
+              "job": {
+                "filters": [],
+                "resolution": 300000,
+                "template": "CONSUMER_GROUP_OFFSET = data('kafka.consumer_group.offset'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+                "varName": "CONSUMER_GROUP_OFFSET"
+              },
+              "metricSelectors": [
+                "kafka.consumer_group.offset"
+              ],
+              "type": "metric",
+              "valueFormat": "Number",
+              "valueLabel": "Consumer group offset",
+              "valueType": null
+            }
+          ],
+          "mtsQuery": null,
+          "o11yMetricName": "Active brokers",
+          "o11yMetricUnit": null,
+          "o11yProductName": "Kafka brokers (OTel)",
+          "o11ySignalflowTemplate": "A = data('kafka.brokers').sum(by=['host.name']).sum().publish(label='A')",
+          "o11yTrendDisplayMode": null,
+          "propertyColumns": null,
+          "proxyProperties": null,
+          "requiredProperties": [],
+          "singleHostSystemDashboardName": null,
+          "systemDashboardName": null,
+          "systemDashboardPrefix": null,
+          "tooltipKeyList": [
+            {
+              "displayName": "Value",
+              "format": "Number",
+              "isSummaryProperty": true,
+              "property": "value"
+            }
+          ],
+          "type": "elemental",
+          "unreleased": false
+        },
+        "visualizations": []
+      }
+    },
+    "packageType": "NAVIGATOR"
+  }
