@@ -1,0 +1,327 @@
+{
+  "crossLinkExports": null,
+  "hashCode": -794130007,
+  "id": "Ga9J-_nAgAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "GTpBTG0AYBk"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "Ga9J-_nAgAA",
+      "idDisplayName": "{{k8s.namespace.name}} | {{k8s.cluster.name}}",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "k8s.namespace.name"
+              ]
+            }
+          ],
+          "metric": "k8s.namespace.phase"
+        }
+      ],
+      "instanceDashboards": [
+        "GTpKtH-AcAs"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Kubernetes namespaces",
+      "navigatorCategory": "Kubernetes",
+      "navigatorCategoryDisplayName": "Kubernetes",
+      "navigatorCategoryGroupDisplayName": "Containers",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "splunk",
+      "pinnedFilters": [],
+      "relationships": [],
+      "requiresFilter": false,
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": "_exists_:k8s.namespace.phase",
+        "category": "Kubernetes",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "Kubernetes namespaces",
+        "filterProperties": null,
+        "id": "k8snamespaces",
+        "idName": "Namespace",
+        "idTemplate": "{{k8s.namespace.name}} | {{k8s.cluster.name}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Namespace",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Cluster",
+            "format": null,
+            "metric": null,
+            "property": "k8s.cluster.name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Status",
+            "format": null,
+            "metric": null,
+            "property": "phase",
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "CPU usage",
+            "format": "Number",
+            "metric": "CPU usage",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "Memory usage",
+            "format": "Bytes",
+            "metric": "Memory usage",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "Network usage",
+            "format": "Bytes",
+            "metric": "Network usage",
+            "property": null,
+            "sortable": null
+          },
+          {
+            "aggregate": "sum",
+            "displayName": "Pods",
+            "format": "Number",
+            "metric": "Pods",
+            "property": null,
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Status",
+            "id": "status",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "ACTIVE = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(1).promote(by='phase', allow_missing={'phase':'Active'})\nTERMINATING = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(0).promote(by='phase', allow_missing={'phase':'Terminating'})\nNA = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='phase', allow_missing={'phase':'n/a'})\nPHASE = union(ACTIVE,TERMINATING,NA)",
+              "varName": "PHASE"
+            },
+            "metricSelectors": [
+              "k8s.namespace.phase"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "CPU usage",
+            "id": "CPU usage",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "CPU_POST_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name']).scale(0.01)\nCPU_PRE_USAGE = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])\nCPU_USAGE=union(CPU_POST_USAGE,CPU_PRE_USAGE)",
+              "varName": "CPU_USAGE"
+            },
+            "metricSelectors": [
+              "container_cpu_utilization"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Memory usage",
+            "id": "Memory usage",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])",
+              "varName": "MEMORY_USAGE"
+            },
+            "metricSelectors": [
+              "container.memory.usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Network usage",
+            "id": "Network usage",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "NETWORK_USAGE = data('k8s.pod.network.io'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])",
+              "varName": "NETWORK_USAGE"
+            },
+            "metricSelectors": [
+              "k8s.pod.network.io"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "",
+            "displayName": "Pods",
+            "id": "Pods",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "PODS = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.namespace.name']).count(by=['k8s.namespace.name', 'k8s.cluster.name'])",
+              "varName": "PODS"
+            },
+            "metricSelectors": [
+              "k8s.pod.phase"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Running namespaces",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Kubernetes namespaces",
+        "o11ySignalflowTemplate": "A = data('k8s.namespace.phase').sum(by=['k8s.namespace.name', 'k8s.cluster.name']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": [
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": false,
+              "showGroupBy": true,
+              "showNavigatorSettings": false,
+              "showOutliers": false
+            },
+            "listType": "multiMetric"
+          },
+          "defaultVisualization": true,
+          "type": "list",
+          "views": [
+            "aggregate"
+          ]
+        },
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": true,
+              "showGroupBy": true,
+              "showNavigatorSettings": true,
+              "showOutliers": true
+            }
+          },
+          "defaultVisualization": false,
+          "type": "heatmap",
+          "views": [
+            "aggregate"
+          ]
+        }
+      ]
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
