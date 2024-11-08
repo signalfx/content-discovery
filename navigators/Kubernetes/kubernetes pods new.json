@@ -149,7 +149,7 @@
       }
     }
   ],
-  "hashCode": 664026081,
+  "hashCode": -854954447,
   "id": "FTBzcwtAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -396,7 +396,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "OTEL_CPU_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid']).scale(0.01)\nOTEL_CPU_PROCESSORS = data('cpu.num_processors'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_USAGE = (OTEL_CPU_USAGE*100)/OTEL_CPU_PROCESSORS\nCPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid'])\nSYSTEM_CPU_TIME = data('system.cpu.time', filter('state', 'idle'){{#filter}} and {{{filter}}}{{/filter}}).count(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_PRE_USAGE = (CPU_TIME/SYSTEM_CPU_TIME)*100\nCPU_UTILIZATION = union(CPU_USAGE, CPU_PRE_USAGE)",
+              "template": "CONTAINER_CPU_UTILIZATION = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='rate').scale(0.01).sum(by=['k8s.pod.name','k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCONTAINER_CPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_POST_UTILIZATION = union(CONTAINER_CPU_UTILIZATION, CONTAINER_CPU_TIME)\nCONTAINER_CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_UTILIZATION = ((CPU_POST_UTILIZATION*100)/CONTAINER_CPU_LIMIT)",
               "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
