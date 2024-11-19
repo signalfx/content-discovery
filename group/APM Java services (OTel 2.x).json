@@ -177,7 +177,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -186,7 +186,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "L",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "E",
           "paletteIndex" : null,
           "plotType" : null,
@@ -195,7 +204,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "M",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "N",
           "paletteIndex" : null,
           "plotType" : null,
@@ -204,7 +222,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "I",
           "paletteIndex" : null,
           "plotType" : null,
@@ -213,7 +240,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Container cpu utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "O",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Container cpu utilization (Post translated)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -222,8 +258,26 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "CPU num processors",
+          "displayName" : "Container cpu utilization (Pre translated)",
+          "label" : "J",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU num processors (Post translated)",
           "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU num processors (Pre translated)",
+          "label" : "K",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -260,7 +314,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "G = (F/F).scale(100).publish(label='G', enable=False)\nC = (A/B).publish(label='C', enable=False)\nE = (A/D).publish(label='E', enable=False)\nN = (C*G).publish(label='N')\nI = (E*G).publish(label='I')\nA = data('container_cpu_utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nD = data('machine_cpu_cores', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)",
+      "programText" : "C = (A/B).publish(label='C')\nL = (J/K).publish(label='L')\nE = (A/D).publish(label='E')\nM = (J/D).publish(label='M')\nN = (C*G).publish(label='N')\nH = (L*G).publish(label='H')\nI = (E*G).publish(label='I')\nO = (M*G).publish(label='O')\nA = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nJ = data('container.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).scale(100).publish(label='J', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nK = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'idle')).count(by=['kubernetes_node']).publish(label='K', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)\nG = (F/F).publish(label='G', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -311,11 +365,7 @@
           "paletteIndex" : 20
         } ],
         "maximumPrecision" : 3,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -362,8 +412,8 @@
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_ and filter('sf_error', 'true')).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='A', enable=False)\nB = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\n\nA = data('spans.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum().publish(label='A', enable=False)\nB = data('spans.count', filter=filter_, rollup='rate').sum().publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -430,24 +480,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "C",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "D",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "Rx (bytes/sec)",
           "label" : "A",
           "paletteIndex" : 4,
@@ -465,6 +497,24 @@
           "valueSuffix" : null,
           "valueUnit" : "Byte",
           "yAxis" : 1
+        }, {
+          "displayName" : "C",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "D",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         }, {
           "displayName" : "Rx (bytes/sec)",
           "label" : "E",
@@ -494,8 +544,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Binary"
       },
-      "packageSpecifications" : "",
-      "programText" : "A = data('pod_network_receive_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A', enable=False)\nB = data('pod_network_transmit_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')\nC = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)",
+      "packageSpecifications" : null,
+      "programText" : "C = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)\nA = data('pod_network_receive_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A', enable=False)\nB = data('pod_network_transmit_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -546,11 +596,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -599,8 +645,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_ and filter('sf_error', 'true')).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='A', enable=False)\nB = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\nA = data('spans.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum(by=['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -672,11 +718,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -689,11 +731,11 @@
         },
         "publishLabelOptions" : [ {
           "displayName" : "Requests/sec",
-          "label" : "Requests/sec",
-          "paletteIndex" : null,
+          "label" : "C",
+          "paletteIndex" : 11,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "requests/s",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -707,8 +749,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'service.name']\n\nA = histogram('service.request', filter=filter_).count(by=groupby).rate(by=groupby).publish(label='Requests/sec')",
+      "packageSpecifications" : null,
+      "programText" : "C = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*')), rollup='rate').sum(by=['sf_service', 'sf_environment']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -797,12 +839,12 @@
         },
         "publishLabelOptions" : [ {
           "displayName" : "Disk utilization",
-          "label" : "A",
+          "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : "Byte",
+          "valueUnit" : null,
           "yAxis" : 0
         }, {
           "displayName" : "B",
@@ -824,12 +866,12 @@
           "yAxis" : 0
         }, {
           "displayName" : "Disk utilization",
-          "label" : "D",
+          "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         } ],
         "showEventLines" : false,
@@ -842,8 +884,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Binary"
       },
-      "packageSpecifications" : "",
-      "programText" : "D = (A*C).publish(label='D')\nB = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nA = data('container_fs_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)",
+      "packageSpecifications" : null,
+      "programText" : "A = data('container_fs_usage_bytes', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nD = (A*C).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -931,7 +973,34 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU utilization",
+          "displayName" : "CPU utilization (Pre translated)",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "C",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU utilization (Post translated)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -951,7 +1020,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['host.name']).publish(label='A')",
+      "programText" : "A = data('cpu.utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='A')\nB = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('state', 'idle'))).sum(by=['host.name']).publish(label='B', enable=False)\nC = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['host.name']).publish(label='C', enable=False)\nD = ((B/C)*100).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -972,11 +1041,7 @@
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 4,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -985,11 +1050,11 @@
         },
         "publishLabelOptions" : [ {
           "displayName" : "Requests/sec",
-          "label" : "Requests/sec",
-          "paletteIndex" : null,
+          "label" : "A",
+          "paletteIndex" : 11,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valueSuffix" : "requests/s",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -1005,8 +1070,8 @@
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'service.name']\n\nA = histogram('service.request', filter=filter_).count(by=groupby).rate(by=groupby).publish('Requests/sec')",
+      "packageSpecifications" : null,
+      "programText" : "A = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*')), rollup='rate').sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1057,11 +1122,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1092,8 +1153,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).publish(label='p90')",
+      "packageSpecifications" : null,
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['sf_service', 'sf_environment', 'sf_operation', 'sf_httpMethod']\nweighted_duration('spans', 'p90', filter_, groupby).publish(label='p90')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1300,11 +1361,7 @@
           } ]
         },
         "maximumPrecision" : null,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 30000,
@@ -1350,8 +1407,8 @@
         "type" : "List",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_ and filter('sf_error', 'true')).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='A', enable=False)\nB = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).mean(over='1m').top(count=10).publish(label='C')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\nA = data('spans.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum(by=['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).mean(over='1m').top(count=10).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1402,11 +1459,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1437,8 +1490,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).rate(by=groupby, allow_missing=allow_missing).publish(label='A')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\nA = data('spans.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1496,28 +1549,76 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU utilization",
+          "displayName" : "A",
           "label" : "A",
           "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null
         }, {
-          "displayName" : "Memory utilization",
+          "displayName" : "B",
           "label" : "B",
           "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null
         }, {
-          "displayName" : "Disk utilization",
+          "displayName" : "CPU utilization (Post translated)",
+          "label" : "K",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU utilization (Pre translated)",
           "label" : "C",
           "valuePrefix" : "",
           "valueSuffix" : "%",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU utilization",
+          "label" : "L",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
           "valueUnit" : null
         }, {
           "displayName" : "D",
           "label" : "D",
           "valuePrefix" : "",
           "valueSuffix" : "%",
+          "valueUnit" : null
+        }, {
+          "displayName" : "E",
+          "label" : "E",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "F",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "G",
+          "label" : "G",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "H",
+          "label" : "H",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Disk summary utilization",
+          "label" : "I",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Saturation",
+          "label" : "J",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
@@ -1533,7 +1634,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "f = filter('deployment.environment', '*') and filter('service.name', '*')\ng = ['host.name']\n\nA = data('cpu.utilization', filter=f).sum(by=g).publish(label='A')\nB = data('memory.utilization', filter=f).sum(by=g).publish(label='B')\nC = data('disk.summary_utilization', filter=f).sum(by=g).publish(label='C')\n\nD = max(A, B, C).sum(by=g).publish(label='D', enable=True)",
+      "programText" : "f = filter('sf_environment', '*') and filter('sf_service', '*')\nA = data('system.cpu.time', filter=f and (not filter('state', 'idle'))).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.cpu.time', filter=f).sum(by=['host.name']).publish(label='B', enable=False)\nK = data('cpu.utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['host.name']).publish(label='K', enable=False)\nC = ((A/B)*100).publish(label='C', enable=False)\nL = union(C, K).publish(label='L', enable=False)\nD = data('system.memory.usage', filter=f and filter('state', 'used')).sum(by=['host.name']).publish(label='D', enable=False)\nE = data('system.memory.usage', filter=f and filter('state', 'used', 'cached', 'free', 'buffered')).sum(by=['host.name']).publish(label='E', enable=False)\nF = ((D/E)*100).publish(label='F', enable=False)\nG = data('system.filesystem.usage', filter=f and filter('state', 'used')).sum(by=['host.name']).publish(label='G', enable=False)\nH = data('system.filesystem.usage', filter=f and filter('state', 'used', 'free')).sum(by=['host.name']).publish(label='H', enable=False)\nI = ((G/H)*100).publish(label='I', enable=False)\nJ = max(L, F, I).sum(by='host.name').publish(label='J', enable=True)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1621,11 +1722,29 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Memory utilization",
+          "displayName" : "A",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : "",
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
@@ -1641,7 +1760,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*')).publish(label='A')",
+      "programText" : "C = ((A/B)*100).publish(label='C')\nA = data('system.memory.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.memory.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'used', 'cached', 'free', 'buffered')).sum(by=['host.name']).publish(label='B', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1708,7 +1827,34 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU utilization",
+          "displayName" : "CPU utilization (Pre translated)",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "C",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU utilization (Post translated)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -1728,7 +1874,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cpu.utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['host.name']).publish(label='A')",
+      "programText" : "A = data('cpu.utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='A')\nB = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('state', 'idle'))).sum(by=['host.name']).publish(label='B', enable=False)\nC = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['host.name']).publish(label='C', enable=False)\nD = ((B/C)*100).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1770,11 +1916,7 @@
           } ]
         },
         "maximumPrecision" : null,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 30000,
@@ -1802,8 +1944,8 @@
         "type" : "List",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).rate(by=groupby, allow_missing=allow_missing).mean(over='1m').top(count=10).publish(label='A')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\nA = data('spans.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).mean(over='1m').top(count=10).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1824,11 +1966,7 @@
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 4,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -1857,8 +1995,8 @@
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).rate(by=groupby, allow_missing=allow_missing).publish(label='A')",
+      "packageSpecifications" : null,
+      "programText" : "A = data('spans.count', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*')) and filter('sf_operation', '*'), rollup='rate').sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1909,11 +2047,7 @@
           "paletteIndex" : 20
         } ],
         "maximumPrecision" : 2,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -1960,8 +2094,8 @@
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and (not filter('sf_dimensionalized', '*'))\ngroup_by = ['deployment.environment', 'service.name']\n\nA = histogram('service.request', filter=filter_ and filter('sf_error', 'true')).count(by=group_by).fill(0).publish(label='A', enable=False)\nB = histogram('service.request', filter=filter_).count(by=group_by).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('service.request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'sf_service']).publish(label='A', enable=False)\nB = data('service.request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'sf_service']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1982,11 +2116,7 @@
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 5,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -2015,8 +2145,8 @@
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'service.name']\nallow_missing = ['sf_httpMethod']\n\nB = histogram('service.request', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).publish(label='p90')",
+      "packageSpecifications" : null,
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*')\ngroupby = ['sf_service', 'sf_environment']\nweighted_duration('service.request', 'p90', filter_, groupby).mean().publish(label='p90')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2267,11 +2397,29 @@
         },
         "publishLabelOptions" : [ {
           "displayName" : "Disk utilization",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : "",
           "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -2286,7 +2434,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['host.name']).publish(label='A')",
+      "programText" : "A = data('system.filesystem.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.filesystem.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'free', 'used')).sum(by=['host.name']).publish(label='B', enable=False)\nC = ((A/B)*100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2496,11 +2644,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -2549,8 +2693,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_ and filter('sf_error', 'true')).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='A', enable=False)\nB = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod']\nA = data('spans.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum(by=groupby, allow_missing=['sf_httpMethod']).publish(label='A', enable=False)\nB = data('spans.count', filter=filter_, rollup='rate').sum(by=groupby, allow_missing=['sf_httpMethod']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2618,11 +2762,29 @@
         },
         "publishLabelOptions" : [ {
           "displayName" : "Disk utilization",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "A",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : "",
           "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -2637,7 +2799,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['host.name']).publish(label='A')",
+      "programText" : "A = data('system.filesystem.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.filesystem.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'free', 'used')).sum(by=['host.name']).publish(label='B', enable=False)\nC = ((A/B)*100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2724,7 +2886,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('network.total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='delta').sum(by=['host.name']).publish(label='A')",
+      "programText" : "A = data('system.network.io', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['host.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2830,7 +2992,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2839,7 +3001,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "L",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "E",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2848,7 +3019,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "M",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "N",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2857,7 +3037,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Pod CPU utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "H",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Pod CPU utilization (Post translation)",
           "label" : "I",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2866,7 +3055,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Container cpu utilization",
+          "displayName" : "Pod CPU utilization (Pre translation)",
+          "label" : "O",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Container cpu utilization (Post translated)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2875,8 +3073,26 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "CPU num processors",
+          "displayName" : "Container cpu utilization (Pre translated)",
+          "label" : "J",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU num processors (Post translated)",
           "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "CPU num processors (Pre translated)",
+          "label" : "K",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -2913,7 +3129,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "G = (F/F).scale(100).publish(label='G', enable=False)\nC = (A/B).publish(label='C', enable=False)\nE = (A/D).publish(label='E', enable=False)\nN = (C*G).publish(label='N')\nI = (E*G).publish(label='I')\nA = data('container_cpu_utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nD = data('machine_cpu_cores', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)",
+      "programText" : "C = (A/B).publish(label='C')\nL = (J/K).publish(label='L')\nE = (A/D).publish(label='E')\nM = (J/D).publish(label='M')\nN = (C*G).publish(label='N')\nH = (L*G).publish(label='H')\nI = (E*G).publish(label='I')\nO = (M*G).publish(label='O')\nA = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nJ = data('container.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).scale(100).publish(label='J', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nK = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'idle')).count(by=['kubernetes_node']).publish(label='K', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)\nG = (F/F).publish(label='G', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2934,11 +3150,7 @@
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 5,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -2967,8 +3179,8 @@
         "type" : "SingleValue",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).publish(label='p90')",
+      "packageSpecifications" : null,
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod']\nweighted_duration('spans', 'p90', filter_, groupby).mean().publish(label='p90')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3055,7 +3267,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('network.total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='delta').sum(by=['host.name']).publish(label='A')",
+      "programText" : "A = data('system.network.io', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['host.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3360,12 +3572,12 @@
         },
         "publishLabelOptions" : [ {
           "displayName" : "Disk utilization",
-          "label" : "D",
+          "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
+          "valueUnit" : "Byte",
           "yAxis" : 0
         }, {
           "displayName" : "B",
@@ -3387,12 +3599,12 @@
           "yAxis" : 0
         }, {
           "displayName" : "Disk utilization",
-          "label" : "A",
+          "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : "Byte",
+          "valueUnit" : null,
           "yAxis" : 0
         } ],
         "showEventLines" : false,
@@ -3405,8 +3617,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Binary"
       },
-      "packageSpecifications" : "",
-      "programText" : "D = (A*C).publish(label='D')\nB = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nA = data('container_fs_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)",
+      "packageSpecifications" : null,
+      "programText" : "D = (A*C).publish(label='D')\nB = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nA = data('container_fs_usage_bytes', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3457,11 +3669,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -3492,8 +3700,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).count(by=groupby, allow_missing=allow_missing).rate(by=groupby, allow_missing=allow_missing).publish(label='A')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\nA = data('spans.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod'], allow_missing=['sf_httpMethod']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3544,11 +3752,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -3597,8 +3801,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).percentile(pct=50, by=groupby, allow_missing=allow_missing).publish(label='median')\nB = histogram('spans', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).publish(label='p90')\nC = histogram('spans', filter=filter_).percentile(pct=99, by=groupby, allow_missing=allow_missing).publish(label='p99')",
+      "packageSpecifications" : null,
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_service', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['sf_environment', 'sf_service', 'sf_operation', 'sf_httpMethod']\nweighted_duration('spans', 'median', filter_, groupby).publish(label='median')\nweighted_duration('spans', 'p90', filter_, groupby).publish(label='p90')\nweighted_duration('spans', 'p99', filter_, groupby).publish(label='p99')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3649,11 +3853,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -3702,8 +3902,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and (not filter('sf_dimensionalized', '*'))\ngroup_by = ['deployment.environment', 'service.name']\n\nA = histogram('service.request', filter=filter_ and filter('sf_error', 'true')).count(by=group_by).fill(0).publish(label='A', enable=False)\nB = histogram('service.request', filter=filter_).count(by=group_by).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
+      "packageSpecifications" : null,
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('service.request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'sf_service']).publish(label='A', enable=False)\nB = data('service.request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'sf_service']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3818,24 +4018,6 @@
           "valueUnit" : null,
           "yAxis" : 1
         }, {
-          "displayName" : "Memory usage in bytes",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory utilization (out of limit)",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "D",
           "label" : "D",
           "paletteIndex" : null,
@@ -3853,6 +4035,24 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Memory usage in bytes",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization (out of limit)",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -3864,8 +4064,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Binary"
       },
-      "packageSpecifications" : "",
-      "programText" : "A = data('container_memory_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('container_spec_memory_limit_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')\nD = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)",
+      "packageSpecifications" : null,
+      "programText" : "D = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)\nA = data('container_memory_usage_bytes', filter=filter('sf_environment', '*') and filter('sf_service', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('container_spec_memory_limit_bytes', filter=filter('sf_environment', '*') and filter('sf_service', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3932,11 +4132,29 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Memory utilization",
+          "displayName" : "A",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : "",
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
@@ -3952,7 +4170,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('memory.utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*')).publish(label='A')",
+      "programText" : "C = ((A/B)*100).publish(label='C')\nA = data('system.memory.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'used')).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.memory.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'used', 'cached', 'free', 'buffered')).sum(by=['host.name']).publish(label='B', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4433,24 +4651,6 @@
           "valueUnit" : "Byte",
           "yAxis" : 1
         }, {
-          "displayName" : "Rx (bytes/sec)",
-          "label" : "E",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Tx (bytes/sec)",
-          "label" : "F",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "C",
           "label" : "C",
           "paletteIndex" : null,
@@ -4468,6 +4668,24 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Rx (bytes/sec)",
+          "label" : "E",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Tx (bytes/sec)",
+          "label" : "F",
+          "paletteIndex" : 1,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -4479,8 +4697,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Binary"
       },
-      "packageSpecifications" : "",
-      "programText" : "A = data('pod_network_receive_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A', enable=False)\nB = data('pod_network_transmit_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')\nC = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)",
+      "packageSpecifications" : null,
+      "programText" : "C = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)\nA = data('pod_network_receive_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A', enable=False)\nB = data('pod_network_transmit_bytes_total', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4538,28 +4756,76 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU utilization",
+          "displayName" : "A",
           "label" : "A",
           "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null
         }, {
-          "displayName" : "Memory utilization",
+          "displayName" : "B",
           "label" : "B",
           "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null
         }, {
-          "displayName" : "Disk utilization",
+          "displayName" : "CPU utilization (Post translated)",
+          "label" : "K",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU utilization (Pre translated)",
           "label" : "C",
           "valuePrefix" : "",
           "valueSuffix" : "%",
+          "valueUnit" : null
+        }, {
+          "displayName" : "CPU utilization",
+          "label" : "L",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
           "valueUnit" : null
         }, {
           "displayName" : "D",
           "label" : "D",
           "valuePrefix" : "",
           "valueSuffix" : "%",
+          "valueUnit" : null
+        }, {
+          "displayName" : "E",
+          "label" : "E",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Memory utilization",
+          "label" : "F",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "G",
+          "label" : "G",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "H",
+          "label" : "H",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Disk summary utilization",
+          "label" : "I",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
+          "valueUnit" : null
+        }, {
+          "displayName" : "Saturation",
+          "label" : "J",
+          "valuePrefix" : "",
+          "valueSuffix" : "",
           "valueUnit" : null
         } ],
         "refreshInterval" : null,
@@ -4575,7 +4841,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "f = filter('deployment.environment', '*') and filter('service.name', '*')\ng = ['host.name']\n\nA = data('cpu.utilization', filter=f).sum(by=g).publish(label='A')\nB = data('memory.utilization', filter=f).sum(by=g).publish(label='B')\nC = data('disk.summary_utilization', filter=f).sum(by=g).publish(label='C')\n\nD = max(A, B, C).sum(by=g).publish(label='D', enable=True)",
+      "programText" : "f = filter('sf_environment', '*') and filter('sf_service', '*')\nA = data('system.cpu.time', filter=f and (not filter('state', 'idle'))).sum(by=['host.name']).publish(label='A', enable=False)\nB = data('system.cpu.time', filter=f).sum(by=['host.name']).publish(label='B', enable=False)\nK = data('cpu.utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['host.name']).publish(label='K', enable=False)\nC = ((A/B)*100).publish(label='C', enable=False)\nL = union(C, K).publish(label='L', enable=False)\nD = data('system.memory.usage', filter=f and filter('state', 'used')).sum(by=['host.name']).publish(label='D', enable=False)\nE = data('system.memory.usage', filter=f and filter('state', 'used', 'cached', 'free', 'buffered')).sum(by=['host.name']).publish(label='E', enable=False)\nF = ((D/E)*100).publish(label='F', enable=False)\nG = data('system.filesystem.usage', filter=f and filter('state', 'used')).sum(by=['host.name']).publish(label='G', enable=False)\nH = data('system.filesystem.usage', filter=f and filter('state', 'used', 'free')).sum(by=['host.name']).publish(label='H', enable=False)\nI = ((G/H)*100).publish(label='I', enable=False)\nJ = max(L, F, I).sum(by='host.name').publish(label='J', enable=True)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4668,11 +4934,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -4721,8 +4983,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Metric"
       },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'service.name']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('service.request', filter=filter_).percentile(pct=50, by=groupby, allow_missing=allow_missing).publish(label='median')\nB = histogram('service.request', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).publish(label='p90')\nC = histogram('service.request', filter=filter_).percentile(pct=99, by=groupby, allow_missing=allow_missing).publish(label='p99')",
+      "packageSpecifications" : null,
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*')\ngroupby = ['sf_service', 'sf_environment']\nweighted_duration('service.request', 'median', filter_, groupby).publish(label='median')\nweighted_duration('service.request', 'p90', filter_, groupby).publish(label='p90')\nweighted_duration('service.request', 'p99', filter_, groupby).publish(label='p99')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4837,24 +5099,6 @@
           "valueUnit" : null,
           "yAxis" : 1
         }, {
-          "displayName" : "Memory usage in bytes",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory utilization (out of limit)",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "D",
           "label" : "D",
           "paletteIndex" : null,
@@ -4872,6 +5116,24 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
+        }, {
+          "displayName" : "Memory usage in bytes",
+          "label" : "F",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "Memory utilization (out of limit)",
+          "label" : "G",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
         } ],
         "showEventLines" : false,
         "stacked" : false,
@@ -4883,83 +5145,8 @@
         "type" : "TimeSeriesChart",
         "unitPrefix" : "Binary"
       },
-      "packageSpecifications" : "",
-      "programText" : "A = data('container_memory_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('container_spec_memory_limit_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')\nD = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)",
-      "relatedDetectorIds" : [ ],
-      "tags" : [ ]
-    }
-  }, {
-    "chart" : {
-      "autoDetectRelatedDetectorIds" : [ ],
-      "created" : 0,
-      "creator" : null,
-      "customProperties" : { },
-      "description" : "Slowest service endpoints (1-minute latency average)",
-      "id" : "GbtnhlAAcAE",
-      "importOf" : "GNpEglCAICw",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "name" : "Top endpoints by latency",
-      "options" : {
-        "colorBy" : "Dimension",
-        "colorScale2" : null,
-        "hideMissingValues" : false,
-        "legendOptions" : {
-          "fields" : [ {
-            "enabled" : false,
-            "property" : "sf_originatingMetric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_metric"
-          }, {
-            "enabled" : false,
-            "property" : "sf_environment"
-          }, {
-            "enabled" : true,
-            "property" : "sf_operation"
-          }, {
-            "enabled" : true,
-            "property" : "sf_httpMethod"
-          }, {
-            "enabled" : true,
-            "property" : "sf_service"
-          } ]
-        },
-        "maximumPrecision" : null,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
-        "programOptions" : {
-          "disableSampling" : false,
-          "maxDelay" : 30000,
-          "minimumResolution" : 0,
-          "timezone" : null
-        },
-        "publishLabelOptions" : [ {
-          "displayName" : "p90",
-          "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : "Nanosecond",
-          "yAxis" : 0
-        } ],
-        "refreshInterval" : null,
-        "secondaryVisualization" : "None",
-        "sortBy" : "-value",
-        "time" : {
-          "range" : 900000,
-          "rangeEnd" : 0,
-          "type" : "relative"
-        },
-        "type" : "List",
-        "unitPrefix" : "Metric"
-      },
-      "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('service.name', '*') and filter('sf_operation', '*') and filter('sf_kind', 'SERVER', 'CONSUMER') and (not filter('sf_dimensionalized', '*')) and (not filter('sf_serviceMesh', '*'))\ngroupby = ['deployment.environment', 'service.name', 'sf_operation', 'sf_httpMethod']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('spans', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).mean(over='1m').top(count=10).publish(label='A')",
+      "packageSpecifications" : null,
+      "programText" : "D = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)\nA = data('container_memory_usage_bytes', filter=filter('sf_environment', '*') and filter('sf_service', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('container_spec_memory_limit_bytes', filter=filter('sf_environment', '*') and filter('sf_service', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5024,23 +5211,17 @@
         "row" : 3,
         "width" : 4
       }, {
-        "chartId" : "GOFA9ceAgAY",
-        "column" : 8,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
-        "chartId" : "GbtnhlAAcAE",
-        "column" : 4,
-        "height" : 1,
-        "row" : 4,
-        "width" : 4
-      }, {
         "chartId" : "GOFA9ceAgAw",
         "column" : 0,
         "height" : 1,
         "row" : 4,
-        "width" : 4
+        "width" : 6
+      }, {
+        "chartId" : "GOFA9ceAgAY",
+        "column" : 6,
+        "height" : 1,
+        "row" : 4,
+        "width" : 6
       }, {
         "chartId" : "GOE95grAYAA",
         "column" : 0,
@@ -5048,26 +5229,26 @@
         "row" : 5,
         "width" : 12
       }, {
-        "chartId" : "GOFA9ceAgB8",
-        "column" : 6,
-        "height" : 1,
-        "row" : 6,
-        "width" : 6
-      }, {
         "chartId" : "GOFA9ceAgAI",
         "column" : 0,
         "height" : 1,
         "row" : 6,
         "width" : 6
       }, {
-        "chartId" : "GOFA9ceAgBU",
+        "chartId" : "GOFA9ceAgB8",
         "column" : 6,
         "height" : 1,
-        "row" : 7,
+        "row" : 6,
         "width" : 6
       }, {
         "chartId" : "GOFA9ceAgBE",
         "column" : 0,
+        "height" : 1,
+        "row" : 7,
+        "width" : 6
+      }, {
+        "chartId" : "GOFA9ceAgBU",
+        "column" : 6,
         "height" : 1,
         "row" : 7,
         "width" : 6
@@ -5122,8 +5303,8 @@
           "applyIfExists" : false,
           "description" : "APM Environment Name",
           "preferredSuggestions" : [ ],
-          "property" : "deployment.environment",
-          "propertyMappings" : [ "deployment.environment" ],
+          "property" : "sf_environment",
+          "propertyMappings" : [ "sf_environment" ],
           "replaceOnly" : true,
           "required" : true,
           "restricted" : false,
@@ -5133,8 +5314,8 @@
           "applyIfExists" : false,
           "description" : "APM Service Name",
           "preferredSuggestions" : [ ],
-          "property" : "service.name",
-          "propertyMappings" : [ "service.name" ],
+          "property" : "sf_service",
+          "propertyMappings" : [ "sf_service" ],
           "replaceOnly" : true,
           "required" : true,
           "restricted" : false,
@@ -5475,7 +5656,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 1116356355,
+  "hashCode" : -1810927216,
   "id" : "GOExLDiAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"

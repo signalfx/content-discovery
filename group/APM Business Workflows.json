@@ -57,11 +57,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -93,7 +89,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = histogram('workflows', filter=filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))).count(by=['sf_workflow', 'deployment.environment']).sum(by=['sf_workflow', 'deployment.environment']).top(count=100).publish(label='A')",
+      "programText" : "A = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*')), rollup='sum').sum(by=['sf_workflow', 'sf_environment']).top(count=100).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -137,11 +133,7 @@
           } ]
         },
         "maximumPrecision" : null,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : true,
           "maxDelay" : 0,
@@ -170,7 +162,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'sf_workflow']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('workflows', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).top(100).publish(label='p90')",
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['sf_environment', 'sf_workflow']\nweighted_duration('workflows', 'p90', filter_, groupby).top(100).publish(label='p90')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -232,11 +224,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -268,7 +256,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'sf_workflow']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('workflows', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).top(100).publish(label='p90')",
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['sf_environment', 'sf_workflow']\nweighted_duration('workflows', 'p90', filter_, groupby).top(100).publish(label='p90')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -303,11 +291,7 @@
           } ]
         },
         "maximumPrecision" : null,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : true,
           "maxDelay" : 0,
@@ -315,7 +299,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Workflows Count",
+          "displayName" : "A",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -336,7 +320,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = histogram('workflows', filter=filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))).count(by=['sf_workflow', 'deployment.environment']).sum(by=['sf_workflow', 'deployment.environment']).sum(over='1m').top(count=100).publish(label='A')",
+      "programText" : "A = data('workflows.count', filter=filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*')), rollup='sum').sum(by=['sf_workflow', 'sf_environment']).sum(over='1m').top(count=100).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -371,11 +355,7 @@
           } ]
         },
         "maximumPrecision" : 3,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : true,
           "maxDelay" : 0,
@@ -422,7 +402,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroup_by = ['deployment.environment', 'sf_workflow']\n\nA = histogram('workflows', filter=filter_ and filter('sf_error', 'true')).count(by=group_by).fill(0).publish(label='A', enable=False)\nB = histogram('workflows', filter=filter_).count(by=group_by).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).top(100).publish(label='C')",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('workflows.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum(by=['sf_environment', 'sf_workflow']).publish(label='A', enable=False)\nB = data('workflows.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_workflow']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).mean(over='1m').top(100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -472,11 +452,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -526,7 +502,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroup_by = ['deployment.environment', 'sf_workflow']\n\nA = histogram('workflows', filter=filter_ and filter('sf_error', 'true')).count(by=group_by).fill(0).publish(label='A', enable=False)\nB = histogram('workflows', filter=filter_).count(by=group_by).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).top(100).publish(label='C')",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('workflows.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum(by=['sf_environment', 'sf_workflow']).publish(label='A', enable=False)\nB = data('workflows.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_workflow']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).top(100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -588,11 +564,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -604,12 +576,12 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "A",
-          "label" : "A",
-          "paletteIndex" : null,
+          "displayName" : "Requests",
+          "label" : "C",
+          "paletteIndex" : 11,
           "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
+          "valuePrefix" : "",
+          "valueSuffix" : "",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -624,7 +596,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'sf_workflow']\n\nA = histogram('workflows', filter=filter_).count(by=groupby).sum(by=groupby).publish(label='A')",
+      "programText" : "C = data('workflows.count', filter=filter('sf_environment', '*') and (not filter('sf_dimensionalized', '*')) and filter('sf_workflow', '*'), rollup='sum').sum(by=['sf_workflow', 'sf_environment']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -644,11 +616,7 @@
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 4,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -678,7 +646,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = histogram('workflows', filter=filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))).count().sum().publish(label='A')\nB = alerts(detector_id='ElYWH0iAASI').publish(label='B')",
+      "programText" : "A = data('workflows.count', filter=filter('sf_environment', '*') and (not filter('sf_dimensionalized', '*')) and filter('sf_workflow', '*'), rollup='sum').sum().publish(label='A')\nB = alerts(detector_id='ElYWH0iAASI').publish(label='B')",
       "relatedDetectorIds" : [ "ElYWH0iAASI" ],
       "tags" : [ ]
     }
@@ -728,11 +696,7 @@
           "paletteIndex" : 20
         } ],
         "maximumPrecision" : 2,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -780,7 +744,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroup_by = ['deployment.environment', 'sf_workflow']\n\nA = histogram('workflows', filter=filter_ and filter('sf_error', 'true')).count(by=group_by).fill(0).publish(label='A', enable=False)\nB = histogram('workflows', filter=filter_).count(by=group_by).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('workflows.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum().publish(label='A', enable=False)\nB = data('workflows.count', filter=filter_, rollup='rate').sum().publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -800,11 +764,7 @@
         "colorScale" : null,
         "colorScale2" : null,
         "maximumPrecision" : 5,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : 0,
@@ -834,7 +794,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'sf_workflow']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('workflows', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).sum(over='1m').publish(label='p90')",
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['sf_environment', 'sf_workflow']\nweighted_duration('workflows', 'p90', filter_, groupby).mean().publish(label='p90')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -884,11 +844,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -938,7 +894,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['deployment.environment', 'sf_workflow']\nallow_missing = ['sf_httpMethod']\n\nA = histogram('workflows', filter=filter_).percentile(pct=50, by=groupby, allow_missing=allow_missing).publish(label='median')\nB = histogram('workflows', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing).publish(label='p90')\nC = histogram('workflows', filter=filter_).percentile(pct=99, by=groupby, allow_missing=allow_missing).publish(label='p99')",
+      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n\n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n\n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n\nfilter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['sf_environment', 'sf_workflow']\nweighted_duration('workflows', 'median', filter_, groupby).publish(label='median')\nweighted_duration('workflows', 'p90', filter_, groupby).publish(label='p90')\nweighted_duration('workflows', 'p99', filter_, groupby).publish(label='p99')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1000,11 +956,7 @@
         "lineChartOptions" : {
           "showDataMarkers" : false
         },
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : null
-        },
+        "noDataOptions" : null,
         "onChartLegendOptions" : {
           "dimensionInLegend" : null,
           "showLegend" : false
@@ -1054,7 +1006,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('deployment.environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\ngroup_by = ['deployment.environment', 'sf_workflow']\n\nA = histogram('workflows', filter=filter_ and filter('sf_error', 'true')).count(by=group_by).fill(0).publish(label='A', enable=False)\nB = histogram('workflows', filter=filter_).count(by=group_by).fill(0).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C')",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_workflow', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('workflows.count', filter=filter_ and filter('sf_error', 'true'), rollup='rate').sum(by=['sf_environment', 'sf_workflow']).publish(label='A', enable=False)\nB = data('workflows.count', filter=filter_, rollup='rate').sum(by=['sf_environment', 'sf_workflow']).publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0)/B)).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1153,8 +1105,8 @@
           "applyIfExists" : false,
           "description" : "Environment",
           "preferredSuggestions" : [ ],
-          "property" : "deployment.environment",
-          "propertyMappings" : [ "deployment.environment" ],
+          "property" : "sf_environment",
+          "propertyMappings" : [ "sf_environment" ],
           "replaceOnly" : false,
           "required" : true,
           "restricted" : false,
@@ -1298,7 +1250,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 1242168073,
+  "hashCode" : -716376430,
   "id" : "Em-XVZjAYCs",
   "modelVersion" : 1,
   "packageType" : "GROUP"
