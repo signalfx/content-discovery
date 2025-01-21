@@ -99,7 +99,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.apm.numTracesReceived').mean(over='7d').publish(label='C')\nD = data('sf.org.apm.numTracesReceived').mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.apm.numTracesReceived').mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -207,7 +207,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('logs.events.count', rollup='sum').sum(by=['severity'], allow_missing=['severity']).sum(over='1d').mean(over='7d').publish(label='Event Count')\n        \n### Relies on a Log Pipeline Management Metric\n### Setup with below information\n## Matching Condition: Match All\n## Operation: count\n## Dimensions: [\"severity\",\"deployment.environment\"]\n## Field: null\n## Metric Name: logs.events.count\n## Metric Type: COUNTER\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -340,9 +340,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('service.request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'sf_service']).mean(over='1d').publish(label='A', enable=False)\nB = data('service.request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'sf_service']).mean(over='1d').publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).mean().publish(label='Today')\nD = combine(100*((A if A is not None else 0) / B)).mean().timeshift('4w').publish(label='4w', enable=False)\nE = combine(100*((A if A is not None else 0) / B)).mean().timeshift('12w').publish(label='12w', enable=False)\n        \nF = (((C-D)/C)*100).publish(label='% 4 week Change')\nG = (((C-E)/C)*100).publish(label='% 12 week Change')\n",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))\n\nA = histogram('service.request', filter=filter_ and filter('sf_error', 'true')).count(over='1d').publish(label='A', enable=False)\nB = histogram('service.request', filter=filter_).count(over='1d').publish(label='B', enable=False)\n\nC = combine(100*((A if A is not None else 0) / B)).mean().publish(label='Today')\nD = combine(100*((A if A is not None else 0) / B)).mean().timeshift('4w').publish(label='4w', enable=False)\nE = combine(100*((A if A is not None else 0) / B)).mean().timeshift('12w').publish(label='12w', enable=False)\n        \nF = (((C-D)/C)*100).publish(label='% 4 week Change')\nG = (((C-E)/C)*100).publish(label='% 12 week Change')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -357,20 +357,8 @@
       "lastUpdatedBy" : null,
       "name" : "Latency (P90)",
       "options" : {
-        "colorBy" : "Scale",
-        "colorScale2" : [ {
-          "gt" : 0.0,
-          "gte" : null,
-          "lt" : null,
-          "lte" : 100.0,
-          "paletteIndex" : 0
-        }, {
-          "gt" : null,
-          "gte" : -100.0,
-          "lt" : null,
-          "lte" : 0.0,
-          "paletteIndex" : 15
-        } ],
+        "groupBy" : [ "sf_service" ],
+        "groupBySort" : "Descending",
         "hideMissingValues" : false,
         "legendOptions" : {
           "fields" : [ {
@@ -379,11 +367,6 @@
           } ]
         },
         "maximumPrecision" : 4,
-        "noDataOptions" : {
-          "linkText" : null,
-          "linkUrl" : null,
-          "noDataMessage" : "Currently, no data is available for this chart."
-        },
         "programOptions" : {
           "disableSampling" : false,
           "maxDelay" : null,
@@ -393,64 +376,49 @@
         "publishLabelOptions" : [ {
           "displayName" : "Today",
           "label" : "C",
-          "paletteIndex" : 11,
-          "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : "Millisecond",
-          "yAxis" : 0
+          "valueUnit" : "Millisecond"
         }, {
           "displayName" : "-4w",
           "label" : "D",
-          "paletteIndex" : 11,
-          "plotType" : null,
-          "valuePrefix" : null,
+          "valuePrefix" : "",
           "valueSuffix" : "requests/s",
-          "valueUnit" : null,
-          "yAxis" : 0
+          "valueUnit" : null
         }, {
           "displayName" : "-12w",
           "label" : "E",
-          "paletteIndex" : 11,
-          "plotType" : null,
-          "valuePrefix" : null,
+          "valuePrefix" : "",
           "valueSuffix" : "requests/s",
-          "valueUnit" : null,
-          "yAxis" : 0
+          "valueUnit" : null
         }, {
           "displayName" : "% 4 week change",
           "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
+          "valuePrefix" : "",
           "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
+          "valueUnit" : null
         }, {
           "displayName" : "% 12 week change",
           "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
+          "valuePrefix" : "",
           "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
+          "valueUnit" : null
         } ],
         "refreshInterval" : 60000,
-        "secondaryVisualization" : "Radial",
         "sortBy" : "-sf_metric",
         "time" : {
           "range" : 900000,
           "rangeEnd" : 0,
           "type" : "relative"
         },
-        "type" : "List",
+        "timestampHidden" : false,
+        "type" : "TableChart",
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n        \n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n        \n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n        \n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n        \nfilter_ = filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*')\ngroupby = ['sf_service', 'sf_environment']\nweighted_duration('service.request', 'p90', filter_, groupby)\n        \nC = weighted_duration('service.request', 'p90', filter_, groupby).mean(over='1d').mean().scale(0.00000001).publish(label='C')\nD = weighted_duration('service.request', 'p90', filter_, groupby).mean(over='1d').mean().scale(0.00000001).timeshift('4w').publish(label='D', enable=False)\nE = weighted_duration('service.request', 'p90', filter_, groupby).mean(over='1d').mean().scale(0.00000001).timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/C)*100).publish(label='F')\nG = (((C-E)/C)*100).publish(label='G')\n",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*')\ngroupby = ['sf_service']\n\nC = histogram('service.request', filter=filter_).percentile(pct=90, by=groupby, over='1d').scale(0.00000001).publish(label='C', enable=True)\nD = histogram('service.request', filter=filter_).percentile(pct=90, by=groupby, over='1d').scale(0.00000001).timeshift('4w').publish(label='D', enable=True)\nE = histogram('service.request', filter=filter_).percentile(pct=90, by=groupby, over='1d').scale(0.00000001).timeshift('12w').publish(label='E', enable=True)\n\nF = (((C-D)/C)*100).publish(label='F')\nG = (((C-E)/C)*100).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -534,7 +502,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.numLogsReceivedByToken', rollup='sum').sum(by=['tokenName']).mean(over='7d').sum(over='1d').top(count=5).publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -654,7 +622,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.apm.numContainers').mean(over='7d').publish(label='C')\nH = data('sf.org.apm.numHosts').mean(over='7d').publish(label='H')\nI = (C+H).publish(label='I')\nJ = (C+H).timeshift('4w').publish(label='J', enable=False)\nK = (C+H).timeshift('12w').publish(label='K', enable=False)\nG = (((I-K)/K)*100).publish(label='G')\nF = (((I-J)/J)*100).publish(label='F')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -840,7 +808,7 @@
       "packageSpecifications" : "",
       "programText" : "f = filter('sf_environment', '*') and filter('sf_service', '*')\nA = data('cpu.utilization', filter=f).mean(by='sf_service').publish(label='A', enable=False)\nB = data('memory.utilization', filter=f).mean(by='sf_service').publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=f).mean(by='sf_service').publish(label='C', enable=False)\nD = max(A, B, C).publish(label='Saturation', enable=False)\nE = max(A, B, C).timeshift('12w').publish(label='Saturation-12w', enable=False)\n        \nG = (((E-D)/D)*100).mean(over='7d').top(count=5).publish(label='Top 5', enable=False)\nH = (((E-D)/D)*100).mean(over='7d').bottom(count=5).publish(label='Bottom 5', enable = False)\n\nI = union(G, H).publish(label=\"I\")\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -978,7 +946,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.workflow.time.ns.p75', filter=filter('sf_environment', '*') and filter('workflow.name', '*')).mean(by=['workflow.name']).mean(over='7d').publish(label='A', enable=False)\nB = data('rum.workflow.time.ns.p75', filter=filter('sf_environment', '*') and filter('workflow.name', '*')).mean(by=['workflow.name']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['workflow.name']).mean(over='7d').top(count=5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['workflow.name']).mean(over='7d').bottom(count=5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1080,7 +1048,7 @@
       "packageSpecifications" : "",
       "programText" : "F = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')\nD = data('sf.org.numCustomMetrics').mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.numCustomMetrics').mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nC = data('sf.org.numCustomMetrics').mean(over='7d').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1161,7 +1129,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.webvitals_fid.time.ns.p75').scale(0.000001).mean(cycle='month', cycle_start='1d', partial_values=True).mean().publish(label='A')\nB = data('rum.webvitals_lcp.time.ns.p75').scale(0.000001).mean(cycle='month', cycle_start='1d', partial_values=True).mean().publish(label='B')\nC = data('rum.webvitals_cls.score.p75').mean(cycle='month', cycle_start='1d', partial_values=True).mean().publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1284,7 +1252,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.profiling.numLogsReceivedByToken').sum(by=['tokenName']).mean(over='7d').sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.profiling.numLogsReceivedByToken').sum(by=['tokenName']).timeshift('12w').mean(over='7d').sum(over='1d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).top(5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).bottom(5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1407,7 +1375,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numLogsReceivedByToken').sum(by=['tokenName']).mean(over='7d').sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.numLogsReceivedByToken').sum(by=['tokenName']).timeshift('12w').mean(over='7d').sum(over='1d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).top(5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).bottom(5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1509,7 +1477,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('logs.events.count').sum(by=['severity'], allow_missing=['severity']).mean(over='7d').sum(over='1d').publish(label='A', enable=False)\nB = data('logs.events.count').sum(by=['severity'], allow_missing=['severity']).timeshift('12w').mean(over='7d').sum(over='1d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['severity'], allow_missing=['severity']).mean(over='7d').publish(label='C')\n        \n### Relies on a Log Pipeline Management Metric\n### Setup with below information\n## Matching Condition: Match All\n## Operation: count\n## Dimensions: [\"severity\",\"deployment.environment\"]\n## Field: null\n## Metric Name: logs.events.count\n## Metric Type: COUNTER\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1621,9 +1589,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['sf_service']).mean(over='7d').publish(label='A', enable=False)\nB = data('service.request.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['sf_service']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['sf_service']).mean(over='7d').top(count=5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['sf_service']).mean(over='7d').bottom(count=5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*')\ngroupby = ['sf_service']\n\nA = histogram('service.request', filter=filter_).count(by=groupby, over='7d').rate(by=groupby).publish(label='A', enable=False)\nB = histogram('service.request', filter=filter_).count(by=groupby, over='7d').rate(by=groupby).timeshift('12w').publish(label='B', enable=False)\nC = (((A-B)/B)*100).top(count=5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).bottom(count=5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1731,7 +1699,7 @@
       "packageSpecifications" : "",
       "programText" : "F = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')\nD = data('sf.org.rum.numSpanBytesReceivedByToken').sum().mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.rum.numSpanBytesReceivedByToken').sum().mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nC = data('sf.org.rum.numSpanBytesReceivedByToken').sum().mean(over='7d').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1851,7 +1819,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('rum.workflow.time.ns.p75', filter=filter('sf_environment', '*')).mean().timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['app', 'app.version']).mean(over='7d').top(count=5).publish(label='C')\nA = data('rum.workflow.time.ns.p75', filter=filter('sf_environment', '*')).mean(by=['app']).mean(over='7d').publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -1956,7 +1924,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.log.numContentBytesReceivedByToken').sum().mean(over='7d').publish(label='C')\nD = data('sf.org.log.numContentBytesReceivedByToken').sum().mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.log.numContentBytesReceivedByToken').sum().mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2064,7 +2032,7 @@
       "packageSpecifications" : "",
       "programText" : "F = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')\nD = data('sf.org.numDatapointsReceivedByToken').sum().mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.numDatapointsReceivedByToken').sum().mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nC = data('sf.org.numDatapointsReceivedByToken').sum().mean(over='7d').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2173,9 +2141,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('service.request.count', filter=(not filter('sf_dimensionalized', '*')) and filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(over='1d').sum().publish(label='C')\nD = data('service.request.count', filter=(not filter('sf_dimensionalized', '*')) and filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(over='1d').sum().timeshift('4w').publish(label='D', enable=False)\nE = data('service.request.count', filter=(not filter('sf_dimensionalized', '*')) and filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(over='1d').sum().timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/C)*100).publish(label='F')\nG = (((C-E)/C)*100).publish(label='G')",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))\n\nC = histogram('service.request', filter=filter_).count(over='1d').rate().publish(label='C')\nD = histogram('service.request', filter=filter_).count(over='1d').rate().timeshift('4w').publish(label='D', enable=False)\nE = histogram('service.request', filter=filter_).count(over='1d').rate().timeshift('12w').publish(label='E', enable=False)\n\nF = (((C-D)/C)*100).publish(label='F')\nG = (((C-E)/C)*100).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2277,7 +2245,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.apm.numTroubleshootingMetricSets').mean(over='7d').publish(label='C')\nD = data('sf.org.apm.numTroubleshootingMetricSets').mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.apm.numTroubleshootingMetricSets').mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2361,7 +2329,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.client_error.count', filter=filter('sf_ua_browsername', '*')).mean(by=['sf_ua_browsername']).mean(over='7d').publish(label='A', enable=False)\nB = data('rum.client_error.count', filter=filter('sf_ua_browsername', '*')).mean(by=['sf_ua_browsername']).mean(over='7d').timeshift('12w').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['sf_ua_browsername']).mean(over='7d').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2445,7 +2413,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.profiling.numLogsReceivedByToken', rollup='sum').sum(by=['tokenName']).mean(over='7d').sum(over='1d').top(count=5).publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2529,7 +2497,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('rum.page_view.time.ns.p75', filter=filter('sf_ua_browsername', '*')).mean(by=['sf_ua_browsername']).mean(over='7d').timeshift('12w').scale(0.000001).publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['sf_ua_browsername']).mean(over='7d').publish(label='C')\nA = data('rum.page_view.time.ns.p75', filter=filter('sf_ua_browsername', '*')).mean(by=['sf_ua_browsername']).mean(over='7d').scale(0.000001).publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2613,7 +2581,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.page_view.count', filter=filter('sf_ua_browsername', '*')).mean(by=['sf_ua_browsername']).mean(over='7d').publish(label='A', enable=False)\nB = data('rum.page_view.count', filter=filter('sf_ua_browsername', '*')).mean(by=['sf_ua_browsername']).mean(over='7d').timeshift('12w').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['sf_ua_browsername']).mean(over='7d').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2715,7 +2683,7 @@
       "packageSpecifications" : "",
       "programText" : "D = data('sf.org.numHighResolutionMetrics').mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.numHighResolutionMetrics').mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')\nC = data('sf.org.numHighResolutionMetrics').mean(over='7d').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -2835,7 +2803,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.workflow.count', rollup='rate').sum(by=['app', 'app.version'], allow_missing=['app', 'app.version']).mean(over='7d').publish(label='A', enable=False)\nB = data('rum.workflow.count', rollup='rate').sum(by=['app', 'app.version'], allow_missing=['app', 'app.version']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['app', 'app.version'], allow_missing=['app', 'app.version']).mean(over='7d').top(count=5).publish(label='C')\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3027,7 +2995,7 @@
       "packageSpecifications" : "",
       "programText" : "f = filter('sf_environment', '*') and filter('sf_service', '*')\nA = data('cpu.utilization', filter=f).mean(by='sf_service').publish(label='A', enable=False)\nB = data('memory.utilization', filter=f).mean(by='sf_service').publish(label='B', enable=False)\nC = data('disk.summary_utilization', filter=f).mean(by='sf_service').publish(label='C', enable=False)\nD = max(A, B, C).mean().publish(label='Today')\nE = max(A, B, C).mean().timeshift('4w').publish(label='% 4', enable=False)\nG = max(A, B, C).mean().timeshift('12w').publish(label='% 12', enable=False)\nH = (((D-E)/D)*100).publish(label='% 4 week Change')\nI = (((D-G)/D)*100).publish(label='% 12 week Change')\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3105,7 +3073,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('logs.events.count', rollup='sum').sum(by=['severity'], allow_missing=['severity']).mean(over='7d').sum(over='1d').publish(label='C')\n        \n### Relies on a Log Pipeline Management Metric\n### Setup with below information\n## Matching Condition: Match All\n## Operation: count\n## Dimensions: [\"severity\",\"deployment.environment\"]\n## Field: null\n## Metric Name: logs.events.count\n## Metric Type: COUNTER\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3225,7 +3193,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.crash.count', rollup='rate').sum(by=['app', 'app.version'], allow_missing=['app', 'app.version']).mean(over='7d').publish(label='A', enable=False)\nB = data('rum.crash.count', rollup='rate').sum(by=['app', 'app.version'], allow_missing=['app', 'app.version']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['app', 'app.version'], allow_missing=['app', 'app.version']).mean(over='7d').top(count=5).publish(label='C')\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3345,7 +3313,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.app_error.count', rollup='rate').sum(by=['app', 'app.version'], allow_missing=['app', 'app.version']).mean(over='7d').publish(label='A', enable=False)\nB = data('rum.app_error.count', rollup='rate').sum(by=['app', 'app.version'], allow_missing=['app', 'app.version']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['app', 'app.version'], allow_missing=['app', 'app.version']).mean(over='7d').top(count=5).publish(label='C')\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3447,7 +3415,7 @@
       "packageSpecifications" : "",
       "programText" : "F = (((C-D)/D)*100).publish(label='F')\nG = (((C-E)/E)*100).publish(label='G')\nD = data('sf.org.apm.numSpanBytesReceived', rollup='sum').mean(over='7d').timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.apm.numSpanBytesReceived', rollup='sum').mean(over='7d').timeshift('12w').publish(label='E', enable=False)\nC = data('sf.org.apm.numSpanBytesReceived', rollup='sum').mean(over='7d').publish(label='C')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3573,7 +3541,7 @@
       "packageSpecifications" : "",
       "programText" : "H = data('sf.org.numResourcesMonitored').sum().publish(label='H', enable=False)\nC = data('sf.org.log.numContentBytesReceivedByToken').sum().mean(over='7d').publish(label='C', enable=False)\nI = (C/H).publish(label='I')\nJ = (C/H).timeshift('4w').publish(label='J', enable=False)\nK = (C/H).timeshift('12w').publish(label='K', enable=False)\nF = (((I-J)/J)*100).publish(label='F')\nG = (((I-K)/K)*100).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3682,9 +3650,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "def weighted_duration(base, p, filter_, groupby):\n    error_durations     = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'true'),  rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_durations = data(base + '.duration.ns.' + p, filter=filter_ and filter('sf_error', 'false'), rollup='max').mean(by=groupby, allow_missing=['sf_httpMethod'])\n        \n    error_counts     = data(base + '.count', filter=filter_ and filter('sf_error', 'true'),  rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n    non_error_counts = data(base + '.count', filter=filter_ and filter('sf_error', 'false'), rollup='sum').sum(by=groupby, allow_missing=['sf_httpMethod'])\n        \n    error_weight     = (error_durations * error_counts).sum(over='1m')\n    non_error_weight = (non_error_durations * non_error_counts).sum(over='1m')\n        \n    total_weight = combine((error_weight if error_weight is not None else 0) + (non_error_weight if non_error_weight is not None else 0))\n    total = combine((error_counts if error_counts is not None else 0) + (non_error_counts if non_error_counts is not None else 0)).sum(over='1m')\n    return (total_weight / total)\n        \nfilter_ = filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*')\ngroupby = ['sf_service', 'sf_environment']\nweighted_duration('service.request', 'p90', filter_, groupby).mean()\n        \nA = weighted_duration('service.request', 'p90', filter_, groupby).mean(by=['sf_service']).mean(over='7d').publish(label='A', enable=False)\nB = weighted_duration('service.request', 'p90', filter_, groupby).mean(by=['sf_service']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['sf_service']).mean(over='7d').top(count=5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['sf_service']).mean(over='7d').bottom(count=5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")\n",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and not filter('sf_dimensionalized', '*')\ngroupby = ['sf_service']\nallow_missing = ['sf_httpMethod']\n\n\nA = histogram('service.request', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing, over='7d').publish(label='A', enable=False)\nB = histogram('service.request', filter=filter_).percentile(pct=90, by=groupby, allow_missing=allow_missing, over='7d').timeshift('12w').publish(label='B', enable=False)\nC = (((A-B)/B)*100).top(count=5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).bottom(count=5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3814,9 +3782,9 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))\nA = data('service.request.count', filter=filter_ and filter('sf_error', 'true'), rollup='delta').sum(by=['sf_environment', 'sf_service']).mean(over='7d').publish(label='A', enable=False)\nB = data('service.request.count', filter=filter_, rollup='delta').sum(by=['sf_environment', 'sf_service']).mean(over='7d').publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C', enable=False)\nD = combine(100*((A if A is not None else 0) / B)).timeshift('12w').publish(label='D', enable=False)\n        \nE = (((C-D)/D)*100).mean(by=['sf_service']).mean(over='7d').top(count=5).publish(label='Top 5', enable=False)\nF = (((C-D)/D)*100).mean(by=['sf_service']).mean(over='7d').bottom(count=5).publish(label='Bottom 5', enable=False)\n\nG = union(E,F).publish(label='G', enable=True)\n",
+      "programText" : "filter_ = filter('sf_environment', '*') and filter('sf_service', '*') and (not filter('sf_dimensionalized', '*'))\ngroupby = ['sf_service']\n\nA = histogram('service.request', filter=filter_ and filter('sf_error', 'true')).count(by=groupby, over='7d').publish(label='A', enable=False)\nB = histogram('service.request', filter=filter_).count(by=groupby, over='7d').publish(label='B', enable=False)\nC = combine(100*((A if A is not None else 0) / B)).publish(label='C', enable=False)\nD = combine(100*((A if A is not None else 0) / B)).timeshift('12w').publish(label='D', enable=False)\n        \nE = (((C-D)/D)*100).top(count=5).publish(label='Top 5', enable=False)\nF = (((C-D)/D)*100).bottom(count=5).publish(label='Bottom 5', enable=False)\n\nG = union(E,F).publish(label='G', enable=True)",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -3936,7 +3904,7 @@
       "packageSpecifications" : "",
       "programText" : "B = data('rum.workflow.count', filter=filter('sf_environment', '*') and filter('workflow.name', '*') and filter('sf_error', 'true'), rollup='rate').sum(by=['workflow.name']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((B-A)/A)*100).mean(by=['workflow.name']).mean(over='7d').top(count=5).publish(label='C')\nA = data('rum.workflow.count', filter=filter('sf_environment', '*') and filter('workflow.name', '*') and filter('sf_error', 'true'), rollup='rate').sum(by=['workflow.name']).mean(over='7d').publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4059,7 +4027,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.numResourcesMonitored', filter=filter('resourceType', 'container')).mean(over='7d').publish(label='C')\nH = data('sf.org.numResourcesMonitored', filter=filter('resourceType', 'host')).mean(over='7d').publish(label='H')\nI = (C+H).publish(label='I')\nJ = (C+H).timeshift('4w').publish(label='J', enable=False)\nK = (C+H).timeshift('12w').publish(label='K', enable=False)\nG = (((I-K)/K)*100).publish(label='G')\nF = (((I-J)/J)*100).publish(label='F')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4197,7 +4165,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('rum.workflow.count', filter=filter('sf_environment', '*') and filter('workflow.name', '*'), rollup='rate').sum(by=['workflow.name']).mean(over='7d').publish(label='A', enable=False)\nB = data('rum.workflow.count', filter=filter('sf_environment', '*') and filter('workflow.name', '*'), rollup='rate').sum(by=['workflow.name']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['workflow.name']).mean(over='7d').top(count=5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['workflow.name']).mean(over='7d').bottom(count=5).publish(label='D', enable=False)\nE = union(C, D).publish(label=\"E\")",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4311,7 +4279,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4413,7 +4381,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.profiling.numLogsReceivedByToken').sum(by=['tokenName']).mean(over='7d').sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.profiling.numLogsReceivedByToken').sum(by=['tokenName']).timeshift('4w').mean(over='7d').sum(over='1d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).top(5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).bottom(5).publish(label='D', enable=False)\nE = union(C, D).publish(label='E', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4515,7 +4483,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numLogsReceivedByToken').sum(by=['tokenName']).mean(over='7d').sum(over='1d').publish(label='A', enable=False)\nB = data('sf.org.numLogsReceivedByToken').sum(by=['tokenName']).timeshift('4w').mean(over='7d').sum(over='1d').publish(label='B', enable=False)\nC = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).top(5).publish(label='C', enable=False)\nD = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').fill(0).bottom(5).publish(label='D', enable=False)\nE = union(C, D).publish(label='E', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4629,7 +4597,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4743,7 +4711,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4848,7 +4816,7 @@
       "packageSpecifications" : "",
       "programText" : "C = data('sf.org.numBundledMetricsByToken', rollup='sum').sum(over='1d').sum().publish(label='C')\nD = data('sf.org.numBundledMetricsByToken', rollup='sum').sum(over='1d').sum().timeshift('4w').publish(label='D', enable=False)\nE = data('sf.org.numBundledMetricsByToken', rollup='sum').sum(over='1d').sum().timeshift('12w').publish(label='E', enable=False)\nF = (((C-D)/C)*100).publish(label='F')\nG = (((C-E)/C)*100).publish(label='G')",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -4962,7 +4930,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numHighResolutionMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numHighResolutionMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -5076,7 +5044,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \nbundledTotal = (A.sum() if A.count() > 0 else 0).publish(label='bundledTotal', enable=False)\nbundledTotal4w = (B.sum() if B.count() > 0 else 0).publish(label='bundledTotal4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -5190,7 +5158,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('4w').mean(over='7d').publish(label='B', enable=False)\n        \ntotal = (A.sum() if A.count() > 0 else 0).publish(label='total', enable=False)\ntotal4w = (B.sum() if B.count() > 0 else 0).publish(label='total4w', enable=False)\n        \ntopChange = (((A-B)/B)*100).mean(by=['tokenName']).mean(over='7d').publish(label='topChange', enable=True)\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -5379,7 +5347,7 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\nB = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='B', enable=False)\n        \nAA = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AA', enable=False)\nA1 = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A1', enable=False)\n        \nAB = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AB', enable=False)\nA2 = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A2', enable=False)\n        \nAC = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AC', enable=False)\nA3 = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A3', enable=False)\n        \nAD = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AD', enable=False)\nA4 = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).timeshift('12w').mean(over='7d').publish(label='A4', enable=False)\n        \nsyntheticsTotal = (AB.sum() if AB.count() > 0 else 0).publish(label='synthetics', enable=False)\nsyntheticsTotal12w = (A2.sum() if A2.count() > 0 else 0).publish(label='synthetics', enable=False)\n        \ntotal = (A + AA + syntheticsTotal + AC + AD).publish(label='total', enable=False)\ntotal12w = (B + A1 + syntheticsTotal12w + A3 + A4).publish(label='total', enable=False)\n        \n        \ntopChange = (((total-total12w)/total12w)*100).mean(by=['tokenName']).mean(over='7d').top(count=5).publish(label='topChange', enable=False)\nbottomChange = (((total-total12w)/total12w)*100).mean(by=['tokenName']).mean(over='7d').bottom(count=5).publish(label='bottomChange', enable=False)\n\nC = union(topChange, bottomChange).publish(label=\"Change %\", enable=True)\n\n\n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "chart" : {
@@ -5508,7 +5476,604 @@
       "packageSpecifications" : "",
       "programText" : "A = data('sf.org.numBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='A', enable=False)\n        \nAA = data('sf.org.numCustomMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AA', enable=False)\n        \nAB = data('sf.org.numSyntheticsMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AB', enable=False)\n        \nAC = data('sf.org.numApmBundledMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AC', enable=False)\n        \nAD = data('sf.org.numResourceMetricsByToken', filter=filter('tokenName', '*')).sum(by=['tokenName']).mean(over='7d').publish(label='AD', enable=False)\n        \nsyntheticsTotal = (AB.sum() if AB.count() > 0 else 0).publish(label='synthetics', enable=False)\n        \ntotal = (A + AA + syntheticsTotal + AC + AD).publish(label='total', enable=True)\n        \n",
       "relatedDetectorIds" : [ ],
-      "tags" : null
+      "tags" : [ ]
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Daily count of metrics from Synthetic tests (1d sum)",
+      "id" : "GK3mjKBAgAI",
+      "importOf" : "GKxn0QAAcCw",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "# Synthetics metrics",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Synthetics metric",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('sf.org.numSyntheticsMetrics', filter=filter('sf_metric', '*'), extrapolation='last_value').sum().sum(cycle='day', cycle_start='0h', partial_values=False).fill(duration='1d').publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Daily count of Synthetic runs (1d sum)",
+      "id" : "GK3nmKBAcAA",
+      "importOf" : "GKxn0QAAcEc",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "# Daily test run",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "LineChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : null,
+          "showLegend" : false
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : "America/Los_Angeles"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Test run",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('synthetics.run.count', filter=filter('sf_product', 'synthetics'), extrapolation='last_value').sum().sum(cycle='day', cycle_start='0h', partial_values=False).fill(duration='1d').publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Number of Synthetics test runs today compared with 4 weeks ago and 12 weeks ago",
+      "id" : "GK3p_wRAYAA",
+      "importOf" : "GKxn0QAAcC0",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "# Test run",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "ColumnChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : null
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "sf_metric",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : "America/Los_Angeles"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Today",
+          "label" : "Today",
+          "paletteIndex" : 2,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "-4w",
+          "label" : "-4w",
+          "paletteIndex" : 4,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "-12w",
+          "label" : "-12w",
+          "paletteIndex" : 6,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : false,
+        "time" : {
+          "range" : 86400000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('synthetics.run.count', filter=filter('location', '*') and filter('test_type', '*'), extrapolation='last_value').sum(cycle='day', cycle_start='0h', partial_values=False).fill(duration='1d').sum().publish(label='Today')\nB = data('synthetics.run.count', filter=filter('location', '*') and filter('test_type', '*'), extrapolation='last_value').sum(cycle='day', cycle_start='0h', partial_values=False).fill(duration='1d').sum().timeshift(\"4w\").publish(label='-4w')\nC = data('synthetics.run.count', filter=filter('location', '*') and filter('test_type', '*'), extrapolation='last_value').sum(cycle='day', cycle_start='0h', partial_values=False).fill(duration='1d').sum().timeshift(\"12w\").publish(label='-12w')",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Daily count of Synthetic runs by test type",
+      "id" : "GK3qp-jAgAA",
+      "importOf" : "GKxn0QAAcDM",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "# Test run count by test type",
+      "options" : {
+        "areaChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "axes" : [ {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        }, {
+          "highWatermark" : null,
+          "highWatermarkLabel" : null,
+          "label" : "",
+          "lowWatermark" : null,
+          "lowWatermarkLabel" : null,
+          "max" : null,
+          "min" : null
+        } ],
+        "axisPrecision" : null,
+        "colorBy" : "Dimension",
+        "defaultPlotType" : "AreaChart",
+        "eventPublishLabelOptions" : [ ],
+        "histogramChartOptions" : {
+          "colorThemeIndex" : 16
+        },
+        "includeZero" : false,
+        "legendOptions" : {
+          "fields" : null
+        },
+        "lineChartOptions" : {
+          "showDataMarkers" : false
+        },
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "onChartLegendOptions" : {
+          "dimensionInLegend" : "test_type",
+          "showLegend" : true
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : null,
+          "minimumResolution" : 0,
+          "timezone" : "America/Los_Angeles"
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "synthetics.run.count - Sum(daily) - Sum by test_type,location_id",
+          "label" : "A",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "showEventLines" : false,
+        "stacked" : true,
+        "time" : {
+          "range" : 86400000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "TimeSeriesChart",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "A = data('synthetics.run.count', filter=filter('location', '*') and filter('test_type', '*'), extrapolation='last_value').sum(cycle='day', cycle_start='0h', partial_values=False).fill(duration='1d').sum(by=['test_type']).publish(label='A')",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Overall availability across all tests",
+      "id" : "GK3qqjMAcAE",
+      "importOf" : "GKxn0QAAcEY",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Uptime trends (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 99.99,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 100.0,
+          "paletteIndex" : 20
+        }, {
+          "gt" : 90.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 99.99,
+          "paletteIndex" : 18
+        }, {
+          "gt" : 75.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 90.0,
+          "paletteIndex" : 17
+        }, {
+          "gt" : null,
+          "gte" : 0.0,
+          "lt" : null,
+          "lte" : 75.0,
+          "paletteIndex" : 16
+        } ],
+        "hideMissingValues" : false,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "failed"
+          }, {
+            "enabled" : false,
+            "property" : "location_id"
+          }, {
+            "enabled" : false,
+            "property" : "test_type"
+          }, {
+            "enabled" : false,
+            "property" : "success"
+          }, {
+            "enabled" : false,
+            "property" : "sf_product"
+          }, {
+            "enabled" : false,
+            "property" : "test_id"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "1d",
+          "label" : "J",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "8d",
+          "label" : "K",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
+          "displayName" : "30d",
+          "label" : "L",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Linear",
+        "sortBy" : "+value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "J = data('synthetics.run.uptime.percent').mean(over='1d').mean().publish(label='J')\nK = data('synthetics.run.uptime.percent').mean(over='8d').mean().publish(label='K')\nL = data('synthetics.run.uptime.percent').mean(over='30d').mean().publish(label='L')",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
+    }
+  }, {
+    "chart" : {
+      "autoDetectRelatedDetectorIds" : [ ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : { },
+      "description" : "Uptime percentage by test",
+      "id" : "GK3tryzAYAA",
+      "importOf" : "GKxn0QAAcB8",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "name" : "Test run uptime (%)",
+      "options" : {
+        "colorBy" : "Scale",
+        "colorScale2" : [ {
+          "gt" : 99.99,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 100.0,
+          "paletteIndex" : 20
+        }, {
+          "gt" : 90.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 99.99,
+          "paletteIndex" : 18
+        }, {
+          "gt" : 75.0,
+          "gte" : null,
+          "lt" : null,
+          "lte" : 90.0,
+          "paletteIndex" : 17
+        }, {
+          "gt" : null,
+          "gte" : 0.0,
+          "lt" : null,
+          "lte" : 75.0,
+          "paletteIndex" : 16
+        } ],
+        "hideMissingValues" : true,
+        "legendOptions" : {
+          "fields" : [ {
+            "enabled" : false,
+            "property" : "test_id"
+          }, {
+            "enabled" : false,
+            "property" : "test_type"
+          }, {
+            "enabled" : true,
+            "property" : "test"
+          }, {
+            "enabled" : false,
+            "property" : "sf_metric"
+          }, {
+            "enabled" : false,
+            "property" : "sf_originatingMetric"
+          }, {
+            "enabled" : true,
+            "property" : "failed"
+          }, {
+            "enabled" : true,
+            "property" : "location_id"
+          }, {
+            "enabled" : true,
+            "property" : "success"
+          }, {
+            "enabled" : true,
+            "property" : "sf_product"
+          } ]
+        },
+        "maximumPrecision" : 4,
+        "noDataOptions" : {
+          "linkText" : null,
+          "linkUrl" : null,
+          "noDataMessage" : "Currently, no data is available for this chart."
+        },
+        "programOptions" : {
+          "disableSampling" : false,
+          "maxDelay" : 0,
+          "minimumResolution" : 0,
+          "timezone" : null
+        },
+        "publishLabelOptions" : [ {
+          "displayName" : "Uptime",
+          "label" : "D",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : "%",
+          "valueUnit" : null,
+          "yAxis" : 0
+        } ],
+        "refreshInterval" : null,
+        "secondaryVisualization" : "Linear",
+        "sortBy" : "+value",
+        "time" : {
+          "range" : 900000,
+          "rangeEnd" : 0,
+          "type" : "relative"
+        },
+        "type" : "List",
+        "unitPrefix" : "Metric"
+      },
+      "packageSpecifications" : "",
+      "programText" : "D = data('synthetics.run.uptime.percent').mean(by=['test']).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='D')",
+      "relatedDetectorIds" : [ ],
+      "tags" : [ ]
     }
   } ],
   "crossLinkExports" : [ ],
@@ -5607,6 +6172,7 @@
       "importOf" : "GALUE60AgAM",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "APM / IMM",
       "permissions" : null,
@@ -5672,7 +6238,7 @@
           "end" : "Now",
           "start" : "-31d"
         },
-        "variables" : null
+        "variables" : [ ]
       },
       "groupId" : "GApfIBSAcAI",
       "groupName" : "Executive Level",
@@ -5680,6 +6246,7 @@
       "importOf" : "GALUFQTAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "Logs",
       "permissions" : null,
@@ -5769,7 +6336,7 @@
           "end" : "Now",
           "start" : "-140d"
         },
-        "variables" : null
+        "variables" : [ ]
       },
       "groupId" : "GApfIBSAcAI",
       "groupName" : "Executive Level",
@@ -5777,6 +6344,7 @@
       "importOf" : "GALUFlFAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "RUM",
       "permissions" : null,
@@ -5896,6 +6464,7 @@
       "importOf" : "GBSXGxgAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "Token usage",
       "permissions" : null,
@@ -5985,7 +6554,7 @@
           "end" : "Now",
           "start" : "-12w"
         },
-        "variables" : null
+        "variables" : [ ]
       },
       "groupId" : "GApfIBSAcAI",
       "groupName" : "Executive Level",
@@ -5993,10 +6562,79 @@
       "importOf" : "GALUF6zAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "License usage overview",
       "permissions" : null,
       "selectedEventOverlays" : null,
+      "tags" : null
+    }
+  }, {
+    "dashboard" : {
+      "authorizedWriters" : null,
+      "chartDensity" : "DEFAULT",
+      "charts" : [ {
+        "chartId" : "GK3nmKBAcAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 0,
+        "width" : 6
+      }, {
+        "chartId" : "GK3mjKBAgAI",
+        "column" : 6,
+        "height" : 1,
+        "row" : 0,
+        "width" : 6
+      }, {
+        "chartId" : "GK3p_wRAYAA",
+        "column" : 0,
+        "height" : 1,
+        "row" : 1,
+        "width" : 6
+      }, {
+        "chartId" : "GK3qp-jAgAA",
+        "column" : 6,
+        "height" : 1,
+        "row" : 1,
+        "width" : 6
+      }, {
+        "chartId" : "GK3tryzAYAA",
+        "column" : 0,
+        "height" : 2,
+        "row" : 2,
+        "width" : 6
+      }, {
+        "chartId" : "GK3qqjMAcAE",
+        "column" : 6,
+        "height" : 2,
+        "row" : 2,
+        "width" : 6
+      } ],
+      "created" : 0,
+      "creator" : null,
+      "customProperties" : null,
+      "description" : "",
+      "discoveryOptions" : null,
+      "eventOverlays" : null,
+      "filters" : {
+        "sources" : null,
+        "time" : {
+          "end" : "Now",
+          "start" : "-1w"
+        },
+        "variables" : [ ]
+      },
+      "groupId" : "GApfIBSAcAI",
+      "groupName" : "Executive Level",
+      "id" : "GK3uMFoAgAM",
+      "importOf" : "GKxn0QAAcE8",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "locked" : false,
+      "maxDelayOverride" : null,
+      "name" : "Synthetics overview",
+      "permissions" : null,
+      "selectedEventOverlays" : [ ],
       "tags" : null
     }
   } ],
@@ -6035,8 +6673,14 @@
         "descriptionOverride" : null,
         "filtersOverride" : null,
         "nameOverride" : null
+      }, {
+        "configId" : "GK36q9vAcAA",
+        "dashboardId" : "GK3uMFoAgAM",
+        "descriptionOverride" : null,
+        "filtersOverride" : null,
+        "nameOverride" : null
       } ],
-      "dashboards" : [ "GApfIBSAcCk", "GApfIBSAcCo", "GApfIBSAcCs", "GBSQfHSAgBQ", "GApfIBSAcCw" ],
+      "dashboards" : [ "GApfIBSAcCk", "GApfIBSAcCo", "GApfIBSAcCs", "GBSQfHSAgBQ", "GApfIBSAcCw", "GK3uMFoAgAM" ],
       "description" : "Executive Level Dashboards",
       "email" : null,
       "id" : "GApfIBSAcAI",
@@ -6073,6 +6717,28 @@
       }, {
         "filters" : [ ],
         "metric" : "sf.org.apm.numContainers"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "test_type",
+          "values" : [ ]
+        }, {
+          "not" : false,
+          "property" : "test",
+          "values" : [ ]
+        } ],
+        "metric" : "synthetics.run.count"
+      }, {
+        "filters" : [ {
+          "not" : false,
+          "property" : "test",
+          "values" : [ ]
+        }, {
+          "not" : false,
+          "property" : "location",
+          "values" : [ ]
+        } ],
+        "metric" : "synthetics.run.uptime.percent"
       } ],
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -6081,7 +6747,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 1671109631,
+  "hashCode" : -1295275282,
   "id" : "GApfIBSAcAI",
   "modelVersion" : 1,
   "packageType" : "GROUP"
