@@ -149,7 +149,7 @@
       }
     }
   ],
-  "hashCode": -1756450376,
+  "hashCode": -1416248550,
   "id": "FTBzcwtAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -686,7 +686,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "CONTAINER_CPU_UTILIZATION = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='rate').scale(0.01).sum(by=['k8s.pod.name','k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCONTAINER_CPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_POST_UTILIZATION = union(CONTAINER_CPU_UTILIZATION, CONTAINER_CPU_TIME)\nCONTAINER_CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_UTILIZATION = ((CPU_POST_UTILIZATION*100)/CONTAINER_CPU_LIMIT)",
+              "template": "CONTAINER_CPU_UTILIZATION = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='rate').scale(0.01).sum(by=['k8s.pod.name','k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid', 'pod.creation_timestamp'])\nCONTAINER_CPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid', 'pod.creation_timestamp'])\nCPU_POST_UTILIZATION = union(CONTAINER_CPU_UTILIZATION, CONTAINER_CPU_TIME)\nCONTAINER_CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid', 'pod.creation_timestamp'])\nCPU_UTILIZATION = ((CPU_POST_UTILIZATION*100)/CONTAINER_CPU_LIMIT)",
               "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
@@ -697,6 +697,106 @@
             ],
             "type": "metric",
             "valueFormat": "Percentage",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the total CPU request for Kubernetes pods across the cluster. Higher values indicate more requested CPU resources.",
+            "displayName": "CPU request",
+            "id": "CPU request",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.pod.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.node.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "CPU_REQUEST = data('k8s.container.cpu_request'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.node.name', 'k8s.pod.name', 'k8s.pod.uid'])",
+              "varName": "CPU_REQUEST"
+            },
+            "metricSelectors": [
+              "k8s.container.cpu_request"
+            ],
+            "type": "metric",
+            "valueFormat": null,
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the total CPU limit for Kubernetes pods across the cluster. This is the instantaneous value.",
+            "displayName": "CPU limit",
+            "id": "CPU limit",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.pod.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.node.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])",
+              "varName": "CPU_LIMIT"
+            },
+            "metricSelectors": [
+              "k8s.container.cpu_limit"
+            ],
+            "type": "metric",
+            "valueFormat": null,
             "valueLabel": "",
             "valueType": null
           },
@@ -759,6 +859,149 @@
                 "#ea1849"
               ]
             },
+            "description": "This metric shows the total memory usage for Kubernetes pods across the cluster.",
+            "displayName": "Memory usage",
+            "id": "Memory usage",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.namespace.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.node.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "CONTAINER_MEMORY_USAGE = data('container.memory.usage', filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.pod.name'])",
+              "varName": "CONTAINER_MEMORY_USAGE"
+            },
+            "metricSelectors": [
+              "container.memory.usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the total memory limit for Kubernetes pods across the cluster.",
+            "displayName": "Memory limit",
+            "id": "Memory limit",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "MEMORY_LIMIT = data('k8s.container.memory_limit', filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).above(0, inclusive=True)",
+              "varName": "MEMORY_LIMIT"
+            },
+            "metricSelectors": [
+              "k8s.container.memory_limit"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the total memory request for Kubernetes pods across the cluster.",
+            "displayName": "Memory request",
+            "id": "Memory request",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "MEMORY_REQUEST = data('k8s.container.memory_request', filter('k8s.deployment.name', '*', match_missing=True) and filter('sf_tags', '*', match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid']).above(0, inclusive=True)",
+              "varName": "MEMORY_REQUEST"
+            },
+            "metricSelectors": [
+              "k8s.container.memory_request"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Highest memory usage recorded for the Pod during a specific time period.",
+            "displayName": "Memory peak usage",
+            "id": "Memory peak usage",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "PEAK_MEMORY_USAGE = data('container.memory.usage', filter('k8s.pod.uid', '*'){{#filter}} and {{{filter}}}{{/filter}}).max(over=Args.get('ui.dashboard_window', '15m'))",
+              "varName": "PEAK_MEMORY_USAGE"
+            },
+            "metricSelectors": [
+              "container.memory.usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
             "description": "This metric shows the file system utilization of pod. Darker colors indicate higher relative values.",
             "displayName": "File system utilization",
             "id": "File system utilization",
@@ -789,6 +1032,217 @@
             "valueFormat": "Percentage",
             "valueLabel": "",
             "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Available file system space for Kubernetes pods.",
+            "displayName": "File system available",
+            "id": "File system available",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "FILE_SYSTEM_AVAILABLE = data('container.filesystem.available'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.node.name'])",
+              "varName": "FILE_SYSTEM_AVAILABLE"
+            },
+            "metricSelectors": [
+              "container.filesystem.available"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Total file system capacity for Kubernetes pods.",
+            "displayName": "File system capacity",
+            "id": "File system capacity",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "FILE_SYSTEM_CAPACITY =data('container.filesystem.capacity', filter('sf_tags', '*',  match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.node.name'])",
+              "varName": "FILE_SYSTEM_CAPACITY"
+            },
+            "metricSelectors": [
+              "container.filesystem.capacity"
+            ],
+            "type": "metric",
+            "valueFormat": null,
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Used file system space for Kubernetes pods.",
+            "displayName": "File system usage",
+            "id": "File system usage",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "FILE_SYSTEM_USAGE = data('container.filesystem.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.node.name'])",
+              "varName": "FILE_SYSTEM_USAGE"
+            },
+            "metricSelectors": [
+              "container.filesystem.usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Ready pods",
+            "displayName": "Ready pods",
+            "id": "ready_pods",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "READY_PODS = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).equals(2).count(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name'])",
+              "varName": "READY_PODS"
+            },
+            "metricSelectors": [
+              "k8s.pod.phase"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null,
+            "visualizations": [
+              "list"
+            ]
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the number of restarts for Kubernetes pods. Darker colors indicate higher values.",
+            "displayName": "Restarts",
+            "id": "Restarts",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.pod.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.node.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "RESTARTS = data('k8s.container.restarts'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.node.name', 'k8s.pod.name', 'k8s.pod.uid']).above(0)",
+              "varName": "RESTARTS"
+            },
+            "metricSelectors": [
+              "k8s.container.restarts"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Total pods",
+            "displayName": "Total pods",
+            "id": "total_pods",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TOTAL_PODS = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).count(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name'])",
+              "varName": "TOTAL_PODS"
+            },
+            "metricSelectors": [
+              "k8s.pod.phase"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
+            "valueType": null,
+            "visualizations": [
+              "list"
+            ]
           }
         ],
         "mtsQuery": null,
