@@ -75,7 +75,7 @@
           }
       }
   ],
-  "hashCode": 1963271169,
+  "hashCode": 1001190826,
   "id": "GZmqelfAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -180,8 +180,7 @@
                       "namespace_name",
                       "cluster_name",
                       "daemonset_age",
-                      "daemonset_service_name",
-                      "daemonset_environment"
+                      "daemonset_ready_nodes"
                   ]
               }
           ],
@@ -214,7 +213,7 @@
                   "aggregate": "sum",
                   "displayFormatterCode": null,
                   "displayName": "Nodes ready / running",
-                  "displayTemplate": "{{Ready nodes}} / {{Nodes current scheduled}}",
+                  "displayTemplate": "{{Nodes ready} / {{Nodes current scheduled}}",
                   "metricColumnCode": "daemonset_nodes_ready_current_scheduled",
                   "propertyFormat": null
               },
@@ -577,82 +576,6 @@
                               "#ea1849"
                           ]
                       },
-                      "description": "This metric shows the number of ready nodes in daemonset. Darker colors indicate higher relative values.",
-                      "displayName": "Ready nodes",
-                      "id": "Ready nodes",
-                      "job": {
-                          "filters": [
-                              {
-                                  "not": false,
-                                  "property": "k8s.workload.kind",
-                                  "propertyValue": "DaemonSet",
-                                  "type": "property"
-                              }
-                          ],
-                          "resolution": 300000,
-                          "template": "READY = data('k8s.daemonset.ready_nodes'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name'])",
-                          "varName": "READY"
-                      },
-                      "metricSelectors": [
-                          "k8s.daemonset.ready_nodes"
-                      ],
-                      "type": "metric",
-                      "valueFormat": "Number",
-                      "valueLabel": "",
-                      "valueType": null
-                  },
-                  {
-                      "coloring": {
-                          "limits": null,
-                          "maxValue": null,
-                          "method": "quantile",
-                          "minValue": 0,
-                          "range": [
-                              "#6bd37e",
-                              "#acef7f",
-                              "#e2ed6a",
-                              "#eac24b",
-                              "#ea1849"
-                          ]
-                      },
-                      "description": "This metric shows the number of misscheduled nodes in daemonset. Darker colors indicate higher relative values.",
-                      "displayName": "Misscheduled nodes",
-                      "id": "Misscheduled nodes",
-                      "job": {
-                          "filters": [
-                              {
-                                  "not": false,
-                                  "property": "k8s.workload.kind",
-                                  "propertyValue": "DaemonSet",
-                                  "type": "property"
-                              }
-                          ],
-                          "resolution": 300000,
-                          "template": "MISSCHEDULED = data('k8s.daemonset.misscheduled_nodes'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name'])",
-                          "varName": "MISSCHEDULED"
-                      },
-                      "metricSelectors": [
-                          "k8s.daemonset.misscheduled_nodes"
-                      ],
-                      "type": "metric",
-                      "valueFormat": "Number",
-                      "valueLabel": "",
-                      "valueType": null
-                  },
-                  {
-                      "coloring": {
-                          "limits": null,
-                          "maxValue": null,
-                          "method": "quantile",
-                          "minValue": 0,
-                          "range": [
-                              "#6bd37e",
-                              "#acef7f",
-                              "#e2ed6a",
-                              "#eac24b",
-                              "#ea1849"
-                          ]
-                      },
                       "description": "This metric shows the number of pod restarts in daemonset. Darker colors indicate higher relative values.",
                       "displayName": "Pod restarts",
                       "id": "Pod restarts",
@@ -704,7 +627,7 @@
                               }
                           ],
                           "resolution": 60000,
-                          "template": "DAEMONSET_NODES_MISSCHEDULED = data('k8s.daemonset.misscheduled_nodes'{{#filter}}, filter={{{filter}}}{{/filter}})",
+                          "template": "DAEMONSET_NODES_MISSCHEDULED = data('k8s.daemonset.misscheduled_nodes'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name'])",
                           "varName": "DAEMONSET_NODES_MISSCHEDULED"
                       },
                       "metricSelectors": [],
@@ -743,7 +666,7 @@
                               }
                           ],
                           "resolution": 60000,
-                          "template": "DAEMONSET_READY_NODES = data('k8s.daemonset.ready_nodes'{{#filter}}, filter={{{filter}}}{{/filter}})",
+                          "template": "DAEMONSET_READY_NODES = data('k8s.daemonset.ready_nodes'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.daemonset.name', 'daemonset.creation_timestamp', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid'])",
                           "varName": "DAEMONSET_READY_NODES"
                       },
                       "metricSelectors": [
@@ -784,7 +707,7 @@
                               }
                           ],
                           "resolution": 60000,
-                          "template": "DAEMONSET_CURRENT_SCHEDULED_NODES = data('k8s.daemonset.current_scheduled_nodes'{{#filter}}, filter={{{filter}}}{{/filter}})",
+                          "template": "DAEMONSET_CURRENT_SCHEDULED_NODES = data('k8s.daemonset.current_scheduled_nodes'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name'])",
                           "varName": "DAEMONSET_CURRENT_SCHEDULED_NODES"
                       },
                       "metricSelectors": [
@@ -825,7 +748,7 @@
                               }
                           ],
                           "resolution": 60000,
-                          "template": "DAEMONSET_NODES_DESIRED_SCHEDULED = data('k8s.daemonset.desired_scheduled_nodes'{{#filter}}, filter={{{filter}}}{{/filter}})",
+                          "template": "DAEMONSET_NODES_DESIRED_SCHEDULED = data('k8s.daemonset.desired_scheduled_nodes'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name'])",
                           "varName": "DAEMONSET_NODES_DESIRED_SCHEDULED"
                       },
                       "metricSelectors": [
@@ -907,7 +830,7 @@
                               }
                           ],
                           "resolution": 60000,
-                          "template": "DAEMONSET_PODS_PENDING = data('k8s.pod.phase', filter=filter('k8s.daemonset.name', '*'){{#filter}} and {{{filter}}}{{/filter}}, rollup='latest').equals(1).count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).above(1, inclusive=True).sum(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.cluster.name', 'k8s.namespace.name'])",
+                          "template": "DAEMONSET_PODS_PENDING = data('k8s.pod.phase', filter=filter('k8s.daemonset.name', '*'){{#filter}} and {{{filter}}}{{/filter}}, rollup='latest').equals(1).count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).sum(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.cluster.name', 'k8s.namespace.name'])",
                           "varName": "DAEMONSET_PODS_PENDING"
                       },
                       "metricSelectors": [
