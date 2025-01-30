@@ -75,7 +75,7 @@
           }
       }
   ],
-  "hashCode": 68309148,
+  "hashCode": -1155224802,
   "id": "GZmpTYVAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -158,21 +158,6 @@
                   ]
               },
               {
-                  "description": "A group of metrics and KPIs related to scaling up/down of pods within a ReplicaSet",
-                  "displayName": "ReplicaSet scaling",
-                  "metricClassCode": "replicaset_scaling",
-                  "metricClassColumns": [
-                      "replicaset_name",
-                      "namespace_name",
-                      "cluster_name",
-                      "replicaset_pods_running_desired",
-                      "replicaset_pods_desired_min",
-                      "replicaset_pods_desired_max",
-                      "replicaset_pods_running_min",
-                      "replicaset_pods_running_max"
-                  ]
-              },
-              {
                   "description": "A group of metrics and KPIs related to ReplicaSet attributes.",
                   "displayName": "ReplicaSet attributes",
                   "metricClassCode": "replicaset_attributes",
@@ -192,6 +177,22 @@
                   "displayName": "ReplicaSet name",
                   "displayTemplate": "{{id}}",
                   "metricColumnCode": "replicaset_name",
+                  "propertyFormat": null
+              },
+              {
+                  "aggregate": null,
+                  "displayFormatterCode": null,
+                  "displayName": "Namespace",
+                  "displayTemplate": "{{k8s.namespace.name}}",
+                  "metricColumnCode": "namespace_name",
+                  "propertyFormat": null
+              },
+              {
+                  "aggregate": null,
+                  "displayFormatterCode": null,
+                  "displayName": "Cluster",
+                  "displayTemplate": "{{k8s.cluster.name}}",
+                  "metricColumnCode": "cluster_name",
                   "propertyFormat": null
               },
               {
@@ -240,6 +241,38 @@
                   "displayName": "Pods desired",
                   "displayTemplate": "{{Pods desired}}",
                   "metricColumnCode": "replicaset_pods_desired",
+                  "propertyFormat": "Number"
+              },
+              {
+                  "aggregate": "sum",
+                  "displayFormatterCode": null,
+                  "displayName": "Pods running min",
+                  "displayTemplate": "{{Pods running min}}",
+                  "metricColumnCode": "replicaset_pods_running_min",
+                  "propertyFormat": "Number"
+              },
+              {
+                  "aggregate": "sum",
+                  "displayFormatterCode": null,
+                  "displayName": "Pods running max",
+                  "displayTemplate": "{{Pods running max}}",
+                  "metricColumnCode": "replicaset_pods_running_max",
+                  "propertyFormat": "Number"
+              },
+              {
+                  "aggregate": "sum",
+                  "displayFormatterCode": null,
+                  "displayName": "Pods desired min",
+                  "displayTemplate": "{{Pods desired min}}",
+                  "metricColumnCode": "replicaset_pods_desired_min",
+                  "propertyFormat": "Number"
+              },
+              {
+                  "aggregate": "sum",
+                  "displayFormatterCode": null,
+                  "displayName": "Pods desired max",
+                  "displayTemplate": "{{Pods desired max}}",
+                  "metricColumnCode": "replicaset_pods_desired_max",
                   "propertyFormat": "Number"
               },
               {
@@ -391,7 +424,7 @@
                       "aggregate": "sum",
                       "displayName": "Desired pods",
                       "format": "Number",
-                      "metric": "Desired pods",
+                      "metric": "Pods desired",
                       "property": null,
                       "sortable": null
                   },
@@ -399,7 +432,7 @@
                       "aggregate": "sum",
                       "displayName": "Pod restarts",
                       "format": "Number",
-                      "metric": "Pod restarts",
+                      "metric": "Total container restarts",
                       "property": null,
                       "sortable": null
                   },
@@ -415,7 +448,7 @@
                       "aggregate": "sum",
                       "displayName": "Failed pods",
                       "format": "Number",
-                      "metric": "Failed pods",
+                      "metric": "Total pods failed",
                       "property": null,
                       "sortable": null
                   },
@@ -461,137 +494,6 @@
                       },
                       "metricSelectors": [
                           "k8s.replicaset.available"
-                      ],
-                      "type": "metric",
-                      "valueFormat": "Number",
-                      "valueLabel": "",
-                      "valueType": null
-                  },
-                  {
-                      "coloring": {
-                          "limits": null,
-                          "maxValue": null,
-                          "method": "quantile",
-                          "minValue": 0,
-                          "range": [
-                              "#6bd37e",
-                              "#acef7f",
-                              "#e2ed6a",
-                              "#eac24b",
-                              "#ea1849"
-                          ]
-                      },
-                      "description": "This metric shows the desired pods in replicaset. Darker colors indicate higher relative values.",
-                      "displayName": "Desired pods",
-                      "id": "Desired pods",
-                      "job": {
-                          "filters": [
-                              {
-                                  "not": false,
-                                  "property": "k8s.workload.kind",
-                                  "propertyValue": "ReplicaSet",
-                                  "type": "property"
-                              }
-                          ],
-                          "resolution": 300000,
-                          "template": "DESIRED = data('k8s.replicaset.desired'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).above(1, inclusive=True)",
-                          "varName": "DESIRED"
-                      },
-                      "metricSelectors": [
-                          "k8s.replicaset.desired"
-                      ],
-                      "type": "metric",
-                      "valueFormat": "Number",
-                      "valueLabel": "",
-                      "valueType": null
-                  },
-                  {
-                      "coloring": {
-                          "limits": null,
-                          "maxValue": null,
-                          "method": "quantile",
-                          "minValue": 0,
-                          "range": [
-                              "#6bd37e",
-                              "#acef7f",
-                              "#e2ed6a",
-                              "#eac24b",
-                              "#ea1849"
-                          ]
-                      },
-                      "description": "This metric shows the number of pod restarts in replicaset. Darker colors indicate higher relative values.",
-                      "displayName": "Pod restarts",
-                      "id": "Pod restarts",
-                      "job": {
-                          "filters": [],
-                          "resolution": 300000,
-                          "template": "POD_RESTART = data('k8s.container.restarts'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name'])",
-                          "varName": "POD_RESTART"
-                      },
-                      "metricSelectors": [
-                          "k8s.container.restarts"
-                      ],
-                      "type": "metric",
-                      "valueFormat": "Number",
-                      "valueLabel": "",
-                      "valueType": null
-                  },
-                  {
-                      "coloring": {
-                          "limits": null,
-                          "maxValue": null,
-                          "method": "quantile",
-                          "minValue": 0,
-                          "range": [
-                              "#6bd37e",
-                              "#acef7f",
-                              "#e2ed6a",
-                              "#eac24b",
-                              "#ea1849"
-                          ]
-                      },
-                      "description": "This metric shows the number of pods that are in pending state in replicaset. Darker colors indicate higher relative values.",
-                      "displayName": "Pending pods",
-                      "id": "Pending pods",
-                      "job": {
-                          "filters": [],
-                          "resolution": 300000,
-                          "template": "PENDING = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}).below(1, inclusive=True).count(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.replicaset.name', 'k8s.replicaset.uid'])",
-                          "varName": "PENDING"
-                      },
-                      "metricSelectors": [
-                          "k8s.pod.phase"
-                      ],
-                      "type": "metric",
-                      "valueFormat": "Number",
-                      "valueLabel": "",
-                      "valueType": null
-                  },
-                  {
-                      "coloring": {
-                          "limits": null,
-                          "maxValue": null,
-                          "method": "quantile",
-                          "minValue": 0,
-                          "range": [
-                              "#6bd37e",
-                              "#acef7f",
-                              "#e2ed6a",
-                              "#eac24b",
-                              "#ea1849"
-                          ]
-                      },
-                      "description": "This metric shows the number of pods that in failed state in replicaset. Darker colors indicate higher relative values.",
-                      "displayName": "Failed pods",
-                      "id": "Failed pods",
-                      "job": {
-                          "filters": [],
-                          "resolution": 300000,
-                          "template": "FAILED = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}).equals(4).count(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.replicaset.name', 'k8s.replicaset.uid'])",
-                          "varName": "FAILED"
-                      },
-                      "metricSelectors": [
-                          "k8s.pod.phase"
                       ],
                       "type": "metric",
                       "valueFormat": "Number",
@@ -683,7 +585,7 @@
                       "job": {
                           "filters": [],
                           "resolution": 60000,
-                          "template": "REPLICASET_PODS_FAILED_TOTAL = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').equals(4).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).above(1, inclusive=True).max(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name'])",
+                          "template": "REPLICASET_PODS_FAILED_TOTAL = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').equals(4).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).max(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name'])",
                           "varName": "REPLICASET_PODS_FAILED_TOTAL"
                       },
                       "metricSelectors": [
@@ -826,7 +728,7 @@
                       "job": {
                           "filters": [],
                           "resolution": 60000,
-                          "template": "REPLICASET_PODS_SUCCEEDED_TOTAL = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').equals(3).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).above(1, inclusive=True).max(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name'])",
+                          "template": "REPLICASET_PODS_SUCCEEDED_TOTAL = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').equals(3).count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).max(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.cluster.name', 'k8s.namespace.name'])",
                           "varName": "REPLICASET_PODS_SUCCEEDED_TOTAL"
                       },
                       "metricSelectors": [
