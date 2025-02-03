@@ -243,7 +243,7 @@
       }
     }
   ],
-  "hashCode": 1759889559,
+  "hashCode": -1468082671,
   "id": "FTByWHUAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -442,7 +442,7 @@
           "displayName": "Peak memory utilization",
           "displayTemplate": "{{Peak memory utilization}}",
           "metricColumnCode": "peak_memory_utilization",
-          "propertyFormat": "ScaleBytes"
+          "propertyFormat": "Percentage"
         },
         {
           "aggregate": "mean",
@@ -1249,11 +1249,12 @@
                 }
               ],
               "resolution": 300000,
-              "template": "PEAK_MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nPEAK_MEMORY_LIMIT = data('k8s.container.memory_limit'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nPEAK_MEMORY_UTILIZATION = (PEAK_MEMORY_USAGE/PEAK_MEMORY_LIMIT*100).max(by=['k8s.node.name', 'k8s.cluster.name'])",
+              "template": "PEAK_MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nPEAK_MEMORY_LIMIT = data('k8s.container.memory_limit'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nPEAK_MEMORY_UTILIZATION = (PEAK_MEMORY_USAGE/PEAK_MEMORY_LIMIT*100).max(by=['k8s.node.name', 'k8s.cluster.name']).max(over=Args.get('ui.dashboard_window', '15m'))",
               "varName": "PEAK_MEMORY_UTILIZATION"
             },
             "metricSelectors": [
-              "container.memory.usage"
+              "container.memory.usage",
+              "k8s.container.memory_limit"
             ],
             "type": "metric",
             "valueFormat": "Percentage",
