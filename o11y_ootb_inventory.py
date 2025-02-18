@@ -232,6 +232,8 @@ class GitlabInventory:
         }
         response = requests.request("GET", cls.GITLAB_COMMIT_URL.format(url_encode_path), headers=headers,
                                     params=query_params)
+        if response.status_code != 200:
+            print(f"Unexpected error while fetching {cls.GITLAB_COMMIT_URL.format(url_encode_path)} creation date and response: {response.json()}")
         if len(response.json()) > 0:
             commit_list = response.json()[0]
             commit_date = parser.parse(commit_list.get('commit').get('committed_date')).strftime('%d-%m-%Y')
