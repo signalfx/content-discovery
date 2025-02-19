@@ -26,7 +26,7 @@
       }
     }
   ],
-  "hashCode": 1031443602,
+  "hashCode": 1324217518,
   "id": "FTwxEZhAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -438,7 +438,7 @@
                 }
               ],
               "resolution": 60000,
-              "template": "CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\", \"k8s.node.name\"])\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container_cpu_utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = union(CPU_USED_EKS, CPU_USED_MACHINE, CPU_USED_FARGATE)",
+              "template": "CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\", \"k8s.node.name\"])\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container_cpu_utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.node.name\", \"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = combine((CPU_USED_EKS if CPU_USED_EKS is not None else 0) + (CPU_USED_MACHINE if CPU_USED_MACHINE is not None else 0) + (CPU_USED_FARGATE if CPU_USED_FARGATE is not None else 0))",
               "varName": "CPU_CAPACITY_USED"
             },
             "metricSelectors": [

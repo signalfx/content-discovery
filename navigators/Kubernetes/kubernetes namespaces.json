@@ -26,7 +26,7 @@
       }
     }
   ],
-  "hashCode": 2078403225,
+  "hashCode": 1064314875,
   "id": "Ga9J-_nAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -306,7 +306,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "ACTIVE = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(1).promote(by='phase', allow_missing={'phase':'Active'})\nTERMINATING = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(0).promote(by='phase', allow_missing={'phase':'Terminating'})\nNA = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='phase', allow_missing={'phase':'n/a'})\nPHASE = union(ACTIVE,TERMINATING,NA)",
+              "template": "ACTIVE = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(1).promote(by='phase', allow_missing={'phase':'Active'})\nTERMINATING = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(0).promote(by='phase', allow_missing={'phase':'Terminating'})\nNA = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='phase', allow_missing={'phase':'n/a'})\nPHASE = combine((ACTIVE if ACTIVE is not None else 0) + (TERMINATING if TERMINATING is not None else 0) + (NA if NA is not None else 0))",
               "varName": "PHASE"
             },
             "metricSelectors": [
@@ -337,7 +337,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "CPU_POST_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name']).scale(0.01)\nCPU_PRE_USAGE = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])\nCPU_USAGE=union(CPU_POST_USAGE,CPU_PRE_USAGE)",
+              "template": "CPU_POST_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name']).scale(0.01)\nCPU_PRE_USAGE = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])\nCPU_USAGE=combine((CPU_POST_USAGE if CPU_POST_USAGE is not None else 0) + (CPU_PRE_USAGE if CPU_PRE_USAGE is not None else 0))",
               "varName": "CPU_USAGE"
             },
             "metricSelectors": [
