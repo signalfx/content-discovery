@@ -51,7 +51,7 @@
       }
     }
   ],
-  "hashCode": -873276086,
+  "hashCode": -2038304456,
   "id": "FTBxJpUAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -596,7 +596,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "RUNNING = data('k8s.container.restarts', filter=filter('container.status', 'running'){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'Running'})\nWAITING = data('k8s.container.restarts', filter=filter('container.status', 'waiting'){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'Waiting'})\nTERMINATED = data('k8s.container.restarts', filter=filter('container.status', 'terminated'){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'Terminated'})\nNOT_APPLICABLE = data('k8s.container.restarts', filter=(not filter('container.status', '*')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'n/a'})\nPHASE = combine((RUNNING if RUNNING is not None else 0) + (WAITING if WAITING is not None else 0) + (TERMINATED if TERMINATED is not None else 0)+ (NOT_APPLICABLE if NOT_APPLICABLE is not None else 0))",
+              "template": "RUNNING = data('k8s.container.restarts', filter=filter('container.status', 'running'){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'Running'})\nWAITING = data('k8s.container.restarts', filter=filter('container.status', 'waiting'){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'Waiting'})\nTERMINATED = data('k8s.container.restarts', filter=filter('container.status', 'terminated'){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'Terminated'})\nNOT_APPLICABLE = data('k8s.container.restarts', filter=(not filter('container.status', '*')){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'container.id']).promote(by='status', allow_missing={'status':'n/a'})\nPHASE = union(RUNNING,WAITING,TERMINATED,NOT_APPLICABLE)",
               "varName": "PHASE"
             },
             "metricSelectors": [
@@ -809,7 +809,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "CONTAINER_CPU_UTILIZATION = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='rate').scale(0.01).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCONTAINER_CPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_POST_UTILIZATION = combine((CONTAINER_CPU_UTILIZATION if CONTAINER_CPU_UTILIZATION is not None else 0) + (CONTAINER_CPU_TIME if CONTAINER_CPU_TIME is not None else 0))\nCONTAINER_CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_UTILIZATION = ((CPU_POST_UTILIZATION*100)/CONTAINER_CPU_LIMIT)",
+              "template": "CONTAINER_CPU_UTILIZATION = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='rate').scale(0.01).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCONTAINER_CPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_POST_UTILIZATION = union(CONTAINER_CPU_UTILIZATION, CONTAINER_CPU_TIME)\nCONTAINER_CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_UTILIZATION = ((CPU_POST_UTILIZATION*100)/CONTAINER_CPU_LIMIT)",
               "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
