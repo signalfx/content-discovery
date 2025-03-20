@@ -26,7 +26,7 @@
       }
     }
   ],
-  "hashCode": 2078403225,
+  "hashCode": 1948605216,
   "id": "Ga9J-_nAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -113,7 +113,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Workloads",
-          "displayTemplate": "{{Workloads}}",
+          "displayTemplate": "{{workloads}}",
           "metricColumnCode": "namespace_workloads",
           "propertyFormat": "Number"
         },
@@ -121,7 +121,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Pods",
-          "displayTemplate": "{{Pods}}",
+          "displayTemplate": "{{pods}}",
           "metricColumnCode": "pods",
           "propertyFormat": "Number"
         },
@@ -129,7 +129,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "CPU usage",
-          "displayTemplate": "{{CPU usage}}",
+          "displayTemplate": "{{cpu_usage}}",
           "metricColumnCode": "cpu_usage",
           "propertyFormat": "Number"
         },
@@ -137,7 +137,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Memory usage",
-          "displayTemplate": "{{Memory usage}}",
+          "displayTemplate": "{{memory_usage}}",
           "metricColumnCode": "memory_usage",
           "propertyFormat": "Bytes"
         },
@@ -145,7 +145,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Network usage",
-          "displayTemplate": "{{Network usage}}",
+          "displayTemplate": "{{network_usage}}",
           "metricColumnCode": "network_usage",
           "propertyFormat": "Bytes"
         },
@@ -153,7 +153,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Pods",
-          "displayTemplate": "{{Pods}}",
+          "displayTemplate": "{{pods}}",
           "metricColumnCode": "pods",
           "propertyFormat": "Number"
         },
@@ -306,7 +306,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "ACTIVE = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(1).promote(by='phase', allow_missing={'phase':'Active'})\nTERMINATING = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(0).promote(by='phase', allow_missing={'phase':'Terminating'})\nNA = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='phase', allow_missing={'phase':'n/a'})\nPHASE = union(ACTIVE,TERMINATING,NA)",
+              "template": "ACTIVE = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(1).promote(by='phase', allow_missing={'phase':'Active'})\nTERMINATING = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).equals(0).promote(by='phase', allow_missing={'phase':'Terminating'})\nNA = data('k8s.namespace.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).map(lambda x: 2 if x is None else x).equals(2).promote(by='phase', allow_missing={'phase':'n/a'})\nPHASE = combine((ACTIVE if ACTIVE is not None else 0) + (TERMINATING if TERMINATING is not None else 0) + (NA if NA is not None else 0))",
               "varName": "PHASE"
             },
             "metricSelectors": [
@@ -333,11 +333,11 @@
             },
             "description": "",
             "displayName": "CPU usage",
-            "id": "CPU usage",
+            "id": "cpu_usage",
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "CPU_POST_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name']).scale(0.01)\nCPU_PRE_USAGE = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])\nCPU_USAGE=union(CPU_POST_USAGE,CPU_PRE_USAGE)",
+              "template": "CPU_POST_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name']).scale(0.01)\nCPU_PRE_USAGE = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])\nCPU_USAGE=combine((CPU_POST_USAGE if CPU_POST_USAGE is not None else 0) + (CPU_PRE_USAGE if CPU_PRE_USAGE is not None else 0))",
               "varName": "CPU_USAGE"
             },
             "metricSelectors": [
@@ -364,7 +364,7 @@
             },
             "description": "",
             "displayName": "Memory usage",
-            "id": "Memory usage",
+            "id": "memory_usage",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -395,7 +395,7 @@
             },
             "description": "",
             "displayName": "Network usage",
-            "id": "Network usage",
+            "id": "network_usage",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -426,7 +426,7 @@
             },
             "description": "",
             "displayName": "Pods",
-            "id": "Pods",
+            "id": "pods",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -457,7 +457,7 @@
             },
             "description": "This metric shows the number of workloads in the namespace",
             "displayName": "Workloads",
-            "id": "Workloads",
+            "id": "workloads",
             "job": {
               "filters": [],
               "resolution": 300000,
