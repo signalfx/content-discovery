@@ -101,7 +101,7 @@
       }
     }
   ],
-  "hashCode": 1732899212,
+  "hashCode": -189894797,
   "id": "FTBzcwtAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -261,7 +261,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Restarts",
-          "displayTemplate": "{{Restarts}}",
+          "displayTemplate": "{{kubernetes_pods_restarts}}",
           "metricColumnCode": "restarts",
           "propertyFormat": null
         },
@@ -269,7 +269,7 @@
           "aggregate": "mean",
           "displayFormatterCode": null,
           "displayName": "Total CPU utilization",
-          "displayTemplate": "{{Total CPU utilization}}",
+          "displayTemplate": "{{kubernetes_pods_total_cpu_utilization}}",
           "metricColumnCode": "total_cpu_utilization",
           "propertyFormat": "Percentage"
         },
@@ -277,7 +277,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "CPU request",
-          "displayTemplate": "{{CPU request}}",
+          "displayTemplate": "{{kubernetes_pods_cpu_request}}",
           "metricColumnCode": "cpu_request",
           "propertyFormat": "Number"
         },
@@ -285,7 +285,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "CPU limit",
-          "displayTemplate": "{{CPU limit}}",
+          "displayTemplate": "{{kubernetes_pods_cpu_limit}}",
           "metricColumnCode": "cpu_limit",
           "propertyFormat": "Number"
         },
@@ -293,7 +293,7 @@
           "aggregate": "mean",
           "displayFormatterCode": null,
           "displayName": "Total memory utilization",
-          "displayTemplate": "{{Total memory utilization}}",
+          "displayTemplate": "{{kubernetes_pods_total_memory_utilization}}",
           "metricColumnCode": "total_memory_utilization",
           "propertyFormat": "Percentage"
         },
@@ -301,7 +301,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Memory usage",
-          "displayTemplate": "{{Memory usage}}",
+          "displayTemplate": "{{kubernetes_pods_memory_usage}}",
           "metricColumnCode": "memory_usage",
           "propertyFormat": "Number"
         },
@@ -309,7 +309,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Memory limit",
-          "displayTemplate": "{{Memory limit}}",
+          "displayTemplate": "{{kubernetes_pods_memory_limit}}",
           "metricColumnCode": "memory_limit",
           "propertyFormat": "Number"
         },
@@ -317,7 +317,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Memory request",
-          "displayTemplate": "{{Memory request}}",
+          "displayTemplate": "{{kubernetes_pods_memory_request}}",
           "metricColumnCode": "memory_request",
           "propertyFormat": "Number"
         },
@@ -325,7 +325,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Memory peak usage",
-          "displayTemplate": "{{Memory peak usage}}",
+          "displayTemplate": "{{kubernetes_pods_memory_peak_usage}}",
           "metricColumnCode": "pod_memory_peak_usage",
           "propertyFormat": "Number"
         },
@@ -333,7 +333,7 @@
           "aggregate": "mean",
           "displayFormatterCode": null,
           "displayName": "File system utilization",
-          "displayTemplate": "{{File system utilization}}",
+          "displayTemplate": "{{kubernetes_pods_file_system_utilization}}",
           "metricColumnCode": "file_system_utilization",
           "propertyFormat": "Percentage"
         },
@@ -341,7 +341,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "File system available",
-          "displayTemplate": "{{File system available}}",
+          "displayTemplate": "{{kubernetes_pods_file_system_available}}",
           "metricColumnCode": "file_system_available",
           "propertyFormat": "Number"
         },
@@ -349,7 +349,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "File system capacity",
-          "displayTemplate": "{{File system capacity}}",
+          "displayTemplate": "{{kubernetes_pods_file_system_capacity}}",
           "metricColumnCode": "file_system_capacity",
           "propertyFormat": "Number"
         },
@@ -357,7 +357,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "File system usage",
-          "displayTemplate": "{{File system usage}}",
+          "displayTemplate": "{{kubernetes_pods_file_system_usage}}",
           "metricColumnCode": "file_system_usage",
           "propertyFormat": "Number"
         }
@@ -588,53 +588,6 @@
               ]
             },
             "description": "This metric shows the phases of pods.",
-            "displayName": "Pod Phase",
-            "id": "k8s_pods_hierarchy",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "_exists_",
-                  "propertyValue": "k8s.cluster.name",
-                  "type": "property"
-                },
-                {
-                  "not": false,
-                  "property": "_exists_",
-                  "propertyValue": "k8s.pod.uid",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "\nKUBE_POD_PHASE = data(\"k8s.pod.phase\" {{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\", \"sf_service\"]).publish(\"Pod SFx Service\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\", \"sf_environment\"]).publish(\"Pod SFx Environment\")",
-              "varName": "KUBE_POD_PHASE"
-            },
-            "metricSelectors": [
-              "k8s.pod.phase"
-            ],
-            "type": "metric",
-            "valueFormat": null,
-            "valueLabel": "Phase",
-            "valueType": null,
-            "visualizations": [
-              "hierarchical"
-            ]
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
-              ]
-            },
-            "description": "This metric shows the phases of pods.",
             "displayName": "Pod phase",
             "id": "pod_phases",
             "job": {
@@ -657,40 +610,6 @@
           {
             "coloring": {
               "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
-              ]
-            },
-            "description": "This metric shows the phases of pods.",
-            "displayName": "Pod phase",
-            "id": "pod_phases",
-            "job": {
-              "filters": [],
-              "resolution": 300000,
-              "template": "POD_PHASE = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])",
-              "varName": "POD_PHASE"
-            },
-            "metricSelectors": [
-              "k8s.pod.phase"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "",
-            "valueType": null,
-            "visualizations": [
-              "heatmap"
-            ]
-          },
-          {
-            "coloring": {
-              "limits": null,
               "maxValue": 100,
               "method": "quantile",
               "minValue": 0,
@@ -702,9 +621,9 @@
                 "#ea1849"
               ]
             },
-            "description": "This metric shows the CPU utilization of pod. Darker colors indicate higher relative values.",
-            "displayName": "Total CPU utilization",
-            "id": "Total CPU utilization",
+            "description": "This metric shows the CPU utilization of pod. Under 20% (green), over 80% (red).",
+            "displayName": "Total CPU utilization (%)",
+            "id": "kubernetes_pods_total_cpu_utilization",
             "job": {
               "filters": [
                 {
@@ -732,26 +651,26 @@
             ],
             "type": "metric",
             "valueFormat": "Percentage",
-            "valueLabel": "",
+            "valueLabel": "Total CPU utilization",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "This metric shows the total CPU request for Kubernetes pods across the cluster. Higher values indicate more requested CPU resources.",
+            "description": "This metric shows the total CPU request for Kubernetes pods across the cluster. Darker colors indicate higher relative values.",
             "displayName": "CPU request",
-            "id": "CPU request",
+            "id": "kubernetes_pods_cpu_request",
             "job": {
               "filters": [
                 {
@@ -782,7 +701,7 @@
             ],
             "type": "metric",
             "valueFormat": null,
-            "valueLabel": "",
+            "valueLabel": "CPU request",
             "valueType": null
           },
           {
@@ -792,16 +711,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "This metric shows the total CPU limit for Kubernetes pods across the cluster. This is the instantaneous value.",
+            "description": "This metric shows the total CPU limit for Kubernetes pods across the cluster. This is the instantaneous value. Darker colors indicate higher relative values.",
             "displayName": "CPU limit",
-            "id": "CPU limit",
+            "id": "kubernetes_pods_cpu_limit",
             "job": {
               "filters": [
                 {
@@ -832,7 +751,7 @@
             ],
             "type": "metric",
             "valueFormat": null,
-            "valueLabel": "",
+            "valueLabel": "CPU limit",
             "valueType": null
           },
           {
@@ -849,9 +768,9 @@
                 "#ea1849"
               ]
             },
-            "description": "This metric shows the memory utilization of pod. Darker colors indicate higher relative values.",
-            "displayName": "Total memory utilization",
-            "id": "Total memory utilization",
+            "description": "This metric shows the memory utilization of pod. Under 20% (green), over 80% (red).",
+            "displayName": "Total memory utilization (%)",
+            "id": "kubernetes_pods_total_memory_utilization",
             "job": {
               "filters": [
                 {
@@ -877,26 +796,26 @@
             ],
             "type": "metric",
             "valueFormat": "Percentage",
-            "valueLabel": "",
+            "valueLabel": "Total memory utilization",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "This metric shows the total memory usage for Kubernetes pods across the cluster.",
+            "description": "This metric shows the total memory usage for Kubernetes pods across the cluster. Darker colors indicate higher relative values.",
             "displayName": "Memory usage",
-            "id": "Memory usage",
+            "id": "kubernetes_pods_memory_usage",
             "job": {
               "filters": [
                 {
@@ -927,26 +846,26 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Memory usage",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "This metric shows the total memory limit for Kubernetes pods across the cluster.",
+            "description": "This metric shows the total memory limit for Kubernetes pods across the cluster. Darker colors indicate higher relative values.",
             "displayName": "Memory limit",
-            "id": "Memory limit",
+            "id": "kubernetes_pods_memory_limit",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -958,26 +877,26 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Memory limit",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "This metric shows the total memory request for Kubernetes pods across the cluster.",
+            "description": "This metric shows the total memory request for Kubernetes pods across the cluster. Darker colors indicate higher relative values.",
             "displayName": "Memory request",
-            "id": "Memory request",
+            "id": "kubernetes_pods_memory_request",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -989,26 +908,26 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Memory request",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Highest memory usage recorded for the Pod during a specific time period.",
+            "description": "Highest memory usage recorded for the Pod during a specific time period. Darker colors indicate higher relative values.",
             "displayName": "Memory peak usage",
-            "id": "Memory peak usage",
+            "id": "kubernetes_pods_memory_peak_usage",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -1020,7 +939,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Memory peak usage",
             "valueType": null
           },
           {
@@ -1037,9 +956,9 @@
                 "#ea1849"
               ]
             },
-            "description": "This metric shows the file system utilization of pod. Darker colors indicate higher relative values.",
-            "displayName": "File system utilization",
-            "id": "File system utilization",
+            "description": "This metric shows the file system utilization of pod. Under 20% (green), over 80% (red).",
+            "displayName": "File system utilization (%)",
+            "id": "kubernetes_pods_file_system_utilization",
             "job": {
               "filters": [
                 {
@@ -1065,26 +984,26 @@
             ],
             "type": "metric",
             "valueFormat": "Percentage",
-            "valueLabel": "",
+            "valueLabel": "File system utilization",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Available file system space for Kubernetes pods.",
+            "description": "Available file system space for Kubernetes pods. Darker colors indicate higher relative values.",
             "displayName": "File system available",
-            "id": "File system available",
+            "id": "kubernetes_pods_file_system_available",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -1096,26 +1015,26 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "File system available",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Total file system capacity for Kubernetes pods.",
+            "description": "Total file system capacity for Kubernetes pods. Darker colors indicate higher relative values.",
             "displayName": "File system capacity",
-            "id": "File system capacity",
+            "id": "kubernetes_pods_file_system_capacity",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -1127,26 +1046,26 @@
             ],
             "type": "metric",
             "valueFormat": null,
-            "valueLabel": "",
+            "valueLabel": "File system capacity",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Used file system space for Kubernetes pods.",
+            "description": "Used file system space for Kubernetes pods. Darker colors indicate higher relative values.",
             "displayName": "File system usage",
-            "id": "File system usage",
+            "id": "kubernetes_pods_file_system_usage",
             "job": {
               "filters": [],
               "resolution": 300000,
@@ -1158,7 +1077,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "File system usage",
             "valueType": null
           },
           {
@@ -1198,20 +1117,20 @@
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of restarts for Kubernetes pods. Darker colors indicate higher values.",
-            "displayName": "Restarts",
-            "id": "Restarts",
+            "displayName": "# Restarts",
+            "id": "kubernetes_pods_restarts",
             "job": {
               "filters": [
                 {
@@ -1242,7 +1161,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Restarts",
             "valueType": null
           },
           {
