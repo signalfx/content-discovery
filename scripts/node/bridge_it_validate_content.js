@@ -1,14 +1,14 @@
-import fs from 'fs';
-import https from 'https';
-import child_process from 'child_process';
-import util from 'util';
+const fs = require('fs');
+const https = require('https');
+const { exec } = require('child_process');
+const util = require('util');
 
 const BRIDGE_API_CLIENT_ID = process.env.BRIDGE_API_CLIENT_ID;
 const BRIDGE_API_CLIENT_SECRET = process.env.BRIDGE_API_CLIENT_SECRET;
 const BRIDGE_API_APP_KEY = process.env.BRIDGE_API_APP_KEY;
 const TARGET_BRANCH = process.env.CI_MERGE_REQUEST_TARGET_BRANCH_NAME;
 
-const execPromise = util.promisify(child_process.exec);
+const execPromise = util.promisify(exec);
 
 function promisifiedHttpRequest(options, payload) {
     return new Promise((resolve, reject) => {
