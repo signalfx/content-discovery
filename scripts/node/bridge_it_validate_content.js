@@ -87,7 +87,7 @@ function getFeedbackFromBridgeIT(files, access_token) {
 }
 
 function getChangedFiles(callback) {
-    exec('git diff --name-only -- ../../navigators', (error, stdout, stderr) => {
+    exec('git diff --name-only -- navigators', (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return callback(error);
@@ -103,6 +103,6 @@ getChangedFiles((err, files) => {
         console.error('Failed to get changed files:', err);
         return;
     }
-    bridgeITAuth(files.map((file) => JSON.parse(fs.readFileSync("../../" + file, 'utf8'))));
+    bridgeITAuth(files.map((file) => JSON.parse(fs.readFileSync(file, 'utf8'))));
 });
 
