@@ -116,9 +116,9 @@ function getFeedbackFromBridgeIT(files, access_token) {
 }
 
 async function getChangedFiles(target_branch) {
-    const { stdout, stderr } = await execPromise(`git diff ${target_branch} --name-only --diff-filter=AMCR -- navigators`);
-    if (stderr) {
-        console.error(`Failed to run git diff: ${stderr}`);
+    const { error, stdout } = await execPromise(`git diff ${target_branch} --name-only --diff-filter=AMCR -- navigators`);
+    if (error) {
+        console.error(`Failed to run git diff: ${error}`);
         process.exit(1);
     }
     return stdout.split('\n').filter(file => file.trim() !== '');
@@ -129,9 +129,9 @@ async function fetchTargetBranch() {
         return 'HEAD^';
     }
     console.log(`Running in CI against branch ${TARGET_BRANCH}`);
-    const { stdout, stderr } = await execPromise('git fetch origin ' + TARGET_BRANCH);
-    if (stderr) {
-        console.error(`Failed to retrieve fetch target branch: ${stderr}`);
+    const { error } = await execPromise('git fetch origin ' + TARGET_BRANCH);
+    if (error) {
+        console.error(`Failed to retrieve target branch: ${error}`);
         process.exit(1);
     }
     return `origin/${TARGET_BRANCH}`;
