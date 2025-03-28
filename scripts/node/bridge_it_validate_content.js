@@ -1,14 +1,50 @@
-const fs = require('fs');
-const https = require('https');
-const { exec } = require('child_process');
+import fs from 'fs';
+import https from 'https';
+import child_process from 'child_process';
+import util from 'util';
+
 const BRIDGE_API_CLIENT_ID = process.env.BRIDGE_API_CLIENT_ID;
 const BRIDGE_API_CLIENT_SECRET = process.env.BRIDGE_API_CLIENT_SECRET;
 const BRIDGE_API_APP_KEY = process.env.BRIDGE_API_APP_KEY;
+const TARGET_BRANCH = process.env.CI_MERGE_REQUEST_TARGET_BRANCH_NAME;
 
-function bridgeITAuth(files) {
+const execPromise = util.promisify(child_process.exec);
+
+function promisifiedHttpRequest(options, payload) {
+    return new Promise((resolve, reject) => {
+        var req = https.request(options, function (res) {
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+                return reject(new Error('statusCode=' + res.statusCode));
+            }
+            const body = [];
+            res.on('data', function (chunk) {
+                body.push(chunk);
+            });
+            res.on('end', function () {
+                try {
+                    const jsonBody = JSON.parse(Buffer.concat(body).toString());
+                    resolve(jsonBody);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        });
+
+        req.on('error', function(error) {
+            reject(error);
+        })
+
+        if (payload) {
+            req.write(payload);
+        }
+
+        req.end();
+    });
+}
+
+async function bridgeITAuth() {
     var options = {
         hostname: 'id.cisco.com',
-        port: 443,
         path: '/oauth2/default/v1/token',
         method: 'POST',
         headers: {
@@ -17,19 +53,13 @@ function bridgeITAuth(files) {
         }
     };
 
-    var req = https.request(options, function(res) {
-        const body = [];
-        res.on('data', function(chunk) {
-            body.push(chunk);
-        });
-        res.on('end', function() {
-            const response = JSON.parse(Buffer.concat(body).toString());
-            getFeedbackFromBridgeIT(files, response.access_token);
-        });
-    });
-
-    req.write('grant_type=client_credentials');
-    req.end();
+    try {
+        const response = await promisifiedHttpRequest(options, 'grant_type=client_credentials');
+        return response.access_token;
+    } catch (error) {
+        console.error('Failed to authenticate with BridgeIT:', error);
+        process.exit(1);
+    }
 }
 
 
@@ -57,7 +87,6 @@ function getFeedbackFromBridgeIT(files, access_token) {
 
     var options = {
         hostname: "chat-ai.cisco.com",
-        port: 443,
         path: "/openai/deployments/gpt-4o-mini/chat/completions",
         method: "POST",
         headers: {
@@ -74,7 +103,6 @@ function getFeedbackFromBridgeIT(files, access_token) {
         });
         res.on("end", function() {
             const response = JSON.parse(Buffer.concat(body).toString());
-            console.log(response);
             console.log(response.choices[0].message.content);
         });
     });
@@ -87,23 +115,30 @@ function getFeedbackFromBridgeIT(files, access_token) {
     req.end();
 }
 
-function getChangedFiles(callback) {
-    exec('git diff --name-only -- navigators', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            return callback(error);
-        }
-        const changedFiles = stdout.split('\n').filter(file => file.trim() !== '');
-        callback(null, changedFiles);
-    });
+async function getChangedFiles(target_branch) {
+    const { stdout, stderr } = await execPromise(`git diff ${target_branch} --name-only --diff-filter=AMCR -- navigators`);
+    if (stderr) {
+        console.error(`Failed to run git diff: ${stderr}`);
+        process.exit(1);
+    }
+    return stdout.split('\n').filter(file => file.trim() !== '');
 }
 
-getChangedFiles((err, files) => {
-    console.log(files);
-    if (err) {
-        console.error('Failed to get changed files:', err);
-        return;
+async function fetchTargetBranch() {
+    if (!TARGET_BRANCH) {
+        return 'HEAD^';
     }
-    bridgeITAuth(files.map((file) => JSON.parse(fs.readFileSync(file, 'utf8'))));
-});
+    console.log(`Running in CI against branch ${TARGET_BRANCH}`);
+    const { stdout, stderr } = await execPromise('git fetch origin ' + TARGET_BRANCH);
+    if (stderr) {
+        console.error(`Failed to retrieve fetch target branch: ${stderr}`);
+        process.exit(1);
+    }
+    return `origin/${TARGET_BRANCH}`;
+}
 
+const target_branch = await fetchTargetBranch();
+const files = await getChangedFiles(target_branch);
+console.log(`Files to validate: ${files}`);
+const access_token = await bridgeITAuth();
+getFeedbackFromBridgeIT(files.map((file) => JSON.parse(fs.readFileSync(file, 'utf8'))), access_token);
