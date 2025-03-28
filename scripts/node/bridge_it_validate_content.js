@@ -6,6 +6,7 @@ const BRIDGE_API_CLIENT_SECRET = process.env.BRIDGE_API_CLIENT_SECRET;
 const BRIDGE_API_APP_KEY = process.env.BRIDGE_API_APP_KEY;
 
 function bridgeITAuth(files) {
+    console.log(BRIDGE_API_CLIENT_ID);
     var options = {
         hostname: 'id.cisco.com',
         port: 443,
