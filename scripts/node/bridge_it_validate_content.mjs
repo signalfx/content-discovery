@@ -10,6 +10,8 @@ const TARGET_BRANCH = process.env.CI_MERGE_REQUEST_TARGET_BRANCH_NAME;
 
 const execPromise = util.promisify(child_process.exec);
 
+const ERRORS_FOUND_MESSAGE = '!!Potential issues found!!';
+
 function promisifiedHttpRequest(options, payload) {
     return new Promise((resolve, reject) => {
         var req = https.request(options, function (res) {
@@ -74,7 +76,7 @@ function getFeedbackFromBridgeIT(files, access_token) {
             },
             {
                 "role": "user",
-                "content": "Find any typographical errors in the following files, separate the typographical results by the o11yProductName property:" + stringifiedFiles
+                "content": `Find any typographical errors in the following files, separate the typographical results by the o11yProductName property. If there are any potential errors, print the following message: '${ERRORS_FOUND_MESSAGE}'. Otherwise, don't print that message: ${stringifiedFiles}`
             },
         ],
         "user": "{\"appkey\":\"" + BRIDGE_API_APP_KEY + "\"}",
@@ -104,6 +106,9 @@ function getFeedbackFromBridgeIT(files, access_token) {
         res.on("end", function() {
             const response = JSON.parse(Buffer.concat(body).toString());
             console.log(response.choices[0].message.content);
+            if (response.choices[0].message.content.includes(ERRORS_FOUND_MESSAGE)) {
+                process.exit(1);
+            }
         });
     });
 
