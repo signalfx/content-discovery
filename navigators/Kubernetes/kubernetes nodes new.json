@@ -243,7 +243,7 @@
       }
     }
   ],
-  "hashCode": -2033642233,
+  "hashCode": -1660145372,
   "id": "FTByWHUAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -747,6 +747,54 @@
         "idTemplate": "{{k8s.node.name}}",
         "listColumns": [],
         "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the condition of the nodes.",
+            "displayName": "Node condition",
+            "id": "k8s_nodes_hierarchy",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.node.name",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "MASTER_NODES = data(\"container_cpu_utilization\", filter=(filter(\"kubernetes_role\", \"master\") or filter(\"sf_tags\", \"node-role_kubernetes_io_master\")){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"rate\").scale(0.01).mean(by=[\"k8s.cluster.name\", \"k8s.node.name\"])\nMASTER_NODES.publish(label=\"Master Node\")\nNODE_CONDITION = data(\"k8s.node.condition_*\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\").sum(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"sf_metric\"])",
+              "varName": "NODE_CONDITION"
+            },
+            "metricSelectors": [
+              "k8s.node.condition_ready",
+              "container_cpu_utilization"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Node condition",
+            "valueType": null,
+            "visualizations": [
+              "hierarchical"
+            ]
+          },
           {
             "coloring": {
               "limits": null,

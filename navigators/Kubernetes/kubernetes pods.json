@@ -101,7 +101,7 @@
       }
     }
   ],
-  "hashCode": -189894797,
+  "hashCode": -1247395213,
   "id": "FTBzcwtAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -573,6 +573,53 @@
           }
         ],
         "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the phases of pods.",
+            "displayName": "Pod Phase",
+            "id": "k8s_pods_hierarchy",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "\nKUBE_POD_PHASE = data(\"k8s.pod.phase\" {{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\", \"sf_service\"]).publish(\"Pod SFx Service\")\nKUBE_POD_PHASE.count(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\", \"sf_environment\"]).publish(\"Pod SFx Environment\")",
+              "varName": "KUBE_POD_PHASE"
+            },
+            "metricSelectors": [
+              "k8s.pod.phase"
+            ],
+            "type": "metric",
+            "valueFormat": null,
+            "valueLabel": "Phase",
+            "valueType": null,
+            "visualizations": [
+              "hierarchical"
+            ]
+          },
           {
             "coloring": {
               "limits": null,
