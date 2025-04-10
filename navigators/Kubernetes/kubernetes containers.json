@@ -51,7 +51,7 @@
       }
     }
   ],
-  "hashCode": -581559290,
+  "hashCode": 1234858196,
   "id": "FTBxJpUAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -442,6 +442,59 @@
         "idTemplate": "{{container.id}}",
         "listColumns": [],
         "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "This metric shows the ready status of containers.",
+            "displayName": "Container Status",
+            "id": "container_ready_hierarchy",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.cluster.name",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "k8s.pod.uid",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "container.id",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "CONTAINER_READY = data(\"k8s.container.ready\" {{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\")\nCONTAINER_READY.count(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\", \"k8s.container.name\", \"container.id\", \"sf_service\"]).publish(\"Container SFx Service\")\nCONTAINER_READY.count(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"k8s.pod.name\", \"k8s.pod.uid\", \"k8s.container.name\", \"container.id\", \"sf_environment\"]).publish(\"Container SFx Environment\")",
+              "varName": "CONTAINER_READY"
+            },
+            "metricSelectors": [
+              "k8s.container.ready"
+            ],
+            "type": "metric",
+            "valueFormat": null,
+            "valueLabel": "Container Ready",
+            "valueType": null,
+            "visualizations": [
+              "hierarchical"
+            ]
+          },
           {
             "coloring": {
               "limits": null,
