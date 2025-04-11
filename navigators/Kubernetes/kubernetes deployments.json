@@ -51,7 +51,7 @@
       }
     }
   ],
-  "hashCode": 1744453991,
+  "hashCode": -997094573,
   "id": "GZmnuzBAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -64,6 +64,7 @@
       "creator": null,
       "defaultGroupBy": null,
       "description": "",
+      "entityHighlightedAttributes": [],
       "id": "GZmnuzBAcAA",
       "idDisplayName": "{{k8s.deployment.name}}",
       "importQualifiers": [
@@ -156,6 +157,9 @@
             "deployment_name",
             "namespace_name",
             "cluster_name",
+            "deployment_environment",
+            "deployment_service_name",
+            "deployment_version",
             "deployment_age",
             "deployment_pods_running"
           ]
@@ -190,31 +194,31 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Pods running / desired",
-          "displayTemplate": "{{Pods running}} / {{Desired pods}}",
+          "displayTemplate": "{{kubernetes_deployments_pods_running}} / {{kubernetes_deployments_pods_desired}}",
           "metricColumnCode": "deployment_pods_running_desired",
           "propertyFormat": null
         },
         {
           "aggregate": "sum",
           "displayFormatterCode": null,
-          "displayName": "Current pending pods",
-          "displayTemplate": "{{Pending pods}}",
+          "displayName": "Pods pending",
+          "displayTemplate": "{{kubernetes_deployments_pods_pending}}",
           "metricColumnCode": "deployment_pods_pending",
           "propertyFormat": "Number"
         },
         {
           "aggregate": "sum",
           "displayFormatterCode": null,
-          "displayName": "Total pods failed",
-          "displayTemplate": "{{Failed pods}}",
+          "displayName": "Pods failed",
+          "displayTemplate": "{{kubernetes_deployments_pods_failed}}",
           "metricColumnCode": "deployment_pods_failed_total",
           "propertyFormat": "Number"
         },
         {
           "aggregate": "sum",
           "displayFormatterCode": null,
-          "displayName": "Total container restarts",
-          "displayTemplate": "{{Total container restarts}}",
+          "displayName": "Container restarts",
+          "displayTemplate": "{{kubernetes_deployments_container_restarts}}",
           "metricColumnCode": "deployment_container_restarts_total",
           "propertyFormat": "Number"
         },
@@ -222,7 +226,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Pods running",
-          "displayTemplate": "{{Pods running}}",
+          "displayTemplate": "{{kubernetes_deployments_pods_running}}",
           "metricColumnCode": "deployment_pods_running",
           "propertyFormat": "Number"
         },
@@ -230,15 +234,15 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Pods desired",
-          "displayTemplate": "{{Desired pods}}",
+          "displayTemplate": "{{kubernetes_deployments_pods_desired}}",
           "metricColumnCode": "deployment_pods_desired",
           "propertyFormat": "Number"
         },
         {
           "aggregate": "sum",
           "displayFormatterCode": null,
-          "displayName": "Total pods succeeded",
-          "displayTemplate": "{{Total pods succeeded}}",
+          "displayName": "Pods succeeded",
+          "displayTemplate": "{{kubernetes_deployments_pods_succeeded}}",
           "metricColumnCode": "deployment_pods_succeeded_total",
           "propertyFormat": "Number"
         },
@@ -246,7 +250,7 @@
           "aggregate": null,
           "displayFormatterCode": null,
           "displayName": "Pod churn ratio",
-          "displayTemplate": "{{Pod churn ratio}}",
+          "displayTemplate": "{{kubernetes_deployments_pod_churn_ratio}}",
           "metricColumnCode": "deployment_pod_churn_ratio",
           "propertyFormat": "Number"
         },
@@ -254,7 +258,7 @@
           "aggregate": null,
           "displayFormatterCode": null,
           "displayName": "Version",
-          "displayTemplate": "{{}}",
+          "displayTemplate": "{{version}}",
           "metricColumnCode": "deployment_version",
           "propertyFormat": "id"
         },
@@ -270,7 +274,7 @@
           "aggregate": null,
           "displayFormatterCode": null,
           "displayName": "Service",
-          "displayTemplate": "{{}}",
+          "displayTemplate": "{{service.name}}",
           "metricColumnCode": "deployment_service_name",
           "propertyFormat": "id"
         },
@@ -278,7 +282,7 @@
           "aggregate": null,
           "displayFormatterCode": null,
           "displayName": "Environment",
-          "displayTemplate": "{{}}",
+          "displayTemplate": "{{deployment.envrionment}}",
           "metricColumnCode": "deployment_environment",
           "propertyFormat": "id"
         },
@@ -286,7 +290,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Min pods desired",
-          "displayTemplate": "{{Min pods desired}}",
+          "displayTemplate": "{{kubernetes_deployments_min_pod_desired}}",
           "metricColumnCode": "deployment_pods_desired_min",
           "propertyFormat": "id"
         },
@@ -294,7 +298,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Max pods desired",
-          "displayTemplate": "{{Max pods desired}}",
+          "displayTemplate": "{{kubernetes_deployments_max_pod_desired}}",
           "metricColumnCode": "deployment_pods_desired_max",
           "propertyFormat": "id"
         },
@@ -302,7 +306,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Min running pods",
-          "displayTemplate": "{{Min running pods}}",
+          "displayTemplate": "{{kubernetes_deployments_min_runing_pods}}",
           "metricColumnCode": "deployment_pods_running_min",
           "propertyFormat": "id"
         },
@@ -310,7 +314,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Max running pods",
-          "displayTemplate": "{{Max running pods}}",
+          "displayTemplate": "{{kubernetes_deployments_max_runing_pods}}",
           "metricColumnCode": "deployment_pods_running_max",
           "propertyFormat": "id"
         }
@@ -366,88 +370,7 @@
         "id": "k8sdeployments",
         "idName": "Deployment",
         "idTemplate": "{{k8s.deployment.name}} | {{k8s.namespace.name}} | {{k8s.cluster.name}}",
-        "listColumns": [
-          {
-            "aggregate": null,
-            "displayName": "Deployment",
-            "format": "id",
-            "metric": null,
-            "property": "id",
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Deployment id",
-            "format": null,
-            "metric": null,
-            "property": "k8s.deployment.uid",
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Namespace",
-            "format": null,
-            "metric": null,
-            "property": "k8s.namespace.name",
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Cluster",
-            "format": null,
-            "metric": null,
-            "property": "k8s.cluster.name",
-            "sortable": null
-          },
-          {
-            "aggregate": "sum",
-            "displayName": "Available pods",
-            "format": "Number",
-            "metric": "Available pods",
-            "property": null,
-            "sortable": null
-          },
-          {
-            "aggregate": "sum",
-            "displayName": "Desired pods",
-            "format": "Number",
-            "metric": "Desired pods",
-            "property": null,
-            "sortable": null
-          },
-          {
-            "aggregate": "sum",
-            "displayName": "Deployment failed",
-            "format": "Number",
-            "metric": "Deployment failed",
-            "property": null,
-            "sortable": null
-          },
-          {
-            "aggregate": "sum",
-            "displayName": "Pending pods",
-            "format": "Number",
-            "metric": "Pending pods",
-            "property": null,
-            "sortable": null
-          },
-          {
-            "aggregate": "sum",
-            "displayName": "Failed pods",
-            "format": "Number",
-            "metric": "Failed pods",
-            "property": null,
-            "sortable": null
-          },
-          {
-            "aggregate": "sum",
-            "displayName": "Unknown pods",
-            "format": "Number",
-            "metric": "Unknown pods",
-            "property": null,
-            "sortable": null
-          }
-        ],
+        "listColumns": [],
         "metrics": [
           {
             "coloring": {
@@ -456,16 +379,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of available pods in deployment. Darker colors indicate higher relative values.",
-            "displayName": "Available pods",
-            "id": "Available pods",
+            "displayName": "# Pods available",
+            "id": "kubernetes_deployments_pods_available",
             "job": {
               "filters": [
                 {
@@ -484,7 +407,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Pods available",
             "valueType": null
           },
           {
@@ -494,16 +417,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of desired pods in deployment. Darker colors indicate higher relative values.",
-            "displayName": "Pods running",
-            "id": "Pods running",
+            "displayName": "# Pods running",
+            "id": "kubernetes_deployments_pods_running",
             "job": {
               "filters": [
                 {
@@ -522,7 +445,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Pods running",
             "valueType": null
           },
           {
@@ -532,16 +455,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of desired pods in deployment. Darker colors indicate higher relative values.",
-            "displayName": "Desired pods",
-            "id": "Desired pods",
+            "displayName": "# Pods desired",
+            "id": "kubernetes_deployments_pods_desired",
             "job": {
               "filters": [
                 {
@@ -560,7 +483,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Pods desired",
             "valueType": null
           },
           {
@@ -570,16 +493,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of failed deployment. Darker colors indicate higher relative values.",
-            "displayName": "Deployment failed",
-            "id": "Deployment failed",
+            "displayName": "# Deployment failed",
+            "id": "kubernetes_deployments_deployment_failed",
             "job": {
               "filters": [
                 {
@@ -599,7 +522,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Deployment failed",
             "valueType": null
           },
           {
@@ -609,16 +532,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of pods that are in pending state in deployment. Darker colors indicate higher relative values.",
-            "displayName": "Pending pods",
-            "id": "Pending pods",
+            "displayName": "# Pods pending",
+            "id": "kubernetes_deployments_pods_pending",
             "job": {
               "filters": [
                 {
@@ -637,7 +560,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Pods pending",
             "valueType": null
           },
           {
@@ -647,16 +570,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of pods that are in failed state in deployment. Darker colors indicate higher relative values.",
-            "displayName": "Failed pods",
-            "id": "Failed pods",
+            "displayName": "# Pods failed",
+            "id": "kubernetes_deployments_pods_failed",
             "job": {
               "filters": [
                 {
@@ -675,7 +598,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Total Pods Failed",
+            "valueLabel": "Pods failed",
             "valueType": null
           },
           {
@@ -685,16 +608,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
             "description": "This metric shows the number of pods that are in unknown state in deployment. Darker colors indicate higher relative values.",
-            "displayName": "Unknown pods",
-            "id": "Unknown pods",
+            "displayName": "# Pods unknown",
+            "id": "kubernetes_deployments_pods_unknown",
             "job": {
               "filters": [
                 {
@@ -713,7 +636,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Pods unknown",
             "valueType": null
           },
           {
@@ -723,16 +646,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Total number of container restarts for all pods of the deployment aggregated over the dashboard time window.",
-            "displayName": "Total container restarts",
-            "id": "Total container restarts",
+            "description": "This metric shows the total number of container restarts for all pods of the deployment aggregated over the dashboard time window. Darker colors indicate higher relative values.",
+            "displayName": "# Container restarts",
+            "id": "kubernetes_deployments_container_restarts",
             "job": {
               "filters": [
                 {
@@ -751,7 +674,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "",
+            "valueLabel": "Container restarts",
             "valueType": null
           },
           {
@@ -761,16 +684,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Total number of pods which reached succeeded status over the dashboard time window.",
-            "displayName": "Total pods succeeded",
-            "id": "Total pods succeeded",
+            "description": "This metric shows the total number of pods which reached succeeded status over the dashboard time window. Darker colors indicate higher relative values.",
+            "displayName": "# Pods succeeded",
+            "id": "kubernetes_deployments_pods_succeeded",
             "job": {
               "filters": [
                 {
@@ -789,7 +712,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Total Pods Succeded",
+            "valueLabel": "Pods Succeded",
             "valueType": null
           },
           {
@@ -799,16 +722,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Ratio of total number of pods for a replicaset (any status) to the number of running pods.",
+            "description": "This metric shows the ratio of total number of pods for a replicaset (any status) to the number of running pods. Darker colors indicate higher relative values.",
             "displayName": "Pod churn ratio",
-            "id": "Pod churn ratio",
+            "id": "kubernetes_deployments_pod_churn_ratio",
             "job": {
               "filters": [
                 {
@@ -837,16 +760,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Minimum number of pods desired over the dashboard time window.",
-            "displayName": "Min pods desired",
-            "id": "Min pods desired",
+            "description": "This metric shows the minimum number of pods desired over the dashboard time window. Darker colors indicate higher relative values.",
+            "displayName": "# Min pods desired",
+            "id": "kubernetes_deployments_min_pod_desired",
             "job": {
               "filters": [
                 {
@@ -865,7 +788,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Minimum desired deployment",
+            "valueLabel": "Min pods desired",
             "valueType": null
           },
           {
@@ -875,16 +798,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Maximum number of pods desired over the dashboard time window.",
-            "displayName": "Max pods desired",
-            "id": "Max pods desired",
+            "description": "This metric shows the maximum number of pods desired over the dashboard time window. Darker colors indicate higher relative values.",
+            "displayName": "# Max pods desired",
+            "id": "kubernetes_deployments_max_pod_desired",
             "job": {
               "filters": [
                 {
@@ -903,7 +826,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Deployment Desired Max",
+            "valueLabel": "Max pods desired",
             "valueType": null
           },
           {
@@ -913,16 +836,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Minimum number of pods running over the dashboard time window.",
-            "displayName": "Min running pods",
-            "id": "Min running pods",
+            "description": "This metric shows the minimum number of pods running over the dashboard time window. Darker colors indicate higher relative values.",
+            "displayName": "# Min running pods",
+            "id": "kubernetes_deployments_min_runing_pods",
             "job": {
               "filters": [
                 {
@@ -941,7 +864,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Deployment Desired Max",
+            "valueLabel": "Min running pods",
             "valueType": null
           },
           {
@@ -951,16 +874,16 @@
               "method": "quantile",
               "minValue": 0,
               "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
               ]
             },
-            "description": "Maximum number of pods running over the dashboard time window.",
-            "displayName": "Max running pods",
-            "id": "Max running pods",
+            "description": "This metric shows the maximum number of pods running over the dashboard time window. Darker colors indicate higher relative values.",
+            "displayName": "# Max running pods",
+            "id": "kubernetes_deployments_max_runing_pods",
             "job": {
               "filters": [
                 {
@@ -979,7 +902,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Deployment Desired Max",
+            "valueLabel": "Max running pods",
             "valueType": null
           }
         ],
@@ -995,7 +918,20 @@
         "singleHostSystemDashboardName": null,
         "systemDashboardName": null,
         "systemDashboardPrefix": null,
-        "tooltipKeyList": [],
+        "tooltipKeyList": [
+          {
+            "displayName": "Deployment uid",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "k8s.deployment.uid"
+          },
+          {
+            "displayName": "Value",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
         "type": "elemental",
         "unreleased": false
       },
