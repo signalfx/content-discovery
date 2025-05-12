@@ -1,6 +1,6 @@
 {
   "crossLinkExports": null,
-  "hashCode": -803244948,
+  "hashCode": -1583098625,
   "id": "GnuHu6FAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -28,8 +28,72 @@
       "instanceDisplayText": "Weaviate instance",
       "lastUpdated": 0,
       "lastUpdatedBy": null,
-      "metricClasses": [],
-      "metricColumns": [],
+      "metricClasses": [
+        {
+          "description": "A default group of metrics and KPIs essential for monitoring Weaviate instances.",
+          "displayName": "Default",
+          "metricClassCode": "default",
+          "metricClassColumns": [
+            "instance_id",
+            "object_count",
+            "total_requests",
+            "active_tombstones"
+          ]
+        },
+        {
+          "description": "A group of metrics and KPIs related to object storage in Weaviate.",
+          "displayName": "Object Storage",
+          "metricClassCode": "object_storage",
+          "metricClassColumns": [
+            "instance_id",
+            "object_count"
+          ]
+        },
+        {
+          "description": "A group of metrics and KPIs related to request analysis in Weaviate.",
+          "displayName": "Request Analysis",
+          "metricClassCode": "request_analysis",
+          "metricClassColumns": [
+            "instance_id",
+            "total_requests",
+            "active_tombstones"
+          ]
+        }
+      ],
+      "metricColumns": [
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Instance ID",
+          "displayTemplate": "{{id}}",
+          "metricColumnCode": "instance_id",
+          "propertyFormat": "id"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Object Count",
+          "displayTemplate": "{{object_count}}",
+          "metricColumnCode": "object_count",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Total Requests",
+          "displayTemplate": "{{requests_total}}",
+          "metricColumnCode": "total_requests",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Active Tombstones",
+          "displayTemplate": "{{vector_index_tombstone_cleanup_threads}}",
+          "metricColumnCode": "active_tombstones",
+          "propertyFormat": "Number"
+        }
+      ],
       "name": "Weaviate",
       "navigatorCategory": "AI Frameworks",
       "navigatorCategoryDisplayName": "AI Frameworks",
@@ -53,24 +117,7 @@
         "id": "Weaviate instances",
         "idName": "Host",
         "idTemplate": "{{service.instance.id}}",
-        "listColumns": [
-          {
-            "aggregate": null,
-            "displayName": "Instance ID",
-            "format": "id",
-            "metric": null,
-            "property": "id",
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Value",
-            "format": "Number",
-            "metric": null,
-            "property": "value",
-            "sortable": null
-          }
-        ],
+        "listColumns": [],
         "metrics": [
           {
             "coloring": {
@@ -90,42 +137,11 @@
             "displayName": "Total requests",
             "id": "requests_total",
             "job": {
-              "filters": null,
-              "resolution": 300000,
-              "template": "TOTAL_REQUESTS = data(\"requests_total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"service.instance.id\"])",
-              "varName": "TOTAL_REQUESTS"
-            },
-            "metricSelectors": [
-              "requests_total"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Requests",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
-              ]
-            },
-            "description": "Color instances by the number of request errors",
-            "displayName": "Total request errors",
-            "id": "request_errors",
-            "job": {
               "filters": [
                 {
-                  "not": true,
-                  "property": "status",
-                  "propertyValue": "ok",
+                  "not": false,
+                  "property": "service.instance.id",
+                  "propertyValue": "*",
                   "type": "property"
                 }
               ],
@@ -138,7 +154,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Request errors",
+            "valueLabel": "Requests",
             "valueType": null
           },
           {
@@ -159,7 +175,14 @@
             "displayName": "Object count",
             "id": "object_count",
             "job": {
-              "filters": null,
+              "filters": [
+                {
+                  "not": false,
+                  "property": "service.instance.id",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 300000,
               "template": "OBJECT_COUNT = data(\"object_count\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"service.instance.id\"])",
               "varName": "OBJECT_COUNT"
@@ -186,42 +209,18 @@
                 "#810f7c"
               ]
             },
-            "description": "Color instances by the number of vectors indexed",
-            "displayName": "# Vectors",
-            "id": "net_vectors",
-            "job": {
-              "filters": null,
-              "resolution": 300000,
-              "template": "VECTORS_INSERTED = data(\"vector_index_operations\", filter=filter(\"operation\", \"create\"){{#filter}} and filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"service.instance.id\"])\nVECTORS_DELETED = data(\"vector_index_operations\", filter=filter(\"operation\", \"delete\"){{#filter}} and filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"service.instance.id\"])\nNET_VECTORS = (VECTORS_INSERTED - VECTORS_DELETED)",
-              "varName": "NET_VECTORS"
-            },
-            "metricSelectors": [
-              "vector_index_operations"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Vectors",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
             "description": "Color instances by the number of active vector index tombstones. Tombstones are records that mark deleted objects; a large number of tombstones requires more resources to clean up and may cause performance issues",
             "displayName": "Active tombstones",
             "id": "vector_index_tombstone_cleanup_threads",
             "job": {
-              "filters": null,
+              "filters": [
+                {
+                  "not": false,
+                  "property": "service.instance.id",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 300000,
               "template": "ACTIVE_TOMBSTONES = data(\"vector_index_tombstone_cleanup_threads\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"service.instance.id\"])",
               "varName": "ACTIVE_TOMBSTONES"
@@ -232,38 +231,6 @@
             "type": "metric",
             "valueFormat": "Number",
             "valueLabel": "Active tombstones",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
-              ]
-            },
-            "description": "Color instances by the average duration of PUT operations.",
-            "displayName": "PUT duration (ms)",
-            "id": "put_duration",
-            "job": {
-              "filters": null,
-              "resolution": 300000,
-              "template": "TOTAL_PUT_DURATIONS = data(\"objects_durations_ms_sum\", filter=filter(\"operation\", \"put\"){{#filter}} and filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"service.instance.id\"])\nPUT_OPERATION_COUNT = data(\"objects_durations_ms_count\", filter=filter(\"operation\", \"put\"){{#filter}} and filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"service.instance.id\"])\nAVG_PUT_DURATION = (TOTAL_PUT_DURATIONS / PUT_OPERATION_COUNT)",
-              "varName": "AVG_PUT_DURATION"
-            },
-            "metricSelectors": [
-              "objects_durations_ms_sum",
-              "objects_durations_ms_count"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Duration (ms)",
             "valueType": null
           }
         ],
@@ -292,7 +259,39 @@
         "type": "elemental",
         "unreleased": false
       },
-      "visualizations": []
+      "visualizations": [
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": false,
+              "showGroupBy": false,
+              "showNavigatorSettings": false,
+              "showOutliers": false
+            },
+            "listType": "multiMetric"
+          },
+          "defaultVisualization": true,
+          "type": "list",
+          "views": [
+            "aggregate"
+          ]
+        },
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": true,
+              "showGroupBy": true,
+              "showNavigatorSettings": true,
+              "showOutliers": true
+            }
+          },
+          "defaultVisualization": false,
+          "type": "heatmap",
+          "views": [
+            "aggregate"
+          ]
+        }
+      ]
     }
   },
   "packageType": "NAVIGATOR"
