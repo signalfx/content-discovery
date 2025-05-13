@@ -34,7 +34,7 @@
       }
     }
   ],
-  "hashCode": 567161518,
+  "hashCode": -673877460,
   "id": "GoNEXmAAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -183,14 +183,6 @@
           "displayTemplate": "{{gen_ai.client.operation.duration_count}}",
           "metricColumnCode": "duration_count",
           "propertyFormat": "Number"
-        },
-        {
-          "aggregate": "mean",
-          "displayFormatterCode": null,
-          "displayName": "Latency",
-          "displayTemplate": "{{gen_ai.request.latency}}",
-          "metricColumnCode": "latency",
-          "propertyFormat": "Number"
         }
       ],
       "name": "OpenAI",
@@ -242,12 +234,6 @@
                   "property": "_exists_",
                   "propertyValue": "gen_ai.system",
                   "type": "property"
-                },
-                {
-                  "not": false,
-                  "property": "gen_ai.system",
-                  "propertyValue": "openai",
-                  "type": "property"
                 }
               ],
               "resolution": 0,
@@ -285,12 +271,6 @@
                   "not": false,
                   "property": "_exists_",
                   "propertyValue": "gen_ai.system",
-                  "type": "property"
-                },
-                {
-                  "not": false,
-                  "property": "gen_ai.system",
-                  "propertyValue": "openai",
                   "type": "property"
                 }
               ],
@@ -427,7 +407,7 @@
                 }
               ],
               "resolution": 0,
-              "template": "CLIENT_TOKEN_USAGE_COUNT = histogram('gen_ai.client.token.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m')).sum(by=['gen_ai.request.model', 'service.name']).above(1, inclusive=True)",
+              "template": "CLIENT_TOKEN_USAGE_COUNT = histogram('gen_ai.client.token.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m')).above(1, inclusive=True).sum(by=['gen_ai.request.model', 'service.name'])",
               "varName": "CLIENT_TOKEN_USAGE_COUNT"
             },
             "metricSelectors": [
@@ -479,7 +459,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Client token usage count",
+            "valueLabel": "Max client operation duration",
             "valueType": null
           },
           {
@@ -523,7 +503,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": null,
+            "valueLabel": "Min client operation duration",
             "valueType": null
           },
           {
@@ -547,13 +527,19 @@
               "filters": [
                 {
                   "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                },
+                {
+                  "not": false,
                   "property": "gen_ai.system",
                   "propertyValue": "openai",
                   "type": "property"
                 }
               ],
               "resolution": 0,
-              "template": "CLIENT_OPERATION_DURATION_COUNT = histogram('gen_ai.client.operation.duration'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m')).above(1, inclusive=True).sum(by=['service.name'])",
+              "template": "CLIENT_OPERATION_DURATION_COUNT = histogram('gen_ai.client.operation.duration'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m')).above(1, inclusive=True).sum(by=['gen_ai.request.model', 'service.name'])",
               "varName": "CLIENT_OPERATION_DURATION_COUNT"
             },
             "metricSelectors": [
@@ -569,7 +555,7 @@
         "o11yMetricName": "Active services",
         "o11yMetricUnit": null,
         "o11yProductName": "OpenAI",
-        "o11ySignalflowTemplate": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.system', 'openai') and filter('gen_ai.token.type', 'input')).sum(by=['gen_ai.request.model', 'service.name']).sum(over=Args.get('ui.dashboard_window', '4h')).count().publish(label='A')",
+        "o11ySignalflowTemplate": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.system', 'openai') and filter('gen_ai.token.type', 'input')).sum(by=['gen_ai.request.model', 'service.name']).count(by=['service.name']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
