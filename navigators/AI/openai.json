@@ -34,7 +34,7 @@
       }
     }
   ],
-  "hashCode": 2144068820,
+  "hashCode": -198475292,
   "id": "GoNEXmAAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -62,8 +62,129 @@
       "instanceDisplayText": null,
       "lastUpdated": 0,
       "lastUpdatedBy": null,
-      "metricClasses": [],
-      "metricColumns": [],
+      "metricClasses": [
+        {
+          "description": "A default group of metrics and KPIs essential for monitoring OpenAI usage.",
+          "displayName": "Default",
+          "metricClassCode": "default",
+          "metricClassColumns": [
+            "application",
+            "model_name",
+            "input_tokens",
+            "output_tokens",
+            "usage_count",
+            "max_duration",
+            "min_duration"
+          ]
+        },
+        {
+          "description": "A group of metrics and KPIs related to token usage in OpenAI.",
+          "displayName": "Token usage",
+          "metricClassCode": "token_usage",
+          "metricClassColumns": [
+            "application",
+            "model_name",
+            "input_tokens",
+            "output_tokens",
+            "max_token",
+            "min_token"
+          ]
+        },
+        {
+          "description": "A group of metrics and KPIs related to request analysis in OpenAI.",
+          "displayName": "Request analysis",
+          "metricClassCode": "request_analysis",
+          "metricClassColumns": [
+            "application",
+            "model_name",
+            "max_duration",
+            "min_duration",
+            "duration_count"
+          ]
+        }
+      ],
+      "metricColumns": [
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Service",
+          "displayTemplate": "{{id}}",
+          "metricColumnCode": "application",
+          "propertyFormat": "id"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Model name",
+          "displayTemplate": "{{gen_ai.request.model}}",
+          "metricColumnCode": "model_name",
+          "propertyFormat": null
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Input tokens",
+          "displayTemplate": "{{gen_ai.client.token.usage_input}}",
+          "metricColumnCode": "input_tokens",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Output tokens",
+          "displayTemplate": "{{gen_ai.client.token.usage_output}}",
+          "metricColumnCode": "output_tokens",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Max token",
+          "displayTemplate": "{{gen_ai.client.token.usage_max}}",
+          "metricColumnCode": "max_token",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Min token",
+          "displayTemplate": "{{gen_ai.client.token.usage_min}}",
+          "metricColumnCode": "min_token",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Token usage count",
+          "displayTemplate": "{{gen_ai.client.token.usage_count}}",
+          "metricColumnCode": "usage_count",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Max duration",
+          "displayTemplate": "{{gen_ai.client.operation.duration_max}}",
+          "metricColumnCode": "max_duration",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Min duration",
+          "displayTemplate": "{{gen_ai.client.operation.duration_min}}",
+          "metricColumnCode": "min_duration",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Duration count",
+          "displayTemplate": "{{gen_ai.client.operation.duration_count}}",
+          "metricColumnCode": "duration_count",
+          "propertyFormat": "Number"
+        }
+      ],
       "name": "OpenAI",
       "navigatorCategory": "AI Frameworks",
       "navigatorCategoryDisplayName": "AI Frameworks",
@@ -87,32 +208,7 @@
         "id": "openAI",
         "idName": "OpenAI",
         "idTemplate": "{{service.name}}",
-        "listColumns": [
-          {
-            "aggregate": null,
-            "displayName": "Service Name",
-            "format": "id",
-            "metric": null,
-            "property": "id",
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "gen_ai_operation_name",
-            "format": null,
-            "metric": null,
-            "property": "gen_ai.operation.name",
-            "sortable": null
-          },
-          {
-            "aggregate": null,
-            "displayName": "Value",
-            "format": "Number",
-            "metric": null,
-            "property": "value",
-            "sortable": null
-          }
-        ],
+        "listColumns": [],
         "metrics": [
           {
             "coloring": {
@@ -132,17 +228,24 @@
             "displayName": "Input tokens",
             "id": "gen_ai.client.token.usage_input",
             "job": {
-              "filters": null,
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                }
+              ],
               "resolution": 0,
-              "template": "INPUT_TOKENS = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'input') and filter('gen_ai.system', 'openai')).sum(over=Args.get('ui.dashboard_window', '15m'))",
+              "template": "INPUT_TOKENS = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'input') and filter('gen_ai.system', 'openai')).sum(by=['gen_ai.request.model', 'service.name']).sum(over=Args.get('ui.dashboard_window', '15m'))",
               "varName": "INPUT_TOKENS"
             },
             "metricSelectors": [
               "gen_ai.client.token.usage_input"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Input tokens",
             "valueType": null
           },
           {
@@ -163,55 +266,24 @@
             "displayName": "Output tokens",
             "id": "gen_ai.client.token.usage_output",
             "job": {
-              "filters": null,
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                }
+              ],
               "resolution": 0,
-              "template": "OUTPUT_TOKENS = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'output') and filter('gen_ai.system', 'openai')).sum(over=Args.get('ui.dashboard_window', '15m'))",
+              "template": "OUTPUT_TOKENS = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'output') and filter('gen_ai.system', 'openai')).sum(by=['gen_ai.request.model', 'service.name']).sum(over=Args.get('ui.dashboard_window', '15m'))",
               "varName": "OUTPUT_TOKENS"
             },
             "metricSelectors": [
               "gen_ai.client.token.usage_output"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "The total cumulative client token usage within selected timeframe",
-            "displayName": "Total Client Token Usage",
-            "id": "gen_ai.client.token.usage_sum",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "gen_ai.system",
-                  "propertyValue": "openai",
-                  "type": "property"
-                }
-              ],
-              "resolution": 0,
-              "template": "TOTAL_CLIENT_TOKEN_USAGE = histogram('gen_ai.client.token.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(over=Args.get('ui.dashboard_window', '15m'))",
-              "varName": "TOTAL_CLIENT_TOKEN_USAGE"
-            },
-            "metricSelectors": [
-              "gen_ai.client.token.usage_sum"
-            ],
-            "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Output tokens",
             "valueType": null
           },
           {
@@ -229,10 +301,16 @@
               ]
             },
             "description": "The maximum client token usage within selected timeframe",
-            "displayName": "Max Client Token Usage",
+            "displayName": "Max client token usage",
             "id": "gen_ai.client.token.usage_max",
             "job": {
               "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                },
                 {
                   "not": false,
                   "property": "gen_ai.system",
@@ -248,8 +326,8 @@
               "gen_ai.client.token.usage_max"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Max client token usage",
             "valueType": null
           },
           {
@@ -267,10 +345,16 @@
               ]
             },
             "description": "The minimum client token usage within selected timeframe",
-            "displayName": "Min Client Token Usage",
+            "displayName": "Min client token usage",
             "id": "gen_ai.client.token.usage_min",
             "job": {
               "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                },
                 {
                   "not": false,
                   "property": "gen_ai.system",
@@ -286,8 +370,8 @@
               "gen_ai.client.token.usage_min"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Min client token usage",
             "valueType": null
           },
           {
@@ -305,10 +389,16 @@
               ]
             },
             "description": "The count of client token usage within selected timeframe",
-            "displayName": "Client Token Usage Count",
+            "displayName": "Client token usage count",
             "id": "gen_ai.client.token.usage_count",
             "job": {
               "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                },
                 {
                   "not": false,
                   "property": "gen_ai.system",
@@ -317,15 +407,15 @@
                 }
               ],
               "resolution": 0,
-              "template": "CLIENT_TOKEN_USAGE_COUNT = histogram('gen_ai.client.token.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m'))",
+              "template": "CLIENT_TOKEN_USAGE_COUNT = histogram('gen_ai.client.token.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m')).above(1, inclusive=True).sum(by=['gen_ai.request.model', 'service.name'])",
               "varName": "CLIENT_TOKEN_USAGE_COUNT"
             },
             "metricSelectors": [
               "gen_ai.client.token.usage_count"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Client token usage count",
             "valueType": null
           },
           {
@@ -343,10 +433,16 @@
               ]
             },
             "description": "The maximum duration of client operations within selected timeframe",
-            "displayName": "Max Client Operation Duration",
+            "displayName": "Max client operation duration",
             "id": "gen_ai.client.operation.duration_max",
             "job": {
               "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                },
                 {
                   "not": false,
                   "property": "gen_ai.system",
@@ -362,8 +458,8 @@
               "gen_ai.client.operation.duration_max"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Max client operation duration",
             "valueType": null
           },
           {
@@ -381,10 +477,16 @@
               ]
             },
             "description": "The minimum duration of client operations within selected timeframe",
-            "displayName": "Min Client Operation Duration",
+            "displayName": "Min client operation duration",
             "id": "gen_ai.client.operation.duration_min",
             "job": {
               "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                },
                 {
                   "not": false,
                   "property": "gen_ai.system",
@@ -400,8 +502,8 @@
               "gen_ai.client.operation.duration_min"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Min client operation duration",
             "valueType": null
           },
           {
@@ -419,10 +521,16 @@
               ]
             },
             "description": "The count of client operation durations within selected timeframe",
-            "displayName": "Client Operation Duration Count",
+            "displayName": "Client operation duration count",
             "id": "gen_ai.client.operation.duration_count",
             "job": {
               "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "gen_ai.system",
+                  "type": "property"
+                },
                 {
                   "not": false,
                   "property": "gen_ai.system",
@@ -431,23 +539,23 @@
                 }
               ],
               "resolution": 0,
-              "template": "CLIENT_OPERATION_DURATION_COUNT = histogram('gen_ai.client.operation.duration'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m'))",
+              "template": "CLIENT_OPERATION_DURATION_COUNT = histogram('gen_ai.client.operation.duration'{{#filter}}, filter={{{filter}}}{{/filter}}).count(over=Args.get('ui.dashboard_window', '15m')).above(1, inclusive=True).sum(by=['gen_ai.request.model', 'service.name'])",
               "varName": "CLIENT_OPERATION_DURATION_COUNT"
             },
             "metricSelectors": [
               "gen_ai.client.operation.duration_count"
             ],
             "type": "metric",
-            "valueFormat": null,
-            "valueLabel": null,
+            "valueFormat": "Number",
+            "valueLabel": "Client operation duration count",
             "valueType": null
           }
         ],
         "mtsQuery": null,
-        "o11yMetricName": "Active Services",
+        "o11yMetricName": "Active services",
         "o11yMetricUnit": null,
         "o11yProductName": "OpenAI",
-        "o11ySignalflowTemplate": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.system', 'openai') and filter('gen_ai.token.type', 'input')).count(by=['service.name']).sum(over=Args.get('ui.dashboard_window', '15m')).count().publish(label='A')",
+        "o11ySignalflowTemplate": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.system', 'openai') and filter('gen_ai.token.type', 'input')).count(by=['service.name']).sum(by=['gen_ai.request.model', 'service.name']).sum(over=Args.get('ui.dashboard_window', '15m')).count().publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
@@ -480,7 +588,39 @@
         "type": "elemental",
         "unreleased": false
       },
-      "visualizations": []
+      "visualizations": [
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": false,
+              "showGroupBy": true,
+              "showNavigatorSettings": false,
+              "showOutliers": false
+            },
+            "listType": "multiMetric"
+          },
+          "defaultVisualization": true,
+          "type": "list",
+          "views": [
+            "aggregate"
+          ]
+        },
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": true,
+              "showGroupBy": true,
+              "showNavigatorSettings": true,
+              "showOutliers": true
+            }
+          },
+          "defaultVisualization": false,
+          "type": "heatmap",
+          "views": [
+            "aggregate"
+          ]
+        }
+      ]
     }
   },
   "packageType": "NAVIGATOR"
