@@ -5,38 +5,36 @@
       "created": 0,
       "creator": null,
       "customProperties": {},
-      "description": "Alerts when Redis server CPU usage is higher than threshold",
+      "description": "Alerts when Redis CPU usage exceeds the threshold for 80% of the last 10 minutes. The alert clears when Redis CPU usage drops below the clear threshold for 100% of the last 10 minutes.",
       "detectorOrigin": "Standard",
       "id": "FadUmhaAcAA",
       "labelResolutions": {
-        "Redis CPU utilization is high": 1000
+        "Redis - CPU usage  sustained high (80%+ for 10 min)": 1000
       },
       "lastUpdated": 0,
       "lastUpdatedBy": null,
+      "locked": false,
       "maxDelay": 0,
       "minDelay": null,
-      "name": "Redis server - CPU continuously near limit",
+      "name": "Redis - CPU usage  sustained high (80%+ for 10 min)",
       "overMTSLimit": false,
-      "packageSpecifications": "",
-      "parentDetectorId": null,
-      "programText": "from signalfx.detectors.autodetect.infra.db import redis\nredis.cpu_utilization_detector().publish('Redis CPU utilization is high')",
+      "packageSpecifications": "signalfx==0.1.891",
+      "programText": "from signalfx.detectors.autodetect.infra.db import redis\nredis.cpu_utilization_detector().publish('Redis - CPU usage  sustained high (80%+ for 10 min)')",
       "rules": [
         {
-          "description": "The value of CPU utilization is higher than specified threshold",
-          "detectLabel": "Redis CPU utilization is high",
+          "description": "Redis - CPU usage  sustained high (80%+ for 10 min)",
+          "detectLabel": "Redis - CPU usage  sustained high (80%+ for 10 min)",
           "disabled": false,
-          "notifications": null,
           "parameterizedBody": "{{#if anomalous}}\n\t    Rule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{else}}\n\t    Rule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n    {{/if}}\n    {{#if anomalous}}\n      Triggering condition: {{{readableRule}}} ({{inputs.fire_threshold_stream.value}}%)\n    {{/if}}\n    {{#if anomalous}}\n      Signal value: {{inputs.stream.value}}\n    {{else}}\n      Current signal value: {{inputs.stream.value}}\n    {{/if}}\n    {{#notEmpty dimensions}}\n      Signal details: {{{dimensions}}}\n    {{/notEmpty}}\n    {{#if anomalous}}\n      {{#if runbookUrl}}\n        Runbook: {{{runbookUrl}}}\n      {{/if}}\n      {{#if tip}}\n        Tip: {{{tip}}}\n      {{/if}}\n    {{/if}}",
           "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
-          "runbookUrl": null,
-          "severity": "Major",
-          "tip": null
+          "severity": "Major"
         }
       ],
       "sf_metricsInObjectProgramText": [
         "counter.used_cpu_sys",
         "counter.used_cpu_user"
       ],
+      "status": "ACTIVE",
       "tags": null,
       "teams": null,
       "timezone": null,
@@ -50,36 +48,10 @@
           "rangeEnd": 0,
           "type": "relative"
         }
-      },
-      "importQualifiers": [
-        {
-          "metric": "counter.used_cpu_user",
-          "filters": [
-            {
-              "values": [
-                "redis_info"
-              ],
-              "property": "plugin",
-              "not": false
-            }
-          ]
-        },
-        {
-          "metric": "counter.used_cpu_sys",
-          "filters": [
-            {
-              "values": [
-                "redis_info"
-              ],
-              "property": "plugin",
-              "not": false
-            }
-          ]
-        }
-      ]
+      }
     }
   },
-  "hashCode": 595486090,
+  "hashCode": 1707621236,
   "id": "FadUmhaAcAA",
   "packageType": "DETECTOR"
 }
