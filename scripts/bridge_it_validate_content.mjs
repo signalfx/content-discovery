@@ -158,6 +158,10 @@ async function main(){
     const target_branch = await fetchTargetBranch();
     const filenames = await getChangedFiles(target_branch);
     console.log(`Files to validate: ${filenames}`);
+    if (filenames.length === 0) {
+        console.log('No files to validate.');
+        return;
+    }
     const access_token = await bridgeITAuth();
     getFeedbackFromBridgeIT(filenames.map((file) => ({...JSON.parse(fs.readFileSync(file, 'utf8')), filename: file})), access_token);
 }
