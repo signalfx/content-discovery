@@ -151,7 +151,7 @@ async function fetchTargetBranch() {
         console.error(`Failed to retrieve target branch: ${error}`);
         process.exit(1);
     }
-    return `origin/${TARGET_BRANCH}`;
+    return `origin/${TARGET_BRANCH}...HEAD`;
 }
 
 async function main(){
