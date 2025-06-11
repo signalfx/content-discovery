@@ -8,80 +8,23 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "GsdtQxdAIAA",
-        "importOf": "Grlpr5RAwAs",
+        "id": "Gsm1tuvAgAM",
+        "importOf": "GsdtclrAAAI",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "ㅤ",
+        "name": "Top 10 number of invocations by account",
         "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">AWS Call Metrics</font>\n</td></tr></table>\n\n<p align=\"center\" ><br /><font>Charts on the right refer to the generic API metrics of AWS Bedrock. <br></p></font>",
-          "type": "Text"
-        },
-        "packageSpecifications": "",
-        "programText": "",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Aws service call exception rate in percentile",
-        "id": "GsdtclrAAAA",
-        "importOf": "GrlZ9WqA4AA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Aws service call exception rate",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
+          "colorScale2": null,
+          "hideMissingValues": false,
           "legendOptions": {
             "fields": null
           },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
+          "maximumPrecision": null,
           "noDataOptions": {
             "linkText": null,
             "linkUrl": null,
             "noDataMessage": null
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": "aws_account_id",
-            "showLegend": true
           },
           "programOptions": {
             "disableSampling": false,
@@ -91,48 +34,29 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "aws service call count",
+              "displayName": "Invocations",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "aws service call count exceptions",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "aws service call exception rate",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
               "valueUnit": null,
               "yAxis": 0
             }
           ],
-          "showEventLines": false,
-          "stacked": false,
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
           "time": {
             "range": 900000,
             "rangeEnd": 0,
             "type": "relative"
           },
-          "type": "TimeSeriesChart",
+          "type": "List",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('sf.org.num.awsServiceCallCount', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['aws_account_id']).publish(label='A', enable=False)\nB = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['aws_account_id']).publish(label='B', enable=False)\nC = (B/A*100).publish(label='C')",
+        "programText": "A = data('Invocations',filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'sum'), rollup= 'sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='A')\n",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -145,8 +69,67 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "GsdtclrAAAE",
-        "importOf": "GsOAWuUAwAA",
+        "id": "Gsm1tuvAgAQ",
+        "importOf": "GsdtclrAAAM",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "P90 request latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "InvocationLatency - P90 - Mean(Dashboard window)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock'), rollup='average').percentile(pct=90).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "Gsm1tuvAgAU",
+        "importOf": "GsdtclrAAAE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Top 10 number of invocations by model",
@@ -206,114 +189,17 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "GsdtclrAAAI",
-        "importOf": "GsEXo0kAwAE",
+        "id": "Gsm1tuvAgAY",
+        "importOf": "GsdtclrAABQ",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top 10 number of invocations by account",
+        "name": "ㅤ",
         "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
-          "noDataOptions": {
-            "linkText": null,
-            "linkUrl": null,
-            "noDataMessage": null
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Invocations",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "",
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "type": "List",
-          "unitPrefix": "Metric"
+          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">AWS Call Metrics</font>\n</td></tr></table>\n\n<p align=\"center\" ><br /><font>Charts below refer to the generic API metrics of AWS Bedrock. <br></p></font>",
+          "type": "Text"
         },
         "packageSpecifications": "",
-        "programText": "A = data('Invocations',filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'sum'), rollup= 'sum', extrapolation='zero').dimensions(renames={\"account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['account id']).top(10).publish(label='A')\n",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "GsdtclrAAAM",
-        "importOf": "GsBG9w-A4AA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "P90 request latency",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 4,
-          "noDataOptions": {
-            "linkText": null,
-            "linkUrl": null,
-            "noDataMessage": null
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "InvocationLatency - P90 - Mean(Dashboard window)",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock'), rollup='average').percentile(pct=90).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "programText": "",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -326,8 +212,8 @@
         "creator": null,
         "customProperties": {},
         "description": "Invocation latency per model mean, max and min over time",
-        "id": "GsdtclrAAAQ",
-        "importOf": "GrlPWxBAwAQ",
+        "id": "Gsm1tuvAgAc",
+        "importOf": "GsdtclrAAAQ",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Top 10 invocation latency overview by model",
@@ -383,7 +269,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'mean'), rollup='average', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['Model id']).top(10).publish(label='A')\nB = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'upper'), rollup='max', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).max(over=Args.get('ui.dashboard_window', '15m')).max(by=['Model id']).top(10).publish(label='B')\nC = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'lower'), rollup='min', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).max(over=Args.get('ui.dashboard_window', '15m')).min(by=['Model id']).top(10).publish(label='C')",
+        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'mean'), rollup='average', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['Model id']).top(10).publish(label='A')\nB = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'upper'), rollup='max', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).max(over=Args.get('ui.dashboard_window', '15m')).max(by=['Model id']).top(10).publish(label='B')\nC = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'lower'), rollup='min', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).min(over=Args.get('ui.dashboard_window', '15m')).min(by=['Model id']).top(10).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -396,34 +282,11 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "GsdtclrAAAU",
-        "importOf": "GrlhfMKAwAA",
+        "id": "Gsm1tuvAgAg",
+        "importOf": "GsdtclrAAA4",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "ㅤ",
-        "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Invocations</font>\n</td></tr></table>\n\n<p align=\"center\" ><br /><font>Charts on the right refer to the invocations of AWS Bedrock. <br></p></font>",
-          "type": "Text"
-        },
-        "packageSpecifications": "",
-        "programText": "",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "GsdtclrAAAc",
-        "importOf": "GrlhTySA4Ao",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top 10 aws service call errors count by account ",
+        "name": "Top 10 aws service call errors count",
         "options": {
           "columnSizes": {},
           "groupBy": [
@@ -483,7 +346,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('sf.org.num.awsServiceAuthErrorCount', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='A')\nB = data('sf.org.num.awsServiceCallThrottles', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='B')\nC = data('sf.org.num.awsServiceCallThrottledRetryFailures', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='C')\nD = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='D')",
+        "programText": "A = data('sf.org.num.awsServiceAuthErrorCount', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='A')\nB = data('sf.org.num.awsServiceCallThrottles', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='B')\nC = data('sf.org.num.awsServiceCallThrottledRetryFailures', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='C')\nD = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='D')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -496,8 +359,92 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "GsdtclrAAAg",
-        "importOf": "GsBEp_HAwAA",
+        "id": "Gsm1tuvAgAk",
+        "importOf": "GsdtclrAABU",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top 10 number of invocations by model",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Invocations",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('Invocations', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum',extrapolation='zero').dimensions(renames={\"model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['model id']).top(10).publish(label='A')\n",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "Gsm1tuvAgAo",
+        "importOf": "GsdtclrAAAU",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "ㅤ",
+        "options": {
+          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">Invocations</font>\n</td></tr></table>\n\n<p align=\"center\" ><br /><font>Charts on the right refer to the invocations of AWS Bedrock. <br></p></font>",
+          "type": "Text"
+        },
+        "packageSpecifications": "",
+        "programText": "",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "Gsm1tuvAgAs",
+        "importOf": "GsdtclrAAAg",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Token usage trend",
@@ -610,8 +557,8 @@
         "creator": null,
         "customProperties": {},
         "description": "Aws service call throttles retry failure rate in percentile",
-        "id": "GsdtclrAAAk",
-        "importOf": "GrldbbJA0AA",
+        "id": "Gsm1tuvAgAw",
+        "importOf": "GsdtclrAAAk",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Throttles retry failure rate",
@@ -670,7 +617,7 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "throttle retry failures",
+              "displayName": "Throttle retry failures",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
@@ -680,7 +627,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "service call throttles",
+              "displayName": "Service call throttles",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -690,7 +637,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "throttle retry failure rate",
+              "displayName": "Throttle retry failure rate",
               "label": "C",
               "paletteIndex": null,
               "plotType": null,
@@ -723,470 +670,12 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "",
-        "id": "GsdtclrAAAo",
-        "importOf": "GrlfrySA0Aw",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Active Bedrock Instances",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "noDataOptions": {
-            "linkText": null,
-            "linkUrl": null,
-            "noDataMessage": null
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "A",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('InputTokenCount', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').count(by=['AWSUniqueId']).sum(over=Args.get('ui.dashboard_window', '15m')).above(1, inclusive=True).count().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
         "description": "Usage of tokens consumed",
-        "id": "GsdtclrAAAs",
-        "importOf": "GrlDJrbAwA8",
+        "id": "Gsm1tuvAgA0",
+        "importOf": "GsdtclrAABE",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Total tokens",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": null,
-          "noDataOptions": {
-            "linkText": null,
-            "linkUrl": null,
-            "noDataMessage": null
-          },
-          "programOptions": {
-            "disableSampling": true,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Input tokens",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Output tokens",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Total tokens",
-              "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('InputTokenCount', filter=filter('namespace', 'AWS/Bedrock')).sum(by=['namespace']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A', enable=False)\nB = data('OutputTokenCount', filter=filter('namespace', 'AWS/Bedrock')).sum(by=['namespace']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='B', enable=False)\nD = (A+B).publish(label='D')",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "GsdtclrAAAw",
-        "importOf": "GsBHM1SAwAI",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "AVG request latency",
-        "options": {
-          "colorBy": "Dimension",
-          "colorScale": null,
-          "colorScale2": null,
-          "maximumPrecision": 4,
-          "noDataOptions": {
-            "linkText": null,
-            "linkUrl": null,
-            "noDataMessage": null
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "InvocationLatency - Mean(Dashboard window) - Mean",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            }
-          ],
-          "refreshInterval": null,
-          "secondaryVisualization": "None",
-          "showSparkLine": false,
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "SingleValue",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock'), rollup='average').mean(over=Args.get('ui.dashboard_window', '15m')).mean().publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Invocation latency per aws account, mean, max and min over time",
-        "id": "GsdtclrAAA0",
-        "importOf": "GsESz_jA4AA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top 10 invocation latency overview by account",
-        "options": {
-          "columnSizes": {},
-          "groupBy": [
-            "Account id"
-          ],
-          "groupBySort": "Descending",
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Mean invocation latency",
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Max invocation latency",
-              "label": "B",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Min invocation latency",
-              "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            }
-          ],
-          "refreshInterval": null,
-          "sortBy": "",
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "TableChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'mean'), rollup='average', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['Account id']).top(10).publish(label='A')\nB = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'upper'), rollup='max', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).max(over=Args.get('ui.dashboard_window', '15m')).max(by=['Account id']).top(10).publish(label='B')\nC = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'lower'), rollup='min', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).min(over=Args.get('ui.dashboard_window', '15m')).min(by=['Account id']).top(10).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "",
-        "id": "GsdtclrAAA4",
-        "importOf": "Grlpr5RAwAo",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Top 10 aws service call errors count",
-        "options": {
-          "columnSizes": {},
-          "groupBy": [
-            "None"
-          ],
-          "groupBySort": "Descending",
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Auth error count",
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Throttle count",
-              "label": "B",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Throttle retry failure count",
-              "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Exception count",
-              "label": "D",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            }
-          ],
-          "refreshInterval": null,
-          "sortBy": "",
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "TableChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('sf.org.num.awsServiceAuthErrorCount', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='A')\nB = data('sf.org.num.awsServiceCallThrottles', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='B')\nC = data('sf.org.num.awsServiceCallThrottledRetryFailures', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='C')\nD = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum().top(count=10).publish(label='D')",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Aws service call exception rate in percentile",
-        "id": "GsdtclrAABA",
-        "importOf": "GrlpwgKA0AI",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Aws service call exception rate",
-        "options": {
-          "areaChartOptions": {
-            "showDataMarkers": false
-          },
-          "axes": [
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            },
-            {
-              "highWatermark": null,
-              "highWatermarkLabel": null,
-              "label": "",
-              "lowWatermark": null,
-              "lowWatermarkLabel": null,
-              "max": null,
-              "min": null
-            }
-          ],
-          "axisPrecision": null,
-          "colorBy": "Dimension",
-          "defaultPlotType": "LineChart",
-          "eventPublishLabelOptions": [],
-          "histogramChartOptions": {
-            "colorThemeIndex": 16
-          },
-          "includeZero": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "lineChartOptions": {
-            "showDataMarkers": false
-          },
-          "noDataOptions": {
-            "linkText": null,
-            "linkUrl": null,
-            "noDataMessage": null
-          },
-          "onChartLegendOptions": {
-            "dimensionInLegend": "sf_metric",
-            "showLegend": true
-          },
-          "programOptions": {
-            "disableSampling": false,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "aws service call count",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "aws service call count exceptions",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "aws service call exception rate",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            }
-          ],
-          "showEventLines": false,
-          "stacked": false,
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "type": "TimeSeriesChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('sf.org.num.awsServiceCallCount', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A', enable=False)\nB = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='B', enable=False)\nC = (B/A*100).publish(label='C')",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "Usage of tokens consumed",
-        "id": "GsdtclrAABE",
-        "importOf": "GsBKqosA4AM",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "Token usage by model ",
+        "name": "Token usage by model",
         "options": {
           "areaChartOptions": {
             "showDataMarkers": false
@@ -1383,13 +872,13 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "GsdtclrAABQ",
-        "importOf": "GrlguhIA0AY",
+        "id": "Gsm1tuvAgA4",
+        "importOf": "GsdtQxdAIAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "ㅤ",
         "options": {
-          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">AWS Call Metrics</font>\n</td></tr></table>\n\n<p align=\"center\" ><br /><font>Charts below refer to the generic API metrics of AWS Bedrock. <br></p></font>",
+          "markdown": "<table width=\"100%\" height=\"50%\" rules=\"none\"><tr><td valign=\"middle\" align=\"center\" bgcolor=\"#4682B4\">\n<font size=\"5\" color=\"white\">AWS Call Metrics</font>\n</td></tr></table>\n\n<p align=\"center\" ><br /><font>Charts on the right refer to the generic API metrics of AWS Bedrock. <br></p></font>",
           "type": "Text"
         },
         "packageSpecifications": "",
@@ -1406,19 +895,207 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "GsdtclrAABU",
-        "importOf": "Grk99D0A0AA",
+        "id": "Gsm1tuvAgA8",
+        "importOf": "GsdtclrAAAc",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top 10 number of invocations by model",
+        "name": "Top 10 aws service call errors count by account ",
         "options": {
-          "colorBy": "Dimension",
-          "colorScale2": null,
+          "columnSizes": {},
+          "groupBy": [
+            "None"
+          ],
+          "groupBySort": "Descending",
           "hideMissingValues": false,
           "legendOptions": {
             "fields": null
           },
           "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Auth error count",
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Throttle count",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Throttle retry failure count",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Exception count",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortBy": "",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('sf.org.num.awsServiceAuthErrorCount', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='A')\nB = data('sf.org.num.awsServiceCallThrottles', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='B')\nC = data('sf.org.num.awsServiceCallThrottledRetryFailures', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='C')\nD = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Account id']).top(10).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Aws service call exception rate in percentile",
+        "id": "Gsm1tuvAgBA",
+        "importOf": "GsdtclrAABA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Aws service call exception rate",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "aws service call count",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "aws service call count exceptions",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "aws service call exception rate",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('sf.org.num.awsServiceCallCount', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A', enable=False)\nB = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='B', enable=False)\nC = (B/A*100).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "Gsm1tuvAgBE",
+        "importOf": "GsdtclrAAAw",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "AVG request latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
           "noDataOptions": {
             "linkText": null,
             "linkUrl": null,
@@ -1432,29 +1109,300 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Invocations",
+              "displayName": "InvocationLatency - Mean(Dashboard window) - Mean",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
               "yAxis": 0
             }
           ],
           "refreshInterval": null,
-          "secondaryVisualization": "Sparkline",
-          "sortBy": "-value",
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
           "time": {
             "range": 900000,
             "rangeEnd": 0,
             "type": "relative"
           },
-          "type": "List",
+          "timestampHidden": false,
+          "type": "SingleValue",
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('Invocations', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum',extrapolation='zero').dimensions(renames={\"model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['model id']).top(10).publish(label='A')\n",
+        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock'), rollup='average').mean(over=Args.get('ui.dashboard_window', '15m')).mean().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "Gsm1tuvAgBI",
+        "importOf": "Gsi5-k0AIAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top 10 aws service call errors count by model",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "None"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Auth error count",
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Throttle count",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Throttle retry failure count",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Exception count",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortBy": "",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('sf.org.num.awsServiceAuthErrorCount', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='A')\nB = data('sf.org.num.awsServiceCallThrottles', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='B')\nC = data('sf.org.num.awsServiceCallThrottledRetryFailures', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='C')\nD = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Aws service call exception rate in percentile",
+        "id": "Gsm1tuvAgBM",
+        "importOf": "GsdtclrAAAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Aws service call exception rate",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "aws_account_id",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "aws service call count",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "aws service call count exceptions",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "aws service call exception rate",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('sf.org.num.awsServiceCallCount', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['aws_account_id']).publish(label='A', enable=False)\nB = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock')).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['aws_account_id']).publish(label='B', enable=False)\nC = (B/A*100).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Usage of tokens consumed",
+        "id": "Gsm1tuvAgBQ",
+        "importOf": "GsdtclrAAAs",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total tokens",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Input tokens",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Output tokens",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total tokens",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('InputTokenCount', filter=filter('namespace', 'AWS/Bedrock')).sum(by=['namespace']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A', enable=False)\nB = data('OutputTokenCount', filter=filter('namespace', 'AWS/Bedrock')).sum(by=['namespace']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='B', enable=False)\nD = (A+B).publish(label='D')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1467,8 +1415,8 @@
         "creator": null,
         "customProperties": {},
         "description": "Aws service call throttles retry failure rate in percentile",
-        "id": "GsdtclrAABY",
-        "importOf": "GrloQ4xAwAA",
+        "id": "Gsm1tuvAgBU",
+        "importOf": "GsdtclrAABY",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "name": "Throttles retry failure rate",
@@ -1581,15 +1529,74 @@
         "creator": null,
         "customProperties": {},
         "description": "",
-        "id": "Gsi5-k0AIAA",
-        "importOf": "GrlhTySA4Ao",
+        "id": "Gsm1tuvAgBY",
+        "importOf": "GsdtclrAAAo",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
-        "name": "Top 10 aws service call errors count by model",
+        "name": "Active Bedrock Instances",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "A",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('InputTokenCount', filter=filter('namespace', 'AWS/Bedrock'), extrapolation='zero').count(by=['AWSUniqueId']).sum(over=Args.get('ui.dashboard_window', '15m')).above(1, inclusive=True).count().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Invocation latency per aws account, mean, max and min over time",
+        "id": "Gsm1tuvAgBc",
+        "importOf": "GsdtclrAAA0",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top 10 invocation latency overview by account",
         "options": {
           "columnSizes": {},
           "groupBy": [
-            "None"
+            "Account id"
           ],
           "groupBySort": "Descending",
           "hideMissingValues": false,
@@ -1605,29 +1612,22 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Auth error count",
+              "displayName": "Mean invocation latency",
               "label": "A",
               "valuePrefix": "",
               "valueSuffix": "",
               "valueUnit": null
             },
             {
-              "displayName": "Throttle count",
+              "displayName": "Max invocation latency",
               "label": "B",
               "valuePrefix": "",
               "valueSuffix": "",
               "valueUnit": null
             },
             {
-              "displayName": "Throttle retry failure count",
+              "displayName": "Min invocation latency",
               "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Exception count",
-              "label": "D",
               "valuePrefix": "",
               "valueSuffix": "",
               "valueUnit": null
@@ -1645,7 +1645,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('sf.org.num.awsServiceAuthErrorCount', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='A')\nB = data('sf.org.num.awsServiceCallThrottles', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='B')\nC = data('sf.org.num.awsServiceCallThrottledRetryFailures', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='C')\nD = data('sf.org.num.awsServiceCallCountExceptions', filter=filter('namespace', 'AWS/Bedrock'), rollup='sum', extrapolation='zero').dimensions(renames={\"Model id\": \"ModelId\"}).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['Model id']).top(10).publish(label='D')",
+        "programText": "A = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'mean'), rollup='average', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['Account id']).top(10).publish(label='A')\nB = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'upper'), rollup='max', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).max(over=Args.get('ui.dashboard_window', '15m')).max(by=['Account id']).top(10).publish(label='B')\nC = data('InvocationLatency', filter=filter('namespace', 'AWS/Bedrock') and filter('stat', 'lower'), rollup='min', extrapolation='zero').dimensions(renames={\"Account id\": \"aws_account_id\"}).min(over=Args.get('ui.dashboard_window', '15m')).min(by=['Account id']).top(10).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1659,98 +1659,178 @@
         "chartDensity": "DEFAULT",
         "charts": [
           {
-            "chartId": "GsdtclrAAAo",
+            "chartId": "Gsm1tuvAgA0",
             "column": 0,
-            "height": 1,
-            "row": 0,
-            "width": 2
-          },
-          {
-            "chartId": "GsdtclrAAAg",
-            "column": 8,
             "height": 1,
             "row": 0,
             "width": 4
           },
           {
-            "chartId": "GsdtclrAAAM",
-            "column": 5,
+            "chartId": "Gsm1tuvAgAU",
+            "column": 7,
+            "height": 1,
+            "row": 0,
+            "width": 5
+          },
+          {
+            "chartId": "Gsm1tuvAgBE",
+            "column": 4,
             "height": 1,
             "row": 0,
             "width": 3
           },
           {
-            "chartId": "GsdtclrAAAs",
-            "column": 2,
-            "height": 1,
-            "row": 0,
-            "width": 3
-          },
-          {
-            "chartId": "GsdtclrAAAU",
+            "chartId": "Gsm1tuvAgA4",
             "column": 0,
             "height": 1,
             "row": 1,
             "width": 12
           },
           {
-            "chartId": "GsdtclrAABU",
+            "chartId": "Gsm1tuvAgBU",
+            "column": 4,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "Gsm1tuvAgAg",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "Gsm1tuvAgBA",
+            "column": 8,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": []
+        },
+        "groupId": "GsdtMvmAAAA",
+        "groupName": "AWS Bedrock",
+        "id": "Gsm1tuvAgBk",
+        "importOf": "GsdtclrAACg",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "AWS Bedrock Instance",
+        "permissions": null,
+        "selectedEventOverlays": [],
+        "tags": null
+      }
+    },
+    {
+      "dashboard": {
+        "authorizedWriters": null,
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "Gsm1tuvAgBY",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "Gsm1tuvAgAs",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "Gsm1tuvAgAQ",
+            "column": 5,
+            "height": 1,
+            "row": 0,
+            "width": 3
+          },
+          {
+            "chartId": "Gsm1tuvAgBQ",
+            "column": 2,
+            "height": 1,
+            "row": 0,
+            "width": 3
+          },
+          {
+            "chartId": "Gsm1tuvAgAo",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 12
+          },
+          {
+            "chartId": "Gsm1tuvAgAk",
             "column": 0,
             "height": 1,
             "row": 2,
             "width": 3
           },
           {
-            "chartId": "GsdtclrAAAQ",
+            "chartId": "Gsm1tuvAgAc",
             "column": 3,
             "height": 1,
             "row": 2,
             "width": 3
           },
           {
-            "chartId": "GsdtclrAAAI",
+            "chartId": "Gsm1tuvAgAM",
             "column": 6,
             "height": 1,
             "row": 2,
             "width": 3
           },
           {
-            "chartId": "GsdtclrAAA0",
+            "chartId": "Gsm1tuvAgBc",
             "column": 9,
             "height": 1,
             "row": 2,
             "width": 3
           },
           {
-            "chartId": "GsdtclrAABQ",
+            "chartId": "Gsm1tuvAgAY",
             "column": 0,
             "height": 1,
             "row": 3,
             "width": 12
           },
           {
-            "chartId": "GsdtclrAAAk",
+            "chartId": "Gsm1tuvAgAw",
             "column": 0,
             "height": 1,
             "row": 4,
             "width": 3
           },
           {
-            "chartId": "GsdtclrAAAA",
+            "chartId": "Gsm1tuvAgBM",
             "column": 3,
             "height": 1,
             "row": 4,
             "width": 3
           },
           {
-            "chartId": "GsdtclrAAAc",
+            "chartId": "Gsm1tuvAgA8",
             "column": 9,
             "height": 1,
             "row": 4,
             "width": 3
           },
           {
-            "chartId": "Gsi5-k0AIAA",
+            "chartId": "Gsm1tuvAgBI",
             "column": 6,
             "height": 1,
             "row": 4,
@@ -1773,91 +1853,13 @@
         },
         "groupId": "GsdtMvmAAAA",
         "groupName": "AWS Bedrock",
-        "id": "GsdtclrAABc",
-        "importOf": "GrlB_C3A4AI",
+        "id": "Gsm1tuvAgBg",
+        "importOf": "GsdtclrAABc",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
+        "locked": false,
         "maxDelayOverride": null,
         "name": "AWS Bedrock Aggregate",
-        "permissions": null,
-        "selectedEventOverlays": [],
-        "tags": null
-      }
-    },
-    {
-      "dashboard": {
-        "authorizedWriters": null,
-        "chartDensity": "DEFAULT",
-        "charts": [
-          {
-            "chartId": "GsdtclrAABE",
-            "column": 0,
-            "height": 1,
-            "row": 0,
-            "width": 4
-          },
-          {
-            "chartId": "GsdtclrAAAE",
-            "column": 7,
-            "height": 1,
-            "row": 0,
-            "width": 5
-          },
-          {
-            "chartId": "GsdtclrAAAw",
-            "column": 4,
-            "height": 1,
-            "row": 0,
-            "width": 3
-          },
-          {
-            "chartId": "GsdtQxdAIAA",
-            "column": 0,
-            "height": 1,
-            "row": 1,
-            "width": 12
-          },
-          {
-            "chartId": "GsdtclrAABY",
-            "column": 4,
-            "height": 1,
-            "row": 2,
-            "width": 4
-          },
-          {
-            "chartId": "GsdtclrAAA4",
-            "column": 0,
-            "height": 1,
-            "row": 2,
-            "width": 4
-          },
-          {
-            "chartId": "GsdtclrAABA",
-            "column": 8,
-            "height": 1,
-            "row": 2,
-            "width": 4
-          }
-        ],
-        "created": 0,
-        "creator": null,
-        "customProperties": null,
-        "description": "",
-        "discoveryOptions": null,
-        "eventOverlays": null,
-        "filters": {
-          "sources": [],
-          "time": null,
-          "variables": []
-        },
-        "groupId": "GsdtMvmAAAA",
-        "groupName": "AWS Bedrock",
-        "id": "GsdtclrAACg",
-        "importOf": "GrlmyqTA0Ac",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "maxDelayOverride": null,
-        "name": "AWS Bedrock Instance",
         "permissions": null,
         "selectedEventOverlays": [],
         "tags": null
@@ -1871,33 +1873,27 @@
       "creator": null,
       "dashboardConfigs": [
         {
-          "configId": "GrlB_C3A4AM",
-          "dashboardId": "GsdtclrAABc",
+          "configId": "GtMYc4zAcAE",
+          "dashboardId": "Gsm1tuvAgBk",
           "descriptionOverride": null,
           "filtersOverride": null,
           "nameOverride": null
         },
         {
-          "configId": "Grlmyq2AwAA",
-          "dashboardId": "GsdtclrAACg",
+          "configId": "GtMZHWuAgAA",
+          "dashboardId": "Gsm1tuvAgBg",
           "descriptionOverride": null,
           "filtersOverride": null,
           "nameOverride": null
         }
       ],
       "dashboards": [
-        "GsdtclrAABc",
-        "GsdtclrAACg"
+        "Gsm1tuvAgBk",
+        "Gsm1tuvAgBg"
       ],
       "description": "AWS Bedrock dashboard group",
       "email": null,
       "id": "GsdtMvmAAAA",
-      "importDetails": {
-        "hashCode": 682401644,
-        "importOf": "GrlB_C3A4AE",
-        "importTime": 1748895035878
-      },
-      "importOf": "GrlB_C3A4AE",
       "importQualifiers": [
         {
           "filters": [
@@ -1926,7 +1922,7 @@
       "teams": null
     }
   },
-  "hashCode": -1161911738,
+  "hashCode": -552675260,
   "id": "GsdtMvmAAAA",
   "modelVersion": 1,
   "packageType": "GROUP"
