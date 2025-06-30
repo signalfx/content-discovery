@@ -1,6 +1,6 @@
 {
   "crossLinkExports": null,
-  "hashCode": -1508635029,
+  "hashCode": -254287359,
   "id": "GuPyyUnAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -28,7 +28,8 @@
                 "SessionName"
               ]
             }
-          ]
+          ],
+          "metric": "ray_cluster_active_nodes"
         }
       ],
       "instanceDashboards": [
@@ -44,8 +45,7 @@
           "metricClassCode": "default",
           "metricClassColumns": [
             "id",
-            "component",
-            "name",
+            "service.name",
             "ray_cluster_active_nodes",
             "ray_cluster_pending_nodes",
             "ray_tasks"
@@ -57,8 +57,7 @@
           "metricClassCode": "memory_usage",
           "metricClassColumns": [
             "id",
-            "component",
-            "name",
+            "service.name",
             "ray_node_cpu_utilization",
             "ray_node_cpu_count",
             "ray_node_mem_total",
@@ -73,8 +72,7 @@
           "metricClassCode": "data_analytics",
           "metricClassColumns": [
             "id",
-            "component",
-            "name",
+            "service.name",
             "ray_node_disk_write_iops",
             "ray_node_disk_read_iops",
             "ray_node_network_received",
@@ -94,17 +92,9 @@
         {
           "aggregate": null,
           "displayFormatterCode": null,
-          "displayName": "Component",
-          "displayTemplate": "{{Component}}",
-          "metricColumnCode": "component",
-          "propertyFormat": null
-        },
-        {
-          "aggregate": null,
-          "displayFormatterCode": null,
-          "displayName": "Name",
-          "displayTemplate": "{{Name}}",
-          "metricColumnCode": "name",
+          "displayName": "Service Name",
+          "displayTemplate": "{{service.name}}",
+          "metricColumnCode": "service.name",
           "propertyFormat": null
         },
         {
@@ -182,7 +172,7 @@
         {
           "aggregate": null,
           "displayFormatterCode": null,
-          "displayName": "Disk Write Iops (Bytes/sec)",
+          "displayName": "Disk Write Iops",
           "displayTemplate": "{{ray_node_disk_write_iops}}",
           "metricColumnCode": "ray_node_disk_write_iops",
           "propertyFormat": null
@@ -190,7 +180,7 @@
         {
           "aggregate": null,
           "displayFormatterCode": null,
-          "displayName": "Disk read Iops (Bytes/sec)",
+          "displayName": "Disk Read Iops",
           "displayTemplate": "{{ray_node_disk_read_iops}}",
           "metricColumnCode": "ray_node_disk_read_iops",
           "propertyFormat": null
@@ -198,7 +188,7 @@
         {
           "aggregate": null,
           "displayFormatterCode": null,
-          "displayName": "Network Received (Bytes)",
+          "displayName": "Network Received",
           "displayTemplate": "{{ray_node_network_received}}",
           "metricColumnCode": "ray_node_network_received",
           "propertyFormat": null
@@ -206,7 +196,7 @@
         {
           "aggregate": null,
           "displayFormatterCode": null,
-          "displayName": "Network Sent (Bytes)",
+          "displayName": "Network Sent",
           "displayTemplate": "{{ray_node_network_sent}}",
           "metricColumnCode": "ray_node_network_sent",
           "propertyFormat": null
@@ -226,7 +216,7 @@
       "sites": "o11y",
       "systemTypes": [],
       "uiModel": {
-        "alertQuery": "_exists_:gen_ai.system AND gen_ai.system:openai",
+        "alertQuery": "_exists_:SessionName",
         "category": "AI Frameworks",
         "categoryPriority": 0,
         "discoveryQuery": [],
@@ -257,7 +247,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "ACTIVE_NODES = data('ray_cluster_active_nodes')",
+              "template": "ACTIVE_NODES = data('ray_cluster_active_nodes', rollup='latest').sum(by=['SessionName','Version','service.name']).above(1, inclusive=True)",
               "varName": "ACTIVE_NODES"
             },
             "metricSelectors": [
@@ -288,7 +278,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "PENDING_NODES = data('ray_cluster_pending_nodes')",
+              "template": "PENDING_NODES = data('ray_cluster_pending_nodes', rollup='latest').sum(by=['SessionName','Version','service.name']).above(1, inclusive=True)",
               "varName": "PENDING_NODES"
             },
             "metricSelectors": [
@@ -319,7 +309,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "CPU_UTILIZATION = data('ray_node_cpu_utilization')",
+              "template": "CPU_UTILIZATION = data('ray_node_cpu_utilization',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
@@ -350,7 +340,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "CPU_COUNT = data('ray_node_cpu_count')",
+              "template": "CPU_COUNT = data('ray_node_cpu_count',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "CPU_COUNT"
             },
             "metricSelectors": [
@@ -377,11 +367,11 @@
             },
             "description": "Total memory on a ray node in bytes",
             "displayName": "Total memory",
-            "id": "ray_node_cpu_count",
+            "id": "ray_node_mem_total",
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "TOTAL_MEM = data('ray_node_mem_total')",
+              "template": "TOTAL_MEM = data('ray_node_mem_total',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "TOTAL_MEM"
             },
             "metricSelectors": [
@@ -412,7 +402,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "USED_MEM = data('ray_node_mem_used')",
+              "template": "USED_MEM = data('ray_node_mem_used',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "USED_MEM"
             },
             "metricSelectors": [
@@ -438,13 +428,13 @@
               ]
             },
             "description": "Available GPUs on a ray node",
-            "displayName": "Available GPU",
-            "id": "ray_node_network_sent",
+            "displayName": "Available GPUs",
+            "id": "ray_node_gpus_available",
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "AVAILABLE_GPU = data('ray_node_gpus_available')",
-              "varName": "AVAILABLE_GPU"
+              "template": "AVAILABLE_GPUs = data('ray_node_gpus_available',rollup='latest').sum(by=['SessionName','Version','service.name'])",
+              "varName": "AVAILABLE_GPUs"
             },
             "metricSelectors": [
               "ray_node_gpus_available"
@@ -474,7 +464,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "GPU_UTILIZATION = data('ray_node_gpus_utilization')",
+              "template": "GPU_UTILIZATION = data('ray_node_gpus_utilization',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "GPU_UTILIZATION"
             },
             "metricSelectors": [
@@ -505,7 +495,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "RAY_TASKS = data('ray_tasks')",
+              "template": "RAY_TASKS = data('ray_tasks',rollup='latest').sum(by=['SessionName','Component','Name'])",
               "varName": "RAY_TASKS"
             },
             "metricSelectors": [
@@ -536,7 +526,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "DISK_WRITE_IOPS = data('ray_node_disk_write_iops')",
+              "template": "DISK_WRITE_IOPS = data('ray_node_disk_write_iops',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "DISK_WRITE_IOPS"
             },
             "metricSelectors": [
@@ -567,7 +557,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "DISK_READ_IOPS = data('ray_node_disk_read_iops')",
+              "template": "DISK_READ_IOPS = data('ray_node_disk_read_iops',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "DISK_READ_IOPS"
             },
             "metricSelectors": [
@@ -598,7 +588,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "NETWORK_RECEIVED = data('ray_node_network_received')",
+              "template": "NETWORK_RECEIVED = data('ray_node_network_received',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "NETWORK_RECEIVED"
             },
             "metricSelectors": [
@@ -629,7 +619,7 @@
             "job": {
               "filters": [],
               "resolution": 0,
-              "template": "NETWORK_SENT = data('ray_node_network_sent')",
+              "template": "NETWORK_SENT = data('ray_node_network_sent',rollup='latest').sum(by=['SessionName','Version','service.name'])",
               "varName": "NETWORK_SENT"
             },
             "metricSelectors": [
