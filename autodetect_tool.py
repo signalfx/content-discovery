@@ -201,10 +201,8 @@ def make_request(endpoint, realm, token, method="GET", headers={}, data=None, rs
 
 def fetch_plots_info(program_text, realm, token):
     endpoint = "v2/signalflow/_/getPlotsInfo"
-    headers = {'Content-Type': 'text/plain'}
     response = make_request(endpoint,
-                            method='POST',
-                            headers=headers,
+                            method='POST',                  
                             data=program_text,
                             token=token,
                             realm=realm)
