@@ -1,0 +1,612 @@
+{
+  "crossLinkExports": [
+    {
+      "crossLink": {
+        "aliases": {
+          "model_name": [
+            "model_name"
+          ]
+        },
+        "created": 0,
+        "creator": null,
+        "id": "GuZG5gSAcAI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "propertyName": "model_name",
+        "targets": [
+          {
+            "navigatorId": "GuZfXNQAcAQ",
+            "navigatorView": "AGGREGATE",
+            "isDefault": true,
+            "name": "Nvidia NIM service",
+            "type": "INTERNAL_NAVIGATOR_LINK"
+          }
+        ]
+      }
+    }
+  ],
+  "hashCode": -193682479,
+  "id": "GuZfXNQAcAQ",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "GuYHllRAgFw"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "entityHighlightedAttributes": [],
+      "id": "GuZfXNQAcAQ",
+      "idDisplayName": null,
+      "importQualifiers": [
+        {
+          "filters": [],
+          "metric": "num_requests_waiting"
+        }
+      ],
+      "instanceDashboards": [
+        "GuYHllRAgF0"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "metricClasses": [],
+      "metricColumns": [],
+      "name": "Nvidia NIM",
+      "navigatorCategory": "AI Frameworks",
+      "navigatorCategoryDisplayName": "AI Frameworks",
+      "navigatorCategoryGroupDisplayName": "AI/ML",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "organization",
+      "pinnedFilters": [],
+      "propertyDisplayFormatters": [],
+      "relationships": [],
+      "requiresFilter": false,
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": null,
+        "category": "AI Frameworks",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "Nvidia NIM",
+        "filterProperties": null,
+        "id": "nvidianim",
+        "idName": "NIM Instance",
+        "idTemplate": "{{model_name}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Model",
+            "format": null,
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Deployment",
+            "format": null,
+            "metric": null,
+            "property": "k8s.deployment.name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Cluster",
+            "format": null,
+            "metric": null,
+            "property": "k8s.cluster.name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Pod",
+            "format": null,
+            "metric": null,
+            "property": "k8s.pod.name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on number of running requests",
+            "displayName": "Running requests",
+            "id": "nim_running_requests",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "RUNNING_REQUESTS = data('num_requests_running', extrapolation='last_value', maxExtrapolations=2).sum(by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "RUNNING_REQUESTS"
+            },
+            "metricSelectors": [
+              "num_requests_running"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Running requests",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on number of waiting requests",
+            "displayName": "Waiting requests",
+            "id": "nim_waiting_requests",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "WAITING_REQUESTS = data('num_requests_waiting', extrapolation='last_value', maxExtrapolations=2).sum(by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "WAITING_REQUESTS"
+            },
+            "metricSelectors": [
+              "num_requests_waiting"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Waiting requests",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on request success rate",
+            "displayName": "Success rate",
+            "id": "nim_success_rate",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "SUCCESS = data('request_success_total', rollup='delta').sum(by=['model_name', 'k8s.cluster.name', 'server.address'])\nFAILURE = data('request_failure_total', rollup='delta').sum(by=['model_name', 'k8s.cluster.name', 'server.address'])\nSUCCESS_RATE = (SUCCESS / (SUCCESS + FAILURE) * 100).publish(label='A')",
+              "varName": "SUCCESS_RATE"
+            },
+            "metricSelectors": [
+              "request_success_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Success Rate",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on time to first token (P90)",
+            "displayName": "Time to first token (P90)",
+            "id": "nim_ttft_p90",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TTFT = histogram('time_to_first_token_seconds').percentile(pct=90, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "TTFT"
+            },
+            "metricSelectors": [
+              "time_to_first_token_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "TTFT P90",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on time to first token (P95)",
+            "displayName": "Time to first token (P95)",
+            "id": "nim_ttft_p95",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TTFT = histogram('time_to_first_token_seconds').percentile(pct=95, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "TTFT"
+            },
+            "metricSelectors": [
+              "time_to_first_token_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "TTFT P95",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on time to first token (P99)",
+            "displayName": "Time to first token (P99)",
+            "id": "nim_ttft_p99",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TTFT = histogram('time_to_first_token_seconds').percentile(pct=99, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "TTFT"
+            },
+            "metricSelectors": [
+              "time_to_first_token_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "TTFT P99",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on time per output token (P90)",
+            "displayName": "Time per token (P90)",
+            "id": "nim_time_per_token_p90",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TIME_PER_TOKEN = histogram('time_per_output_token_seconds').percentile(pct=90, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "TIME_PER_TOKEN"
+            },
+            "metricSelectors": [
+              "time_per_output_token_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Time Per Token P90",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on time per output token (P95)",
+            "displayName": "Time per token (P95)",
+            "id": "nim_time_per_token_p95",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TIME_PER_TOKEN = histogram('time_per_output_token_seconds').percentile(pct=95, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "TIME_PER_TOKEN"
+            },
+            "metricSelectors": [
+              "time_per_output_token_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Time Per Token P95",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on time per output token (P99)",
+            "displayName": "Time per token (P99)",
+            "id": "nim_time_per_token_p99",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TIME_PER_TOKEN = histogram('time_per_output_token_seconds').percentile(pct=99, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "TIME_PER_TOKEN"
+            },
+            "metricSelectors": [
+              "time_per_output_token_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Time Per Token P99",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on end-to-end request latency (P90)",
+            "displayName": "E2E latency (P90)",
+            "id": "nim_e2e_latency_p90",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "E2E_LATENCY = histogram('e2e_request_latency_seconds').percentile(pct=90, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "E2E_LATENCY"
+            },
+            "metricSelectors": [
+              "e2e_request_latency_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "E2E Latency P90",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on end-to-end request latency (P95)",
+            "displayName": "E2E latency (P95)",
+            "id": "nim_e2e_latency_p95",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "E2E_LATENCY = histogram('e2e_request_latency_seconds').percentile(pct=95, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "E2E_LATENCY"
+            },
+            "metricSelectors": [
+              "e2e_request_latency_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "E2E Latency P95",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on end-to-end request latency (P99)",
+            "displayName": "E2E latency (P99)",
+            "id": "nim_e2e_latency_p99",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "E2E_LATENCY = histogram('e2e_request_latency_seconds').percentile(pct=99, by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "E2E_LATENCY"
+            },
+            "metricSelectors": [
+              "e2e_request_latency_seconds"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "E2E Latency P99",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on token throughput",
+            "displayName": "Token throughput",
+            "id": "nim_token_throughput",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "TOKEN_THROUGHPUT = data('generation_tokens_total', rollup='delta').sum(by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "TOKEN_THROUGHPUT"
+            },
+            "metricSelectors": [
+              "generation_tokens_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Tokens/interval",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on prompt tokens processed",
+            "displayName": "Prompt tokens",
+            "id": "nim_prompt_tokens",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "PROMPT_TOKENS = data('prompt_tokens_total', rollup='delta').sum(by=['model_name', 'k8s.cluster.name', 'server.address']).publish(label='A')",
+              "varName": "PROMPT_TOKENS"
+            },
+            "metricSelectors": [
+              "prompt_tokens_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Prompt tokens",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color NIM instances based on KV cache utilization",
+            "displayName": "KV cache utilization",
+            "id": "nim_kv_cache",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "KV_CACHE = data('gpu_cache_usage_perc').mean(by=['model_name', 'k8s.cluster.name', 'server.address']).scale(100).publish(label='A')",
+              "varName": "KV_CACHE"
+            },
+            "metricSelectors": [
+              "gpu_cache_usage_perc"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "KV Cache %",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Active models",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Nvidia NIM",
+        "o11ySignalflowTemplate": "A = data('num_requests_running').sum(by=['model_name']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "model_name"
+        ],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": []
+    }
+  },
+  "packageType": "NAVIGATOR"
+}

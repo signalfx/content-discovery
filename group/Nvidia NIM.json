@@ -1,0 +1,4063 @@
+{
+  "chartExports": [
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "P90 Performance over dashboard time window",
+        "id": "GuYHllRAgDw",
+        "importOf": "GtQtlFPA4B0",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Token overview",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "model_name"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "net.host.name"
+              },
+              {
+                "enabled": true,
+                "property": "os.type"
+              },
+              {
+                "enabled": true,
+                "property": "url.scheme"
+              },
+              {
+                "enabled": true,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": true,
+                "property": "server.port"
+              },
+              {
+                "enabled": true,
+                "property": "host.name"
+              },
+              {
+                "enabled": true,
+                "property": "deployment.environment"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": true,
+                "property": "net.host.port"
+              },
+              {
+                "enabled": true,
+                "property": "http.scheme"
+              },
+              {
+                "enabled": true,
+                "property": "finished_reason"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# Requests",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Request rate",
+              "label": "E",
+              "valuePrefix": "",
+              "valueSuffix": " req/s",
+              "valueUnit": null
+            },
+            {
+              "displayName": "First token (TTFT P95)",
+              "label": "A",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second"
+            },
+            {
+              "displayName": "Per output (TPOT P95)",
+              "label": "B",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second"
+            },
+            {
+              "displayName": "Request latency",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Errors",
+              "label": "F",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Complete (stop)",
+              "label": "G",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Complete (length)",
+              "label": "H",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Peak requests waiting",
+              "label": "I",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Total waited requests",
+              "label": "J",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Peak prompt tokens/s",
+              "label": "K",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Total prompt tokens",
+              "label": "L",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Peak generation tokens/s",
+              "label": "M",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Total generation tokens",
+              "label": "N",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortBy": "-# Requests",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "D = histogram('e2e_request_latency_seconds').count(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='D')\nE = histogram('e2e_request_latency_seconds').rate(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='E', enable=False)\nA = histogram('time_to_first_token_seconds').percentile(pct=95, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='A')\nB = histogram('time_per_output_token_seconds').percentile(pct=95, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='B')\nC = histogram('e2e_request_latency_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='C', enable=False)\nF = data('request_failure_total').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='F', enable=False)\nG = data('request_success_total', filter=filter('finished_reason', 'stop')).sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='G', enable=False)\nH = data('request_success_total', filter=filter('finished_reason', 'length')).sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='H', enable=False)\nI = data('num_requests_waiting', rollup='max').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='I', enable=False)\nJ = data('num_requests_waiting', rollup='sum').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='J', enable=False)\nK = data('prompt_tokens_total', rollup='rate').max(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).max(over=Args.get('ui.dashboard_window', '15m')).publish(label='K')\nL = data('prompt_tokens_total').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='L')\nM = data('generation_tokens_total', rollup='rate').max(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).max(over=Args.get('ui.dashboard_window', '15m')).publish(label='M')\nN = data('generation_tokens_total').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='N')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgD0",
+        "importOf": "GtQ7lihA4AU",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Success rate",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale": null,
+          "colorScale2": [
+            {
+              "gt": 95,
+              "gte": null,
+              "lt": null,
+              "lte": 100,
+              "paletteIndex": 20
+            },
+            {
+              "gt": 90,
+              "gte": null,
+              "lt": null,
+              "lte": 95,
+              "paletteIndex": 19
+            },
+            {
+              "gt": 85,
+              "gte": null,
+              "lt": null,
+              "lte": 90,
+              "paletteIndex": 18
+            },
+            {
+              "gt": null,
+              "gte": 0,
+              "lt": null,
+              "lte": 85,
+              "paletteIndex": 17
+            }
+          ],
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Finish total",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Success total",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Success",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Radial",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('request_finish_total', filter=filter('finished_reason', 'stop')).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='A', enable=False)\nB = data('request_success_total').mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='B', enable=False)\nC = (B/A*100).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Finished requests across dashboard time window\n",
+        "id": "GuYHllRAgD4",
+        "importOf": "GtQtlFPA4CU",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Finished requests",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Metric",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Stop",
+              "label": "A",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Length",
+              "label": "B",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('request_finish_total', filter=filter('k8s.cluster.name', '*') and filter('finished_reason', 'stop'), rollup='rate').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')\nB = data('request_finish_total', filter=filter('k8s.cluster.name', '*') and filter('finished_reason', 'length'), rollup='rate').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total token count across dashboard time window\n",
+        "id": "GuYHllRAgD8",
+        "importOf": "GtQtlFPA4A0",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total token ",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Prompt tokens",
+              "label": "A",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Generation tokens",
+              "label": "B",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('prompt_tokens_total', filter=filter('k8s.cluster.name', '*'), rollup='delta').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')\nB = data('generation_tokens_total', filter=filter('k8s.cluster.name', '*'), rollup='delta').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average utilization across dashboard time window\n",
+        "id": "GuYHllRAgEA",
+        "importOf": "GtViTI5AwAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "K/V cache utilization",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale": null,
+          "colorScale2": [
+            {
+              "gt": 75,
+              "gte": null,
+              "lt": null,
+              "lte": 100,
+              "paletteIndex": 16
+            },
+            {
+              "gt": 50,
+              "gte": null,
+              "lt": null,
+              "lte": 75,
+              "paletteIndex": 17
+            },
+            {
+              "gt": 30,
+              "gte": null,
+              "lt": null,
+              "lte": 50,
+              "paletteIndex": 18
+            },
+            {
+              "gt": 10,
+              "gte": null,
+              "lt": null,
+              "lte": 30,
+              "paletteIndex": 19
+            },
+            {
+              "gt": null,
+              "gte": 0,
+              "lt": null,
+              "lte": 10,
+              "paletteIndex": 20
+            }
+          ],
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Cache utilization",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Radial",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "D = data('gpu_cache_usage_perc').mean(over=Args.get('ui.dashboard_window', '15m')).scale(100).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Percentile for all requests in dashboard window",
+        "id": "GuYHllRAgEE",
+        "importOf": "GtQtlFPA4CY",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "End to end P90 request latency (sec)",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Requests/s",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('e2e_request_latency_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgEI",
+        "importOf": "GtQtlFPA4Aw",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Model requests",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Requests",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('e2e_request_latency_seconds').count(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgEM",
+        "importOf": "GtRLWgFA4AA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total requests",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "num_requests_running - Sum(Dashboard window)",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('num_requests_running').sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average cache utilization by model\n",
+        "id": "GuYHllRAgEQ",
+        "importOf": "GtQtlFPA4Bk",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "K/V cache utilization",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Cache utilization",
+              "label": "A",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gpu_cache_usage_perc', filter=filter('k8s.cluster.name', '*')).mean(by=['model_name']).scale(100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Time per output token across dashboard time window\n",
+        "id": "GuYHllRAgEU",
+        "importOf": "GtQtlFPA4Bo",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Time per output token (P95) by model",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "TPOT P95",
+              "label": "A",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('time_per_output_token_seconds').percentile(pct=95, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average request latency across dashboard time window",
+        "id": "GuYHllRAgEY",
+        "importOf": "GtRSm6ZA0AI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "End to end request latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Request latency",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('e2e_request_latency_seconds').rate().mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total requests across dashboard time window\n",
+        "id": "GuYHllRAgEc",
+        "importOf": "GtQtlFPA4CM",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total requests",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Requests/s",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('num_requests_running').sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total active requests across dashboard time window\n",
+        "id": "GuYHllRAgEg",
+        "importOf": "GtQtlFPA4Bw",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Active requests",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Waiting",
+              "label": "A",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Running",
+              "label": "B",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('num_requests_waiting').mean(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')\nB = data('num_requests_running').mean(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total finished requests across dashboard time window\n",
+        "id": "GuYHllRAgEk",
+        "importOf": "GtQtlFPA4B8",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Finished requests",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "finished_reason"
+              },
+              {
+                "enabled": false,
+                "property": "host.name"
+              },
+              {
+                "enabled": false,
+                "property": "http.scheme"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.namespace.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.uid"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.port"
+              },
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              },
+              {
+                "enabled": false,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "url.scheme"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Stopped",
+              "label": "A",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Length",
+              "label": "D",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('request_finish_total', filter=filter('k8s.cluster.name', '*') and filter('finished_reason', 'stop'), rollup='rate').sum().publish(label='A')\nD = data('request_finish_total', filter=filter('k8s.cluster.name', '*') and filter('finished_reason', 'length'), rollup='rate').sum().publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average request latency and P95 across dashboard time window\n",
+        "id": "GuYHllRAgEo",
+        "importOf": "GtQtlFPA4Bs",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "End to end request latency",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average",
+              "label": "A",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P95",
+              "label": "B",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('e2e_request_latency_seconds').mean().publish(label='A')\nB = histogram('e2e_request_latency_seconds').percentile(pct=95).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Top running requests across dashboard time window\n",
+        "id": "GuYHllRAgEs",
+        "importOf": "GtQtlFPA4BQ",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top running requests by model",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "host.name"
+              },
+              {
+                "enabled": false,
+                "property": "http.scheme"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.namespace.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.uid"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.port"
+              },
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              },
+              {
+                "enabled": false,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "url.scheme"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Running requests",
+              "label": "B",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('num_requests_running').mean(by=['model_name']).top(count=100).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgEw",
+        "importOf": "GtWLn37AwBE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request overview",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "model_name"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": false,
+                "property": "url.scheme"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.name"
+              },
+              {
+                "enabled": false,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.port"
+              },
+              {
+                "enabled": false,
+                "property": "http.scheme"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.uid"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.pod.name"
+              },
+              {
+                "enabled": true,
+                "property": "server.address"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.namespace.name"
+              },
+              {
+                "enabled": true,
+                "property": "host.name"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": true,
+                "property": "computationId"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": true,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Running",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Max",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Waiting",
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortBy": "",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = data('num_requests_running').publish(label='B')\nC = data('num_request_max').publish(label='C')\nA = data('num_requests_waiting').publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total active requests across dashboard time window\n",
+        "id": "GuYHllRAgE0",
+        "importOf": "GtRS29fA0AQ",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Active requests",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "host.name"
+              },
+              {
+                "enabled": false,
+                "property": "http.scheme"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.namespace.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.uid"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.port"
+              },
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              },
+              {
+                "enabled": false,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "url.scheme"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Waiting",
+              "label": "A",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Running",
+              "label": "B",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('num_requests_waiting').publish(label='A')\nB = data('num_requests_running').publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total requests across dashboard time window\n",
+        "id": "GuYHllRAgE4",
+        "importOf": "GtQtlFPA4Ao",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total errors",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Errors",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('request_failure_total', rollup='delta').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Time to first token across dashboard time window\n",
+        "id": "GuYHllRAgE8",
+        "importOf": "GtQtlFPA4B4",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Time to first token percentiles",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Metric",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "P50",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P90",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P95",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P99",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "MAX",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "E = histogram('time_to_first_token_seconds').percentile(pct=50, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='E')\nD = histogram('time_to_first_token_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='D')\nC = histogram('time_to_first_token_seconds').percentile(pct=95, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='C')\nB = histogram('time_to_first_token_seconds').percentile(pct=99, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='B')\nA = histogram('time_to_first_token_seconds').max(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A', enable=False)",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgFA",
+        "importOf": "GtQtlFPA4CI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Errors / sec",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Errors",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('request_failure_total', rollup='rate').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Time per output token across dashboard time window\n",
+        "id": "GuYHllRAgFE",
+        "importOf": "GtQtlFPA4BM",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Time per output token percentiles",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Metric",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "P50",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P90",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P95",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P99",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = histogram('time_per_output_token_seconds').percentile(pct=50, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='B')\nC = histogram('time_per_output_token_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='C')\nD = histogram('time_per_output_token_seconds').percentile(pct=95, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='D')\nE = histogram('time_per_output_token_seconds').percentile(pct=99, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='E')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total token count across dashboard time window\n",
+        "id": "GuYHllRAgFM",
+        "importOf": "GtQtlFPA4BU",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total tokens",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "host.name"
+              },
+              {
+                "enabled": false,
+                "property": "http.scheme"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.namespace.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.pod.uid"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.name"
+              },
+              {
+                "enabled": false,
+                "property": "net.host.port"
+              },
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              },
+              {
+                "enabled": false,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "url.scheme"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Prompt tokens",
+              "label": "A",
+              "paletteIndex": 14,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Generation tokens",
+              "label": "B",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('prompt_tokens_total', rollup='delta').publish(label='A')\nB = data('generation_tokens_total', rollup='delta').publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average time to first token across dashboard time window",
+        "id": "GuYHllRAgFQ",
+        "importOf": "GtRNVzVA4AI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Time to first token (P90)",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Time to first token",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('time_to_first_token_seconds').percentile(pct=90).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average utilization across dashboard time window\n",
+        "id": "GuYHllRAgFU",
+        "importOf": "GtRLNLoAwAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "K/V cache utilization",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale": null,
+          "colorScale2": [
+            {
+              "gt": 75,
+              "gte": null,
+              "lt": null,
+              "lte": 100,
+              "paletteIndex": 16
+            },
+            {
+              "gt": 50,
+              "gte": null,
+              "lt": null,
+              "lte": 75,
+              "paletteIndex": 17
+            },
+            {
+              "gt": 30,
+              "gte": null,
+              "lt": null,
+              "lte": 50,
+              "paletteIndex": 18
+            },
+            {
+              "gt": 10,
+              "gte": null,
+              "lt": null,
+              "lte": 30,
+              "paletteIndex": 19
+            },
+            {
+              "gt": null,
+              "gte": 0,
+              "lt": null,
+              "lte": 10,
+              "paletteIndex": 20
+            }
+          ],
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Cache utilization",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Radial",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "D = data('gpu_cache_usage_perc').mean(over=Args.get('ui.dashboard_window', '15m')).scale(100).publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgFY",
+        "importOf": "GtQtlFPA4Bc",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "KV cache % utilization",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "gpu_cache_usage_perc - Mean by k8s.cluster.name,model_name,service.name,server.address - Scale:100",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('gpu_cache_usage_perc', filter=filter('k8s.cluster.name', '*')).mean(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).scale(100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average request latency percentiles across dashboard time window",
+        "id": "GuYHllRAgFc",
+        "importOf": "GtQtlFPA4CA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request latency percentiles",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Metric",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "P50",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P90",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P95",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P99",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "D = histogram('e2e_request_latency_seconds').percentile(pct=50, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='D')\nC = histogram('e2e_request_latency_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='C')\nB = histogram('e2e_request_latency_seconds').percentile(pct=95, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='B')\nA = histogram('e2e_request_latency_seconds').percentile(pct=99, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgFg",
+        "importOf": "GtQtlFPA4CQ",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total generation tokens",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total generation tokens",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('generation_tokens_total', filter=filter('k8s.cluster.name', '*'), rollup='delta').sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Time to first token across dashboard time window\n",
+        "id": "GuYHllRAgFk",
+        "importOf": "GtQtlFPA4As",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Time to first token (P95) by model",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "TTFT P90",
+              "label": "A",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('time_to_first_token_seconds').percentile(pct=95, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgFo",
+        "importOf": "GtQtlFPA4BI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Total prompt tokens",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "prompt_tokens_total - Sum(Dashboard window)",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('prompt_tokens_total', filter=filter('k8s.cluster.name', '*'), rollup='delta').sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "GuYHllRAgFs",
+        "importOf": "GtQtRyaA0AE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Active models",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "num_requests_waiting - Sum(Dashboard window) - Count by model_name",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('num_requests_waiting').sum(over=Args.get('ui.dashboard_window', '15m')).count(by=['model_name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "P90 Performance over dashboard time window",
+        "id": "Gu8T4QfAcBI",
+        "importOf": "GtQtlFPA4A4",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Model performance summary",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "model_name"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "net.host.name"
+              },
+              {
+                "enabled": true,
+                "property": "os.type"
+              },
+              {
+                "enabled": true,
+                "property": "url.scheme"
+              },
+              {
+                "enabled": true,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": true,
+                "property": "server.port"
+              },
+              {
+                "enabled": true,
+                "property": "host.name"
+              },
+              {
+                "enabled": true,
+                "property": "deployment.environment"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": true,
+                "property": "net.host.port"
+              },
+              {
+                "enabled": true,
+                "property": "http.scheme"
+              },
+              {
+                "enabled": true,
+                "property": "finished_reason"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# Requests",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Request rate",
+              "label": "E",
+              "valuePrefix": "",
+              "valueSuffix": " req/s",
+              "valueUnit": null
+            },
+            {
+              "displayName": "First token (TTFT)",
+              "label": "A",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second"
+            },
+            {
+              "displayName": "Per output (TPOT)",
+              "label": "B",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second"
+            },
+            {
+              "displayName": "Request latency",
+              "label": "C",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Second"
+            },
+            {
+              "displayName": "# Errors",
+              "label": "F",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Complete (stop)",
+              "label": "G",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Complete (length)",
+              "label": "H",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Peak requests waiting",
+              "label": "I",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Total waited requests",
+              "label": "J",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Peak prompt tokens/s",
+              "label": "K",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Total prompt tokens",
+              "label": "L",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Peak generation tokens/s",
+              "label": "M",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Total generation tokens",
+              "label": "N",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortBy": "-# Requests",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "D = histogram('e2e_request_latency_seconds').count(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='D')\nE = histogram('e2e_request_latency_seconds').rate(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='E')\nA = histogram('time_to_first_token_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='A')\nB = histogram('time_per_output_token_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='B')\nC = histogram('e2e_request_latency_seconds').percentile(pct=90, by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address'], over=Args.get('ui.dashboard_window', '15m')).publish(label='C')\nF = data('request_failure_total').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='F')\nG = data('request_success_total', filter=filter('finished_reason', 'stop')).sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='G')\nH = data('request_success_total', filter=filter('finished_reason', 'length')).sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='H')\nI = data('num_requests_waiting', rollup='max').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).publish(label='I')\nJ = data('num_requests_waiting', rollup='sum').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='J')\nK = data('prompt_tokens_total', rollup='rate').max(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).max(over=Args.get('ui.dashboard_window', '15m')).publish(label='K', enable=False)\nL = data('prompt_tokens_total').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='L', enable=False)\nM = data('generation_tokens_total', rollup='rate').max(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).max(over=Args.get('ui.dashboard_window', '15m')).publish(label='M', enable=False)\nN = data('generation_tokens_total').sum(by=['k8s.cluster.name', 'model_name', 'service.name', 'server.address']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='N', enable=False)",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    }
+  ],
+  "crossLinkExports": [
+    {
+      "crossLink": {
+        "aliases": null,
+        "contextId": "GuYHllRAgFw",
+        "created": 0,
+        "creator": null,
+        "id": "GuYHllRAgF4",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "propertyName": "model_name",
+        "targets": [
+          {
+            "dashboardGroupId": "GuYHllRAgDs",
+            "dashboardId": "GuYHllRAgF0",
+            "isDefault": true,
+            "name": "Model",
+            "type": "INTERNAL_LINK"
+          }
+        ]
+      }
+    }
+  ],
+  "dashboardExports": [
+    {
+      "dashboard": {
+        "authorizedWriters": null,
+        "chartDensity": "HIGHEST",
+        "charts": [
+          {
+            "chartId": "GuYHllRAgFs",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgEM",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgFU",
+            "column": 2,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgEk",
+            "column": 6,
+            "height": 1,
+            "row": 0,
+            "width": 3
+          },
+          {
+            "chartId": "GuYHllRAgE0",
+            "column": 9,
+            "height": 1,
+            "row": 0,
+            "width": 3
+          },
+          {
+            "chartId": "GuYHllRAgEY",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgD0",
+            "column": 2,
+            "height": 1,
+            "row": 1,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgFQ",
+            "column": 4,
+            "height": 1,
+            "row": 1,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgFM",
+            "column": 6,
+            "height": 1,
+            "row": 1,
+            "width": 3
+          },
+          {
+            "chartId": "GuYHllRAgEo",
+            "column": 9,
+            "height": 1,
+            "row": 1,
+            "width": 3
+          },
+          {
+            "chartId": "GuYHllRAgEQ",
+            "column": 9,
+            "height": 1,
+            "row": 2,
+            "width": 3
+          },
+          {
+            "chartId": "GuYHllRAgDw",
+            "column": 0,
+            "height": 2,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "GuYHllRAgEs",
+            "column": 6,
+            "height": 1,
+            "row": 2,
+            "width": 3
+          },
+          {
+            "chartId": "GuYHllRAgEU",
+            "column": 9,
+            "height": 1,
+            "row": 3,
+            "width": 3
+          },
+          {
+            "chartId": "GuYHllRAgFk",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 3
+          },
+          {
+            "chartId": "Gu8T4QfAcBI",
+            "column": 0,
+            "height": 1,
+            "row": 4,
+            "width": 12
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": [
+            {
+              "alias": "Cluster",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [],
+              "property": "k8s.cluster.name",
+              "propertyMappings": [
+                "k8s.cluster.name",
+                "kubernetes_cluster"
+              ],
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": [
+                "*"
+              ]
+            }
+          ]
+        },
+        "groupId": "GuYHllRAgDs",
+        "groupName": "NVIDIA NIM",
+        "id": "GuYHllRAgFw",
+        "importOf": "GtQtlFPA4Cc",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "NIM usage",
+        "permissions": null,
+        "selectedEventOverlays": [],
+        "tags": null
+      }
+    },
+    {
+      "dashboard": {
+        "authorizedWriters": null,
+        "chartDensity": "HIGHEST",
+        "charts": [
+          {
+            "chartId": "GuYHllRAgEc",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgEE",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgE4",
+            "column": 2,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgFA",
+            "column": 6,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgEA",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgE8",
+            "column": 8,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgFg",
+            "column": 2,
+            "height": 1,
+            "row": 1,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgD8",
+            "column": 4,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgFo",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 2
+          },
+          {
+            "chartId": "GuYHllRAgD4",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgFE",
+            "column": 8,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgEg",
+            "column": 4,
+            "height": 1,
+            "row": 2,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgEI",
+            "column": 4,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgFc",
+            "column": 8,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgFY",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "GuYHllRAgEw",
+            "column": 0,
+            "height": 1,
+            "row": 4,
+            "width": 12
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": [
+            {
+              "alias": "Cluster",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [],
+              "property": "k8s.cluster.name",
+              "propertyMappings": [
+                "k8s.cluster.name",
+                "kubernetes_cluster"
+              ],
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": [
+                "*"
+              ]
+            },
+            {
+              "alias": "Model",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [],
+              "property": "model_name",
+              "propertyMappings": [
+                "model_name"
+              ],
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": [
+                "*"
+              ]
+            }
+          ]
+        },
+        "groupId": "GuYHllRAgDs",
+        "groupName": "NVIDIA NIM",
+        "id": "GuYHllRAgF0",
+        "importOf": "GtQtlFPA4Cg",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "NIM usage",
+        "permissions": null,
+        "selectedEventOverlays": [],
+        "tags": null
+      }
+    }
+  ],
+  "groupExport": {
+    "group": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "dashboardConfigs": [
+        {
+          "configId": "GqWUCTYA4BM",
+          "dashboardId": "GuYHllRAgFw",
+          "descriptionOverride": null,
+          "filtersOverride": null,
+          "nameOverride": null
+        },
+        {
+          "configId": "GqWg5KHA0AA",
+          "dashboardId": "GuYHllRAgF0",
+          "descriptionOverride": null,
+          "filtersOverride": null,
+          "nameOverride": null
+        }
+      ],
+      "dashboards": [
+        "GuYHllRAgFw",
+        "GuYHllRAgF0"
+      ],
+      "description": "",
+      "email": null,
+      "id": "GuYHllRAgDs",
+      "importDetails": {
+        "hashCode": -1686452578,
+        "importOf": "GtQtlFPA4Ag",
+        "importTime": 1750958390676
+      },
+      "importOf": "GtQtlFPA4Ag",
+      "importQualifiers": [
+        {
+          "filters": [],
+          "metric": "num_requests_waiting"
+        }
+      ],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "NVIDIA NIM",
+      "permissions": null,
+      "teams": null
+    }
+  },
+  "hashCode": 291991576,
+  "id": "GuYHllRAgDs",
+  "modelVersion": 1,
+  "packageType": "GROUP"
+}
