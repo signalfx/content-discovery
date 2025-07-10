@@ -108,7 +108,7 @@
       }
     }
   ],
-  "hashCode": -2101080252,
+  "hashCode": 1994930693,
   "id": "FTBzcwtAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -260,8 +260,8 @@
         {
           "aggregate": "sum",
           "displayFormatterCode": null,
-          "displayName": "Available/ready",
-          "displayTemplate": "{{ready_pods}}/{{total_pods}}",
+          "displayName": "Available/ready containers",
+          "displayTemplate": "{{ready_containers}}/{{total_containers}}",
           "metricColumnCode": "available_ready",
           "propertyFormat": null
         },
@@ -1149,17 +1149,17 @@
                 "#ea1849"
               ]
             },
-            "description": "Ready pods",
-            "displayName": "Ready pods",
-            "id": "ready_pods",
+            "description": "Ready containers",
+            "displayName": "Ready containers",
+            "id": "ready_containers",
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "READY_PODS = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).equals(2).count(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name'])",
-              "varName": "READY_PODS"
+              "template": "READY_CONTAINERS = data('k8s.container.ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.namespace.name']).floor()",
+              "varName": "READY_CONTAINERS"
             },
             "metricSelectors": [
-              "k8s.pod.phase"
+              "k8s.container.ready"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -1233,17 +1233,17 @@
                 "#ea1849"
               ]
             },
-            "description": "Total pods",
-            "displayName": "Total pods",
-            "id": "total_pods",
+            "description": "Total containers",
+            "displayName": "Total containers",
+            "id": "total_containers",
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "TOTAL_PODS = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).count(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.node.name'])",
-              "varName": "TOTAL_PODS"
+              "template": "TOTAL_CONTAINERS = data('k8s.container.ready'{{#filter}}, filter={{{filter}}}{{/filter}},extrapolation='last_value', maxExtrapolations=-1).count(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.namespace.name'])",
+              "varName": "TOTAL_CONTAINERS"
             },
             "metricSelectors": [
-              "k8s.pod.phase"
+              "k8s.container.ready"
             ],
             "type": "metric",
             "valueFormat": "Number",
