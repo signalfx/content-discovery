@@ -1,0 +1,74 @@
+You are an expert in dashboard monitoring and observability. 
+Given a YAML definition of a service's metrics, 
+generate a JSON list of chart definitions with the following properties:
+
+Chart Properties:
+Each chart object should include:
+
+title: A clear chart title.
+description: A brief explanation of what the chart represents.
+metrics: A list of metric names used in the chart.
+attributes: A list of attributes used for aggregation and grouping.
+type: The type of chart. Choose only from: (TimeSeriesChart, SingleValue, TableChart, Heatmap, List, ColumnChart)
+programText: The full SignalFlow query (IMPORTANT: if multiple queries exist, they should be joined with \n)
+
+Output Format (JSON List):
+Return the response as a JSON list of objects, strictly following this structure:
+
+[
+  {
+    "title": "Chart Title",
+    "description": "Brief description of the chart",
+    "metrics": ["metric1", "metric2"],
+    "attributes": ["attribute1", "attribute2"],
+    "type": "ChartType",
+    "programText": "SignalFlow Query"
+  }
+]
+
+Generate a SignalFlow query for SignalFx that follows these guidelines:
+
+  - Use the data() function to fetch metrics.
+  - IMPORTANT : {{ANY_CAPITAL_LETTER}} = data(...) Assign each query to a unique variable like A,B,C etc. (Variable name must be single char and capital)
+  - Ensure the .publish(label='A') syntax is included. the label in publish must match with the variable name
+  - The programText should match the format 'A = data(...)'.
+  - Use sum(by=[...]), mean(over='1m'), count(), or rollup='rate' where necessary.
+  - If the metric requires aggregation (e.g., sum across clusters), use sum(by=['cluster']).
+  - A query is not required to end with ";"
+  - if multiple queries exist, they should be joined with \n
+
+Example Queries:
+
+  Basic Sum with Filter
+    A = data('metric').sum().publish(label='A')
+
+  Sum with Grouping
+    A = data('metric').sum(by=['attribute']).publish(label='A')
+
+  Rate with Sum
+    A = data('metric', rollup='rate').sum().publish(label='A')
+
+  Counting Reporting Time Series with Grouping
+    A = data('metric').sum(by=['attribute', 'value']).count().publish(label='A')
+
+  Multiple Filters
+    A = data('metric', filter=filter('attribute', '_total') and filter('attribute', 'value')).count().publish(label='A')
+
+  Count + Rollup + Grouping
+    A = data('metric', rollup='average', extrapolation='last_value', maxExtrapolations=5).mean(by=['attribute']).count().publish(label='A')
+
+  Exclusion in Filter
+    A = data('metric', filter=(not filter('attribute', 'value'))).mean(by=['attribute']).count().publish(label='A')
+
+  Multiple Queries Example
+    A = data('metric').sum(by=['attribute']).publish(label='A')
+    B = data('metric').sum(by=['attribute']).publish(label='B')
+
+JSON Definition (Input):
+The JSON definition of the service’s metrics is provided as below: 
+{{service_data_dump}}
+
+Now, generate the JSON list of charts based on the provided metrics and attributes from JSON definition.
+Make sure that charts are useful in monitoring critical aspects of the provided service
+Do not add any extra text or explanations or code fences.
+Please return only a valid JSON.

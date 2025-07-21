@@ -1,0 +1,145 @@
+type: redis
+
+status:
+  class: receiver
+  stability:
+    beta: [metrics]
+  distributions: [contrib]
+  codeowners:
+    active: [dmitryax, hughesjj]
+
+resource_attributes:
+  redis.version:
+    description: Redis server's version.
+    enabled: true
+    type: string
+  server.address:
+    description: Redis server's address
+    enabled: false
+    type: string
+  server.port:
+    description: Redis server's port
+    enabled: false
+    type: string
+
+attributes:
+  state:
+    description: Redis CPU usage state
+    type: string
+    # Redis versions < 6.0 have:
+    #   used_cpu_sys: System CPU consumed by the Redis server, which is the sum of system CPU consumed by all threads of the server process (main thread and background threads)
+    #   used_cpu_user: User CPU consumed by the Redis server, which is the sum of user CPU consumed by all threads of the server process (main thread and background threads)
+    #   used_cpu_sys_children: System CPU consumed by the background processes
+    #   used_cpu_user_children: User CPU consumed by the background processes
+    # Redis versions >= 6.0 have two more:
+    #   used_cpu_sys_main_thread: System CPU consumed by the Redis server main thread
+    #   used_cpu_user_main_thread: User CPU consumed by the Redis server main thread
+    enum:
+      - sys
+      - sys_children
+      - sys_main_thread
+      - user
+      - user_children
+      - user_main_thread
+  db:
+    description: Redis database identifier
+    type: string
+
+metrics:
+  redis.maxmemory:
+    enabled: false
+    description: The value of the maxmemory configuration directive
+    unit: By
+    gauge:
+      value_type: int
+
+  redis.uptime:
+    enabled: true
+    description: Number of seconds since Redis server start
+    unit: s
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+
+  redis.cpu.time:
+    enabled: true
+    description: System CPU consumed by the Redis server in seconds since server start
+    unit: s
+    sum:
+      value_type: double
+      monotonic: true
+      aggregation_temporality: cumulative
+    attributes: [state]
+
+  redis.clients.connected:
+    enabled: true
+    description: Number of client connections (excluding connections from replicas)
+    unit: "{client}"
+    sum:
+      value_type: int
+      monotonic: false
+      aggregation_temporality: cumulative
+
+  redis.clients.blocked:
+    enabled: true
+    description: Number of clients pending on a blocking call
+    unit: "{client}"
+    sum:
+      value_type: int
+      monotonic: false
+      aggregation_temporality: cumulative
+
+  redis.keys.expired:
+    enabled: true
+    description: Total number of key expiration events
+    unit: "{event}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+
+  redis.keys.evicted:
+    enabled: true
+    description: Number of evicted keys due to maxmemory limit
+    unit: "{key}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+
+  redis.connections.received:
+    enabled: true
+    description: Total number of connections accepted by the server
+    unit: "{connection}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+
+  redis.connections.rejected:
+    enabled: true
+    description: Number of connections rejected because of maxclients limit
+    unit: "{connection}"
+    sum:
+      value_type: int
+      monotonic: true
+      aggregation_temporality: cumulative
+
+  redis.memory.used:
+    enabled: true
+    description: Total number of bytes allocated by Redis using its allocator
+    unit: By
+    gauge:
+     value_type: int
+
+  redis.memory.peak:
+    enabled: true
+    description: Peak memory consumed by Redis (in bytes)
+    unit: By
+    gauge:
+      value_type: int
+
+tests:
+  config:
+    endpoint: localhost:6379
