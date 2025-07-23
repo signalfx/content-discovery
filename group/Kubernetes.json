@@ -5663,7 +5663,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "G = data('k8s.container.memory_limit', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*') and filter('k8s.deployment.name', '*')).mean(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='G', enable=False)\nA = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*', match_missing=True) and filter('k8s.deployment.name', '*', match_missing=True)).sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+                "programText": "G = data('k8s.container.memory_limit', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*')).sum(by=['k8s.pod.name', 'k8s.pod.uid', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='G')\nA = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('k8s.deployment.name', '*', match_missing=True)).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name']).publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -26332,6 +26332,74 @@
               {
                 "enabled": true,
                 "property": "container.image.name"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "os.type"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "azure.resourcegroup.name"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "azure.vm.name"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "host.name"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "cloud.platform"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "host.id"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "azure.vm.size"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "azure_resource_id"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "cloud.region"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "cloud.provider"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "azure.vm.scaleset.name"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "cloud.account.id"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "host.image.id"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "host.type"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "cloud.availability_zone"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "AWSUniqueId"
+                            },
+                            {
+                                "enabled": true,
+                                "property": "deployment.environment"
               }
             ]
           },
@@ -26386,7 +26454,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('container.memory.usage', filter=filter('k8s.workload.name', '*')).sum(by=['k8s.workload.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name']).publish(label='A')\nB = data('k8s.container.memory_limit').publish(label='B')",
+                "programText": "A = data('container.memory.usage', filter=filter('k8s.workload.name', '*')).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.workload.name', 'k8s.pod.name']).publish(label='A')\nB = data('k8s.container.memory_limit', filter=filter('k8s.workload.name', '*')).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.name', 'k8s.workload.name']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -28481,10 +28549,10 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Usage",
+                            "displayName": "CPU Usage",
               "label": "C",
               "paletteIndex": null,
-              "plotType": null,
+                            "plotType": "AreaChart",
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
@@ -28493,16 +28561,6 @@
             {
               "displayName": "CPU Utilization OTel Pre-translated",
               "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Usage",
-              "label": "CPU usage",
               "paletteIndex": null,
               "plotType": "AreaChart",
               "valuePrefix": null,
@@ -28532,7 +28590,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "C = data('container_cpu_utilization', filter=filter('k8s.workload.name', '*'), rollup='rate').scale(0.01).sum(by=['k8s.workload.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name']).publish(label='C', enable=False)\nD = data('container.cpu.time', filter=filter('k8s.workload.name', '*')).sum(by=['k8s.workload.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name']).publish(label='D', enable=False)\nE = union(C if D is None else D).publish(label='CPU usage')\nF = data('k8s.container.cpu_limit').publish(label='F')",
+                "programText": "C = data('container_cpu_utilization', filter=filter('k8s.workload.name', '*'), rollup='rate').scale(0.01).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.workload.name']).publish(label='C')\nD = data('container.cpu.time', filter=filter('k8s.workload.name', '*')).sum(by=['k8s.pod.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.workload.name']).publish(label='D')\nF = data('k8s.container.cpu_limit').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.workload.name']).publish(label='F')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -30299,8 +30357,8 @@
               "label": "A",
               "paletteIndex": 8,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "Cores",
+                            "valuePrefix": "",
+                            "valueSuffix": "",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -30810,7 +30868,7 @@
           "colorBy": "Dimension",
           "colorScale": null,
           "colorScale2": null,
-          "maximumPrecision": 3,
+                    "maximumPrecision": 4,
           "noDataOptions": {
             "linkText": null,
             "linkUrl": null,
@@ -30828,8 +30886,8 @@
               "label": "A",
               "paletteIndex": 6,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": "Cores",
+                            "valuePrefix": "",
+                            "valueSuffix": "",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -31297,7 +31355,7 @@
             {
               "highWatermark": null,
               "highWatermarkLabel": null,
-              "label": "CPU usage",
+                            "label": "",
               "lowWatermark": null,
               "lowWatermarkLabel": null,
               "max": null,
@@ -31466,7 +31524,7 @@
               "paletteIndex": 8,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": "Cores",
+                            "valueSuffix": "CPU units",
               "valueUnit": null,
               "yAxis": 0
             },
@@ -31476,7 +31534,7 @@
               "paletteIndex": 6,
               "plotType": null,
               "valuePrefix": null,
-              "valueSuffix": "Cores",
+                            "valueSuffix": "CPU units",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -35815,7 +35873,7 @@
         "name": "K8s overview",
         "permissions": null,
         "selectedEventOverlays": [],
-        "tags": null
+                "tags": []
       }
     },
     {
@@ -39733,7 +39791,7 @@
       "teams": null
     }
   },
-    "hashCode": -1014730595,
+    "hashCode": -2134497221,
   "id": "DiVWf-iAgAA",
   "modelVersion": 1,
   "packageType": "GROUP"
