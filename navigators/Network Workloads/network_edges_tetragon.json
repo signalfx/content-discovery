@@ -1,0 +1,262 @@
+{
+  "hashCode": 921680019,
+  "id": "FYgqVToABFG",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "GpP0HfAAcAA",
+        "GpQAaXzAcAI",
+        "GpQHbgMAgAA",
+        "GpUKRVlAcAE"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "FYgqVToABFG",
+      "idDisplayName": null,
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "workload",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "dst.workload",
+              "values": []
+            }
+          ],
+          "metric": "tetragon_socket_stats_txbytes_total"
+        }
+      ],
+      "instanceDashboards": [
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Network edges tetragon",
+      "navigatorCategory": "Network Explorer",
+      "navigatorCategoryDisplayName": "Network Explorer",
+      "navigatorCategoryGroupDisplayName": "Containers",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "organization",
+      "relationships": [],
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": null,
+        "category": "Network Explorer",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "Network edges tetragon",
+        "filterProperties": null,
+        "id": "networkedgestetragon",
+        "idName": "Edge",
+        "idTemplate": "{{workload}} | {{dst.workload}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Source workload | Destination workload",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the percentage of the network packet loss. Darker colors indicate higher relative values.",
+            "displayName": "Network packet loss (%)",
+            "id": "network_edges_network_packet_loss_tetragon",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "RETRANSMISSION = data(\"tetragon_socket_stats_retransmitsegs_total\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nPACKETS = data(\"tetragon_socket_stats_txsegs_total\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nNET_PACK_LOSS = ((RETRANSMISSION*100)/(RETRANSMISSION+PACKETS)).sum(by=[\"workload\", \"dst.workload\"])",
+              "varName": "NET_PACK_LOSS"
+            },
+            "metricSelectors": [
+              "tetragon_socket_stats_retransmitsegs_total",
+              "tetragon_socket_stats_txsegs_total"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Network packet loss",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the round trip time in milliseconds for NPM edge. Darker colors indicate higher relative values.",
+            "displayName": "Round trip time (ms)",
+            "id": "network_edges_round_trip_time_tetragon",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "ROUND_TRIP_TIME = data(\"tcp.rtt.average\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"max\").max(by=[\"workload\", \"dst.workload\"])",
+              "varName": "ROUND_TRIP_TIME"
+            },
+            "metricSelectors": [
+              "tcp.rtt.average"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Round trip time",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the TCP connection timeout value in percentage. Darker colors indicate higher relative values.",
+            "displayName": "TCP connection timeouts (%)",
+            "id": "network_edges_tcp_connection_timeouts_tetragon",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "TIMEOUTS = data(\"tcp.syn_timeouts\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nTCP_CONNECTION_TIMEOUT = ((TIMEOUTS*100)/(TIMEOUTS+ACTIVE))",
+              "varName": "TCP_CONNECTION_TIMEOUT"
+            },
+            "metricSelectors": [
+              "tcp.syn_timeouts",
+              "tcp.active"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "TCP connection timeouts",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the amount of TCP resets happened in percentage. Darker colors indicate higher relative values.",
+            "displayName": "TCP resets (%)",
+            "id": "network_edges_tcp_resets_tetragon",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "RESETS = data(\"tcp.resets\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nTCP_RESETS = ((RESETS*100)/(RESETS+ACTIVE))",
+              "varName": "TCP_RESETS"
+            },
+            "metricSelectors": [
+              "tcp.resets",
+              "tcp.active"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "TCP resets",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Running edges tetragon",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Network edges tetragon",
+        "o11ySignalflowTemplate": "A = data('tetragon_socket_stats_txbytes_total').sum(by=['workload', 'dst.workload']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "workload",
+          "dst.workload"
+        ],
+        "singleHostSystemDashboardName": "Edge dashboard tetragon",
+        "systemDashboardName": "Edge overview tetragon",
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [
+          {
+            "displayName": "Region",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "cloud.region"
+          },
+          {
+            "displayName": "Value",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": [
+        {
+          "configuration": {
+            "actions": {
+              "showColorBy": false,
+              "showGroupBy": false,
+              "showNavigatorSettings": false,
+              "showOutliers": false
+            }
+          },
+          "defaultVisualization": true,
+          "type": "networkGraph",
+          "views": [
+            "instance",
+            "aggregate"
+          ]
+        }
+      ]
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
