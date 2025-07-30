@@ -25523,7 +25523,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "CPU Utilization",
+              "displayName": "E",
               "label": "E",
               "paletteIndex": null,
               "plotType": null,
@@ -25555,7 +25555,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('container.cpu.utilization').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.cluster.name']).scale(0.1).publish(label='A',enable=False)\nD = data('container.cpu.time').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.cluster.name']).publish(label='D', enable=False)\nB = data('k8s.container.cpu_limit').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.cluster.name']).publish(label='B', enable=False)\nE = union(A,D).publish(label='E', enable=False)\nC = combine(E if B is None else None).publish(label='C', enable=True)",
+        "programText": "A = data('container_cpu_utilization', rollup='rate').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.cluster.name']).scale(0.01).publish(label='A',enable=False)\nD = data('container.cpu.time').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.cluster.name']).publish(label='D', enable=False)\nB = data('k8s.container.cpu_limit').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.namespace.name', 'k8s.pod.uid', 'k8s.cluster.name']).publish(label='B', enable=False)\nE = union(A,D).publish(label='E', enable=False)\nC = combine(E if B is None else None).publish(label='C', enable=True)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -29024,6 +29024,16 @@
               "yAxis": 0
             },
             {
+              "displayName": "B",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
               "displayName": "CPU Limit",
               "label": "D",
               "paletteIndex": null,
@@ -29036,6 +29046,36 @@
             {
               "displayName": "Percentage used",
               "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "CPU Usage",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Limit",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "CPU Utilization",
+              "label": "H",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -29055,7 +29095,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('container_cpu_utilization').sum(by=['k8s.container.name', 'k8s.pod.uid', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.namespace.name']).mean(over='5m').scale(0.1).publish(label='A', enable=False)\nD = data('k8s.container.cpu_limit', rollup='average').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(1000).publish(label='D', enable=False)\nE = (A/D).top(count=25).scale(100).publish(label='E')",
+        "programText": "A = data('container.cpu.utilization').sum(by=['k8s.container.name', 'k8s.pod.uid', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.namespace.name']).mean(over='5m').scale(0.01).publish(label='A', enable=False)\nB = data('container.cpu.time').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.pod.uid', 'k8s.cluster.name']).publish(label='B', enable=False)\nD = data('k8s.container.cpu_limit', rollup='average').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='D', enable=False)\nE = (A/D).top(count=25).scale(100).publish(label='E', enable=False)\nF = data('container_cpu_utilization', rollup='rate').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.pod.uid', 'k8s.cluster.name']).mean(over='5m').publish(label='F', enable=False)\nG = data('k8s.container.cpu_limit', rollup='average').sum(by=['k8s.container.name', 'k8s.pod.name', 'k8s.node.name', 'k8s.pod.uid', 'k8s.cluster.name']).publish(label='G', enable=False)\nH = (F/G).top(count=25).publish(label='H')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -29332,31 +29372,129 @@
         "relatedDetectorIds": [],
         "tags": []
       }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Count of all containers that ran during the dashboard window",
+        "id": "GxFzQl4AcAU",
+        "importOf": "GvAiQW3AYAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Containers ",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": "Currently, no data is available for this chart."
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "CPU time",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('container.cpu.time', rollup='latest').min(over=Args.get('ui.dashboard_window', '15m')).below(15, inclusive=True).above(0).count(by=['k8s.cluster.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Count of all containers that ran during the dashboard window",
+        "id": "GxF4vz6AYAA",
+        "importOf": "GvAiQW3AYAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Containers ",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": "Currently, no data is available for this chart."
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# Container recorded",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('container_cpu_utilization').sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid', 'container.id']).sum(over=Args.get('ui.dashboard_window', '15m')).count().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
     }
   ],
   "crossLinkExports": [
-    {
-      "crossLink": {
-        "aliases": null,
-        "contextId": "FY0_IRVAcAA",
-        "created": 0,
-        "creator": null,
-        "id": "Gw60L8DAYAA",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "propertyName": "k8s.workload.kind",
-        "propertyValue": "Node",
-        "targets": [
-          {
-            "navigatorId": "FTByWHUAYAA",
-            "navigatorView": "AGGREGATE",
-            "isDefault": true,
-            "name": "K8s nodes nav",
-            "type": "INTERNAL_NAVIGATOR_LINK"
-          }
-        ]
-      }
-    },
     {
       "crossLink": {
         "aliases": null,
@@ -29374,6 +29512,28 @@
             "navigatorView": "AGGREGATE",
             "isDefault": true,
             "name": "K8s jobs nav",
+            "type": "INTERNAL_NAVIGATOR_LINK"
+          }
+        ]
+      }
+    },
+    {
+      "crossLink": {
+        "aliases": null,
+        "contextId": "FY0_IRVAcAA",
+        "created": 0,
+        "creator": null,
+        "id": "Gw6ud3pAcAk",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "propertyName": "k8s.workload.kind",
+        "propertyValue": "Deployment",
+        "targets": [
+          {
+            "navigatorId": "GZmnuzBAcAA",
+            "navigatorView": "AGGREGATE",
+            "isDefault": true,
+            "name": "K8s deployments",
             "type": "INTERNAL_NAVIGATOR_LINK"
           }
         ]
@@ -29429,17 +29589,17 @@
         "contextId": "FY0_IRVAcAA",
         "created": 0,
         "creator": null,
-        "id": "Gw6ud3pAcAk",
+        "id": "Gw60L8DAYAA",
         "lastUpdated": 0,
         "lastUpdatedBy": null,
         "propertyName": "k8s.workload.kind",
-        "propertyValue": "Deployment",
+        "propertyValue": "Node",
         "targets": [
           {
-            "navigatorId": "GZmnuzBAcAA",
+            "navigatorId": "FTByWHUAYAA",
             "navigatorView": "AGGREGATE",
             "isDefault": true,
-            "name": "K8s deployments",
+            "name": "K8s nodes nav",
             "type": "INTERNAL_NAVIGATOR_LINK"
           }
         ]
@@ -30643,13 +30803,6 @@
         "chartDensity": "DEFAULT",
         "charts": [
           {
-            "chartId": "Gw6tt2lAYAA",
-            "column": 8,
-            "height": 2,
-            "row": 0,
-            "width": 4
-          },
-          {
             "chartId": "Gw6tI8KAYAI",
             "column": 0,
             "height": 1,
@@ -30657,11 +30810,25 @@
             "width": 3
           },
           {
-            "chartId": "Gw6x7C8AcAA",
+            "chartId": "GxF4vz6AYAA",
             "column": 3,
             "height": 1,
             "row": 0,
-            "width": 5
+            "width": 3
+          },
+          {
+            "chartId": "Gw6x7C8AcAA",
+            "column": 6,
+            "height": 1,
+            "row": 0,
+            "width": 6
+          },
+          {
+            "chartId": "Gw6tt2lAYAA",
+            "column": 8,
+            "height": 3,
+            "row": 1,
+            "width": 4
           },
           {
             "chartId": "Gw7Sf8dAgAQ",
@@ -30671,13 +30838,6 @@
             "width": 8
           },
           {
-            "chartId": "Gw6rL3QAgCQ",
-            "column": 8,
-            "height": 1,
-            "row": 2,
-            "width": 4
-          },
-          {
             "chartId": "Gw60L8DAYAM",
             "column": 0,
             "height": 1,
@@ -30685,59 +30845,66 @@
             "width": 8
           },
           {
-            "chartId": "Gw6xJOkAgAA",
-            "column": 8,
+            "chartId": "Gw6tCHGAgA4",
+            "column": 0,
             "height": 1,
             "row": 3,
+            "width": 8
+          },
+          {
+            "chartId": "Gw6u2iUAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 4,
+            "width": 4
+          },
+          {
+            "chartId": "Gw6xJOkAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 4,
             "width": 4
           },
           {
             "chartId": "Gw6zCyDAcAA",
             "column": 4,
             "height": 1,
-            "row": 3,
-            "width": 4
-          },
-          {
-            "chartId": "Gw6u1epAYAE",
-            "column": 0,
-            "height": 1,
-            "row": 3,
+            "row": 4,
             "width": 4
           },
           {
             "chartId": "Gw6ud3pAcA8",
             "column": 8,
             "height": 1,
-            "row": 4,
+            "row": 5,
             "width": 4
           },
           {
-            "chartId": "Gw6tCHGAgA4",
-            "column": 0,
-            "height": 1,
-            "row": 4,
-            "width": 4
-          },
-          {
-            "chartId": "Gw6u2iUAgAA",
+            "chartId": "Gw6u1epAYAE",
             "column": 4,
             "height": 1,
-            "row": 4,
+            "row": 5,
+            "width": 4
+          },
+          {
+            "chartId": "Gw6rL3QAgCQ",
+            "column": 0,
+            "height": 1,
+            "row": 5,
             "width": 4
           },
           {
             "chartId": "Gw6vm7SAgAM",
             "column": 0,
             "height": 2,
-            "row": 5,
+            "row": 6,
             "width": 6
           },
           {
             "chartId": "Gw60L8DAYAQ",
             "column": 6,
             "height": 2,
-            "row": 5,
+            "row": 6,
             "width": 6
           }
         ],
@@ -30882,24 +31049,31 @@
           },
           {
             "chartId": "Gw6tG53AcEM",
-            "column": 5,
-            "height": 1,
-            "row": 2,
-            "width": 5
-          },
-          {
-            "chartId": "Gw7dwnsAYAI",
-            "column": 10,
-            "height": 1,
-            "row": 2,
-            "width": 2
-          },
-          {
-            "chartId": "Gw7ns5bAcAA",
             "column": 0,
             "height": 1,
             "row": 2,
-            "width": 5
+            "width": 9
+          },
+          {
+            "chartId": "Gw7dwnsAYAI",
+            "column": 9,
+            "height": 1,
+            "row": 2,
+            "width": 3
+          },
+          {
+            "chartId": "GxFzQl4AcAU",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "Gw7ns5bAcAA",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 6
           }
         ],
         "created": 0,
@@ -30985,21 +31159,21 @@
             "width": 4
           },
           {
-            "chartId": "Gw6Uhf1AcAA",
+            "chartId": "Gw6X-UfAcAM",
             "column": 8,
             "height": 1,
             "row": 0,
             "width": 4
           },
           {
-            "chartId": "Gw6W1lOAYAA",
-            "column": 8,
+            "chartId": "Gw6Uhf1AcAA",
+            "column": 0,
             "height": 1,
             "row": 1,
             "width": 4
           },
           {
-            "chartId": "Gw6X-UfAcAM",
+            "chartId": "Gw6W1lOAYAA",
             "column": 4,
             "height": 1,
             "row": 1,
@@ -31007,16 +31181,9 @@
           },
           {
             "chartId": "Gw6c88LAYAA",
-            "column": 0,
+            "column": 8,
             "height": 1,
             "row": 1,
-            "width": 4
-          },
-          {
-            "chartId": "Gw6Xk6BAcAA",
-            "column": 0,
-            "height": 2,
-            "row": 2,
             "width": 4
           },
           {
@@ -31032,6 +31199,13 @@
             "height": 2,
             "row": 2,
             "width": 5
+          },
+          {
+            "chartId": "Gw6Xk6BAcAA",
+            "column": 0,
+            "height": 2,
+            "row": 2,
+            "width": 4
           }
         ],
         "created": 0,
@@ -32657,7 +32831,7 @@
       "teams": null
     }
   },
-  "hashCode": -1672135865,
+  "hashCode": -1669482928,
   "id": "DiVWf-iAgAA",
   "modelVersion": 1,
   "packageType": "GROUP"
