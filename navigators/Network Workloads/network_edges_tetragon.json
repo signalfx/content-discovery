@@ -5,10 +5,10 @@
   "navigatorExport": {
     "navigator": {
       "aggregateDashboards": [
-        "GpP0HfAAcAA",
-        "GpQAaXzAcAI",
-        "GpQHbgMAgAA",
-        "GpUKRVlAcAE"
+        "GxFjtXBAABM",
+        "GxFjtXBAABQ",
+        "GxFjtXBAABU",
+        "GxFjtXBAABY"
       ],
       "connectedCategory": null,
       "created": 0,
@@ -27,7 +27,7 @@
             },
             {
               "not": false,
-              "property": "dst.workload",
+              "property": "dstworkload",
               "values": []
             }
           ],
@@ -35,6 +35,9 @@
         }
       ],
       "instanceDashboards": [
+        "GxFjtXBAABM",
+        "GxFjtXBAABQ",
+        "GxFjtXBAABU"
       ],
       "instanceDisplayText": null,
       "lastUpdated": 0,
@@ -58,7 +61,7 @@
         "filterProperties": null,
         "id": "networkedgestetragon",
         "idName": "Edge",
-        "idTemplate": "{{workload}} | {{dst.workload}}",
+        "idTemplate": "{{workload}} | {{dstworkload}}",
         "listColumns": [
           {
             "aggregate": null,
@@ -98,7 +101,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "RETRANSMISSION = data(\"tetragon_socket_stats_retransmitsegs_total\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nPACKETS = data(\"tetragon_socket_stats_txsegs_total\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nNET_PACK_LOSS = ((RETRANSMISSION*100)/(RETRANSMISSION+PACKETS)).sum(by=[\"workload\", \"dst.workload\"])",
+              "template": "RETRANSMISSION = data(\"tetragon_socket_stats_retransmitsegs_total\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dstworkload\"])\nPACKETS = data(\"tetragon_socket_stats_txsegs_total\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dstworkload\"])\nNET_PACK_LOSS = ((RETRANSMISSION*100)/(RETRANSMISSION+PACKETS)).sum(by=[\"workload\", \"dstworkload\"])",
               "varName": "NET_PACK_LOSS"
             },
             "metricSelectors": [
@@ -130,79 +133,15 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "ROUND_TRIP_TIME = data(\"tcp.rtt.average\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"max\").max(by=[\"workload\", \"dst.workload\"])",
+              "template": "ROUND_TRIP_TIME = data(\"tetragon_socket_stats_srtt_sum\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"max\").max(by=[\"workload\", \"dstworkload\"])",
               "varName": "ROUND_TRIP_TIME"
             },
             "metricSelectors": [
-              "tcp.rtt.average"
+              "tetragon_socket_stats_srtt_sum"
             ],
             "type": "metric",
             "valueFormat": "Number",
             "valueLabel": "Round trip time",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the TCP connection timeout value in percentage. Darker colors indicate higher relative values.",
-            "displayName": "TCP connection timeouts (%)",
-            "id": "network_edges_tcp_connection_timeouts_tetragon",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "TIMEOUTS = data(\"tcp.syn_timeouts\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nTCP_CONNECTION_TIMEOUT = ((TIMEOUTS*100)/(TIMEOUTS+ACTIVE))",
-              "varName": "TCP_CONNECTION_TIMEOUT"
-            },
-            "metricSelectors": [
-              "tcp.syn_timeouts",
-              "tcp.active"
-            ],
-            "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "TCP connection timeouts",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the amount of TCP resets happened in percentage. Darker colors indicate higher relative values.",
-            "displayName": "TCP resets (%)",
-            "id": "network_edges_tcp_resets_tetragon",
-            "job": {
-              "filters": [],
-              "resolution": 60000,
-              "template": "RESETS = data(\"tcp.resets\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nACTIVE = data(\"tcp.active\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"workload\", \"dst.workload\"])\nTCP_RESETS = ((RESETS*100)/(RESETS+ACTIVE))",
-              "varName": "TCP_RESETS"
-            },
-            "metricSelectors": [
-              "tcp.resets",
-              "tcp.active"
-            ],
-            "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "TCP resets",
             "valueType": null
           }
         ],
@@ -210,13 +149,13 @@
         "o11yMetricName": "Running edges tetragon",
         "o11yMetricUnit": null,
         "o11yProductName": "Network edges tetragon",
-        "o11ySignalflowTemplate": "A = data('tetragon_socket_stats_txbytes_total').sum(by=['workload', 'dst.workload']).count().publish(label='A')",
+        "o11ySignalflowTemplate": "A = data('tetragon_socket_stats_txbytes_total').sum(by=['workload', 'dstworkload']).count().publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
         "requiredProperties": [
           "workload",
-          "dst.workload"
+          "dstworkload"
         ],
         "singleHostSystemDashboardName": "Edge dashboard tetragon",
         "systemDashboardName": "Edge overview tetragon",
