@@ -1,64 +1,81 @@
 {
-    "detectorExport": {
-        "detector": {
-            "authorizedWriters": null,
-            "created": 0,
-            "creator": null,
-            "customProperties": null,
-            "description": "Alerts when k8s job has pods in failed phase for more than 80% of time in last 5 min",
-            "detectorOrigin": "Standard",
-            "id": "Gxp_cfOAgAE",
-            "labelResolutions": {
-                "(K8s health) K8s job which has pod phase failed for a 5 min": 1000
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Alerts when k8s job has pods in failed phase for more than 80% of time in last 5 min",
+      "detectorOrigin": "Standard",
+      "id": "Gxp_cfOAgAE",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.job.name",
+              "values": []
             },
-            "lastUpdated": 0,
-            "lastUpdatedBy": null,
-            "locked": false,
-            "maxDelay": 0,
-            "minDelay": 0,
-            "name": "(K8s health) K8s job which has pod phase failed in last 5 min",
-            "overMTSLimit": false,
-            "packageSpecifications": "",
-            "programText": "AB = alerts(detector_name='(K8s health) K8s pod failed for job').publish(label='AB')\nA = data('k8s.job.failed_pods').publish(label='A')\ndetect(when(A > threshold(0), lasting='5m', at_least=0.8), auto_resolve_after='15d').publish('(K8s health) K8s job which has pod phase failed for a 5 min')",
-            "rules": [
-                {
-                    "description": "The value of k8s.job.failed_pods is above 0 for 80% of 5m.",
-                    "detectLabel": "(K8s health) K8s job which has pod phase failed for a 5 min",
-                    "disabled": false,
-                    "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\nMinimum value of signal in the last {{event_annotations.current_window}}: {{inputs.recent_min.value}}\n{{#if anomalous}}Trigger threshold: {{inputs.f_top.value}}\n{{else}}Clear threshold: {{inputs.c_top.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}\n\n{{#if detectorTags}}Tags: {{detectorTags}}{{/if}}\n\n{{#if detectorTeams}}\nTeams:{{#each detectorTeams}} {{name}}{{#unless @last}},{{/unless}}{{/each}}.\n{{/if}}",
-                    "severity": "Major"
-                }
-            ],
-            "sf_metricsInObjectProgramText": [
-                "k8s.job.failed_pods"
-            ],
-            "status": "ACTIVE",
-            "tags": null,
-            "teams": null,
-            "timezone": null,
-            "visualizationOptions": {
-                "disableSampling": false,
-                "publishLabelOptions": [
-                    {
-                        "displayName": "k8s.job.failed_pods",
-                        "label": "A",
-                        "paletteIndex": null,
-                        "valuePrefix": null,
-                        "valueSuffix": null,
-                        "valueUnit": null
-                    }
-                ],
-                "showDataMarkers": true,
-                "showEventLines": false,
-                "time": {
-                    "range": 3600000,
-                    "rangeEnd": 0,
-                    "type": "relative"
-                }
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
             }
+          ],
+          "metric": "k8s.job.failed_pods"
         }
-    },
-    "hashCode": 1790595593,
-    "id": "Gxp_cfOAgAE",
-    "packageType": "DETECTOR"
+      ],
+      "labelResolutions": {
+        "(K8s health) K8s job which has pod phase failed for a 5 min": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "(K8s health) K8s job which has pod phase failed in last 5 min",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "AB = alerts(detector_name='(K8s health) K8s pod failed for job').publish(label='AB')\nA = data('k8s.job.failed_pods').publish(label='A')\ndetect(when(A > threshold(0), lasting='5m', at_least=0.8), auto_resolve_after='15d').publish('(K8s health) K8s job which has pod phase failed for a 5 min')",
+      "rules": [
+        {
+          "description": "The value of k8s.job.failed_pods is above 0 for 80% of 5m.",
+          "detectLabel": "(K8s health) K8s job which has pod phase failed for a 5 min",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\nMinimum value of signal in the last {{event_annotations.current_window}}: {{inputs.recent_min.value}}\n{{#if anomalous}}Trigger threshold: {{inputs.f_top.value}}\n{{else}}Clear threshold: {{inputs.c_top.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}\n\n{{#if detectorTags}}Tags: {{detectorTags}}{{/if}}\n\n{{#if detectorTeams}}\nTeams:{{#each detectorTeams}} {{name}}{{#unless @last}},{{/unless}}{{/each}}.\n{{/if}}",
+          "severity": "Major"
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.job.failed_pods"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "k8s.job.failed_pods",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 3600000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      }
+    }
+  },
+  "hashCode": 573535966,
+  "id": "Gxp_cfOAgAE",
+  "packageType": "DETECTOR"
 }
