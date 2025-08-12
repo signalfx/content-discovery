@@ -243,7 +243,7 @@
       }
     }
   ],
-  "hashCode": 79764811,
+  "hashCode": -1584669294,
   "id": "FTByWHUAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -293,6 +293,7 @@
           "displayName": "Default",
           "metricClassCode": "default",
           "metricClassColumns": [
+            "health_status",
             "node_name",
             "cluster_name",
             "node_condition",
@@ -306,6 +307,7 @@
           "displayName": "Node CPU",
           "metricClassCode": "node_cpu",
           "metricClassColumns": [
+            "health_status",
             "node_name",
             "cluster_name",
             "node_condition",
@@ -320,6 +322,7 @@
           "displayName": "Node memory",
           "metricClassCode": "node_memory",
           "metricClassColumns": [
+            "health_status",
             "node_name",
             "cluster_name",
             "node_condition",
@@ -334,6 +337,7 @@
           "displayName": "Node file system",
           "metricClassCode": "node_file_system",
           "metricClassColumns": [
+            "health_status",
             "node_name",
             "cluster_name",
             "node_condition",
@@ -349,6 +353,7 @@
           "displayName": "Node network metrics",
           "metricClassCode": "node_network_metrics",
           "metricClassColumns": [
+            "health_status",
             "node_name",
             "cluster_name",
             "node_condition",
@@ -510,6 +515,14 @@
           "displayName": "Network receive errors",
           "displayTemplate": "{{Network receive errors}}",
           "metricColumnCode": "network_receive_errors",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": "healthStatus",
+          "displayName": "Health",
+          "displayTemplate": "{{Health Status}}",
+          "metricColumnCode": "health_status",
           "propertyFormat": "Number"
         }
       ],
@@ -716,6 +729,24 @@
             "Unknown": {
               "icon": "Unknown",
               "label": null
+            }
+          }
+        },
+        {
+          "defaultMappingValue": {
+            "icon": "Unknown",
+            "label": "Unknown"
+          },
+          "formatType": "iconLabel",
+          "id": "healthStatus",
+          "valueMapping": {
+            "2": {
+              "icon": "kubernetes_health_status_warning",
+              "label": "Warning"
+            },
+            "4": {
+              "icon": "kubernetes_health_status_critical",
+              "label": "Critical"
             }
           }
         }
@@ -1533,6 +1564,35 @@
             "type": "metric",
             "valueFormat": "Number",
             "valueLabel": "Network receive errors",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Health status based on the number of alerts in severities",
+            "displayName": "Health",
+            "id": "Health Status",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "ACTIVE_METRIC='k8s.node.condition_ready'\nGROUPBY_NODE=['k8s.cluster.name', 'k8s.node.name']\nFILTER=(filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and not filter('k8s.pod.name', '*') and not filter('container.id', '*')){{#filter}} and {{{filter}}}{{/filter}}\nACTIVE_NODES=data(ACTIVE_METRIC, filter=FILTER).count(by=GROUPBY_NODE).above(0)\nCRITICAL_NODES=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Critical') or filter('sf_severity', 'Major')), active=True).count(by=GROUPBY_NODE).count(by=GROUPBY_NODE)\nCRITICAL_ACTIVE_NODES=combine(CRITICAL_NODES if ACTIVE_NODES is not None else None).count(by=GROUPBY_NODE).above(0)\nWARNING_NODES=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Minor') or filter('sf_severity', 'Warning')), active=True).count(by=GROUPBY_NODE).count(by=GROUPBY_NODE)\nWARNING_ACTIVE_NODES=combine(WARNING_NODES if ACTIVE_NODES is not None else None).count(by=GROUPBY_NODE).above(0)\nHEALTH = combine(4 if CRITICAL_ACTIVE_NODES is not None else 2 if WARNING_ACTIVE_NODES is not None else 0, mode='mapped').above(0)",
+              "varName": "HEALTH"
+            },
+            "metricSelectors": [],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
             "valueType": null
           }
         ],

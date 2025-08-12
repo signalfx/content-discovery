@@ -51,7 +51,7 @@
       }
     }
   ],
-  "hashCode": 1955834117,
+  "hashCode": -1193524382,
   "id": "GZmnuzBAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -111,6 +111,7 @@
           "displayName": "Default",
           "metricClassCode": "default",
           "metricClassColumns": [
+            "health_status",
             "deployment_name",
             "namespace_name",
             "cluster_name",
@@ -125,6 +126,7 @@
           "displayName": "Deployment churn",
           "metricClassCode": "deployment_churn",
           "metricClassColumns": [
+            "health_status",
             "deployment_name",
             "namespace_name",
             "cluster_name",
@@ -139,6 +141,7 @@
           "displayName": "Deployment scaling",
           "metricClassCode": "deployment_scaling",
           "metricClassColumns": [
+            "health_status",
             "deployment_name",
             "namespace_name",
             "cluster_name",
@@ -154,6 +157,7 @@
           "displayName": "Deployment attributes",
           "metricClassCode": "deployment_attributes",
           "metricClassColumns": [
+            "health_status",
             "deployment_name",
             "namespace_name",
             "cluster_name",
@@ -317,6 +321,14 @@
           "displayTemplate": "{{kubernetes_deployments_max_runing_pods}}",
           "metricColumnCode": "deployment_pods_running_max",
           "propertyFormat": "id"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": "healthStatus",
+          "displayName": "Health",
+          "displayTemplate": "{{Health Status}}",
+          "metricColumnCode": "health_status",
+          "propertyFormat": "Number"
         }
       ],
       "name": "Kubernetes deployments",
@@ -355,7 +367,26 @@
           "groupName": "Relationship"
         }
       ],
-      "propertyDisplayFormatters": [],
+      "propertyDisplayFormatters": [
+        {
+          "defaultMappingValue": {
+            "icon": "Unknown",
+            "label": "Unknown"
+          },
+          "formatType": "iconLabel",
+          "id": "healthStatus",
+          "valueMapping": {
+            "2": {
+              "icon": "kubernetes_health_status_warning",
+              "label": "Warning"
+            },
+            "4": {
+              "icon": "kubernetes_health_status_critical",
+              "label": "Critical"
+            }
+          }
+        }
+      ],
       "relationships": [],
       "requiresFilter": false,
       "sites": "o11y",
@@ -903,6 +934,35 @@
             "type": "metric",
             "valueFormat": "Number",
             "valueLabel": "Max running pods",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Health status based on the number of alerts in severities",
+            "displayName": "Health",
+            "id": "Health Status",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "ACTIVE_METRIC='k8s.pod.phase'\nGROUPBY_POD=['k8s.cluster.name', 'k8s.node.name', 'k8s.pod.name']\nFILTER=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.pod.name', '*') and not filter('container.id', '*')\nACTIVE_PODS=data(ACTIVE_METRIC, filter=FILTER).count(by=GROUPBY_POD).above(0)\nCRITICAL_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Critical') or filter('sf_severity', 'Major')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nCRITICAL_ACTIVE_PODS=combine(CRITICAL_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nWARNING_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Minor') or filter('sf_severity', 'Warning')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nWARNING_ACTIVE_PODS=combine(WARNING_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nHEALTH = combine(4 if CRITICAL_ACTIVE_PODS is not None else 2 if WARNING_ACTIVE_PODS is not None else 0, mode='mapped').above(0)",
+              "varName": "HEALTH"
+            },
+            "metricSelectors": [],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "",
             "valueType": null
           }
         ],
