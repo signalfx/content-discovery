@@ -1,6 +1,6 @@
 {
     "crossLinkExports": null,
-    "hashCode": -1026207155,
+    "hashCode": -567453819,
     "id": "Gw6TGpLAgAA",
     "modelVersion": 1,
     "navigatorExport": {
@@ -36,31 +36,6 @@
             "lastUpdated": 0,
             "lastUpdatedBy": null,
             "metricClasses": [
-                {
-                    "description": "Metrics related to individual IIS Application Pools.",
-                    "displayName": "IIS Application Pools",
-                    "metricClassCode": "iis_application_pool",
-                    "metricClassColumns": [
-                        "iis_application_pool_name",
-                        "iis_application_pool_state",
-                        "iis_application_pool_uptime",
-                        "iis_request_queue_count",
-                        "iis_request_queue_age_max"
-                    ]
-                },
-                {
-                    "description": "Metrics related to individual IIS Sites.",
-                    "displayName": "IIS Sites",
-                    "metricClassCode": "iis_site",
-                    "metricClassColumns": [
-                        "iis_site_name",
-                        "iis_request_count",
-                        "iis_network_io_sent",
-                        "iis_network_io_received",
-                        "iis_connection_active",
-                        "iis_connection_attempt_count"
-                    ]
-                },
                 {
                     "description": "Overall metrics for the IIS Server.",
                     "displayName": "IIS Servers",
@@ -251,7 +226,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "REQ_COUNT = data(\"iis.request.count\", filter=filter('request', '*'){{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site', 'request'])",
+                            "template": "REQ_COUNT = data(\"iis.request.count\", filter=filter('request', '*'){{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site', 'request', 'host.name'])",
                             "varName": "REQ_COUNT"
                         },
                         "metricSelectors": [
@@ -282,7 +257,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "REJECTED_REQ = data(\"iis.request.rejected\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site'])",
+                            "template": "REJECTED_REQ = data(\"iis.request.rejected\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site', 'host.name'])",
                             "varName": "REJECTED_REQ"
                         },
                         "metricSelectors": [
@@ -313,7 +288,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "QUEUE_COUNT = data(\"iis.request.queue.count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['iis.application_pool'])",
+                            "template": "QUEUE_COUNT = data(\"iis.request.queue.count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['iis.application_pool', 'host.name'])",
                             "varName": "QUEUE_COUNT"
                         },
                         "metricSelectors": [
@@ -344,7 +319,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "QUEUE_AGE = data(\"iis.request.queue.age.max\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='max' , extrapolation=\"last_value\", maxExtrapolations=2).max(by=['iis.application_pool'])",
+                            "template": "QUEUE_AGE = data(\"iis.request.queue.age.max\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='max' , extrapolation=\"last_value\", maxExtrapolations=2).max(by=['iis.application_pool', 'host.name'])",
                             "varName": "QUEUE_AGE"
                         },
                         "metricSelectors": [
@@ -375,7 +350,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "IO_SENT = data(\"iis.network.io\", filter=filter('direction', 'sent'){{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site'])",
+                            "template": "IO_SENT = data(\"iis.network.io\", filter=filter('direction', 'sent'){{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site', 'host.name'])",
                             "varName": "IO_SENT"
                         },
                         "metricSelectors": [
@@ -406,7 +381,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "IO_RECEIVED = data(\"iis.network.io\", filter=filter('direction', 'received'){{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site'])",
+                            "template": "IO_RECEIVED = data(\"iis.network.io\", filter=filter('direction', 'received'){{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site', 'host.name'])",
                             "varName": "IO_RECEIVED"
                         },
                         "metricSelectors": [
@@ -437,7 +412,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "BLOCKED_BYTES = data(\"iis.network.blocked\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site'])",
+                            "template": "BLOCKED_BYTES = data(\"iis.network.blocked\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site', 'host.name'])",
                             "varName": "BLOCKED_BYTES"
                         },
                         "metricSelectors": [
@@ -468,7 +443,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "CONN_ATTEMPTS = data(\"iis.connection.attempt.count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site'])",
+                            "template": "CONN_ATTEMPTS = data(\"iis.connection.attempt.count\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='sum' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=['iis.site', 'host.name'])",
                             "varName": "CONN_ATTEMPTS"
                         },
                         "metricSelectors": [
@@ -499,7 +474,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "ACTIVE_CONN = data(\"iis.connection.active\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['iis.site'])",
+                            "template": "ACTIVE_CONN = data(\"iis.connection.active\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['iis.site', 'host.name'])",
                             "varName": "ACTIVE_CONN"
                         },
                         "metricSelectors": [
@@ -592,7 +567,7 @@
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "APP_POOL_STATE = data(\"iis.application_pool.state\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['iis.application_pool'])",
+                            "template": "APP_POOL_STATE = data(\"iis.application_pool.state\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['iis.application_pool', 'host.name'])",
                             "varName": "APP_POOL_STATE"
                         },
                         "metricSelectors": [
@@ -618,12 +593,12 @@
                             ]
                         },
                         "description": "The application pool's uptime period since the last restart.",
-                        "displayName": "App Pool Uptime (s)",
+                        "displayName": "App Pool Uptime",
                         "id": "iis_application_pool_uptime",
                         "job": {
                             "filters": [],
                             "resolution": 60000,
-                            "template": "APP_POOL_UPTIME = data(\"iis.application_pool.uptime\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='max' , extrapolation=\"last_value\", maxExtrapolations=2).max(by=['iis.application_pool'])",
+                            "template": "APP_POOL_UPTIME = data(\"iis.application_pool.uptime\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['iis.application_pool'])",
                             "varName": "APP_POOL_UPTIME"
                         },
                         "metricSelectors": [
