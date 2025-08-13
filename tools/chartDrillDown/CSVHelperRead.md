@@ -22,13 +22,13 @@ This Python script extracts chart details from a JSON export of dashboards and c
 ## Usage
 
 ```bash
-python export_charts.py --input <path_to_json_file> --dashboard-name "<dashboard_name> ...." [--lab]
+python CSVHelper.py --input <path_to_json_file> --dashboard-name "<dashboard_name> ...." [--lab]
 
 ## example 1
-python export_charts.py --input ./group/Kubernetes.json --dashboard-name "K8s operations"
+python CSVHelper.py --input ./group/Kubernetes.json --dashboard-name "K8s operations"
 
 ## example 2
-python export_charts.py --input ./group/Kubernetes.json --dashboard-name "K8s operations" "Kubernetes Overview" --lab
+python CSVHelper.py --input ./group/Kubernetes.json --dashboard-name "K8s operations" "Kubernetes Overview" --lab
 
 
 
