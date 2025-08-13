@@ -3,13 +3,13 @@ import json
 import argparse
 import requests
 
-def fetch_chart_metadata(chart_id, token, debug=False):
+def fetch_chart_metadata(chart_id, token,use_lab=False, debug=False):
     if not chart_id or chart_id.strip() in ('', '-', 'null'):
         if debug:
             print(f"[DEBUG] Skipping empty chartId")
         return None
 
-    url = f"https://o11ytest.lab0.signalfx.com/v2/chart/{chart_id.strip()}"
+    url = f"https://o11ytest.lab0.signalfx.com/v2/chart/{chart_id.strip()}" if use_lab else f"https://app.signalfx.com/v2/chart/{chart_id.strip()}"
     headers = {'x-sf-token': token}
 
     try:
@@ -25,8 +25,8 @@ def fetch_chart_metadata(chart_id, token, debug=False):
         print(f"[ERROR] Request failed for chart {chart_id}: {e}")
         return None
 
-def update_chart(chart_id, chart_body, token, debug=False):
-    url = f"https://o11ytest.lab0.signalfx.com/v2/chart/{chart_id}"
+def update_chart(chart_id, chart_body, token, use_lab=False, debug=False):
+    url = f"https://o11ytest.lab0.signalfx.com/v2/chart/{chart_id.strip()}" if use_lab else f"https://app.us0.signalfx.com/v2/chart/{chart_id.strip()}"
     headers = {
         'x-sf-token': token,
         'Content-Type': 'application/json'
@@ -95,45 +95,6 @@ def generate_data_model(row, use_lab=False):
 
 
 
-
-
-def process_csv(input_file, output_file, debug=False, use_lab=False, token='', update_flag=False):
-    with open(input_file, newline='', encoding='utf-8') as infile:
-        reader = csv.DictReader(infile)
-        rows = list(reader)
-
-        if debug:
-            print(f"[DEBUG] Read {len(rows)} rows from {input_file}")
-            for i, row in enumerate(rows):
-                print(f"[DEBUG] Row {i + 1}: {row}\n")
-
-        rows = [row for row in rows if any(field.strip() for field in row.values())]
-
-        with open(output_file, 'w', encoding='utf-8') as outfile:
-
-
-            for row in rows:
-                row = {k: v.strip() if isinstance(v, str) else v for k, v in row.items()}
-
-                # Fetch chart metadata using chartId (if present)
-                chart_id = row.get('chartId (lab)' if use_lab else 'chartId')
-                chart_metadata = fetch_chart_metadata(chart_id, token, debug=debug)
-
-                if debug:
-                    if chart_id:
-                        print(f"[DEBUG] chartId: {chart_id}")
-                    if chart_metadata:
-                        print(f"[DEBUG] Chart Metadata:\n{json.dumps(chart_metadata, indent=2)}\n")
-
-                # Generate data model JSON string (you can also pass chart_metadata into this if needed)
-                data_model_str = generate_data_model(row, use_lab=use_lab)
-
-                if debug:
-                    print(f"[DEBUG] Generated Data Model:\n{data_model_str}\n")
-
-                outfile.write(data_model_str + '\n')
-
-
 def process_csv(input_file, output_file, debug=False, use_lab=False, token='', update_flag=False):
 
     with open(input_file, newline='', encoding='utf-8') as infile, \
@@ -162,7 +123,7 @@ def process_csv(input_file, output_file, debug=False, use_lab=False, token='', u
                 continue
 
             # Fetch existing chart metadata via GET
-            chart_metadata = fetch_chart_metadata(chart_id, token, debug=debug)
+            chart_metadata = fetch_chart_metadata(chart_id, token,use_lab=use_lab, debug=debug)
             if not chart_metadata:
                 if debug:
                     print(f"[DEBUG] Could not fetch metadata for chartId {chart_id}, skipping row")
@@ -186,7 +147,7 @@ def process_csv(input_file, output_file, debug=False, use_lab=False, token='', u
 
             # If --update flag is provided, PUT updated chart metadata back to API
             if update_flag:
-                success = update_chart(chart_id, chart_metadata, token, debug=debug)
+                success = update_chart(chart_id, chart_metadata, token, use_lab=use_lab, debug=debug)
                 if not success:
                     print(f"[WARN] Update failed for chartId {chart_id}")
 
