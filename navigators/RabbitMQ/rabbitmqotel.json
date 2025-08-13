@@ -1,12 +1,12 @@
 {
     "crossLinkExports": null,
-    "hashCode": 1561149998,
+  "hashCode": 898570166,
     "id": "GqzJF6TAcAE",
     "modelVersion": 1,
     "navigatorExport": {
         "navigator": {
             "aggregateDashboards": [
-                "GqezbJoAYBI"
+        "GyJlV3wAICc"
             ],
             "connectedCategory": null,
             "created": 0,
@@ -14,7 +14,7 @@
             "defaultGroupBy": null,
             "description": "",
             "entityHighlightedAttributes": [],
-            "id": "GqzJF6TAcAE",
+            "id": "GyJlV3wAICg",
             "idDisplayName": null,
             "importQualifiers": [
                 {
@@ -22,14 +22,16 @@
                         {
                             "not": false,
                             "property": "rabbitmq.node.name",
-                            "values": []
+              "values": [
+                "*"
+              ]
                         }
                     ],
                     "metric": "rabbitmq.message.current"
                 }
             ],
             "instanceDashboards": [
-                "GqezbJoAYBM"
+        "Gqfndd1AIB0"
             ],
             "instanceDisplayText": null,
             "lastUpdated": 0,
@@ -41,7 +43,7 @@
                     "metricClassCode": "default",
                     "metricClassColumns": [
                         "node_name",
-                        "rabbitmq_queues",
+            "rabbitmq_node_uptime",
                         "rabbtimq_vhosts",
                         "rabbitmq_queue_consumers"
                     ]
@@ -75,8 +77,7 @@
                     "metricClassColumns": [
                         "node_name",
                         "rabbitmq_file_descriptor_usage",
-                        "rabbitmq_io_latency",
-                        "rabbitmq_node_uptime"
+            "rabbitmq_io_latency"
                     ]
                 }
             ],
@@ -247,9 +248,16 @@
                         "displayName": "# Exchanges",
                         "id": "rabbitmq_exchanges",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
-                            "template": "TOTAL_NUMBER_OF_EXCHANGES = data(\"rabbitmq.message.published\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').count(by=[\"rabbitmq.node.name\"])",
+              "template": "TOTAL_NUMBER_OF_EXCHANGES = data(\"rabbitmq.message.published\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').mean(by=[\"rabbitmq.node.name\"]).count()",
                             "varName": "TOTAL_NUMBER_OF_EXCHANGES"
                         },
                         "metricSelectors": [
@@ -278,9 +286,16 @@
                         "displayName": "Messages published / sec",
                         "id": "rabbitmq_messages_published_per_sec",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
-                            "template": "TOTAL_NUMBER_OF_MESSAGES_PUBLISHED = data(\"rabbitmq.message.published\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate' , extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\", \"rabbitmq.queue.name\"])",
+              "template": "TOTAL_NUMBER_OF_MESSAGES_PUBLISHED = data(\"rabbitmq.message.published\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate' , extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"rabbitmq.node.name\"])",
                             "varName": "TOTAL_NUMBER_OF_MESSAGES_PUBLISHED"
                         },
                         "metricSelectors": [
@@ -309,7 +324,14 @@
                         "displayName": "# Queue consumers",
                         "id": "rabbitmq_queue_consumers",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
                             "template": "TOTAL_NUMBER_OF_CONSUMERS = data(\"rabbitmq.consumer.count\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"rabbitmq.node.name\"])",
                             "varName": "TOTAL_NUMBER_OF_CONSUMERS"
@@ -349,11 +371,11 @@
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "TOTAL_NUMBER_OF_QUEUES = data(\"rabbitmq.message.current\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).count(by=[\"rabbitmq.queue.name\"])",
+              "template": "TOTAL_NUMBER_OF_QUEUES = data(\"rabbitmq.message.current\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['rabbitmq.node.name', 'rabbitmq.queue.name']).count()",
                             "varName": "TOTAL_NUMBER_OF_QUEUES"
                         },
                         "metricSelectors": [
-                            "rabbitmq.queue.name"
+              "rabbitmq.message.current"
                         ],
                         "type": "metric",
                         "valueFormat": "Number",
@@ -387,7 +409,7 @@
                                 }
                             ],
                             "resolution": 10000,
-                            "template": "NUMBER_OF_CHANNEL = data(\"rabbitmq.message.current\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').count(by=[\"rabbitmq.vhost.name\",\"rabbitmq.node.name\"])\nTOTAL_NUMBER_OF_VHOST = NUMBER_OF_CHANNEL.sum(by=['rabbitmq.node.name'])",
+              "template": "NUMBER_OF_CHANNEL = data(\"rabbitmq.message.current\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').count(by=[\"rabbitmq.vhost.name\",\"rabbitmq.node.name\"])\nTOTAL_NUMBER_OF_VHOST = NUMBER_OF_CHANNEL.count(by=['rabbitmq.node.name'])",
                             "varName": "TOTAL_NUMBER_OF_VHOST"
                         },
                         "metricSelectors": [
@@ -416,7 +438,14 @@
                         "displayName": "Disk free (% of alarm level)",
                         "id": "rabbitmq_disk_free",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
                             "template": "TOTAL_DISK_FREE = data(\"rabbitmq.node.disk_free\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_DISK_FREE_LIMIT = data(\"rabbitmq.node.disk_free_limit\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_PERCENTAGE_OF_DISK_FREE_ALARM_LIMIT = (TOTAL_DISK_FREE/TOTAL_DISK_FREE_LIMIT*100)",
                             "varName": "TOTAL_PERCENTAGE_OF_DISK_FREE_ALARM_LIMIT"
@@ -448,9 +477,16 @@
                         "displayName": "File descriptors used (% of available)",
                         "id": "rabbitmq_file_descriptor_usage",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
-                            "template": "TOTAL_FD_USED = data(\"rabbitmq.node.fd_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_FD_AVAILABLE = data(\"rabbitmq.node.fd_total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_FD_USED_OF_TOTAL_AVAILABLE = (TOTAL_FD_USED/TOTAL_FD_AVAILABLE).scale(100)",
+              "template": "TOTAL_FD_USED = data(\"rabbitmq.node.fd_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_FD_AVAILABLE = data(\"rabbitmq.node.fd_total\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_FD_USED_OF_TOTAL_AVAILABLE = (TOTAL_FD_USED/TOTAL_FD_AVAILABLE).scale(100).floor()",
                             "varName": "TOTAL_FD_USED_OF_TOTAL_AVAILABLE"
                         },
                         "metricSelectors": [
@@ -480,7 +516,14 @@
                         "displayName": "I/O latency (ms)",
                         "id": "rabbitmq_io_latency",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
                             "template": "IO_READ_LATENCY = data(\"rabbitmq.node.io_read_avg_time\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nIO_WRITE_LATENCY = data(\"rabbitmq.node.io_write_avg_time\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nIO_LATENCY=(IO_READ_LATENCY+IO_WRITE_LATENCY)",
                             "varName": "IO_LATENCY"
@@ -512,7 +555,14 @@
                         "displayName": "Memory usage (% of alarm level)",
                         "id": "rabbitmq_memory_usage_of_alarm_level",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
                             "template": "TOTAL_MEMORY = data(\"rabbitmq.node.mem_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_MEMORY_LIMIT = data(\"rabbitmq.node.mem_limit\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_PERCENTAGE_OF_MEMORY_USAGE_ALARM_LEVEL = (TOTAL_MEMORY/TOTAL_MEMORY_LIMIT).scale(100)",
                             "varName": "TOTAL_PERCENTAGE_OF_MEMORY_USAGE_ALARM_LEVEL"
@@ -544,7 +594,14 @@
                         "displayName": "Memory usage (bytes)",
                         "id": "rabbitmq_total_memory_usage",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
                             "template": "TOTAL_MEMORY_USED = data(\"rabbitmq.node.mem_used\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])",
                             "varName": "TOTAL_MEMORY_USED"
@@ -575,7 +632,14 @@
                         "displayName": "Messages delivered / sec",
                         "id": "rabbitmq_messages_delivered_per_sec",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
                             "template": "TOTAL_NUMBER_OF_MESSAGES_PER_SEC = data(\"rabbitmq.message.delivered\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate', extrapolation=\"last_value\", maxExtrapolations=2).count(by=[\"rabbitmq.node.name\"])",
                             "varName": "TOTAL_NUMBER_OF_MESSAGES_PER_SEC"
@@ -615,7 +679,7 @@
                                 }
                             ],
                             "resolution": 60000,
-                            "template": "TOTAL_NUMBER_OF_MESSAGES_READY = data(\"rabbitmq.message.current\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).count(by=[\"rabbitmq.node.name\"])",
+              "template": "TOTAL_NUMBER_OF_MESSAGES_READY = data(\"rabbitmq.message.current\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"rabbitmq.node.name\"])",
                             "varName": "TOTAL_NUMBER_OF_MESSAGES_READY"
                         },
                         "metricSelectors": [
@@ -644,7 +708,14 @@
                         "displayName": "Node uptime (hours)",
                         "id": "rabbitmq_node_uptime",
                         "job": {
-                            "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "rabbitmq.node.name",
+                  "type": "property"
+                }
+              ],
                             "resolution": 60000,
                             "template": "TOTAL_NODE_UPTIME = data(\"rabbitmq.node.uptime\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"rabbitmq.node.name\"])\nTOTAL_NODE_UPTIME_IN_HOURS = (TOTAL_NODE_UPTIME/3600/1000)",
                             "varName": "TOTAL_NODE_UPTIME_IN_HOURS"
@@ -662,7 +733,7 @@
                 "o11yMetricName": "Running nodes",
                 "o11yMetricUnit": null,
                 "o11yProductName": "RabbitMQ nodes (OTel)",
-                "o11ySignalflowTemplate": "A = data('rabbitmq.node.uptime').count(by=['rabbitmq.node.name']).publish(label='A')",
+        "o11ySignalflowTemplate": "A = data('rabbitmq.node.uptime').mean(by=['rabbitmq.node.name']).count().publish(label='A')",
                 "o11yTrendDisplayMode": null,
                 "propertyColumns": null,
                 "proxyProperties": null,
