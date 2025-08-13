@@ -16,7 +16,7 @@ This script processes a CSV file containing chart information, fetches metadata 
 ## 🚀 Usage
 
 ```bash
-python chart_processor.py input.csv --token <SIGNALFX_API_TOKEN> [--output_csv output.json] [--lab] [--debug] [--update]
+python createNavLinkModel.py input.csv --token <SIGNALFX_API_TOKEN> [--output_csv output.json] [--lab] [--debug] [--update]
 
 |---------------------------------------------------------------------------------------------|
 | Argument       | Description                                                                |
@@ -40,6 +40,6 @@ Install the required Python libraries:
 
 🛠 Example
 |---------------------------------------------------------------------------------------------|
-| python chart_processor.py charts.csv --token your-api-token-here --debug --update --lab     |
+| python createNavLinkModel.py charts.csv --token your-api-token-here --debug --update --lab     |
 |---------------------------------------------------------------------------------------------|
 
