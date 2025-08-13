@@ -28,4 +28,4 @@ This tool extracts key metadata fields from all `.json` files in a specified dir
 ## 🚀 Usage
 
 ```bash
-python extract_navigator_info.py --input-dir <path_to_json_directory>
+python extract_nav_info.py --input-dir <path_to_json_directory>
