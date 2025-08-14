@@ -17,6 +17,13 @@
         "targets": [
           {
             "navigatorId": "FTwxEZhAcAA",
+            "navigatorView": "AGGREGATE",
+            "isDefault": false,
+            "name": "K8s clusters",
+            "type": "INTERNAL_NAVIGATOR_LINK"
+          },
+          {
+            "navigatorId": "FTwxEZhAcAA",
             "navigatorView": "INSTANCE",
             "isDefault": true,
             "name": "K8s cluster",
@@ -26,7 +33,7 @@
       }
     }
   ],
-  "hashCode": -59904182,
+  "hashCode": -180494136,
   "id": "FTwxEZhAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -81,6 +88,7 @@
           "metricClassCode": "default",
           "metricClassColumns": [
             "cluster_name",
+            "pods",
             "containers",
             "nodes",
             "namespace",
@@ -107,6 +115,14 @@
           "displayName": "Containers",
           "displayTemplate": "{{kubernetes_clusters_containers}}",
           "metricColumnCode": "containers",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "sum",
+          "displayFormatterCode": null,
+          "displayName": "Pods",
+          "displayTemplate": "{{kubernetes_clusters_pods}}",
+          "metricColumnCode": "pods",
           "propertyFormat": "Number"
         },
         {
@@ -182,6 +198,13 @@
             "faceted"
           ],
           "groupName": "Attribute"
+        },
+        {
+          "applyIfExists": false,
+          "displayName": "Cluster",
+          "fieldName": "k8s.cluster.name",
+          "filterType": null,
+          "groupName": null
         }
       ],
       "propertyDisplayFormatters": [],
@@ -237,6 +260,37 @@
             "type": "metric",
             "valueFormat": "Number",
             "valueLabel": "Containers",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of active pods present in the cluster. Darker colors indicate higher relative values.",
+            "displayName": "# Pods",
+            "id": "kubernetes_clusters_pods",
+            "job": {
+              "filters": [],
+              "resolution": 60000,
+              "template": "POD_COUNT = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').between(1.5, 2.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.cluster.name'])",
+              "varName": "POD_COUNT"
+            },
+            "metricSelectors": [
+              "k8s.pod.phase"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Pods",
             "valueType": null
           },
           {
@@ -359,7 +413,7 @@
                 }
               ],
               "resolution": 60000,
-              "template": "CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container_cpu_utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = union(CPU_USED_EKS, CPU_USED_MACHINE, CPU_USED_FARGATE)",
+              "template": "CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container_cpu_utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = union(CPU_USED_EKS, CPU_USED_MACHINE, CPU_USED_FARGATE).scale(100)",
               "varName": "CPU_CAPACITY_USED"
             },
             "metricSelectors": [
