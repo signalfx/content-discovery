@@ -31,7 +31,7 @@
                     },
                     "publishLabelOptions": [
                         {
-                            "displayName": "rabbitmq.message.current - Count by rabbitmq.vhost.name",
+                            "displayName": "rabbitmq.message.current - Count by rabbitmq.vhost.name,rabbitmq.node.name",
                             "label": "A",
                             "paletteIndex": null,
                             "plotType": null,
@@ -64,7 +64,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).count(by=['rabbitmq.vhost.name']).publish(label='A', enable=False)\nB = (A).count().publish(label='B')",
+                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).count(by=['rabbitmq.vhost.name', 'rabbitmq.node.name']).publish(label='A', enable=False)\nB = (A).count().publish(label='B')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -81,7 +81,7 @@
                 "importOf": "GxfLL8iAIB0",
                 "lastUpdated": 0,
                 "lastUpdatedBy": null,
-                "name": "Top 5 queues - Messages ready",
+                "name": "Top 500 queues - Messages ready",
                 "options": {
                     "colorBy": "Dimension",
                     "colorScale2": null,
@@ -140,7 +140,7 @@
                     ],
                     "refreshInterval": 60000,
                     "secondaryVisualization": "Sparkline",
-                    "sortBy": "",
+                    "sortBy": "-value",
                     "time": {
                         "range": 900000,
                         "rangeEnd": 0,
@@ -150,7 +150,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).mean(by=['rabbitmq.node.name', 'rabbitmq.queue.name']).top(count=5).publish(label='A')",
+                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).mean(by=['rabbitmq.node.name', 'rabbitmq.queue.name']).top(count=500).publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -335,7 +335,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.acknowledged', rollup='rate').sum().publish(label='A')\nB = data('rabbitmq.message.dropped').sum().publish(label='B')",
+                "programText": "A = data('rabbitmq.message.acknowledged', rollup='rate').sum(by=['rabbitmq.node.name']).publish(label='A')\nB = data('rabbitmq.message.dropped').sum(by=['rabbitmq.node.name']).publish(label='B')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -411,7 +411,7 @@
                 "importOf": "GxfLL8iAICI",
                 "lastUpdated": 0,
                 "lastUpdatedBy": null,
-                "name": "Top 5 nodes - Messages published",
+                "name": "Top 500 nodes - Messages published",
                 "options": {
                     "colorBy": "Dimension",
                     "colorScale2": null,
@@ -536,7 +536,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.published', rollup='delta').sum(by=['rabbitmq.node.name']).top(count=5).publish(label='A')",
+                "programText": "A = data('rabbitmq.message.published', rollup='delta').sum(by=['rabbitmq.node.name']).top(count=500).publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -642,12 +642,12 @@
                 "created": 0,
                 "creator": null,
                 "customProperties": {},
-                "description": "The 5 queues with the highest unacknowledged messages indicating consumer issues",
+                "description": "The 5 00queues with the highest unacknowledged messages indicating consumer issues",
                 "id": "GyI69FzAgAA",
                 "importOf": "GxfiVVLAIAA",
                 "lastUpdated": 0,
                 "lastUpdatedBy": null,
-                "name": "Top 5 queues – Messages unacknowledged",
+                "name": "Top 500 queues – Messages unacknowledged",
                 "options": {
                     "colorBy": "Dimension",
                     "colorScale2": null,
@@ -706,7 +706,7 @@
                     ],
                     "refreshInterval": 60000,
                     "secondaryVisualization": "Sparkline",
-                    "sortBy": "",
+                    "sortBy": "-value",
                     "time": {
                         "range": 900000,
                         "rangeEnd": 0,
@@ -733,7 +733,7 @@
                 "importOf": "GxfLL8iAICA",
                 "lastUpdated": 0,
                 "lastUpdatedBy": null,
-                "name": "Top 5 nodes - Total messages ready in queues",
+                "name": "Top 500 nodes - Total messages ready in queues",
                 "options": {
                     "colorBy": "Dimension",
                     "colorScale2": null,
@@ -794,7 +794,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).sum(by=['rabbitmq.node.name']).top(count=5).publish(label='A')",
+                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).sum(by=['rabbitmq.node.name']).top(count=500).publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -973,7 +973,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).count(by=['rabbitmq.queue.name', 'rabbitmq.node.name']).publish(label='A')",
+                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).mean(by=['rabbitmq.node.name', 'rabbitmq.queue.name']).count().publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -1067,7 +1067,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.published', rollup='rate').sum().publish(label='A')",
+                "programText": "A = data('rabbitmq.message.published', rollup='rate').sum(by=['rabbitmq.node.name']).publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -1084,7 +1084,7 @@
                 "importOf": "GxfLL8iAICE",
                 "lastUpdated": 0,
                 "lastUpdatedBy": null,
-                "name": "Top 5 nodes - Memory used (bytes)",
+                "name": "Top 500 nodes - Memory used (bytes)",
                 "options": {
                     "colorBy": "Dimension",
                     "colorScale2": null,
@@ -1145,7 +1145,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.node.mem_used').mean(by=['rabbitmq.node.name']).top(count=5).publish(label='A')",
+                "programText": "A = data('rabbitmq.node.mem_used').mean(by=['rabbitmq.node.name']).top(count=500).publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -1162,7 +1162,7 @@
                 "importOf": "GxfLL8iAIBo",
                 "lastUpdated": 0,
                 "lastUpdatedBy": null,
-                "name": "Top 5 queues - Messages delivered (messages/sec)",
+                "name": "Top 500 queues - Messages delivered (messages/sec)",
                 "options": {
                     "colorBy": "Dimension",
                     "colorScale2": null,
@@ -1174,11 +1174,11 @@
                                 "property": "sf_originatingMetric"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "name"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "node"
                             },
                             {
@@ -1186,27 +1186,27 @@
                                 "property": "sf_metric"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "k8s.cluster.name"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "host.image.id"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "os.type"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "AWSUniqueId"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "host.type"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "cloud.availability_zone"
                             },
                             {
@@ -1214,7 +1214,7 @@
                                 "property": "rabbitmq.node.name"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "host.name"
                             },
                             {
@@ -1222,31 +1222,31 @@
                                 "property": "rabbitmq.queue.name"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "cloud.platform"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "host.id"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "cloud.region"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "cloud.provider"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "k8s.node.name"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "cloud.account.id"
                             },
                             {
-                                "enabled": true,
+                                "enabled": false,
                                 "property": "rabbitmq.vhost.name"
                             }
                         ]
@@ -1277,7 +1277,7 @@
                     ],
                     "refreshInterval": 60000,
                     "secondaryVisualization": "Sparkline",
-                    "sortBy": "",
+                    "sortBy": "-value",
                     "time": {
                         "range": 900000,
                         "rangeEnd": 0,
@@ -1287,7 +1287,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.delivered', rollup='rate').sum(by=['rabbitmq.queue.name']).top(count=5).floor().publish(label='A')",
+                "programText": "A = data('rabbitmq.message.delivered', rollup='rate').sum(by=['rabbitmq.queue.name', 'rabbitmq.node.name']).top(count=500).floor().publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -1381,7 +1381,7 @@
                     "unitPrefix": "Metric"
                 },
                 "packageSpecifications": "",
-                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).mean(by=['rabbitmq.queue.name']).count().publish(label='A')",
+                "programText": "A = data('rabbitmq.message.current', filter=filter('state', 'ready')).mean(by=['rabbitmq.queue.name', 'rabbitmq.node.name']).count().publish(label='A')",
                 "relatedDetectorIds": [],
                 "tags": []
             }
@@ -1617,8 +1617,8 @@
                             "label": "Percent",
                             "lowWatermark": null,
                             "lowWatermarkLabel": null,
-                            "max": 100.0,
-                            "min": 0.0
+                            "max": 100,
+                            "min": 0
                         },
                         {
                             "highWatermark": null,
@@ -2674,7 +2674,7 @@
             "teams": null
         }
     },
-    "hashCode": 1503852352,
+    "hashCode": 788027504,
     "id": "GqezbJjAcCk",
     "modelVersion": 1,
     "packageType": "GROUP"
