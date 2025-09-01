@@ -6,7 +6,7 @@
       "creator": null,
       "customProperties": null,
       "description": "Alerts when k8s job has pods in failed phase for more than 80% of time in last 5 min",
-      "detectorOrigin": "AutoDetect",
+      "detectorOrigin": "Standard",
       "id": "Gxp_cfOAgAE",
       "importQualifiers": [
         {
@@ -35,8 +35,8 @@
       "minDelay": 0,
       "name": "K8s job with pod failed (%) > 90",
       "overMTSLimit": false,
-      "packageSpecifications": "",
-      "programText": "A = data('k8s.job.failed_pods', rollup='latest').sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.job.name']).publish(label='A', enable=False)\nAE = data('k8s.job.successful_pods', rollup='latest').sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.job.name']).publish(label='AE', enable=False)\nAF = ((A/(A+AE))*100).publish(label='AF')\ndetect(when(A > threshold(90)), auto_resolve_after='15d').publish('K8s job with pod failed (%) > 90')",
+      "packageSpecifications": "signalfx==0.1.1085",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import job\njob.job_fail_pct_high().publish('K8s job with pod failed (%) > 90')",
       "rules": [
         {
           "description": "The value of k8s.job.failed_pods - Sum by k8s.cluster.name,k8s.namespace.name,k8s.job.name is above 90.",
@@ -47,6 +47,7 @@
         }
       ],
       "sf_metricsInObjectProgramText": [
+        "k8s.job.successful_pods",
         "k8s.job.failed_pods"
       ],
       "status": "ACTIVE",
@@ -55,32 +56,7 @@
       "timezone": null,
       "visualizationOptions": {
         "disableSampling": false,
-        "publishLabelOptions": [
-          {
-            "displayName": "k8s.job.failed_pods - Sum by k8s.cluster.name,k8s.namespace.name,k8s.job.name",
-            "label": "A",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          },
-          {
-            "displayName": "k8s.job.successful_pods - Sum by k8s.cluster.name,k8s.namespace.name,k8s.job.name",
-            "label": "AE",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          },
-          {
-            "displayName": "Job fail pods %",
-            "label": "AF",
-            "paletteIndex": null,
-            "valuePrefix": null,
-            "valueSuffix": null,
-            "valueUnit": null
-          }
-        ],
+        "publishLabelOptions": [],
         "showDataMarkers": true,
         "showEventLines": false,
         "time": {
@@ -91,7 +67,7 @@
       }
     }
   },
-  "hashCode": -1044488288,
+  "hashCode": 1631054452,
   "id": "Gxp_cfOAgAE",
   "packageType": "DETECTOR"
 }

@@ -6,7 +6,7 @@
       "creator": null,
       "customProperties": null,
       "description": "",
-      "detectorOrigin": "AutoDetect",
+      "detectorOrigin": "Standard",
       "id": "Gxp600dAgAA",
       "importQualifiers": [
         {
@@ -32,8 +32,8 @@
       "minDelay": 0,
       "name": "K8s pod phase pending/failed within 5 min",
       "overMTSLimit": false,
-      "packageSpecifications": "signalfx==0.1.1065",
-      "programText": "from signalfx.detectors.autodetect import utils\nfrom signalfx.detectors.autodetect.infra.k8s import utils as k8s_utils\n\ndef pods_in_failed_or_pending_phase(fire_lasting: lasting = lasting('5m', 1), filter_: filter = None):\n    # Detects when K8s Pod is in failed/pending state after 5m\n    # :param fire_lasting description=Specifies trigger sensitivity associated with fire threshold\n    # :param fire_lasting label=Trigger sensitivity\n    # :param filter_ description=Specifies dimensional scope of the detector\n    # :param filter_ metric_name=k8s.pod.phase\n    # :return: detect block that triggers when nodes suitably filtered and grouped, are not ready\n    group_by = [k8s_utils.K8S_NAMESPACE_NAME_DIM,k8s_utils.K8S_CLUSTER_NAME_DIM,k8s_utils.K8S_POD_NAME_DIM]\n\n    stream = data('k8s.pod.phase', filter=filter_).sum(by=group_by, allow_missing=group_by)\n\n    phase_failed_fire_threshold_stream = const(4)\n    phase_pending_fire_threshold_stream = const(1)\n\n    ann = [utils.annotate_stream(stream, 'Pod phase'),utils.annotate_fire_threshold(phase_failed_fire_threshold_stream, orientation='out_of_band'),utils.annotate_fire_threshold(phase_pending_fire_threshold_stream, orientation='out_of_band')]\n\n    return detect((when((stream >= phase_failed_fire_threshold_stream) and (stream <= phase_failed_fire_threshold_stream), lasting=fire_lasting) or when((stream >= phase_pending_fire_threshold_stream) and (stream <= phase_pending_fire_threshold_stream), lasting=fire_lasting)), annotations=ann, auto_resolve_after=utils.AUTO_RESOLVE_AFTER)\n    \npods_in_failed_or_pending_phase().publish('K8s pod phase pending/failed')",
+      "packageSpecifications": "signalfx==0.1.1085",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import pod\npod.pods_in_failed_or_pending_phase().publish('K8s pod phase pending/failed')",
       "rules": [
         {
           "description": "The value of k8s.pod.phase - Mean(5m) is within 1 and 1 for 5m OR The value of k8s.pod.phase - Mean(5m) is within 4 and 4 for 5m.",
@@ -63,7 +63,7 @@
       }
     }
   },
-  "hashCode": -660431930,
+  "hashCode": 1652438401,
   "id": "Gxp600dAgAA",
   "packageType": "DETECTOR"
 }
