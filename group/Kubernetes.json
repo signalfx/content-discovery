@@ -14063,12 +14063,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Number of active pods",
+      "description" : "Number of running pods",
       "id" : "GtneV58AYAk",
       "importOf" : "Gqe1wqSAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Active pods",
+      "name" : "# Pods running",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -14337,7 +14337,7 @@
       "importOf" : "GpwX24WAgAI",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Nodes",
+      "name" : "# Nodes ready",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -14377,7 +14377,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.node.condition_ready', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).mean(over='1m').count().publish(label='A')",
+      "programText" : "A = data('k8s.node.condition_ready').between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -16032,7 +16032,7 @@
       "importOf" : "GvAiQ8tAgAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Nodes",
+      "name" : "Ready Nodes",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -16142,12 +16142,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Number of active pods within each cluster",
+      "description" : "Number of running pods within each cluster",
       "id" : "Gw6Uhf1AcAA",
       "importOf" : "GvAiQBkAcAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Pods",
+      "name" : "# Pods running",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -16208,7 +16208,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Active Pods",
+          "displayName" : "Pods Running",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -17807,7 +17807,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Number of active containers within each cluster",
+      "description" : "Number of running containers within each cluster",
       "id" : "Gw6c88LAYAA",
       "importOf" : "GvAiQBkAcAE",
       "lastUpdated" : 0,
@@ -19576,12 +19576,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "The count of active workloads",
+      "description" : "The count of running workloads",
       "id" : "Gw6sMAPAYAM",
       "importOf" : "GvAhYExAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Active workloads",
+      "name" : "# Running Workloads",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -20310,7 +20310,7 @@
       "importOf" : "GvAh1FFAYAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Active pods",
+      "name" : "# Pods running",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -20775,7 +20775,7 @@
       "importOf" : "GvAiR_aAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Containers active",
+      "name" : "# Containers running",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -20793,7 +20793,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU utilization",
+          "displayName" : "Containers Running",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -20801,25 +20801,7 @@
           "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
-        }, {
-          "displayName" : "OTel Pre Translated",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Active containers",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
+        }],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "None",
         "showSparkLine" : false,
@@ -20833,7 +20815,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*', match_missing=True) and filter('k8s.deployment.name', '*', match_missing=True), rollup='rate', extrapolation='last_value', maxExtrapolations=3).count().publish(label='A', enable=False)\nB = data('container.cpu.time', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.namespace.name', '*'), rollup='rate').count().publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
+      "programText" : "A = data('k8s.container.restarts', extrapolation='zero', filter=filter('container.status', 'running')).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -23797,7 +23779,7 @@
       "importOf" : "GvAhYmwAcAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# of active Namespaces",
+      "name" : "# Active Namespaces",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
