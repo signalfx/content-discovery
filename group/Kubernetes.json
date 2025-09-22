@@ -12865,6 +12865,15 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "B",
+          "label" : "B",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "CPU utilization(CPU requests)",
           "label" : "C",
           "paletteIndex" : null,
@@ -12876,15 +12885,6 @@
         }, {
           "displayName" : "CPU Utilization(CPU Request)",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "B",
-          "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -12903,7 +12903,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-        "programText": "B = data('k8s.container.cpu_request', filter=filter('k8s.pod.name', '*')).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name']).publish(label='B', enable=False)\nC = (A/B).top(count=25).publish(label='C')\nA = data('container_cpu_utilization', filter=filter('k8s.pod.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)",
+      "programText" : "B = data('k8s.container.cpu_request', filter=filter('k8s.pod.name', '*')).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name']).publish(label='B', enable=False)\nC = (A/B).top(count=25).publish(label='C')\nA = data('container_cpu_utilization', filter=filter('k8s.pod.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.pod.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -14061,12 +14061,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "Number of active pods",
+      "description" : "Number of pods with phase of running",
       "id" : "GtneV58AYAk",
       "importOf" : "Gqe1wqSAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Active pods",
+      "name" : "# Pods running",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -14106,7 +14106,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase', rollup='latest').between(1.5, 2.5, low_inclusive=True, high_inclusive=True).count().publish(label='A')",
+      "programText" : "A = data('k8s.pod.phase', rollup='latest').equals(2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.pod.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -14267,6 +14267,15 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
+          "displayName" : "CPU utilization(CPU limits)",
+          "label" : "C",
+          "paletteIndex" : null,
+          "plotType" : null,
+          "valuePrefix" : null,
+          "valueSuffix" : null,
+          "valueUnit" : null,
+          "yAxis" : 0
+        }, {
           "displayName" : "A",
           "label" : "A",
           "paletteIndex" : null,
@@ -14278,15 +14287,6 @@
         }, {
           "displayName" : "B",
           "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU utilization(CPU limits)",
-          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -14305,7 +14305,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-        "programText": "C = ((A*100)/B).top(count=25).publish(label='C')\nA = data('container_cpu_utilization', filter=filter('k8s.pod.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name']).scale(0.01).publish(label='A', enable=False)\nB = data('k8s.container.cpu_limit', filter=filter('k8s.pod.name', '*')).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name']).publish(label='B', enable=False)",
+      "programText" : "C = ((A*100)/B).top(count=25).publish(label='C')\nA = data('container_cpu_utilization', filter=filter('k8s.pod.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name']).scale(0.01).publish(label='A', enable=False)\nB = data('k8s.container.cpu_limit', filter=filter('k8s.pod.name', '*')).sum(by=['k8s.pod.name', 'k8s.cluster.name', 'k8s.pod.uid', 'k8s.namespace.name']).publish(label='B', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -14333,7 +14333,7 @@
       "importOf" : "GpwX24WAgAI",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Nodes",
+      "name" : "# Nodes ready",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -14351,7 +14351,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Nodes",
+          "displayName" : "Nodes ready",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -14373,7 +14373,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.node.condition_ready', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).mean(over='1m').count().publish(label='A')",
+      "programText" : "A = data('k8s.node.condition_ready', rollup='latest').equals(1).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -16270,33 +16270,6 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Cluster with containers",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Cluster with containers (OTel pre-translated)",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Cluster without containers",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
           "displayName" : "Total Clusters",
           "label" : "A",
           "paletteIndex" : null,
@@ -16319,7 +16292,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container_cpu_utilization').sum(by=['k8s.cluster.name']).mean(over='1m').publish(label='D', enable=False)\nE = data('container.cpu.time').sum(by=['k8s.cluster.name']).publish(label='E', enable=False)\nB = data('k8s.node.condition_ready', filter=filter('k8s.cluster.name', '*')).count(by=['k8s.cluster.name']).mean(over='1m').publish(label='B',enable=False)\nA = union(D,E,B).count().publish(label='A')\n",
+      "programText" : "A = data('k8s.node.condition_ready', rollup='latest', extrapolation='last_value').sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.cluster.name']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -19571,12 +19544,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "The count of active workloads",
+      "description" : "The count of running workloads",
       "id" : "Gw6sMAPAYAM",
       "importOf" : "GvAhYExAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Active workloads",
+      "name" : "# Workloads running",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -19594,7 +19567,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Workloads",
+          "displayName" : "Workloads running",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -19616,7 +19589,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.phase').sum(by=['k8s.workload.name', 'k8s.namespace.name', 'k8s.cluster.name']).count().publish(label='A')",
+      "programText" : "A = data('k8s.pod.phase', rollup='latest').equals(2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.workload.name', 'k8s.namespace.name', 'k8s.cluster.name']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -20770,7 +20743,7 @@
       "importOf" : "GvAiR_aAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Containers active",
+      "name" : "# Containers running",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -20788,26 +20761,8 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "CPU utilization",
+          "displayName" : "Containers running",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel Pre Translated",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Active containers",
-          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -20828,7 +20783,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', '*') and filter('sf_tags', '*', match_missing=True) and filter('k8s.deployment.name', '*', match_missing=True), rollup='rate', extrapolation='last_value', maxExtrapolations=3).count().publish(label='A', enable=False)\nB = data('container.cpu.time', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.namespace.name', '*'), rollup='rate').count().publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
+      "programText" : "A = data('k8s.container.restarts', filter=filter('container.status', 'running'), rollup='latest', extrapolation='zero').sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['container.id']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -23828,7 +23783,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.namespace.phase').above(1, inclusive=True).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).count().publish(label='A')",
+      "programText" : "A = data('k8s.namespace.phase', rollup='latest').above(1, inclusive=True).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.cluster.name', 'k8s.namespace.name']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -26884,6 +26839,25 @@
       "contextId" : "FY0_IRVAcAA",
       "created" : 0,
       "creator" : null,
+      "id" : "Gw6mc86AYAE",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "propertyName" : "k8s.workload.kind",
+      "propertyValue" : "StatefulSet",
+      "targets" : [ {
+        "navigatorId" : "GZmqyGKAcAA",
+        "navigatorView" : "AGGREGATE",
+        "isDefault" : true,
+        "name" : "K8s statefulsets nav",
+        "type" : "INTERNAL_NAVIGATOR_LINK"
+      } ]
+    }
+  }, {
+    "crossLink" : {
+      "aliases" : null,
+      "contextId" : "FY0_IRVAcAA",
+      "created" : 0,
+      "creator" : null,
       "id" : "Gw6tCHGAgAg",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -26913,25 +26887,6 @@
         "navigatorView" : "AGGREGATE",
         "isDefault" : true,
         "name" : "K8s deployments",
-        "type" : "INTERNAL_NAVIGATOR_LINK"
-      } ]
-    }
-  }, {
-    "crossLink" : {
-      "aliases" : null,
-      "contextId" : "FY0_IRVAcAA",
-      "created" : 0,
-      "creator" : null,
-      "id" : "Gw6mc86AYAE",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "propertyName" : "k8s.workload.kind",
-      "propertyValue" : "StatefulSet",
-      "targets" : [ {
-        "navigatorId" : "GZmqyGKAcAA",
-        "navigatorView" : "AGGREGATE",
-        "isDefault" : true,
-        "name" : "K8s statefulsets nav",
         "type" : "INTERNAL_NAVIGATOR_LINK"
       } ]
     }
@@ -29676,7 +29631,7 @@
       "teams" : null
     }
   },
-  "hashCode": -1567226450,
+  "hashCode" : 477861920,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"

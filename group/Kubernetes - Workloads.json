@@ -12,6 +12,7 @@
       "lastUpdatedBy" : null,
       "name" : "# Replicas at deficit details",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.replicaset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -449,6 +450,7 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -459,6 +461,7 @@
       "lastUpdatedBy" : null,
       "name" : "Volume overview",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.statefulset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -500,7 +503,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.volume.capacity', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')\nB = data('k8s.volume.available', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.uid', 'k8s.statefulset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
+      "programText" : "A = data('k8s.volume.capacity', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='A')\nB = data('k8s.volume.available', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1180,6 +1183,7 @@
       "lastUpdatedBy" : null,
       "name" : "Network I/O overview (bytes)",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.cronjob.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -1921,6 +1925,7 @@
       "lastUpdatedBy" : null,
       "name" : "Deployment overview",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.deployment.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -2138,6 +2143,7 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -2146,8 +2152,9 @@
       "importOf" : "GWxZB7OAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Deployments not at spec details",
+      "name" : "# Deployments at deficit details",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.deployment.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -2615,10 +2622,11 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "The number of actively running jobs for a cronjob.",
       "id" : "GZmMGz9AgCk",
       "importOf" : "GZbZnsIAYAA",
       "lastUpdated" : 0,
@@ -2663,7 +2671,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.cronjob.active_jobs', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).count().publish(label='A')",
+      "programText" : "A = data('k8s.cronjob.active_jobs', rollup='latest').sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.cronjob.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2863,6 +2871,7 @@
       "lastUpdatedBy" : null,
       "name" : "# ReplicaSet overview",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.replicaset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -2924,6 +2933,7 @@
       "lastUpdatedBy" : null,
       "name" : "Network overview (bytes)",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.statefulset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -3273,15 +3283,16 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Replicasets with available pods",
       "id" : "GZmMGz9AgDI",
       "importOf" : "GXRQAL0AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Replicasets",
+      "name" : "# Replicasets available",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -3321,7 +3332,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.replicaset.available', filter=filter('k8s.workload.kind', 'ReplicaSet')).sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.cluster.name', 'k8s.namespace.name']).count().publish(label='A')",
+      "programText" : "A = data('k8s.replicaset.available', rollup='latest').sum(over=Args.get('ui.dashboard_window', '15m')).above(0).sum(by=['k8s.replicaset.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4117,7 +4128,7 @@
       "importOf" : "GYPfwIsAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Daemonset CPU Usage (CPU units)",
+      "name" : "DaemonSet CPU Usage (CPU units)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -4660,6 +4671,7 @@
       "lastUpdatedBy" : null,
       "name" : "# DaemonSets overview",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.daemonset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -5134,6 +5146,7 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -5182,7 +5195,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.job.active_pods', filter=filter('k8s.workload.kind', 'Job')).sum(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name']).above(0).count().publish(label='A')",
+      "programText" : "A = data('k8s.job.active_pods', extrapolation='zero').above(0).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.job.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5197,7 +5210,7 @@
       "importOf" : "GYPfxIhAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Daemonset Filesystem Activity (bytes)",
+      "name" : "DaemonSet Filesystem Activity (bytes)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -5338,6 +5351,7 @@
       "lastUpdatedBy" : null,
       "name" : "Network I/O overview (bytes)",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.job.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -5609,6 +5623,7 @@
       "lastUpdatedBy" : null,
       "name" : "Statefulset overview",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.statefulset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -6479,6 +6494,7 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -6487,7 +6503,7 @@
       "importOf" : "GYPf0LTAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Daemonsets",
+      "name" : "# DaemonSets running",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -6527,13 +6543,14 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes', filter=filter('k8s.daemonset.name', '*') and filter('k8s.workload.kind', 'DaemonSet')).sum(by=['k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.namespace.name', 'k8s.cluster.name']).count().publish(label='A')",
+      "programText" : "A = data('k8s.daemonset.current_scheduled_nodes', rollup='latest').sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.daemonset.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -6544,6 +6561,7 @@
       "lastUpdatedBy" : null,
       "name" : "Volume overview (bytes)",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.deployment.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : false,
@@ -6600,7 +6618,7 @@
       "importOf" : "GYPfwRyAYAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Daemonsets at deficit",
+      "name" : "# DaemonSets at deficit",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -7448,6 +7466,7 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
@@ -7456,7 +7475,7 @@
       "importOf" : "GWxZB72AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Deployments not at spec",
+      "name" : "# Deployments at deficit",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -7492,7 +7511,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Deployment not at spec",
+          "displayName" : "Deployment at deficit",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -8433,6 +8452,7 @@
       "lastUpdatedBy" : null,
       "name" : "Job overview",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.job.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -9083,6 +9103,7 @@
       "lastUpdatedBy" : null,
       "name" : "Network I/O (bytes)",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.deployment.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -9154,7 +9175,7 @@
       "importOf" : "GYPftxPAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Daemonset total network bytes / sec",
+      "name" : "DaemonSet total network bytes / sec",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -9740,15 +9761,16 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Deployments with available pods(ready for at least minReadySeconds)",
       "id" : "GZmews-AcDA",
       "importOf" : "GWxZCprAgAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Deployments",
+      "name" : "# Deployments available",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -9788,7 +9810,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.deployment.available', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.deployment.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.deployment.uid']).count().publish(label='A')",
+      "programText" : "A = data('k8s.deployment.available', rollup='count').sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.deployment.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -10522,6 +10544,7 @@
       "lastUpdatedBy" : null,
       "name" : "# Statefulsets at deficit details",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.statefulset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -10634,6 +10657,7 @@
       "lastUpdatedBy" : null,
       "name" : "Job overview",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.cronjob.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -10839,15 +10863,16 @@
   }, {
     "chart" : {
       "autoDetectRelatedDetectorIds" : [ ],
+      "chartLinks" : [ ],
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "",
+      "description" : "Statefulsets with pods created by the Statefulset's controller from the Statefulset's version",
       "id" : "GZmews-AcDw",
       "importOf" : "GYyugAsAYAU",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Statefulsets",
+      "name" : "# Statefulsets running",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -10887,7 +10912,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.statefulset.current_pods', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).count().publish(label='A')",
+      "programText" : "A = data('k8s.statefulset.current_pods', rollup='latest').sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.statefulset.uid']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -11423,6 +11448,7 @@
       "lastUpdatedBy" : null,
       "name" : "Network I/O overview (bytes)",
       "options" : {
+        "columnSizes" : null,
         "groupBy" : [ "k8s.replicaset.name" ],
         "groupBySort" : "Descending",
         "hideMissingValues" : true,
@@ -11962,7 +11988,7 @@
       "importOf" : "GYPfvu8AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Daemon set total memory usage (bytes)",
+      "name" : "DaemonSet total memory usage (bytes)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale2" : null,
@@ -12571,7 +12597,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -12584,11 +12610,12 @@
       "importOf" : "GWxZEs8AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s deployments",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -12662,7 +12689,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -12719,11 +12746,12 @@
       "importOf" : "GWxZSBIAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s deployment",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -12827,7 +12855,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -12840,11 +12868,12 @@
       "importOf" : "GXRQBgAAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "k8s replicasets",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -12924,7 +12953,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -12970,11 +12999,12 @@
       "importOf" : "GXRQEi1AcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "k8s replicaset",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13066,7 +13096,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : null,
         "variables" : [ ]
       },
@@ -13076,11 +13106,12 @@
       "importOf" : "GYPf1n7AgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s Daemonsets",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13166,7 +13197,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : null,
         "variables" : [ {
           "alias" : "Daemon set",
@@ -13220,11 +13251,12 @@
       "importOf" : "GYPghk0AcAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s Daemonset",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13328,7 +13360,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -13341,11 +13373,12 @@
       "importOf" : "GYyun1UAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s statefulsets",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13443,7 +13476,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -13489,11 +13522,12 @@
       "importOf" : "GY8cT8yAcAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s statefulset",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13579,7 +13613,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -13592,11 +13626,12 @@
       "importOf" : "GZBFLNsAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s jobs",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13676,7 +13711,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -13722,11 +13757,12 @@
       "importOf" : "GZbK5O3AYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s job",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13800,7 +13836,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -13813,11 +13849,12 @@
       "importOf" : "GZbXKwhAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s cronjobs",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   }, {
     "dashboard" : {
@@ -13891,7 +13928,7 @@
       "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
-        "sources" : null,
+        "sources" : [ ],
         "time" : {
           "end" : "Now",
           "start" : "-15m"
@@ -13937,11 +13974,12 @@
       "importOf" : "GZgNk1QAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
+      "locked" : false,
       "maxDelayOverride" : null,
       "name" : "K8s cronjob",
       "permissions" : null,
       "selectedEventOverlays" : [ ],
-      "tags" : null
+      "tags" : [ ]
     }
   } ],
   "groupExport" : {
@@ -14106,7 +14144,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -93066646,
+  "hashCode" : -1635907761,
   "id" : "GZmMGz9AgAc",
   "modelVersion" : 1,
   "packageType" : "GROUP"
