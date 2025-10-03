@@ -2810,7 +2810,7 @@
       "importOf" : "FXdz9CxAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU usage (%)",
+      "name" : "CPU utilization (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -2818,7 +2818,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "CPU usage %",
+          "label" : "Utilization %",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -2919,98 +2919,8 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "OTel CPU usage",
+          "displayName" : "CPU utilization (%)",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel pre translated CPU usage (%)",
-          "label" : "K",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "SmartAgent CPU limit",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel CPU limit",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate CPU limit",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate CPU usage",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel pre translated CPU usage",
-          "label" : "I",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel pre translated CPU limit",
-          "label" : "J",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "SmartAgent CPU usage (%)",
-          "label" : "N",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel CPU usage (%)",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate CPU usage (%)",
-          "label" : "H",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -3029,7 +2939,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).scale(0.01).publish(label='A', enable=False)\nK = ((I*100)/J).publish(label='K')\nD = data('machine_cpu_cores', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='D', enable=False)\nB = data('cpu.num_processors', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nG = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='G', enable=False)\nF = data('container_cpu_utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*') and filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).scale(0.01).publish(label='F', enable=False)\nI = data('container.cpu.time').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='I', enable=False)\nJ = data('system.cpu.time', rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='J', enable=False)\nE = ((A*100)/D).publish(label='N')\nC = ((A*100)/B).publish(label='L')\nH = ((F*100)/G).publish(label='H')",
+      "programText" : "A = data('cpu.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), rollup='rate').mean(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4197,7 +4107,7 @@
       "importOf" : "FXdz8WaAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Memory capacity used (%)",
+      "name" : "Memory utilization (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -4205,7 +4115,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "Memory used %",
+          "label" : "Utilization %",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -4237,6 +4147,9 @@
           }, {
             "enabled" : true,
             "property" : "k8s.cluster.name"
+          }, {
+            "enabled" : true,
+            "property" : "sf_originatingMetric"
           } ]
         },
         "lineChartOptions" : {
@@ -4258,30 +4171,12 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Memory usage per node",
+          "displayName" : "Memory utilization",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory capacity per node",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory usage",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -4296,7 +4191,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='D', enable=False)\nE = data('k8s.container.memory_limit', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='E', enable=False)\nF = (D/E*100).publish(label='F')",
+      "programText" : "D = data('memory.utilization', filter=filter('k8s.node.name', '*')).mean(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -14462,26 +14357,8 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "A",
+          "displayName" : "Underutilized CPU",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "B",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Underutilized CPU(%)",
-          "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -14500,7 +14377,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).scale(0.01).publish(label='A', enable=False)\nB = data('k8s.container.cpu_limit', filter=filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = ((A*100)/B).bottom(count=25).publish(label='C')",
+      "programText" : "A = data('cpu.utilization', filter=filter('k8s.node.name', '*'), rollup='rate').mean(by=['k8s.node.name', 'k8s.cluster.name']).scale(100).bottom(count=25).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -14956,30 +14833,12 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "container_cpu_utilization - Sum by k8s.node.name,k8s.cluster.name - Scale:0.01",
+          "displayName" : "CPU utilization (%)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "k8s.container.cpu_limit - Sum by k8s.node.name,k8s.cluster.name",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU utilization (%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
-          "valueSuffix" : "",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -14994,7 +14853,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.node.name', '*'), rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).scale(0.01).publish(label='A', enable=False)\nB = data('k8s.container.cpu_limit', filter=filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = ((A*100)/B).top(count=25).publish(label='C')",
+      "programText" : "A = data('cpu.utilization', filter=filter('k8s.node.name', '*'), rollup='rate').mean(by=['k8s.node.name', 'k8s.cluster.name']).scale(100).top(count=25).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -15249,7 +15108,7 @@
       "importOf" : "GpwX24mAcAc",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top 25 nodes by memory usage (%)",
+      "name" : "Top 25 nodes by memory utilization (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -15316,31 +15175,13 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "A",
+          "displayName" : "Memory utilization(%)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
           "valueUnit" : "Byte",
-          "yAxis" : 0
-        }, {
-          "displayName" : "B",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory usage(%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
           "yAxis" : 0
         } ],
         "showEventLines" : false,
@@ -15354,7 +15195,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.memory.usage', filter=filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.container.memory_limit', filter=filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='B', enable=False)\nC = ((A/B)*100).top(count=25).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='C')",
+      "programText" : "A = data('memory.utilization', filter=filter('k8s.node.name', '*')).mean(by=['k8s.node.name', 'k8s.cluster.name']).top(count=25).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -15755,7 +15596,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['k8s.cluster.name', 'k8s.node.name']).bottom(count=25).publish(label='A')",
+      "programText" : "A = data('disk.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['k8s.cluster.name', 'k8s.node.name']).bottom(count=25).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -15783,7 +15624,7 @@
       "importOf" : "GpwX24EAgAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Top 25 nodes by disk usage (%)",
+      "name" : "Top 25 nodes by disk utilization (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -15873,7 +15714,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('disk.summary_utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['k8s.cluster.name', 'k8s.node.name']).top(count=25).publish(label='A')",
+      "programText" : "A = data('disk.utilization', filter=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['k8s.cluster.name', 'k8s.node.name']).top(count=25).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -15963,25 +15804,7 @@
         },
         "publishLabelOptions" : [ {
           "displayName" : "Underutilized memory(%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "B",
-          "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -16000,7 +15823,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = ((A/B)*100).bottom(count=25).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='C')\nA = data('container.memory.usage', filter=filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.container.memory_limit', filter=filter('k8s.node.name', '*')).sum(by=['k8s.node.name', 'k8s.cluster.name']).publish(label='B', enable=False)",
+      "programText" : "A = data('memory.utilization', filter=filter('k8s.node.name', '*')).mean(by=['k8s.node.name', 'k8s.cluster.name']).bottom(count=25).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -16393,29 +16216,11 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Memory usage",
+          "displayName" : "Memory utilization(%)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : "Byte",
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory capacity",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : "Byte",
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory usage (%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : "",
           "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
@@ -16431,7 +16236,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.memory.usage').sum(by=['k8s.cluster.name']).publish(label='A', enable=False)\nB = data('k8s.container.memory_limit').sum(by=['k8s.cluster.name']).publish(label='B', enable=False)\nC = (A/B*100).publish(label='C')",
+      "programText" : "A = data('memory.utilization').mean(by=['k8s.cluster.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -17114,129 +16919,12 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "OTel pre translated CPU usage",
+          "displayName" : "CPU utilization",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel pre translated CPU limit",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel pre translated CPU usage (%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU capacity used %",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "machine_cpu_cores - Sum",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "cpu.num_processors - Sum by k8s.cluster.name",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "container_cpu_utilization - Sum by k8s.cluster.name",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "k8s.container.cpu_limit - Sum by k8s.cluster.name",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Smart Agent k8s CPU usage (%)",
-          "label" : "I",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel Collector k8s CPU usage (%)",
-          "label" : "J",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage (%)",
-          "label" : "K",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "L",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU utilization",
-          "label" : "M",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU Utilization",
-          "label" : "O",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -17251,7 +16939,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.time').sum(by=['k8s.cluster.name']).publish(label='A', enable=False)\nB = data('system.cpu.time', rollup='rate').sum(by=['k8s.cluster.name']).publish(label='B', enable=False)\nC = ((A*100)/B).publish(label='C')\nD = data('container_cpu_utilization', rollup='rate').sum(by=['k8s.cluster.name']).scale(0.01).publish(label='D', enable=False)\nE = data('machine_cpu_cores').sum().publish(label='E', enable=False)\nF = data('cpu.num_processors').sum(by=['k8s.cluster.name']).publish(label='F', enable=False)\nG = data('container_cpu_utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*'), rollup='rate').sum(by=['k8s.cluster.name']).scale(0.01).publish(label='G', enable=False)\nH = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='H', enable=False)\nI = ((D*100)/E).publish(label='I', enable=False)\nJ = ((D*100)/F).publish(label='J', enable=False)\nK = (G*100/H).publish(label='K')\nL = data('k8s.container.cpu_limit').sum(by=['k8s.cluster.name']).publish(label='L', enable=False)\nM = (A/L).scale(100).publish(label='M')\nO = combine(I if J is None else J).publish(label='O')\n",
+      "programText" : "A = data('cpu.utilization').mean(by=['k8s.cluster.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -17359,7 +17047,7 @@
       "importOf" : "GvAh1YJAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Memory capacity used (%)",
+      "name" : "Memory utilization (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -17432,30 +17120,12 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Memory usage per cluster",
+          "displayName" : "Memory utilization per cluster",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
           "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory capacity per cluster",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Memory usage",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
           "valueUnit" : null,
           "yAxis" : 0
         } ],
@@ -17470,7 +17140,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('container.memory.usage').sum(by=['k8s.cluster.name']).publish(label='D', enable=False)\nE = data('k8s.container.memory_limit').sum(by=['k8s.cluster.name']).publish(label='E', enable=False)\nF = (D/E*100).publish(label='F')",
+      "programText" : "D = data('memory.utilization').mean(by=['k8s.cluster.name']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -18139,12 +17809,12 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "CPU capacity used",
+          "displayName" : "D",
           "label" : "D",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "%",
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
@@ -18157,30 +17827,30 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Smart Agent k8s CPU usage (%)",
+          "displayName" : "F",
           "label" : "F",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "%",
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "OTel Collector k8s CPU usage (%)",
+          "displayName" : "G",
           "label" : "G",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "%",
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Fargate k8s CPU usage (%)",
+          "displayName" : "H",
           "label" : "H",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "%",
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
@@ -18202,16 +17872,16 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "OTel pre translated CPU usage (%)",
+          "displayName" : "K",
           "label" : "K",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
-          "valueSuffix" : "%",
+          "valueSuffix" : null,
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "k8s.container.cpu_limit - Sum by k8s.cluster.name",
+          "displayName" : "L",
           "label" : "L",
           "paletteIndex" : null,
           "plotType" : null,
@@ -18220,7 +17890,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "CPU Usage",
+          "displayName" : "M",
           "label" : "M",
           "paletteIndex" : null,
           "plotType" : null,
@@ -18229,7 +17899,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "CPU units",
+          "displayName" : "N",
           "label" : "N",
           "paletteIndex" : null,
           "plotType" : null,
@@ -18467,7 +18137,7 @@
       "importOf" : "GvAiRDbAYAA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "CPU capacity used (%)",
+      "name" : "CPU utilization (%)",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -18648,116 +18318,8 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "OTel pre translated CPU usage",
+          "displayName" : "CPU utilization (%)",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel pre translated CPU limit",
-          "label" : "B",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel pre translated CPU usage (%)",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU capacity used %",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "machine_cpu_cores - Sum",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "cpu.num_processors - Sum by k8s.cluster.name",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "container_cpu_utilization - Sum by k8s.cluster.name",
-          "label" : "G",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "k8s.container.cpu_limit - Sum by k8s.cluster.name",
-          "label" : "H",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Smart Agent k8s CPU usage (%)",
-          "label" : "I",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "OTel Collector k8s CPU usage (%)",
-          "label" : "J",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Fargate k8s CPU usage (%)",
-          "label" : "K",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : "%",
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "L",
-          "label" : "L",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "CPU utilization",
-          "label" : "M",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -18776,7 +18338,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.time').sum(by=['k8s.cluster.name']).publish(label='A', enable=False)\nB = data('system.cpu.time', rollup='rate').sum(by=['k8s.cluster.name']).publish(label='B', enable=False)\nC = ((A*100)/B).publish(label='C')\nD = data('container_cpu_utilization', rollup='rate').sum(by=['k8s.cluster.name']).scale(0.01).publish(label='D', enable=False)\nE = data('machine_cpu_cores').sum().publish(label='E', enable=False)\nF = data('cpu.num_processors').sum(by=['k8s.cluster.name']).publish(label='F', enable=False)\nG = data('container_cpu_utilization', filter=filter('eks.amazonaws.com/fargate-profile', '*'), rollup='rate').sum(by=['k8s.cluster.name']).scale(0.01).publish(label='G', enable=False)\nH = data('k8s.container.cpu_limit', filter=filter('eks.amazonaws.com/fargate-profile', '*')).sum(by=['k8s.cluster.name']).publish(label='H', enable=False)\nI = ((D*100)/E).publish(label='I')\nJ = ((D*100)/F).publish(label='J')\nK = (G*100/H).publish(label='K')\nL = data('k8s.container.cpu_limit').sum(by=['k8s.cluster.name']).publish(label='L', enable=False)\nM = (A/L).scale(100).publish(label='M')",
+      "programText" : "A = data('cpu.utilization', rollup='rate').mean(by=['k8s.cluster.name']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -26858,25 +26420,6 @@
       "contextId" : "FY0_IRVAcAA",
       "created" : 0,
       "creator" : null,
-      "id" : "Gw6tCHGAgAg",
-      "lastUpdated" : 0,
-      "lastUpdatedBy" : null,
-      "propertyName" : "k8s.workload.kind",
-      "propertyValue" : "CronJob",
-      "targets" : [ {
-        "navigatorId" : "GZmrPQDAcAA",
-        "navigatorView" : "AGGREGATE",
-        "isDefault" : true,
-        "name" : "K8s jobs nav",
-        "type" : "INTERNAL_NAVIGATOR_LINK"
-      } ]
-    }
-  }, {
-    "crossLink" : {
-      "aliases" : null,
-      "contextId" : "FY0_IRVAcAA",
-      "created" : 0,
-      "creator" : null,
       "id" : "Gw6ud3pAcAk",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
@@ -26887,6 +26430,25 @@
         "navigatorView" : "AGGREGATE",
         "isDefault" : true,
         "name" : "K8s deployments",
+        "type" : "INTERNAL_NAVIGATOR_LINK"
+      } ]
+    }
+  }, {
+    "crossLink" : {
+      "aliases" : null,
+      "contextId" : "FY0_IRVAcAA",
+      "created" : 0,
+      "creator" : null,
+      "id" : "Gw6sMAPAYAs",
+      "lastUpdated" : 0,
+      "lastUpdatedBy" : null,
+      "propertyName" : "k8s.workload.kind",
+      "propertyValue" : "DaemonSet",
+      "targets" : [ {
+        "navigatorId" : "GZmqelfAcAA",
+        "navigatorView" : "AGGREGATE",
+        "isDefault" : true,
+        "name" : "K8s daemonsets nav",
         "type" : "INTERNAL_NAVIGATOR_LINK"
       } ]
     }
@@ -26915,16 +26477,16 @@
       "contextId" : "FY0_IRVAcAA",
       "created" : 0,
       "creator" : null,
-      "id" : "Gw6sMAPAYAs",
+      "id" : "Gw6tCHGAgAg",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "propertyName" : "k8s.workload.kind",
-      "propertyValue" : "DaemonSet",
+      "propertyValue" : "CronJob",
       "targets" : [ {
-        "navigatorId" : "GZmqelfAcAA",
+        "navigatorId" : "GZmrPQDAcAA",
         "navigatorView" : "AGGREGATE",
         "isDefault" : true,
-        "name" : "K8s daemonsets nav",
+        "name" : "K8s jobs nav",
         "type" : "INTERNAL_NAVIGATOR_LINK"
       } ]
     }
@@ -29631,7 +29193,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -2042150885,
+  "hashCode" : 2061129226,
   "id" : "DiVWf-iAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
