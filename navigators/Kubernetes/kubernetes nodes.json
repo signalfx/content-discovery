@@ -309,7 +309,7 @@
       }
     }
   ],
-  "hashCode": -516422697,
+    "hashCode": 1343900078,
   "id": "FTByWHUAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -522,7 +522,7 @@
         {
           "aggregate": "mean",
           "displayFormatterCode": null,
-          "displayName": "File system utilization",
+                    "displayName": "Disk utilization",
           "displayTemplate": "{{kubernetes_nodes_total_file_system_utilization}}",
           "metricColumnCode": "file_system_utilization",
           "propertyFormat": "Percentage"
@@ -961,7 +961,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "OTEL_CPU_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name']).scale(0.01)\nOTEL_CPU_PROCESSORS = data('cpu.num_processors'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_USAGE = ((OTEL_CPU_USAGE*100)/OTEL_CPU_PROCESSORS)\nCPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').sum(by=['k8s.node.name', 'k8s.cluster.name'])\nSYSTEM_CPU_TIME = data('system.cpu.time', filter('state', 'idle'){{#filter}} and {{{filter}}}{{/filter}}).count(by=['k8s.node.name', 'k8s.cluster.name'])\nCPU_PRE_USAGE = ((CPU_TIME/SYSTEM_CPU_TIME)*100)\nCPU_UTILIZATION = union(CPU_USAGE, CPU_PRE_USAGE)",
+                            "template": "CPU_UTILIZATION = data('cpu.utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
@@ -1002,7 +1002,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "CPU_LOAD = data('system.cpu.load_average.1m'{{#filter}}, filter={{{filter}}}{{/filter}})",
+                            "template": "CPU_LOAD = data('system.cpu.load_average.1m'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m'))",
               "varName": "CPU_LOAD"
             },
             "metricSelectors": [
@@ -1046,7 +1046,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "CPU_REQUEST = data('k8s.container.cpu_request'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
+                            "template": "CPU_REQUEST = data('k8s.container.cpu_request'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "CPU_REQUEST"
             },
             "metricSelectors": [
@@ -1090,7 +1090,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
+                            "template": "CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "CPU_LIMIT"
             },
             "metricSelectors": [
@@ -1134,7 +1134,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nMEMORY_LIMIT = data('k8s.container.memory_limit'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nNODE_MEMORY_USAGE = (MEMORY_USAGE/MEMORY_LIMIT*100)",
+                            "template": "MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nMEMORY_LIMIT = data('k8s.container.memory_limit'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nNODE_MEMORY_USAGE = data('memory.utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "NODE_MEMORY_USAGE"
             },
             "metricSelectors": [
@@ -1267,7 +1267,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "PEAK_MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nPEAK_MEMORY_LIMIT = data('k8s.container.memory_limit'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])\nPEAK_MEMORY_UTILIZATION = (PEAK_MEMORY_USAGE/PEAK_MEMORY_LIMIT*100).max(by=['k8s.node.name', 'k8s.cluster.name']).max(over=Args.get('ui.dashboard_window', '15m'))",
+                            "template": "PEAK_MEMORY_UTILIZATION = data('memory.utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).max(over=Args.get('ui.dashboard_window', '15m')).max(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "PEAK_MEMORY_UTILIZATION"
             },
             "metricSelectors": [
@@ -1312,7 +1312,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "CAPACITY = data('container.filesystem.capacity', filter('sf_tags', '*',  match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nUTILIZATION = data('container.filesystem.usage', filter('sf_tags', '*',  match_missing=True){{#filter}} and {{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nFILE_SYSTEM_UTILIZATION = ((UTILIZATION/CAPACITY)*100)",
+                            "template": "FILE_SYSTEM_UTILIZATION = data('disk.utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name', 'k8s.node.name'])",
               "varName": "FILE_SYSTEM_UTILIZATION"
             },
             "metricSelectors": [
@@ -1357,7 +1357,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "FILE_SYSTEM_AVAILABLE = data('container.filesystem.available'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
+                            "template": "FILE_SYSTEM_AVAILABLE = data('container.filesystem.available'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "FILE_SYSTEM_AVAILABLE"
             },
             "metricSelectors": [
@@ -1401,7 +1401,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "FILE_SYSTEM_CAPACITY = data('container.filesystem.capacity'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
+                            "template": "FILE_SYSTEM_CAPACITY = data('container.filesystem.capacity'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "FILE_SYSTEM_CAPACITY"
             },
             "metricSelectors": [
@@ -1445,7 +1445,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "FILE_SYSTEM_USAGE = data('container.filesystem.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
+                            "template": "FILE_SYSTEM_USAGE = data('container.filesystem.usage'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name', 'k8s.cluster.name'])",
               "varName": "FILE_SYSTEM_USAGE"
             },
             "metricSelectors": [
@@ -1489,7 +1489,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "NETWORK_TRANSMIT_THROUGHPUT = data('system.network.io'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name'])",
+                            "template": "NETWORK_TRANSMIT_THROUGHPUT = data('system.network.io'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name'])",
               "varName": "NETWORK_TRANSMIT_THROUGHPUT"
             },
             "metricSelectors": [
@@ -1533,7 +1533,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "NETWORK_RECEIVE_THROUGHPUT = data('system.network.io'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name'])",
+                            "template": "NETWORK_RECEIVE_THROUGHPUT = data('system.network.io'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name'])",
               "varName": "NETWORK_RECEIVE_THROUGHPUT"
             },
             "metricSelectors": [
@@ -1577,7 +1577,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "NETWORK_TRANSMIT_ERRORS = data('system.network.errors'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name'])",
+                            "template": "NETWORK_TRANSMIT_ERRORS = data('system.network.errors'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name'])",
               "varName": "NETWORK_TRANSMIT_ERRORS"
             },
             "metricSelectors": [
@@ -1621,7 +1621,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "NETWORK_RECEIVE_ERRORS = data('system.network.errors'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.node.name'])",
+                            "template": "NETWORK_RECEIVE_ERRORS = data('system.network.errors'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation='last_value', maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.node.name'])",
               "varName": "NETWORK_RECEIVE_ERRORS"
             },
             "metricSelectors": [

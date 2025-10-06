@@ -33,7 +33,7 @@
       }
     }
   ],
-  "hashCode": -135387586,
+    "hashCode": -1881861816,
   "id": "FTwxEZhAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -176,7 +176,7 @@
         {
           "aggregate": "mean",
           "displayFormatterCode": null,
-          "displayName": "File system utilization",
+                    "displayName": "Disk utilization",
           "displayTemplate": "{{kubernetes_clusters_file_system_utilization}}",
           "metricColumnCode": "file_system_utilization",
           "propertyFormat": "Percentage"
@@ -251,7 +251,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CONTAINER_COUNT = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).mean(over=\"1m\").count(by=[\"k8s.cluster.name\"])",
+                            "template": "CONTAINER_COUNT = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).scale(0.01).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\").count(by=[\"k8s.cluster.name\"])",
               "varName": "CONTAINER_COUNT"
             },
             "metricSelectors": [
@@ -344,7 +344,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "NAMESPACE = data(\"k8s.namespace.phase\"{{#filter}},filter={{{filter}}}{{/filter}}).count(by=[\"k8s.cluster.name\"])",
+                            "template": "NAMESPACE = data(\"k8s.namespace.phase\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).count(by=[\"k8s.cluster.name\"])",
               "varName": "NAMESPACE"
             },
             "metricSelectors": [
@@ -375,7 +375,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "NET_ERROR_PER_CLUSTER = data(\"k8s.pod.network.errors\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").sum(by=[\"k8s.cluster.name\"])",
+                            "template": "NET_ERROR_PER_CLUSTER = data(\"k8s.pod.network.errors\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=[\"k8s.cluster.name\"])",
               "varName": "NET_ERROR_PER_CLUSTER"
             },
             "metricSelectors": [
@@ -413,10 +413,11 @@
                 }
               ],
               "resolution": 60000,
-              "template": "CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.cluster.name\"])\nMACHINE_CPU_CORES = data(\"machine_cpu_cores\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum()\nCPU_NUM_PROCESSORS = data(\"cpu.num_processors\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nCPU_LIMIT_FARGATE = data(\"k8s.container.cpu_limit\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nCPU_UTILIZATION_FARGATE = data(\"container_cpu_utilization\", filter=filter(\"eks.amazonaws.com/fargate-profile\", \"*\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\").scale(0.01).sum(by=[\"k8s.cluster.name\"])\nCPU_USED_EKS = (CPU_UTILIZATION/CPU_NUM_PROCESSORS)\nCPU_USED_MACHINE = (CPU_UTILIZATION/MACHINE_CPU_CORES)\nCPU_USED_FARGATE = ((CPU_UTILIZATION_FARGATE*100)/CPU_LIMIT_FARGATE)\nCPU_CAPACITY_USED = union(CPU_USED_EKS, CPU_USED_MACHINE, CPU_USED_FARGATE).scale(100)",
-              "varName": "CPU_CAPACITY_USED"
+                            "template": "CPU_UTILIZATION = data('cpu.utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name'])",
+                            "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
+                            "cpu.utilization",
               "container_cpu_utilization",
               "cpu.num_processors",
               "machine_cpu_cores",
@@ -447,10 +448,11 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "MEMORY_UTILIZATION = data(\"container.memory.usage\"{{#filter}},filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nMEMORY_LIMIT = data(\"k8s.container.memory_limit\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])\nMEMORY_CAPACITY=(MEMORY_UTILIZATION/MEMORY_LIMIT)*100",
-              "varName": "MEMORY_CAPACITY"
+                            "template": "MEMORY_UTILIZATION = data('memory.utilization'{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name'])",
+                            "varName": "MEMORY_UTILIZATION"
             },
             "metricSelectors": [
+                            "memory.utilization",
               "container.memory.usage",
               "k8s.container.memory_limit"
             ],
@@ -479,7 +481,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "MEMORY_USAGE = data(\"container.memory.usage\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"k8s.cluster.name\"])",
+                            "template": "MEMORY_USAGE = data('container.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.cluster.name'])",
               "varName": "MEMORY_USAGE"
             },
             "metricSelectors": [
@@ -510,10 +512,11 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "CAPACITY = data('container.filesystem.capacity'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name'])\nUSAGE = data('container.filesystem.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.cluster.name'])\nFILE_SYSTEM_UTILIZATION= ((USAGE/CAPACITY)*100)",
-              "varName": "FILE_SYSTEM_UTILIZATION"
+                            "template": "DISK_UTILIZATION = data(\"disk.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name'])",
+                            "varName": "DISK_UTILIZATION"
             },
             "metricSelectors": [
+                            "disk.utilization",
               "container.filesystem.capacity",
               "container.filesystem.usage"
             ],
