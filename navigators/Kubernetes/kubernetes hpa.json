@@ -1,12 +1,13 @@
 {
   "crossLinkExports": null,
-  "hashCode": 904718345,
+  "hashCode": -527924694,
   "id": "Gxl_WQxAgAE",
   "modelVersion": 1,
   "navigatorExport": {
     "navigator": {
       "aggregateDashboards": [
-        "Gxlc3DOAYBw"
+        "G4fwXvWAgAA",
+        "G4fnPKkAcAA"
       ],
       "connectedCategory": true,
       "created": 0,
@@ -16,9 +17,40 @@
       "entityHighlightedAttributes": [],
       "id": "Gxl_WQxAgAE",
       "idDisplayName": null,
-      "importQualifiers": [],
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.hpa.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            }
+          ],
+          "metric": "k8s.hpa.current_replicas"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.hpa.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            }
+          ],
+          "metric": "k8s.hpa.desired_replicas"
+        }
+      ],
       "instanceDashboards": [
-        "GxloTz-AcAE"
+        "G4fvY4lAcAE"
       ],
       "instanceDisplayText": null,
       "lastUpdated": 0,
@@ -29,12 +61,14 @@
           "displayName": "Default",
           "metricClassCode": "default",
           "metricClassColumns": [
+            "health_status",
             "hpa_name",
             "cluster_name",
-            "hpa_min_replicas",
-            "hpa_max_replicas",
-            "hpa_current_replicas",
-            "hpa_desired_replicas"
+            "namespace_name",
+            "deployment_name",
+            "statefulset_name",
+            "hpa_min_vs_max_replicas",
+            "hpa_current_vs_desired_replicas"
           ]
         }
       ],
@@ -42,7 +76,7 @@
         {
           "aggregate": null,
           "displayFormatterCode": null,
-          "displayName": "HPA",
+          "displayName": "HPA name",
           "displayTemplate": "{{id}}",
           "metricColumnCode": "hpa_name",
           "propertyFormat": "id"
@@ -56,36 +90,108 @@
           "propertyFormat": "id"
         },
         {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Namespace",
+          "displayTemplate": "{{k8s.namespace.name}}",
+          "metricColumnCode": "namespace_name",
+          "propertyFormat": "id"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Deployment name",
+          "displayTemplate": "{{k8s.deployment.name}}",
+          "metricColumnCode": "deployment_name",
+          "propertyFormat": "id"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Replicaset name",
+          "displayTemplate": "{{k8s.replicaset.name}}",
+          "metricColumnCode": "replicaset_name",
+          "propertyFormat": "id"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Statefulset name",
+          "displayTemplate": "{{k8s.statefulset.name}}",
+          "metricColumnCode": "statefulset_name",
+          "propertyFormat": "id"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Target name",
+          "displayTemplate": "{{k8s.hpa.scaletargetref.name}}",
+          "metricColumnCode": "target_name",
+          "propertyFormat": null
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": null,
+          "displayName": "Target kind",
+          "displayTemplate": "{{k8s.hpa.scaletargetref.kind}}",
+          "metricColumnCode": "target_kind",
+          "propertyFormat": null
+        },
+        {
           "aggregate": "mean",
           "displayFormatterCode": null,
-          "displayName": "Min replicas",
+          "displayName": "# Min replicas",
           "displayTemplate": "{{k8s_hpa_min_replicas}}",
           "metricColumnCode": "hpa_min_replicas",
-          "propertyFormat": null
+          "propertyFormat": "Number"
         },
         {
           "aggregate": "mean",
           "displayFormatterCode": null,
-          "displayName": "Max replicas",
+          "displayName": "# Max replicas",
           "displayTemplate": "{{k8s_hpa_max_replicas}}",
           "metricColumnCode": "hpa_max_replicas",
-          "propertyFormat": null
+          "propertyFormat": "Number"
         },
         {
           "aggregate": "mean",
           "displayFormatterCode": null,
-          "displayName": "Current replicas",
+          "displayName": "# Min vs max replicas",
+          "displayTemplate": "{{k8s_hpa_min_replicas}} | {{k8s_hpa_max_replicas}}",
+          "metricColumnCode": "hpa_min_vs_max_replicas",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "mean",
+          "displayFormatterCode": null,
+          "displayName": "# Current replicas",
           "displayTemplate": "{{k8s_hpa_current_replicas}}",
           "metricColumnCode": "hpa_current_replicas",
-          "propertyFormat": null
+          "propertyFormat": "Number"
         },
         {
           "aggregate": "mean",
           "displayFormatterCode": null,
-          "displayName": "Desired replicas",
+          "displayName": "# Desired replicas",
           "displayTemplate": "{{k8s_hpa_desired_replicas}}",
           "metricColumnCode": "hpa_desired_replicas",
-          "propertyFormat": null
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": "mean",
+          "displayFormatterCode": null,
+          "displayName": "# Current vs desired replicas",
+          "displayTemplate": "{{k8s_hpa_current_replicas}} | {{k8s_hpa_desired_replicas}}",
+          "metricColumnCode": "hpa_current_vs_desired_replicas",
+          "propertyFormat": "Number"
+        },
+        {
+          "aggregate": null,
+          "displayFormatterCode": "healthStatus",
+          "displayName": "Health",
+          "displayTemplate": "{{Health Status}}",
+          "metricColumnCode": "health_status",
+          "propertyFormat": "Number"
         }
       ],
       "name": "Kubernetes HPAs",
@@ -119,6 +225,13 @@
         },
         {
           "applyIfExists": false,
+          "displayName": "Namespace",
+          "fieldName": "k8s.namespace.name",
+          "filterType": null,
+          "groupName": null
+        },
+        {
+          "applyIfExists": false,
           "displayName": "Region",
           "fieldName": "cloud.region",
           "filterType": [
@@ -134,9 +247,37 @@
             "faceted"
           ],
           "groupName": "Relationship"
+        },
+        {
+          "applyIfExists": false,
+          "displayName": "Namespace name",
+          "fieldName": "k8s.namespace.name",
+          "filterType": [
+            "faceted"
+          ],
+          "groupName": "Relationship"
         }
       ],
-      "propertyDisplayFormatters": [],
+      "propertyDisplayFormatters": [
+        {
+          "defaultMappingValue": {
+            "icon": "Unknown",
+            "label": "Unknown"
+          },
+          "formatType": "iconLabel",
+          "id": "healthStatus",
+          "valueMapping": {
+            "2": {
+              "icon": "kubernetes_health_status_warning",
+              "label": "Warning"
+            },
+            "4": {
+              "icon": "kubernetes_health_status_critical",
+              "label": "Critical"
+            }
+          }
+        }
+      ],
       "relationships": [],
       "requiresFilter": false,
       "sites": "o11y",
@@ -150,7 +291,7 @@
         "filterProperties": null,
         "id": "k8shpa",
         "idName": "HPA",
-        "idTemplate": "{{k8s.hpa.name}} | {{k8s.hpa.uid}}",
+        "idTemplate": "{{k8s.hpa.name}}",
         "listColumns": [],
         "metrics": [
           {
@@ -173,7 +314,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "MIN_REPLICAS = data('k8s.hpa.min_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').mean(by=['k8s.hpa.name', 'k8s.hpa.uid', 'k8s.cluster.name']).publish(label='# Min replicas')",
+              "template": "MIN_REPLICAS = data('k8s.hpa.min_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').promote(by=['k8s.hpa.scaletargetref.kind', 'k8s.hpa.scaletargetref.name','k8s.deployment.name','k8s.statefulset.name','k8s.replicaset.name'], allow_missing={'k8s.deployment.name':\"-\", 'k8s.statefulset.name':'-', 'k8s.replicaset.name': '-', 'k8s.hpa.scaletargetref.kind':'-', 'k8s.hpa.scaletargetref.name':'-'}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.hpa.name'])",
               "varName": "MIN_REPLICAS"
             },
             "metricSelectors": [
@@ -204,7 +345,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "MAX_REPLICAS = data('k8s.hpa.max_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').mean(by=['k8s.hpa.name', 'k8s.hpa.uid', 'k8s.cluster.name']).publish(label='# Min replicas')",
+              "template": "MAX_REPLICAS = data('k8s.hpa.max_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').promote(by=['k8s.hpa.scaletargetref.kind', 'k8s.hpa.scaletargetref.name','k8s.deployment.name','k8s.statefulset.name','k8s.replicaset.name'], allow_missing={'k8s.deployment.name':\"-\", 'k8s.statefulset.name':'-', 'k8s.replicaset.name': '-', 'k8s.hpa.scaletargetref.kind':'-', 'k8s.hpa.scaletargetref.name':'-'}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.hpa.name'])",
               "varName": "MAX_REPLICAS"
             },
             "metricSelectors": [
@@ -235,7 +376,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CURRENT_REPLICAS = data('k8s.hpa.current_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').mean(by=['k8s.hpa.name', 'k8s.hpa.uid', 'k8s.cluster.name']).publish(label='# Min replicas')",
+              "template": "CURRENT_REPLICAS = data('k8s.hpa.current_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').promote(by=['k8s.hpa.scaletargetref.kind', 'k8s.hpa.scaletargetref.name','k8s.deployment.name','k8s.statefulset.name','k8s.replicaset.name'], allow_missing={'k8s.deployment.name':\"-\", 'k8s.statefulset.name':'-', 'k8s.replicaset.name': '-', 'k8s.hpa.scaletargetref.kind':'-', 'k8s.hpa.scaletargetref.name':'-'}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.hpa.name'])",
               "varName": "CURRENT_REPLICAS"
             },
             "metricSelectors": [
@@ -266,7 +407,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "DESIRED_REPLICAS = data('k8s.hpa.desired_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').mean(by=['k8s.hpa.name', 'k8s.hpa.uid', 'k8s.cluster.name']).publish(label='# Min replicas')",
+              "template": "DESIRED_REPLICAS = data('k8s.hpa.desired_replicas'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').promote(by=['k8s.hpa.scaletargetref.kind', 'k8s.hpa.scaletargetref.name','k8s.deployment.name','k8s.statefulset.name','k8s.replicaset.name'], allow_missing={'k8s.deployment.name':\"-\", 'k8s.statefulset.name':'-', 'k8s.replicaset.name': '-', 'k8s.hpa.scaletargetref.kind':'-', 'k8s.hpa.scaletargetref.name':'-'}).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.hpa.name'])",
               "varName": "DESIRED_REPLICAS"
             },
             "metricSelectors": [
@@ -276,13 +417,45 @@
             "valueFormat": "Number",
             "valueLabel": "Desired replicas",
             "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": null,
+            "displayName": null,
+            "id": "Health Status",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "WARNING = 2\nCRITICAL = 4\nREPLICA_DIFF = (DESIRED_REPLICAS-CURRENT_REPLICAS).ceil().top(count=100)\nHPA_SHORTFALl = (REPLICA_DIFF).above(0)\nOVERFLOW_HPA = (REPLICA_DIFF).below(0)\nHEALTH = combine(CRITICAL if HPA_SHORTFALl is not None else WARNING if OVERFLOW_HPA is not None else 0, mode='mapped').above(0)",
+              "varName": "HEALTH"
+            },
+            "metricSelectors": null,
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": null,
+            "valueType": null,
+            "visualizations": [
+              "list"
+            ]
           }
         ],
         "mtsQuery": null,
         "o11yMetricName": "Active HPAs",
         "o11yMetricUnit": null,
         "o11yProductName": "Kubernetes HPAs",
-        "o11ySignalflowTemplate": "A = data('k8s.hpa.desired_replicas', extrapolation='last_value').sum(by=['k8s.hpa.uid']).count().publish(label='A')",
+        "o11ySignalflowTemplate": "A = data('k8s.hpa.desired_replicas').mean(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.hpa.uid']).count().publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
@@ -295,10 +468,34 @@
         "systemDashboardPrefix": null,
         "tooltipKeyList": [
           {
-            "displayName": "HPA creation timestamp",
+            "displayName": "Cluster",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "k8s.cluster.name"
+          },
+          {
+            "displayName": "Namespace",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "k8s.namespace.name"
+          },
+          {
+            "displayName": "Created at",
             "format": null,
             "isSummaryProperty": true,
             "property": "hpa.creation_timestamp"
+          },
+          {
+            "displayName": "Target name",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "k8s.hpa.scaletargetref.name"
+          },
+          {
+            "displayName": "Target kind",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "k8s.hpa.scaletargetref.kind"
           },
           {
             "displayName": "Value",
