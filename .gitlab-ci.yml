@@ -18,6 +18,21 @@ validate:
   script:
     - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
 
+validate-release-notes:
+  image: python:3
+  stage: validate-content
+  except:
+    - schedules
+  script:
+    - pip install pyyaml
+    - python scripts/validate_release_notes.py
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - when: never
+
 validate-ai-experimental:
   image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
   stage: validate-ai-experimental

@@ -1,0 +1,64 @@
+#!/bin/bash
+# Pre-commit hook for content validation and release notes generation
+# This runs automatically before each commit
+
+set -e
+
+echo "🔍 Checking for content changes..."
+
+# Get list of staged JSON files in content directories
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(navigators|group|detector)/.*\.json$' || true)
+
+if [ -z "$STAGED_FILES" ]; then
+    echo "✓ No content files changed, skipping validation and release notes"
+    exit 0
+fi
+
+echo "📝 Content files changed:"
+echo "$STAGED_FILES" | sed 's/^/  - /'
+
+# Step 1: Validate content files
+echo ""
+echo "🔍 Validating content files..."
+if bash scripts/validate_content.sh; then
+    echo "✓ Content validation passed"
+else
+    echo "✗ Content validation failed - please fix errors before committing"
+    exit 1
+fi
+
+# Step 2: Generate release notes
+echo ""
+echo "🤖 Generating release notes from last 50 master commits..."
+
+# Check if required environment variables are set
+if [ -z "$BRIDGE_API_CLIENT_ID" ] || [ -z "$BRIDGE_API_CLIENT_SECRET" ] || [ -z "$BRIDGE_API_APP_KEY" ]; then
+    echo "⚠️  WARNING: Bridge IT API credentials not set"
+    echo "    Skipping AI-powered release notes generation"
+    echo "    Set BRIDGE_API_CLIENT_ID, BRIDGE_API_CLIENT_SECRET, and BRIDGE_API_APP_KEY as GitLab CI/CD variables"
+    exit 0
+fi
+
+# Use venv python if available, otherwise use system python
+if [ -f ".venv/bin/python" ]; then
+    PYTHON_CMD=".venv/bin/python"
+else
+    PYTHON_CMD="python3"
+fi
+
+# Run the release notes generator (from master branch)
+if $PYTHON_CMD scripts/generate_release_notes_from_master.py; then
+    echo "✓ Release notes generated successfully"
+    
+    # Add the release notes file to the commit
+    if [ -f "content_release_notes.yaml" ]; then
+        git add content_release_notes.yaml
+        echo "✓ Release notes added to commit"
+    fi
+else
+    echo "✗ Failed to generate release notes"
+    echo "  Commit will proceed without release notes update"
+    echo "  You can run manually: python scripts/generate_release_notes_from_master.py"
+fi
+
+exit 0
