@@ -37,7 +37,7 @@ AUTH_API_PATH = '/oauth2/default/v1/token'
 CONTENT_FOLDERS = ['detector', 'navigators', 'group']
 
 # Default number of commits to analyze (just the latest)
-DEFAULT_NUM_COMMITS = 1
+DEFAULT_NUM_COMMITS = 10
 
 # Output file
 OUTPUT_FILE = 'content_release_notes.yaml'
@@ -281,7 +281,12 @@ Determine the version bump now:"""
             )
             response.raise_for_status()
             
-            ai_response = response.json()['choices'][0]['message']['content']
+            response_data = response.json()
+            if not response_data or 'choices' not in response_data or not response_data['choices']:
+                print(f"  ⚠ Invalid API response structure: {json.dumps(response_data, indent=2)[:500]}")
+                raise Exception(f"Invalid API response: missing 'choices' field")
+            
+            ai_response = response_data['choices'][0]['message']['content']
             
             # Extract JSON from response
             json_str = ai_response.strip()
@@ -306,8 +311,7 @@ Determine the version bump now:"""
                     'category': file['category'],
                     'description': file_details['description'],
                     'change_type': file_details['change_type'],
-                    'breaking_change': file_details['breaking_change'],
-                    'files_modified': [file['path']]
+                    'breaking_change': file_details['breaking_change']
                 })
             
             return version, version_entry
@@ -322,8 +326,7 @@ Determine the version bump now:"""
                     'category': f['category'], 
                     'description': commit['message'],
                     'change_type': 'updated',
-                    'breaking_change': False,
-                    'files_modified': [f['path']]
+                    'breaking_change': False
                 } for f in files]
             }
             return version, version_entry
@@ -383,7 +386,11 @@ Generate the file details now:"""
             )
             response.raise_for_status()
             
-            ai_response = response.json()['choices'][0]['message']['content']
+            response_data = response.json()
+            if not response_data or 'choices' not in response_data or not response_data['choices']:
+                raise Exception(f"Invalid API response for file details: {response_data}")
+            
+            ai_response = response_data['choices'][0]['message']['content']
             
             # Extract JSON from response
             json_str = ai_response.strip()
@@ -436,8 +443,9 @@ Generate the file details now:"""
                 with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
                     return yaml.safe_load(f) or self.get_default_structure()
             except Exception as e:
-                                print(f'⚠ Could not parse existing release notes: {e}')
-            return self.get_default_release_notes_structure()
+                print(f'⚠ Could not parse existing release notes: {e}')
+                return self.get_default_release_notes_structure()
+        return self.get_default_release_notes_structure()
     
     def get_default_release_notes_structure(self) -> Dict[str, Any]:
         """Get default release notes structure"""
@@ -480,9 +488,21 @@ Generate the file details now:"""
         if 'metadata' in release_notes:
             release_notes['metadata']['last_updated'] = datetime.utcnow().isoformat() + 'Z'
         
-        # Sort versions in descending order
+        # Sort versions in descending order (newest first) using semantic version sorting
         if 'versions' in release_notes:
-            sorted_versions = dict(sorted(release_notes['versions'].items(), key=lambda x: x[0], reverse=True))
+            def parse_version(version_str):
+                """Parse semantic version string to tuple for proper sorting"""
+                try:
+                    parts = version_str.split('.')
+                    return tuple(int(p) for p in parts)
+                except:
+                    return (0, 0, 0)
+            
+            sorted_versions = dict(sorted(
+                release_notes['versions'].items(), 
+                key=lambda x: parse_version(x[0]), 
+                reverse=True
+            ))
             release_notes['versions'] = sorted_versions
         
         with open(OUTPUT_FILE, 'w') as f:
