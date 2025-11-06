@@ -21,12 +21,12 @@ validate:
 validate-release-notes:
   image: python:3
   stage: validate-content
-  except:
-    - schedules
   script:
     - pip install pyyaml
     - python scripts/validate_release_notes.py
   rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
