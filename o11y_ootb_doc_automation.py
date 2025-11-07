@@ -311,7 +311,7 @@ if __name__ == "__main__":
     # Todo: Above code can be moved class's method
     dashboard_file_path = "dashboards_builtin_content.yaml"
     nav_file_path = "navigators_builtin_content.yaml"
-    release_notes_file_path = "content_release_notes.yaml"
+    release_notes_file_path = "content_changelog.yaml"
 
     # Create the YAML file for dashboards built-in content (OOTB)
     with open(dashboard_file_path, 'w') as yaml_file:

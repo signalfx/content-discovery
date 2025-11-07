@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-AI-Powered Release Notes Generator - Master Branch Commits
+AI-Powered Changelog Generator - Master Branch Commits
 
-This script generates release notes from commits to master branch.
+This script generates changelog from commits to master branch.
 By default, analyzes only the last commit (most recent changes).
 Use --commits N to analyze more commits.
 """
@@ -37,14 +37,15 @@ AUTH_API_PATH = '/oauth2/default/v1/token'
 CONTENT_FOLDERS = ['detector', 'navigators', 'group']
 
 # Default number of commits to analyze (just the latest)
-DEFAULT_NUM_COMMITS = 10
+DEFAULT_NUM_COMMITS = 50
 
-# Output file
-OUTPUT_FILE = 'content_release_notes.yaml'
+# Output files
+OUTPUT_YAML = 'content_changelog.yaml'
+OUTPUT_MARKDOWN = 'CHANGELOG.md'
 
 
-class ReleaseNotesGenerator:
-    """Main class for generating release notes from master branch commits using AI"""
+class ChangelogGenerator:
+    """Main class for generating changelog from master branch commits using AI"""
     
     def __init__(self, num_commits: int = DEFAULT_NUM_COMMITS):
         self.access_token: Optional[str] = None
@@ -204,106 +205,24 @@ class ReleaseNotesGenerator:
         
         return Path(file_path).stem
     
-    def generate_version_from_commit(self, commit: Dict[str, Any], files: List[Dict[str, str]], existing_versions: List[str]) -> Dict[str, Any]:
-        """Generate a release notes version entry from a commit using AI"""
+    def generate_version_from_commit(self, commit: Dict[str, Any], files: List[Dict[str, str]], existing_changelog: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate a changelog version entry from a commit using AI"""
         
-        # Generate semantic version number based on existing versions
-        version = self.get_next_version(commit, existing_versions)
+        # Generate date-based version key (for uniqueness and sorting)
+        version_key = self.get_next_version(commit['date'], existing_changelog.get('versions', {}))
         
-        system_prompt = """You are a technical analyst creating release notes from git commits.
-Analyze the commit and generate a version number using semantic versioning.
-
-Output ONLY valid JSON - no markdown, no explanations, no code blocks.
-
-Return a JSON object with:
-- version_bump: one of (major|minor|patch) - suggest version increment based on change significance
-
-Use semantic versioning guidelines:
-- MAJOR: Breaking changes, major feature rewrites
-- MINOR: New features, non-breaking enhancements
-- PATCH: Bug fixes, small tweaks
-
-Note: Change details will be captured at the file level, so you only need to provide the version bump."""
-
-        # Format file changes
-        file_summaries = []
-        for idx, file in enumerate(files, 1):
-            file_summaries.append(f"""
---- FILE {idx}: {file['name']} ({file['category']}) ---
-Path: {file['path']}
-Diff preview:
-{file['diff'][:500]}
----""")
+        # Temporary version number (will be reassigned later in chronological order)
+        user_version = "1.0.0"
         
-        user_prompt = f"""Analyze these changes and generate a public-facing release notes entry.
-
-CHANGE SUMMARY:
-{commit['message']}
-Date: {commit['date']}
-
-FILES CHANGED ({len(files)} files):
-{''.join(file_summaries)}
-
-Return a JSON object with the version bump:
-{{
-  "version_bump": "patch"
-}}
-
-Guidelines:
-- Breaking changes → version_bump="major"
-- New features → version_bump="minor"  
-- Bug fixes, minor updates → version_bump="patch"
-
-Determine the version bump now:"""
-
-        payload = {
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            "user": json.dumps({"appkey": BRIDGE_API_APP_KEY}),
-            "temperature": BRIDGE_API_TEMPERATURE,
-            "top_p": BRIDGE_API_TOP_P,
-            "max_tokens": 500
+        # Build version entry
+        version_entry = {
+            'version': user_version,
+            'date': commit['date'],
+            'files': []
         }
         
-        headers = {
-            "api-key": self.access_token,
-            "Content-Type": "application/json"
-        }
-        
+        # Generate file-level descriptions with AI
         try:
-            response = requests.post(
-                f'https://{BRIDGE_API_HOSTNAME}{BRIDGE_API_PATH}',
-                headers=headers,
-                json=payload,
-                timeout=60
-            )
-            response.raise_for_status()
-            
-            response_data = response.json()
-            if not response_data or 'choices' not in response_data or not response_data['choices']:
-                print(f"  ⚠ Invalid API response structure: {json.dumps(response_data, indent=2)[:500]}")
-                raise Exception(f"Invalid API response: missing 'choices' field")
-            
-            ai_response = response_data['choices'][0]['message']['content']
-            
-            # Extract JSON from response
-            json_str = ai_response.strip()
-            if json_str.startswith('```'):
-                json_str = json_str.replace('```json\n', '').replace('```json', '')
-                json_str = json_str.replace('\n```', '').replace('```', '')
-            
-            changelog_data = json.loads(json_str)
-            
-            # Build version entry (no commit details for public docs)
-            # Note: description, change_type and breaking_change are all at file level only
-            version_entry = {
-                'date': commit['date'],
-                'files': []
-            }
-            
-            # Generate file-level descriptions with AI
             for file in files:
                 file_details = self.generate_file_details(file, commit)
                 version_entry['files'].append({
@@ -314,22 +233,19 @@ Determine the version bump now:"""
                     'breaking_change': file_details['breaking_change']
                 })
             
-            return version, version_entry
+            return version_key, version_entry
             
         except Exception as e:
             print(f'  ✗ Failed to generate release notes with AI: {e}')
             # Fallback: create basic entry without AI
-            version_entry = {
-                'date': commit['date'],
-                'files': [{
-                    'name': f['name'], 
-                    'category': f['category'], 
-                    'description': commit['message'],
-                    'change_type': 'updated',
-                    'breaking_change': False
-                } for f in files]
-            }
-            return version, version_entry
+            version_entry['files'] = [{
+                'name': f['name'], 
+                'category': f['category'], 
+                'description': commit['message'],
+                'change_type': 'updated',
+                'breaking_change': False
+            } for f in files]
+            return version_key, version_entry
     
     def generate_file_details(self, file: Dict[str, str], commit: Dict[str, Any]) -> Dict[str, Any]:
         """Generate detailed change information for a specific file using AI"""
@@ -339,27 +255,22 @@ Analyze the changes and provide structured metadata.
 
 Output ONLY valid JSON - no markdown, no explanations, no code blocks.
 
-Return a JSON object with:
+Return JSON with:
 - description: One concise sentence (max 15 words) about what changed
-- change_type: one of (created|updated|metric_changed|visualization_changed|metadata_changed|detector_rule_changed|deprecated|deleted|migrated|bug_fix|performance_improvement)
-- breaking_change: boolean (true if this file's changes break compatibility)"""
+- change_type: one of (created|updated|bug_fix|deleted)
+- breaking_change: boolean (true if breaks compatibility)"""
         
-        user_prompt = f"""Analyze the changes to this file:
+        user_prompt = f"""Analyze changes to: {file['name']} ({file['category']})
 
-FILE: {file['name']} ({file['category']})
 COMMIT: {commit['message']}
+CHANGES: {file['diff'][:800]}
 
-CHANGES:
-{file['diff'][:800]}
-
-Return a JSON object describing this file's changes:
+Return JSON:
 {{
-  "description": "Brief description of what changed in this file",
+  "description": "Brief description",
   "change_type": "updated",
   "breaking_change": false
-}}
-
-Generate the file details now:"""
+}}"""
 
         payload = {
             "messages": [
@@ -388,15 +299,14 @@ Generate the file details now:"""
             
             response_data = response.json()
             if not response_data or 'choices' not in response_data or not response_data['choices']:
-                raise Exception(f"Invalid API response for file details: {response_data}")
+                raise Exception("Invalid API response")
             
             ai_response = response_data['choices'][0]['message']['content']
             
             # Extract JSON from response
             json_str = ai_response.strip()
             if json_str.startswith('```'):
-                json_str = json_str.replace('```json\n', '').replace('```json', '')
-                json_str = json_str.replace('\n```', '').replace('```', '')
+                json_str = json_str.replace('```json\n', '').replace('```json', '').replace('\n```', '').replace('```', '')
             
             file_details = json.loads(json_str)
             
@@ -414,42 +324,80 @@ Generate the file details now:"""
                 'breaking_change': False
             }
     
-    def get_next_version(self, commit: Dict[str, Any], existing_versions: List[str]) -> str:
-        """Generate semantic version number based on existing versions"""
+    def get_next_version(self, commit_date: str, existing_versions: Dict[str, Any]) -> str:
+        """Generate date-based version number (YYYY.MM.DD.N)"""
+        
+        # Parse date from commit (YYYY-MM-DD)
+        date_parts = commit_date.split('-')
+        year, month, day = date_parts[0], date_parts[1], date_parts[2]
+        
+        # Find existing versions for this date
+        date_prefix = f"{year}.{month}.{day}"
+        same_date_versions = [
+            v for v in existing_versions.keys() 
+            if v.startswith(date_prefix)
+        ]
+        
+        if not same_date_versions:
+            # First version for this date
+            return f"{date_prefix}.1"
+        
+        # Find max sequence number for this date
+        max_seq = 0
+        for v in same_date_versions:
+            try:
+                seq = int(v.split('.')[-1])
+                max_seq = max(max_seq, seq)
+            except:
+                pass
+        
+        return f"{date_prefix}.{max_seq + 1}"
+    
+    def get_next_user_version(self, existing_versions: Dict[str, Any]) -> int:
+        """Generate simple incrementing version number (user-facing)"""
         
         if not existing_versions:
-            # First version
-            return "1.0.0"
+            return 1
         
-        # Parse the latest version
-        latest = existing_versions[0]
-        try:
-            parts = latest.split('.')
-            major, minor, patch = int(parts[0]), int(parts[1]), int(parts[2])
-        except:
-            # If parsing fails, start from 1.0.0
-            return "1.0.0"
+        # Find max user version from all existing entries
+        max_version = 0
+        for entry in existing_versions.values():
+            if 'version' in entry:
+                try:
+                    max_version = max(max_version, int(entry['version']))
+                except:
+                    pass
         
-        # For now, increment patch version
-        # In future, AI can suggest major/minor/patch based on change analysis
-        patch += 1
-        
-        return f"{major}.{minor}.{patch}"
+        return max_version + 1
     
-    def load_existing_release_notes(self) -> Dict[str, Any]:
-        """Load existing release notes file"""
-        if Path(OUTPUT_FILE).exists():
+    def reassign_user_versions(self, changelog: Dict[str, Any]):
+        """Reassign user version numbers in semantic versioning format (major.minor.patch)"""
+        versions = changelog.get('versions', {})
+        
+        if not versions:
+            return
+        
+        # Parse and sort by date-based version key (YYYY.MM.DD.N) ascending (oldest first)
+        def parse_version(v):
             try:
-                with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
+                return tuple(int(p) for p in v.split('.'))
+            except:
+                return (0, 0, 0, 0)
+        
+        sorted_keys = sorted(versions.keys(), key=parse_version, reverse=False)
+        
+        # Assign semantic version numbers: 1.0.0 (oldest) to 1.N.0 (newest)
+        for idx, version_key in enumerate(sorted_keys, 1):
+            versions[version_key]['version'] = f"1.{idx}.0"
+    
+    def load_existing_changelog(self) -> Dict[str, Any]:
+        """Load existing changelog file"""
+        if Path(OUTPUT_YAML).exists():
+            try:
+                with open(OUTPUT_YAML, 'r', encoding='utf-8') as f:
                     return yaml.safe_load(f) or self.get_default_structure()
             except Exception as e:
-                print(f'⚠ Could not parse existing release notes: {e}')
-                return self.get_default_release_notes_structure()
-        return self.get_default_release_notes_structure()
-    
-    def get_default_release_notes_structure(self) -> Dict[str, Any]:
-        """Get default release notes structure"""
-        
+                print(f'⚠ Could not parse existing changelog: {e}')
         return self.get_default_structure()
     
     def get_default_structure(self) -> Dict[str, Any]:
@@ -458,22 +406,15 @@ Generate the file details now:"""
             'metadata': {
                 'version': '2.0.0',
                 'last_updated': datetime.utcnow().isoformat() + 'Z',
-                'description': 'Version-based release notes tracking system',
+                'description': 'Changelog tracking system for content changes',
                 'structure': 'Grouped by version number with files changed in each version'
             },
             'versions': {},
             'change_types': {
                 'created': 'Initial creation of content piece',
                 'updated': 'General update to existing content',
-                'metric_changed': 'Changes to metric queries or calculations',
-                'visualization_changed': 'Changes to charts, dashboards, or display',
-                'metadata_changed': 'Changes to metadata (tags, descriptions, etc.)',
-                'detector_rule_changed': 'Changes to detector rules or conditions',
-                'deprecated': 'Content marked as deprecated',
-                'deleted': 'Content removed from system',
-                'migrated': 'Content migrated from Smart Agent to OTel or other source',
                 'bug_fix': 'Bug fix or correction',
-                'performance_improvement': 'Performance optimization'
+                'deleted': 'Content removed from system'
             },
             'categories': {
                 'detector': 'Detector/Alert configuration',
@@ -482,36 +423,76 @@ Generate the file details now:"""
             }
         }
     
-    def save_release_notes(self, release_notes: Dict[str, Any]):
-        """Save release notes to YAML file"""
+    def save_changelog(self, changelog: Dict[str, Any]):
+        """Save changelog to YAML and Markdown files"""
         # Update last_updated timestamp
-        if 'metadata' in release_notes:
-            release_notes['metadata']['last_updated'] = datetime.utcnow().isoformat() + 'Z'
+        if 'metadata' in changelog:
+            changelog['metadata']['last_updated'] = datetime.utcnow().isoformat() + 'Z'
         
-        # Sort versions in descending order (newest first) using semantic version sorting
-        if 'versions' in release_notes:
-            def parse_version(version_str):
-                """Parse semantic version string to tuple for proper sorting"""
+        # Sort versions by version key (which is date-based YYYY.MM.DD.N) descending
+        if 'versions' in changelog:
+            def parse_version(v):
+                """Parse date-based version YYYY.MM.DD.N into tuple"""
                 try:
-                    parts = version_str.split('.')
-                    return tuple(int(p) for p in parts)
+                    return tuple(int(p) for p in v.split('.'))
                 except:
-                    return (0, 0, 0)
+                    return (0, 0, 0, 0)
             
             sorted_versions = dict(sorted(
-                release_notes['versions'].items(), 
+                changelog['versions'].items(), 
                 key=lambda x: parse_version(x[0]), 
                 reverse=True
             ))
-            release_notes['versions'] = sorted_versions
+            changelog['versions'] = sorted_versions
         
-        with open(OUTPUT_FILE, 'w') as f:
-            yaml.dump(release_notes, f, default_flow_style=False, allow_unicode=True, sort_keys=False, width=120)
-        print(f'✓ Release notes saved to {OUTPUT_FILE}')
+        # Save YAML
+        with open(OUTPUT_YAML, 'w') as f:
+            yaml.dump(changelog, f, default_flow_style=False, allow_unicode=True, sort_keys=False, width=120)
+        print(f'✓ Changelog saved to {OUTPUT_YAML}')
+        
+        # Save Markdown
+        self.save_markdown(changelog)
+        print(f'✓ Changelog saved to {OUTPUT_MARKDOWN}')
+    
+    def save_markdown(self, changelog: Dict[str, Any]):
+        """Generate and save markdown version of changelog"""
+        lines = [
+            '# Changelog',
+            '',
+            'All notable changes to this content will be documented in this file.',
+            '',
+            f'Last Updated: {changelog["metadata"]["last_updated"]}',
+            '',
+            '---',
+            ''
+        ]
+        
+        for version_key, version_data in changelog.get('versions', {}).items():
+            date = version_data.get('date', '')
+            user_version = version_data.get('version', version_key)
+            lines.append(f'## [v{user_version}] - {date}')
+            lines.append('')
+            
+            for file_entry in version_data.get('files', []):
+                change_type = file_entry.get('change_type', 'updated').upper()
+                name = file_entry.get('name', '')
+                category = file_entry.get('category', '').replace('_', ' ').title()
+                description = file_entry.get('description', '')
+                breaking = ' **⚠️ BREAKING**' if file_entry.get('breaking_change') else ''
+                
+                lines.append(f'### {change_type}: {name} ({category}){breaking}')
+                lines.append(f'{description}')
+                lines.append('')
+            
+            lines.append('---')
+            lines.append('')
+        
+        with open(OUTPUT_MARKDOWN, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines))
     
     def run(self):
         """Main execution function"""
-        print('🚀 Starting release notes generation from master branch commits...\n')
+        print('🚀 Starting changelog generation...\n')
         
         # Authenticate
         self.access_token = self.authenticate()
@@ -526,13 +507,13 @@ Generate the file details now:"""
             print('⚠ No commits found!')
             return
         
-        # Load existing release notes
-        release_notes = self.load_existing_release_notes()
+        # Load existing changelog
+        changelog = self.load_existing_changelog()
         
         # Process each commit
         for idx, commit in enumerate(commits, 1):
             commit_short = commit['commit_hash'][:7]
-            print(f"\n[{idx}/{len(commits)}] Processing commit {commit_short}: {commit['message'][:60]}...")
+            print(f"\n[{idx}/{len(commits)}] {commit_short}: {commit['message'][:60]}...")
             
             # Get files changed in this commit
             files = self.get_commit_changes(commit['commit_hash'])
@@ -543,17 +524,14 @@ Generate the file details now:"""
                 continue
             
             print(f"  ✓ Found {len(files)} content files changed")
+            print('  🤖 Generating changelog with AI...')
             
-            # Generate release notes entry with AI
-            print('  🤖 Generating release notes with AI...')
             try:
-                # Get existing version list
-                existing_versions = sorted(release_notes['versions'].keys(), reverse=True)
+                # Generate version entry with date-based version number
+                version, version_entry = self.generate_version_from_commit(commit, files, changelog)
                 
-                version, version_entry = self.generate_version_from_commit(commit, files, existing_versions)
-                
-                # Add to release notes
-                release_notes['versions'][version] = version_entry
+                # Add to changelog
+                changelog['versions'][version] = version_entry
                 
                 print(f"  ✓ Created version entry: {version}")
                 self.processed_count += 1
@@ -563,78 +541,50 @@ Generate the file details now:"""
                 self.error_count += 1
                 continue
             
-            # Add a small delay to avoid rate limiting
+            # Small delay to avoid rate limiting
             time.sleep(0.5)
         
-        # Save the release notes
-        print('\n💾 Saving release notes...')
-        self.save_release_notes(release_notes)
+        # Re-assign user version numbers in chronological order (newest = highest)
+        print('\n🔢 Assigning version numbers in chronological order...')
+        self.reassign_user_versions(changelog)
+        
+        # Save the changelog
+        print('\n💾 Saving changelog...')
+        self.save_changelog(changelog)
         
         # Summary
-        self.print_summary(len(commits))
-    
-    def print_summary(self, total_commits: int):
-        """Print execution summary"""
         print('\n' + '=' * 60)
-        print('📊 SUMMARY')
-        print('=' * 60)
-        print(f'✓ Processed: {self.processed_count} commits')
-        print(f'⊘ Skipped:   {self.skipped_count} commits (no content changes)')
-        print(f'✗ Errors:    {self.error_count} commits')
-        print(f'📄 Total:     {total_commits} commits')
+        print(f'✓ Processed: {self.processed_count} | ⊘ Skipped: {self.skipped_count} | ✗ Errors: {self.error_count}')
         print('=' * 60)
 
 
 def main():
     """Entry point"""
     parser = argparse.ArgumentParser(
-        description='Generate release notes from master branch commits',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Generate release notes for the last commit only (default)
-  %(prog)s
-
-  # Generate release notes for the last 10 commits
-  %(prog)s --commits 10
-
-  # Regenerate all release notes from last 50 commits
-  %(prog)s --commits 50
-
-  # Load environment from file
-  export $(cat scripts/env.env | xargs) && %(prog)s
-        """
+        description='Generate changelog from master branch commits',
+        epilog='Examples:\n'
+               '  %(prog)s                  # Last commit (default)\n'
+               '  %(prog)s --commits 10     # Last 10 commits\n'
+               '  %(prog)s --regenerate     # Last 50 commits',
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    parser.add_argument(
-        '-n', '--commits',
-        type=int,
-        default=DEFAULT_NUM_COMMITS,
-        metavar='N',
-        help=f'Number of commits to analyze from master branch (default: {DEFAULT_NUM_COMMITS})'
-    )
-    
-    parser.add_argument(
-        '--regenerate',
-        action='store_true',
-        help='Regenerate all release notes from last 50 commits (same as --commits 50)'
-    )
+    parser.add_argument('-n', '--commits', type=int, default=DEFAULT_NUM_COMMITS,
+                        help=f'Number of commits to analyze (default: {DEFAULT_NUM_COMMITS})')
+    parser.add_argument('--regenerate', action='store_true',
+                        help='Regenerate from last 50 commits')
     
     args = parser.parse_args()
-    
-    # Handle --regenerate flag
     num_commits = 50 if args.regenerate else args.commits
     
     try:
-        generator = ReleaseNotesGenerator(num_commits=num_commits)
+        generator = ChangelogGenerator(num_commits=num_commits)
         generator.run()
     except KeyboardInterrupt:
         print('\n\n⚠ Interrupted by user')
         sys.exit(1)
     except Exception as e:
         print(f'\n❌ Fatal error: {e}')
-        import traceback
-        traceback.print_exc()
         sys.exit(1)
 
 
