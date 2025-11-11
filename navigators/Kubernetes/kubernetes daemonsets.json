@@ -65,7 +65,7 @@
       }
     }
   ],
-  "hashCode": 33693552,
+  "hashCode": 2146149547,
   "id": "GZmqelfAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -304,7 +304,7 @@
           "aggregate": null,
           "displayFormatterCode": null,
           "displayName": "Environment",
-          "displayTemplate": "{{deployment.envrionment}}",
+          "displayTemplate": "{{deployment.environment}}",
           "metricColumnCode": "deployment.environment",
           "propertyFormat": "id"
         },
@@ -577,7 +577,7 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of number of nodes running. Darker colors indicate higher relative values.",
+            "description": "This metric shows the number of nodes running. Darker colors indicate higher relative values.",
             "displayName": "# Nodes currently scheduled",
             "id": "kubernetes_daemonsets_nodes_currently_scheduled",
             "job": {
@@ -659,7 +659,7 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the total number of number of pods in pending state. Darker colors indicate higher relative values.",
+            "description": "This metric shows the total number of pods in pending state. Darker colors indicate higher relative values.",
             "displayName": "# Current pods pending",
             "id": "kubernetes_daemonsets_current_pods_pending",
             "job": {
@@ -788,7 +788,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "ACTIVE_METRIC='k8s.pod.phase'\nGROUPBY_POD=['k8s.cluster.name', 'k8s.node.name', 'k8s.pod.name']\nFILTER=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.pod.name', '*') and not filter('container.id', '*')\nACTIVE_PODS=data(ACTIVE_METRIC, filter=FILTER).count(by=GROUPBY_POD).above(0)\nCRITICAL_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Critical') or filter('sf_severity', 'Major')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nCRITICAL_ACTIVE_PODS=combine(CRITICAL_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nWARNING_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Minor') or filter('sf_severity', 'Warning')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nWARNING_ACTIVE_PODS=combine(WARNING_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nHEALTH = combine(4 if CRITICAL_ACTIVE_PODS is not None else 2 if WARNING_ACTIVE_PODS is not None else 0, mode='mapped').above(0)",
+              "template": "ACTIVE_METRIC='k8s.pod.phase'\nGROUPBY_POD=['k8s.cluster.name', 'k8s.node.name', 'k8s.pod.name']\nFILTER=(filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.pod.name', '*') and not filter('container.id', '*')){{#filter}} and {{{filter}}}{{/filter}}\nACTIVE_PODS=data(ACTIVE_METRIC, filter=FILTER).count(by=GROUPBY_POD).above(0)\nCRITICAL_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Critical') or filter('sf_severity', 'Major')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nCRITICAL_ACTIVE_PODS=combine(CRITICAL_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nWARNING_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Minor') or filter('sf_severity', 'Warning')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nWARNING_ACTIVE_PODS=combine(WARNING_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nHEALTH = combine(4 if CRITICAL_ACTIVE_PODS is not None else 2 if WARNING_ACTIVE_PODS is not None else 0, mode='mapped').above(0)",
               "varName": "HEALTH"
             },
             "metricSelectors": [],

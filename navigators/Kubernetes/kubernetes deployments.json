@@ -65,7 +65,7 @@
       }
     }
   ],
-  "hashCode": 890161277,
+  "hashCode": -1080848272,
   "id": "GZmnuzBAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -113,6 +113,19 @@
           "metric": "k8s.deployment.desired"
         }
       ],
+      "insightsSection": {
+        "insightsCards": [
+          {
+            "title": "",
+            "type": "airca"
+          },
+          {
+            "title": "",
+            "type": "health"
+          }
+        ],
+        "title": null
+      },
       "instanceDashboards": [
         "GZmews-AcFA"
       ],
@@ -300,7 +313,7 @@
           "aggregate": null,
           "displayFormatterCode": null,
           "displayName": "Environment",
-          "displayTemplate": "{{deployment.envrionment}}",
+          "displayTemplate": "{{deployment.environment}}",
           "metricColumnCode": "deployment_environment",
           "propertyFormat": "id"
         },
@@ -324,7 +337,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Min running pods",
-          "displayTemplate": "{{kubernetes_deployments_min_runing_pods}}",
+          "displayTemplate": "{{kubernetes_deployments_min_running_pods}}",
           "metricColumnCode": "deployment_pods_running_min",
           "propertyFormat": "id"
         },
@@ -332,7 +345,7 @@
           "aggregate": "sum",
           "displayFormatterCode": null,
           "displayName": "Max running pods",
-          "displayTemplate": "{{kubernetes_deployments_max_runing_pods}}",
+          "displayTemplate": "{{kubernetes_deployments_max_running_pods}}",
           "metricColumnCode": "deployment_pods_running_max",
           "propertyFormat": "id"
         },
@@ -673,8 +686,8 @@
                 }
               ],
               "resolution": 300000,
-              "template": "UNKOWN = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}).above(5, inclusive=True).count(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.deployment.name', 'k8s.deployment.uid'])",
-              "varName": "UNKOWN"
+              "template": "UNKNOWN = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}).above(5, inclusive=True).count(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.deployment.name', 'k8s.deployment.uid'])",
+              "varName": "UNKNOWN"
             },
             "metricSelectors": [
               "k8s.pod.phase"
@@ -749,7 +762,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "PODS_SUCCEEDED_TOTAL = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').equals(3).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).max(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='Total Pods Succeded')",
+              "template": "PODS_SUCCEEDED_TOTAL = data('k8s.pod.phase'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').equals(3).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.uid']).max(over=Args.get('ui.dashboard_window', '15m')).sum(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.cluster.name', 'k8s.namespace.name']).publish(label='Total Pods Succeeded')",
               "varName": "PODS_SUCCEEDED_TOTAL"
             },
             "metricSelectors": [
@@ -757,7 +770,7 @@
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Pods Succeded",
+            "valueLabel": "Pods Succeeded",
             "valueType": null
           },
           {
@@ -825,7 +838,7 @@
                 }
               ],
               "resolution": 300000,
-              "template": "MIN_DEP_DESIRED = data('k8s.deployment.desired'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='min').min(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.cluster.name', 'k8s.namespace.name']).min(over=Args.get('ui.dashboard_window', '15m')).publish(label='Deployent Desired Min')",
+              "template": "MIN_DEP_DESIRED = data('k8s.deployment.desired'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='min').min(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.cluster.name', 'k8s.namespace.name']).min(over=Args.get('ui.dashboard_window', '15m')).publish(label='Deployment Desired Min')",
               "varName": "MIN_DEP_DESIRED"
             },
             "metricSelectors": [
@@ -890,7 +903,7 @@
             },
             "description": "This metric shows the minimum number of pods running over the dashboard time window. Darker colors indicate higher relative values.",
             "displayName": "# Min running pods",
-            "id": "kubernetes_deployments_min_runing_pods",
+            "id": "kubernetes_deployments_min_running_pods",
             "job": {
               "filters": [
                 {
@@ -928,7 +941,7 @@
             },
             "description": "This metric shows the maximum number of pods running over the dashboard time window. Darker colors indicate higher relative values.",
             "displayName": "# Max running pods",
-            "id": "kubernetes_deployments_max_runing_pods",
+            "id": "kubernetes_deployments_max_running_pods",
             "job": {
               "filters": [
                 {
@@ -970,7 +983,7 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "ACTIVE_METRIC='k8s.pod.phase'\nGROUPBY_POD=['k8s.cluster.name', 'k8s.node.name', 'k8s.pod.name']\nFILTER=filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.pod.name', '*') and not filter('container.id', '*')\nACTIVE_PODS=data(ACTIVE_METRIC, filter=FILTER).count(by=GROUPBY_POD).above(0)\nCRITICAL_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Critical') or filter('sf_severity', 'Major')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nCRITICAL_ACTIVE_PODS=combine(CRITICAL_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nWARNING_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Minor') or filter('sf_severity', 'Warning')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nWARNING_ACTIVE_PODS=combine(WARNING_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nHEALTH = combine(4 if CRITICAL_ACTIVE_PODS is not None else 2 if WARNING_ACTIVE_PODS is not None else 0, mode='mapped').above(0)",
+              "template": "ACTIVE_METRIC='k8s.pod.phase'\nGROUPBY_POD=['k8s.cluster.name', 'k8s.node.name', 'k8s.pod.name']\nFILTER=(filter('k8s.cluster.name', '*') and filter('k8s.node.name', '*') and filter('k8s.pod.name', '*') and not filter('container.id', '*')){{#filter}} and {{{filter}}}{{/filter}}\nACTIVE_PODS=data(ACTIVE_METRIC, filter=FILTER).count(by=GROUPBY_POD).above(0)\nCRITICAL_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Critical') or filter('sf_severity', 'Major')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nCRITICAL_ACTIVE_PODS=combine(CRITICAL_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nWARNING_PODS=alerts(detector_name='*', filter=FILTER and (filter('sf_severity', 'Minor') or filter('sf_severity', 'Warning')), active=True).count(by=GROUPBY_POD).count(by=GROUPBY_POD)\nWARNING_ACTIVE_PODS=combine(WARNING_PODS if ACTIVE_PODS is not None else None).count(by=GROUPBY_POD).above(0)\nHEALTH = combine(4 if CRITICAL_ACTIVE_PODS is not None else 2 if WARNING_ACTIVE_PODS is not None else 0, mode='mapped').above(0)",
               "varName": "HEALTH"
             },
             "metricSelectors": [],
