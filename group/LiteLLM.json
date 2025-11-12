@@ -89,7 +89,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum(by=['gen_ai.operation.name']).publish(label='A')",
+        "programText": "A = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum(by=['gen_ai.operation.name']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -148,7 +148,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').count().sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "programText": "A = data('gen_ai.client.operation.duration_count').sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -183,6 +183,102 @@
               {
                 "enabled": false,
                 "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.cluster.name"
+              },
+              {
+                "enabled": true,
+                "property": "host.image.id"
+              },
+              {
+                "enabled": true,
+                "property": "os.type"
+              },
+              {
+                "enabled": true,
+                "property": "AWSUniqueId"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.framework"
+              },
+              {
+                "enabled": true,
+                "property": "host.type"
+              },
+              {
+                "enabled": true,
+                "property": "metadata.applied_guardrails"
+              },
+              {
+                "enabled": true,
+                "property": "cloud.availability_zone"
+              },
+              {
+                "enabled": true,
+                "property": "telemetry.sdk.name"
+              },
+              {
+                "enabled": true,
+                "property": "telemetry.sdk.language"
+              },
+              {
+                "enabled": true,
+                "property": "host.name"
+              },
+              {
+                "enabled": true,
+                "property": "telemetry.sdk.version"
+              },
+              {
+                "enabled": true,
+                "property": "cloud.platform"
+              },
+              {
+                "enabled": true,
+                "property": "host.id"
+              },
+              {
+                "enabled": true,
+                "property": "deployment.environment"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.system"
+              },
+              {
+                "enabled": true,
+                "property": "cloud.region"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": true,
+                "property": "model_id"
+              },
+              {
+                "enabled": true,
+                "property": "cloud.provider"
+              },
+              {
+                "enabled": true,
+                "property": "k8s.node.name"
+              },
+              {
+                "enabled": true,
+                "property": "cloud.account.id"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": true,
+                "property": "metadata.requester_metadata"
               }
             ]
           },
@@ -222,7 +318,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').count(by=['gen_ai.request.model']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "programText": "A = data('gen_ai.client.operation.duration_count').sum(by=['gen_ai.request.model']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -349,7 +445,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').sum(by=['gen_ai.operation.name']).sum(by=['gen_ai.operation.name']).publish(label='A', enable=False)\nB = histogram('gen_ai.client.operation.duration').count(by=['gen_ai.operation.name']).sum(by=['gen_ai.operation.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C')",
+        "programText": "A = data('gen_ai.client.operation.duration_sum').sum(by=['gen_ai.operation.name']).publish(label='A', enable=False)\nB = data('gen_ai.client.operation.duration_count').sum(by=['gen_ai.operation.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -408,7 +504,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').mean().count().publish(label='A')",
+        "programText": "A = data('gen_ai.client.operation.duration_sum').count().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -479,7 +575,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'input')).sum(by=['gen_ai.request.model']).sum(by=['gen_ai.request.model']).publish(label='A')\nB = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'completion')).sum(by=['gen_ai.request.model']).sum(by=['gen_ai.request.model']).publish(label='B')",
+        "programText": "A = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.token.type', 'input')).sum(by=['gen_ai.request.model']).publish(label='A')\nB = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.token.type', 'completion')).sum(by=['gen_ai.request.model']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -558,7 +654,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'input')).sum().sum().publish(label='A', enable=False)\nB = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'completion')).sum().sum().publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
+        "programText": "A = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.token.type', 'input')).sum().publish(label='A', enable=False)\nB = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.token.type', 'completion')).sum().publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -682,7 +778,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).percentile(pct=90).mean().publish(label='A')\nB = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).percentile(pct=50).mean().publish(label='B')\nC = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).percentile(pct=10).mean().publish(label='C')\nD = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).mean().mean().publish(label='D')",
+        "programText": "A = data('gen_ai.client.operation.duration_bucket', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).percentile(pct=90).mean().publish(label='A')\nB = data('gen_ai.client.operation.duration_bucket', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).percentile(pct=50).mean().publish(label='B')\nC = data('gen_ai.client.operation.duration_bucket', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).percentile(pct=10).mean().publish(label='C')\nD = data('gen_ai.client.operation.duration_bucket', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).mean().publish(label='D')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -756,7 +852,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum(by=['gen_ai.request.model']).publish(label='A')",
+        "programText": "A = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum(by=['gen_ai.request.model']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -815,7 +911,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'completion')).sum().sum().publish(label='A')",
+        "programText": "A = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.token.type', 'completion')).sum().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -938,7 +1034,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "F = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum().sum().publish(label='F', enable=False)\nG = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).count().sum().publish(label='G', enable=False)\nH = (F/G).publish(label='H')",
+        "programText": "F = data('gen_ai.client.operation.duration_sum', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum().publish(label='F', enable=False)\nG = data('gen_ai.client.operation.duration_count', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum().publish(label='G', enable=False)\nH = (F/G).publish(label='H')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -997,7 +1093,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'litellm', '*litellm*') and filter('gen_ai.token.type', 'input')).sum().publish(label='A')",
+        "programText": "A = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.framework', 'litellm', '*litellm*') and filter('gen_ai.token.type', 'input')).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1056,7 +1152,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').sum(by=['metadata.user_api_key_team_alias']).sum(by=['metadata.user_api_key_team_alias']).count().publish(label='A')",
+        "programText": "A = data('gen_ai.client.operation.duration_sum').sum(by=['metadata.user_api_key_team_alias']).count().publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1152,7 +1248,7 @@
               "yAxis": 0
             },
             {
-              "displayName": "gen_ai.client.operation.duration",
+              "displayName": "gen_ai.client.operation.duration_count",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -1183,7 +1279,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').sum(by=['gen_ai.request.model']).publish(label='A', enable=False)\nB = histogram('gen_ai.client.operation.duration').count(by=['gen_ai.request.model']).publish(label='B', enable=False)\nC = (A/B).publish(label='C')",
+        "programText": "A = data('gen_ai.client.operation.duration_sum').sum(by=['gen_ai.request.model']).publish(label='A', enable=False)\nB = data('gen_ai.client.operation.duration_count').count(by=['gen_ai.request.model']).publish(label='B', enable=False)\nC = (A/B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1242,7 +1338,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').count(by=['gen_ai.request.model']).count().publish(label='A')",
+        "programText": "A = data('gen_ai.client.operation.duration_count').count(by=['gen_ai.request.model']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1303,7 +1399,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage').sum(by=['metadata.user_api_key_team_alias']).sum(by=['metadata.user_api_key_team_alias']).publish(label='A')",
+        "programText": "A = data('gen_ai.client.token.usage_sum').sum(by=['metadata.user_api_key_team_alias']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1397,7 +1493,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum(by=['gen_ai.token.type']).publish(label='A')",
+        "programText": "A = data('gen_ai.client.token.usage_sum', filter=filter('gen_ai.framework', 'litellm', '*litellm*')).sum(by=['gen_ai.token.type']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1479,7 +1575,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('gen_ai.client.operation.duration').count(by=['gen_ai.request.model', 'gen_ai.operation.name']).sum(by=['gen_ai.request.model', 'gen_ai.operation.name']).top(count=10).publish(label='A')",
+        "programText": "A = data('gen_ai.client.operation.duration_count').sum(by=['gen_ai.request.model', 'gen_ai.operation.name']).top(count=10).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1542,44 +1638,44 @@
             "width": 3
           },
           {
-            "chartId": "G37R0F1AYAc",
-            "column": 8,
-            "height": 2,
-            "row": 2,
-            "width": 4
-          },
-          {
             "chartId": "G37R0F1AYAg",
-            "column": 4,
+            "column": 6,
             "height": 1,
             "row": 2,
-            "width": 4
+            "width": 6
           },
           {
             "chartId": "G368Q8JAgAA",
             "column": 0,
             "height": 1,
             "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "G36_ePEAYBY",
+            "column": 8,
+            "height": 1,
+            "row": 3,
             "width": 4
           },
           {
             "chartId": "G37R0F1AYAA",
             "column": 0,
-            "height": 2,
+            "height": 1,
             "row": 3,
             "width": 4
           },
           {
             "chartId": "G37C5clAYAE",
             "column": 4,
-            "height": 2,
+            "height": 1,
             "row": 3,
             "width": 4
           },
           {
-            "chartId": "G36_ePEAYBY",
+            "chartId": "G37R0F1AYAk",
             "column": 8,
-            "height": 2,
+            "height": 1,
             "row": 4,
             "width": 4
           },
@@ -1587,36 +1683,36 @@
             "chartId": "G37R0F1AYAI",
             "column": 0,
             "height": 1,
+            "row": 4,
+            "width": 4
+          },
+          {
+            "chartId": "G37Mi98AgAA",
+            "column": 4,
+            "height": 1,
+            "row": 4,
+            "width": 4
+          },
+          {
+            "chartId": "G37R0F1AYAU",
+            "column": 8,
+            "height": 1,
             "row": 5,
             "width": 4
           },
           {
             "chartId": "G36_ePKAcAU",
-            "column": 4,
+            "column": 0,
             "height": 1,
             "row": 5,
-            "width": 4
+            "width": 8
           },
           {
-            "chartId": "G37Mi98AgAA",
+            "chartId": "G37R0F1AYAc",
             "column": 0,
             "height": 1,
             "row": 6,
-            "width": 4
-          },
-          {
-            "chartId": "G37R0F1AYAk",
-            "column": 8,
-            "height": 1,
-            "row": 6,
-            "width": 4
-          },
-          {
-            "chartId": "G37R0F1AYAU",
-            "column": 4,
-            "height": 1,
-            "row": 6,
-            "width": 4
+            "width": 12
           }
         ],
         "created": 0,
@@ -1715,7 +1811,7 @@
       "teams": null
     }
   },
-  "hashCode": 869724911,
+  "hashCode": -1521698421,
   "id": "G362JTHAYAA",
   "modelVersion": 1,
   "packageType": "GROUP"
