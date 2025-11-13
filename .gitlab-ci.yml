@@ -29,13 +29,13 @@ validate-ai-experimental:
     - apk add --no-cache curl jq
   script:
     - |
-      echo "🔍 Checking for bypass flag in MR description..."
+      echo "🔍 Checking for bypass label..."
       MR_API="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
-      DESC=$(curl -s --header "JOB-TOKEN: $CI_JOB_TOKEN" "$MR_API" | jq -r '.description // ""')
+      LABELS=$(curl -s --header "JOB-TOKEN: $CI_JOB_TOKEN" "$MR_API" | jq -r '.labels[]?' 2>/dev/null | tr '\n' ' ')
 
       BYPASS=false
-      if echo "$DESC" | grep -iq '\[bypass-ai-validation\]'; then
-        echo "🟢 Bypass flag '[bypass-ai-validation]' found — validation will run but not block merge."
+      if echo "$LABELS" | grep -iq 'bypass-ootb-ai-validation'; then
+        echo "🟢 Bypass label 'bypass-ootb-ai-validation' found — validation will run but not block merge."
         BYPASS=true
       else
         echo "🧪 Running AI validation — errors/warnings will block merge."
@@ -47,7 +47,7 @@ validate-ai-experimental:
         exit 0
       else
         if [ "$BYPASS" = "true" ]; then
-          echo "⚠️ Validation failed, but bypass flag is set — not blocking merge."
+          echo "⚠️ Validation failed, but bypass label is set — not blocking merge."
           exit 0
         else
           echo "❌ Validation failed — blocking merge."
