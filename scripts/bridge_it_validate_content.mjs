@@ -71,36 +71,39 @@ async function bridgeITAuth() {
     }
 }
 
-
 function getFeedbackFromBridgeIT(files, access_token) {
     const stringifiedFiles = files.map((file) => JSON.stringify(file)).join(",");
 
-    const systemPrompt = `You are a JSON validation expert. Analyze files and return results in this exact JSON format:
+    const systemPrompt = `You are an expert JSON validator. Analyze JSON files and identify any issues you find.
+
+Categorize issues by severity:
+- "errors": Critical issues that would cause failures or break functionality
+- "warnings": Non-critical issues like typos, style inconsistencies, or potential improvements
+
+Return results in this exact JSON format:
 {
   "errors": {
     "filename.json": [
       {
-        "message": "Error description",
-        "jsonPath": "$.path.to.element"
+        "message": "Detailed error description",
+        "jsonPath": "$.exact.path.to.element"
       }
     ]
   },
   "warnings": {
     "filename.json": [
       {
-        "message": "Warning description",
-        "jsonPath": "$.path.to.element"
+        "message": "Detailed warning description",
+        "jsonPath": "$.exact.path.to.element"
       }
     ]
   }
 }
 
-Critical issues (missing required fields, invalid types, duplicate IDs, syntax errors) go under "errors".
-Non-critical issues (typos, inconsistent naming, suggestions) go under "warnings".
 If no issues found, return empty objects for both errors and warnings.
-Always return valid JSON only, no additional text.`;
+Always return ONLY valid JSON, no additional text or explanations.`;
 
-    const userPrompt = `Analyze the following JSON files for errors and warnings. Return ONLY a valid JSON response in the specified format.
+    const userPrompt = `Analyze the following JSON files and find any potential typographical, syntactical, semantic, or structural issues. Separate results by filename and categorize by severity. Return ONLY a valid JSON response in the specified format.
 
 Files to analyze:
 ${stringifiedFiles}`;
