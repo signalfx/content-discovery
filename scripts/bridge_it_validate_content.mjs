@@ -161,7 +161,6 @@ ${stringifiedFiles}`;
                     process.exit(1);
                 } else if (hasWarnings) {
                     console.log('\n⚠️  Warnings found, but no critical errors.');
-                    process.exit(1);
                 } else {
                     console.log('\n✅ No issues found!');
                 }
