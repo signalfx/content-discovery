@@ -2,14 +2,17 @@ include:
   - project: "observability/shared/gitlab-jobs"
     ref: 1.0.65
     file: "sast-scan-template.yml"
-  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+  - template: "Workflows/MergeRequest-Pipelines.gitlab-ci.yml"
 
 stages:
   - code_analysis
   - validate-content
+  - check-mr        # 👈 new stage for pre-merge soft-gate
   - validate-ai-experimental
   - O11y-Out-of-the-Box-Inventory
   - O11y-DOC-OOTB
+
+# --------------------- VALIDATION JOBS ---------------------
 
 validate:
   stage: validate-content
@@ -26,45 +29,79 @@ validate-ai-experimental:
   script:
     - node scripts/bridge_it_validate_content.mjs
 
+# --------------------- NEW BYPASS CHECK JOB ---------------------
+
+check-mr-status:
+  stage: check-mr
+  image: alpine:3.18
+  only:
+    - merge_requests
+  before_script:
+    - apk add --no-cache curl jq bash
+  script:
+    - |
+      set -e
+      echo "🔍 Checking for bypass flag in MR description..."
+      MR_API="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
+      DESC=$(curl -s --header "JOB-TOKEN: $CI_JOB_TOKEN" "$MR_API" | jq -r '.description // ""')
+
+      if echo "$DESC" | grep -iq '\[bypass-ci\]'; then
+        echo "🟢 Bypass flag '[bypass-ci]' found in MR description — skipping validation."
+        exit 0
+      fi
+
+      echo "🧪 No bypass flag found — running sanity check before merge."
+      # Replace with your real check
+      bash scripts/run_pre_merge_check.sh
+  allow_failure: false
+
+# --------------------- INVENTORY & DOC JOBS ---------------------
+
 update-ootb-inventory:
   image: python:3
   stage: O11y-Out-of-the-Box-Inventory
-  # To run this job to just only on master branch
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
     - when: never
   script:
     - pip install -r requirement.txt
-    - python o11y_ootb_inventory.py -pki $PRIVATE_KEY_ID -ci $CLIENT_ID -ce $CLIENT_EMAIL -pi $PROJECT_ID -pk $PRIVATE_KEY -gpt $GITLAB_API_PRIVATE_TOKEN
-
+    - python o11y_ootb_inventory.py \
+        -pki $PRIVATE_KEY_ID \
+        -ci $CLIENT_ID \
+        -ce $CLIENT_EMAIL \
+        -pi $PROJECT_ID \
+        -pk $PRIVATE_KEY \
+        -gpt $GITLAB_API_PRIVATE_TOKEN
 
 variables:
   USER_OR_ORG_NAME:
     value: "splunk"
-    description: "Provide user name for which we need to use in GitHub API calls. Default: bkanzariya"
+    description: "Provide user name for GitHub API calls"
   GITHUB_REPO_NAME:
     value: "o11y-gdi-metadata"
-    description: "Provide GitHub repo name on which we need to commit yaml files. Default: bits-test"
+    description: "Provide GitHub repo name on which YAML files will be committed"
   BRANCH_NAME:
     value: "bits-o11y-doc-automation"
-    description: "Provide Branch name on which yaml files needs to be committed. Default: o11y-doc-automation"
+    description: "Provide Branch name for YAML file commits"
   GITHUB_FOLDER_NAME:
     value: "ootb"
-    description: "Provide folder/path on which yaml files needs to be committed. Please add '-' (dash) in case to commit file on root/main folder  Default: ootb "
+    description: "Provide folder/path for YAML commits"
 
 update-o11y-doc-github:
   image: python:3
   stage: O11y-DOC-OOTB
-  # To run this job to just only on master branch and schedule
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
     - when: never
-
   script:
     - pip install -r requirement.txt
-    - python o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME -fn $GITHUB_FOLDER_NAME
-
+    - python o11y_ootb_doc_automation.py \
+        -pat $GITHUB_PRIVATE_ACCESS_TOKEN \
+        -un $USER_OR_ORG_NAME \
+        -grn $GITHUB_REPO_NAME \
+        -bn $BRANCH_NAME \
+        -fn $GITHUB_FOLDER_NAME
