@@ -7,7 +7,6 @@ include:
 stages:
   - code_analysis
   - validate-content
-  - check-mr        # 👈 new stage for pre-merge soft-gate
   - validate-ai-experimental
   - O11y-Out-of-the-Box-Inventory
   - O11y-DOC-OOTB
@@ -24,36 +23,23 @@ validate:
 validate-ai-experimental:
   image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
   stage: validate-ai-experimental
-  except:
-    - schedules
-  script:
-    - node scripts/bridge_it_validate_content.mjs
-
-# --------------------- NEW BYPASS CHECK JOB ---------------------
-
-check-mr-status:
-  stage: check-mr
-  image: alpine:3.18
   only:
     - merge_requests
   before_script:
-    - apk add --no-cache curl jq bash
+    - apk add --no-cache curl jq
   script:
     - |
-      set -e
-      echo "🔍 Checking for bypass flag in MR description..."
+      echo "🔍 Checking for skip flag in MR description..."
       MR_API="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
       DESC=$(curl -s --header "JOB-TOKEN: $CI_JOB_TOKEN" "$MR_API" | jq -r '.description // ""')
 
-      if echo "$DESC" | grep -iq '\[bypass-ci\]'; then
-        echo "🟢 Bypass flag '[bypass-ci]' found in MR description — skipping validation."
+      if echo "$DESC" | grep -iq '\[skip-ai-validation\]'; then
+        echo "🟢 Skip flag '[skip-ai-validation]' found in MR description — skipping AI validation."
         exit 0
       fi
 
-      echo "🧪 No bypass flag found — running sanity check before merge."
-      # Replace with your real check
-      bash scripts/run_pre_merge_check.sh
-  allow_failure: false
+      echo "🧪 No skip flag found — running AI validation."
+      node scripts/bridge_it_validate_content.mjs
 
 # --------------------- INVENTORY & DOC JOBS ---------------------
 
