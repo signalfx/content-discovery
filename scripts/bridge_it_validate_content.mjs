@@ -13,13 +13,8 @@ const BRIDGE_API_MODEL_NAME = process.env.BRIDGE_API_MODEL_NAME || 'gpt-4.1';
 const BRIDGE_API_PATH = `/openai/deployments/${BRIDGE_API_MODEL_NAME}/chat/completions`;
 const BRIDGE_API_TEMPERATURE = process.env.BRIDGE_API_TEMPERATURE || 1;
 const BRIDGE_API_TOP_P = process.env.BRIDGE_API_TOP_P || 0.25;
-
 const TARGET_BRANCH = process.env.CI_MERGE_REQUEST_TARGET_BRANCH_NAME;
-
-const ERRORS_FOUND_MESSAGE = '!!Potential issues found!!';
-
-const FOLDERS_TO_VALIDATE = ["navigators", "group"];
-
+const FOLDERS_TO_VALIDATE = ["navigators", "group", "detector"];
 const AUTH_API_HOSTNAME = 'id.cisco.com';
 const AUTH_API_PATH = '/oauth2/default/v1/token';
 const AUTH_API_TOKEN = 'Basic ' + Buffer.from(BRIDGE_API_CLIENT_ID + ':' + BRIDGE_API_CLIENT_SECRET).toString('base64');
@@ -80,15 +75,45 @@ async function bridgeITAuth() {
 function getFeedbackFromBridgeIT(files, access_token) {
     const stringifiedFiles = files.map((file) => JSON.stringify(file)).join(",");
 
+    const systemPrompt = `You are a JSON validation expert. Analyze files and return results in this exact JSON format:
+{
+  "errors": {
+    "filename.json": [
+      {
+        "message": "Error description",
+        "jsonPath": "$.path.to.element"
+      }
+    ]
+  },
+  "warnings": {
+    "filename.json": [
+      {
+        "message": "Warning description",
+        "jsonPath": "$.path.to.element"
+      }
+    ]
+  }
+}
+
+Critical issues (missing required fields, invalid types, duplicate IDs, syntax errors) go under "errors".
+Non-critical issues (typos, inconsistent naming, suggestions) go under "warnings".
+If no issues found, return empty objects for both errors and warnings.
+Always return valid JSON only, no additional text.`;
+
+    const userPrompt = `Analyze the following JSON files for errors and warnings. Return ONLY a valid JSON response in the specified format.
+
+Files to analyze:
+${stringifiedFiles}`;
+
     const payload = JSON.stringify({
         "messages": [
             {
                 "role": "system",
-                "content": "You are a chatbot"
+                "content": systemPrompt
             },
             {
                 "role": "user",
-                "content": `Find any potential typographical or semantic errors in the following files, separate the results by the 'filename' property. If there are any potential errors, print the following message once: '${ERRORS_FOUND_MESSAGE}'. Otherwise, don't print that message: ${stringifiedFiles}`
+                "content": userPrompt
             },
         ],
         "user": "{\"appkey\":\"" + BRIDGE_API_APP_KEY + "\"}",
@@ -117,9 +142,32 @@ function getFeedbackFromBridgeIT(files, access_token) {
         });
         res.on("end", function () {
             const response = JSON.parse(Buffer.concat(body).toString());
-            console.log(response.choices[0].message.content);
-            if (response.choices[0].message.content.includes(ERRORS_FOUND_MESSAGE)) {
-                process.exit(1);
+            const content = response.choices[0].message.content;
+            
+            try {
+                // Parse the AI response as JSON
+                const validationResult = JSON.parse(content);
+                
+                // Pretty print the structured response
+                console.log('\n=== Validation Results ===\n');
+                console.log(JSON.stringify(validationResult, null, 2));
+                
+                // Check if there are any errors
+                const hasErrors = validationResult.errors && Object.keys(validationResult.errors).length > 0;
+                const hasWarnings = validationResult.warnings && Object.keys(validationResult.warnings).length > 0;
+                
+                if (hasErrors) {
+                    console.log('\n❌ Critical errors found!');
+                    process.exit(1);
+                } else if (hasWarnings) {
+                    console.log('\n⚠️  Warnings found, but no critical errors.');
+                } else {
+                    console.log('\n✅ No issues found!');
+                }
+            } catch (parseError) {
+                // Fallback if response is not valid JSON
+                console.log('Warning: Response was not valid JSON');
+                console.log(content);
             }
         });
     });
