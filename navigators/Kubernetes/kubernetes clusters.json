@@ -73,18 +73,6 @@
             }
           ],
           "metric": "container.cpu.time"
-        },
-        {
-          "filters": [
-            {
-              "not": false,
-              "property": "sf_key",
-              "values": [
-                "k8s.cluster.name"
-              ]
-            }
-          ],
-          "metric": "disk.utilization"
         }
       ],
       "instanceDashboards": [
@@ -522,7 +510,14 @@
             "displayName": "File system utilization (%)",
             "id": "kubernetes_clusters_file_system_utilization",
             "job": {
-              "filters": [],
+              "filters": [
+                {
+                  "not": false,
+                  "property": "k8s.cluster.name",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
               "resolution": 300000,
               "template": "DISK_UTILIZATION = data(\"disk.utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['k8s.cluster.name'])",
               "varName": "DISK_UTILIZATION"
