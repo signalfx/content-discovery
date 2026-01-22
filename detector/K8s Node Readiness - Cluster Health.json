@@ -1,0 +1,63 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Triggers alerts when percentage of ready nodes per cluster is below threshold.",
+      "detectorOrigin": "Standard",
+      "entityTypes": [],
+      "id": "G_QGH7AAYA0",
+      "labelResolutions": {
+        "Node Readiness": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": null,
+      "minDelay": null,
+      "name": "K8s Node Readiness - Cluster Health",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s.scoped import node\nnode.node_readiness_detector().publish('Node Readiness')",
+      "rules": [
+        {
+          "description": "Percentage of ready nodes per cluster is below threshold.",
+          "detectLabel": "Node Readiness",
+          "disabled": false,
+          "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: The percentage of nodes ready in the {{dimensions.[k8s.cluster.name]}} cluster is less than 90% for 100% the last minute or less than 95% for at least 80% the last 5 minutes.\nClearing condition: The percentage of nodes ready is more than 90% for 100% of the last 8 minutes or more than 95% for at least 80% of the last 15 minutes\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
+          "severity": "Warning",
+          "tip": null,
+          "runbookUrl": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.node.condition_ready"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "k8s.node.condition_ready",
+          "filters": []
+        }
+      ]
+    }
+  },
+  "hashCode": 1376504902,
+  "id": "G_QGH7AAYA0",
+  "packageType": "DETECTOR"
+}
