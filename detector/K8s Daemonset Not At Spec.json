@@ -1,0 +1,68 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Triggers alerts for a given namespace / cluster when the ratio of daemonsets not at spec is greater than the configurable threshold.",
+      "detectorOrigin": "Standard",
+      "entityTypes": [],
+      "id": "G_vV4SSAgAc",
+      "labelResolutions": {
+        "Daemonset Not At Spec": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": null,
+      "minDelay": null,
+      "name": "K8s Daemonset Not At Spec",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s.scoped import resource\nresource.daemonset_not_at_spec_per_cluster_or_namespace_detector().publish('Daemonset Not At Spec')",
+      "rules": [
+        {
+          "description": "High ratio of daemonsets not at spec per cluster / namespace",
+          "detectLabel": "Daemonset Not At Spec",
+          "disabled": false,
+          "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: A ratio of more than {{inputs.fire_threshold.value}} of daemonsets in the {{dimensions.[unique_dim]}} {{#if dimensions.[k8s.cluster.name]}}cluster {{else}}namespace {{/if}}are not at spec (i.e. number of available pods for the daemonset deviates from the desired number of pods).\nClearing condition: The ratio of daemonsets not at spec has to drop below {{inputs.fire_threshold.value}}/2 over 40 minutes.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
+          "severity": "Warning",
+          "tip": null,
+          "runbookUrl": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.daemonset.desired_scheduled_nodes",
+        "k8s.daemonset.ready_nodes"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "k8s.daemonset.ready_nodes",
+          "filters": []
+        },
+        {
+          "metric": "k8s.daemonset.desired_scheduled_nodes",
+          "filters": []
+        }
+      ]
+    }
+  },
+  "hashCode": -734151557,
+  "id": "G_vV4SSAgAc",
+  "packageType": "DETECTOR"
+}

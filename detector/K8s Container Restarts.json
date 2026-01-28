@@ -1,0 +1,63 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Triggers alerts for a given namespace or cluster when the ratio of pods experiencing container restarts is greater than the configurable threshold.",
+      "detectorOrigin": "Standard",
+      "entityTypes": [],
+      "id": "G_vWE5fAgAA",
+      "labelResolutions": {
+        "Container Restarts": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": null,
+      "minDelay": null,
+      "name": "K8s Container Restarts",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s.scoped import container\ncontainer.container_restarts_per_cluster_or_namespace_detector().publish('Container Restarts')",
+      "rules": [
+        {
+          "description": "High ratio of pods experiencing container restarts per cluster or namespace",
+          "detectLabel": "Container Restarts",
+          "disabled": false,
+          "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: A ratio of more than {{inputs.fire_threshold.value}} of pods with container name '{{dimensions.[k8s.container.name]}}' in the {{dimensions.[unique_dim]}} {{#if dimensions.[k8s.cluster.name]}}cluster {{else}}namespace {{/if}} are experiencing container restarts for at least 80% of the last 15 minutes.\nClearing condition: The ratio of pods experiencing container restarts has to drop below {{inputs.fire_threshold.value}}/2 for 100% of the last 40 minutes.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
+          "severity": "Warning",
+          "tip": null,
+          "runbookUrl": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.container.restarts"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "k8s.container.restarts",
+          "filters": []
+        }
+      ]
+    }
+  },
+  "hashCode": -79710315,
+  "id": "G_vWE5fAgAA",
+  "packageType": "DETECTOR"
+}

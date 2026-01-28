@@ -1,0 +1,68 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Triggers alerts for a given namespace / cluster when the ratio of high-failure jobs is greater than the configurable threshold.",
+      "detectorOrigin": "Standard",
+      "entityTypes": [],
+      "id": "G_vWOLVAcAA",
+      "labelResolutions": {
+        "High-Failure Jobs": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": null,
+      "minDelay": null,
+      "name": "K8s High Job Failure Ratio",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s.scoped import job\njob.job_failures_per_cluster_or_namespace_detector().publish('High-Failure Jobs')",
+      "rules": [
+        {
+          "description": "High ratio of high-failure jobs per cluster / namespace",
+          "detectLabel": "High-Failure Jobs",
+          "disabled": false,
+          "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: A ratio of more than {{inputs.fire_threshold.value}} of jobs in the {{dimensions.[unique_dim]}} {{#if dimensions.[k8s.cluster.name]}}cluster {{else}}namespace {{/if}}are experiencing high number of pod failures.\nClearing condition: The ratio of high-failure jobs has to drop below {{inputs.fire_threshold.value}}/2 over 40 minutes.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
+          "severity": "Warning",
+          "tip": null,
+          "runbookUrl": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.job.successful_pods",
+        "k8s.job.failed_pods"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "k8s.job.failed_pods",
+          "filters": []
+        },
+        {
+          "metric": "k8s.job.successful_pods",
+          "filters": []
+        }
+      ]
+    }
+  },
+  "hashCode": 1223532837,
+  "id": "G_vWOLVAcAA",
+  "packageType": "DETECTOR"
+}
