@@ -2021,7 +2021,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Container cpu utilization",
+          "displayName" : "Container cpu utilization - 5-minute moving average of container CPU utilization (post-translated, scaled)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -2068,7 +2068,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "G = (F/F).scale(100).publish(label='G', enable=False)\nC = (A/B).publish(label='C', enable=False)\nE = (A/D).publish(label='E', enable=False)\nN = (C*G).publish(label='N')\nI = (E*G).publish(label='I')\nA = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)",
+      "programText" : "G = (F/F).scale(100).publish(label='G', enable=False)\nC = (A/B).publish(label='C', enable=False)\nE = (A/D).publish(label='E', enable=False)\nN = (C*G).publish(label='N')\nI = (E*G).publish(label='I')\nA_new = data('container.cpu.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).mean(over='5m').publish(label='A_new', enable=False)\nA_old = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).mean(over='5m').publish(label='A_old', enable=False)\nA = combine(A_old if A_new is None else A_new).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3477,7 +3477,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Container cpu utilization",
+          "displayName" : "Container cpu utilization - 5-minute moving average of container CPU utilization (post-translated, scaled)",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -3533,7 +3533,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B).publish(label='C', enable=False)\nE = (A/D).publish(label='E', enable=False)\nN = (C*G).publish(label='N')\nI = (E*G).publish(label='I')\nA = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)\nG = (F/F).scale(100).publish(label='G', enable=False)",
+      "programText" : "C = (A/B).publish(label='C', enable=False)\nE = (A/D).publish(label='E', enable=False)\nN = (C*G).publish(label='N')\nI = (E*G).publish(label='I')\nA_new = data('container.cpu.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).mean(over='5m').publish(label='A_new', enable=False)\nA_old = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).mean(over='5m').publish(label='A_old', enable=False)\nA = combine(A_old if A_new is None else A_new).publish(label='A', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)\nG = (F/F).scale(100).publish(label='G', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
