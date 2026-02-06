@@ -1,0 +1,111 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Monitors the quantity of requests resulting in errors.",
+      "detectorOrigin": "Standard",
+      "entityTypes": [],
+      "id": "G-Fx9hzAYAg",
+      "labelResolutions": {
+        "Error Rate Increased": 60000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "APM Error Rate Increased",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.apm import errors\nerrors.blended().publish(\"Error Rate Increased\")\n",
+      "rules": [
+        {
+          "description": "Error rate is worse than it has been over the last 12 hours, the same time yesterday, and the same time last week.",
+          "detectLabel": "Error Rate Increased",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n{{dimensions.sf_service}} in {{dimensions.sf_environment}} has experienced degraded error rate for the last 15 minutes.\nTriggered at {{timestamp}}: {{ruleName}}.\n{{else}}\nResolved at {{timestamp}}: {{ruleName}}.\n{{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}\n{{dimensions.sf_service}} in {{dimensions.sf_environment}} - {{detectorName}}\n{{else}}\nResolved: {{dimensions.sf_service}} in {{dimensions.sf_environment}} - {{detectorName}}\n{{/if}}",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": "See the signalflow powering this detector: https://github.com/signalfx/signalflow-library/tree/master/library/signalfx/detectors/apm/errors/blended"
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "service.request"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "Error Rate",
+            "label": "Error Rate",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Today",
+            "label": "Today",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Yesterday",
+            "label": "Yesterday",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Week Ago",
+            "label": "Week Ago",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "service.request",
+          "filters": [
+            {
+              "values": [],
+              "property": "sf_histogramBuckets",
+              "not": false
+            },
+            {
+              "values": [
+                "true"
+              ],
+              "property": "sf_error",
+              "not": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": -1959521574,
+  "id": "G-Fx9hzAYAg",
+  "packageType": "DETECTOR"
+}

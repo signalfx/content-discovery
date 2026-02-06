@@ -1,0 +1,111 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Monitors the 90th percentile of service latency.",
+      "detectorOrigin": "Standard",
+      "entityTypes": [],
+      "id": "G-FxMDQAgAA",
+      "labelResolutions": {
+        "Latency Degraded": 60000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "APM Latency Degradation",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.apm import latency\nlatency.blended().publish(\"Latency Degraded\")\n",
+      "rules": [
+        {
+          "description": "P90 service latency is worse than it has been over the last 12 hours, the same time yesterday, and the same time last week.",
+          "detectLabel": "Latency Degraded",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n{{dimensions.sf_service}} in {{dimensions.sf_environment}} has experienced degraded latency for the last 15 minutes.\nTriggered at {{timestamp}}: {{ruleName}}.\n{{else}}\n{{dimensions.sf_service}} in {{dimensions.sf_environment}} latency is back within empirical tolerances.\n{{ruleName}} resolved at {{timestamp}}.\n{{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}\n{{dimensions.sf_service}} in {{dimensions.sf_environment}} - {{detectorName}}\n{{else}}\nResolved: {{dimensions.sf_service}} in {{dimensions.sf_environment}} - {{detectorName}}\n{{/if}}",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": "See the signalflow powering this detector: https://github.com/signalfx/signalflow-library/tree/master/library/signalfx/detectors/apm/latency/blended"
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "service.request"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "P90 Latency",
+            "label": "P90 Latency",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Today",
+            "label": "Today",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Yesterday",
+            "label": "Yesterday",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Week Ago",
+            "label": "Week Ago",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "service.request",
+          "filters": [
+            {
+              "values": [],
+              "property": "sf_histogramBuckets",
+              "not": false
+            },
+            {
+              "values": [
+                "false"
+              ],
+              "property": "sf_error",
+              "not": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": 633052470,
+  "id": "G-FxMDQAgAA",
+  "packageType": "DETECTOR"
+}

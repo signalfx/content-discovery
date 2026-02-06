@@ -1,0 +1,104 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Monitors request rate for sudden decreases that may indicate service failures.",
+      "detectorOrigin": "Standard",
+      "entityTypes": [],
+      "id": "G-FwWARAcAA",
+      "labelResolutions": {
+        "Request Rate Dropped": 10000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "APM Request Rate Dropped",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.apm import requests\nrequests.blended().publish(\"Request Rate Dropped\")\n",
+      "rules": [
+        {
+          "description": "APM request rate has dropped significantly relative to yesterday and the last 2 hours.",
+          "detectLabel": "Request Rate Dropped",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n{{ruleName}} triggered at {{timestamp}}.\n{{dimensions.sf_service}} in {{dimensions.sf_environment}} has experienced a sudden drop in request rate.\n{{else}}\n{{ruleName}} resolved at {{timestamp}}.\n{{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}\n{{dimensions.sf_environment}}:{{dimensions.sf_service}} {{detectorName}}\n{{else}}\nResolved: {{dimensions.sf_environment}}:{{dimensions.sf_service}} {{detectorName}}\n{{/if}}",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": "See the signalflow powering this detector: https://github.com/signalfx/signalflow-library/tree/master/library/signalfx/detectors/apm/requests/blended"
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "service.request"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "Request Rate",
+            "label": "Request Rate",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Last 2h",
+            "label": "Last 2h",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Yesterday",
+            "label": "Yesterday",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "Week Ago",
+            "label": "Week Ago",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "service.request",
+          "filters": [
+            {
+              "values": [],
+              "property": "sf_histogramBuckets",
+              "not": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": 1866831178,
+  "id": "G-FwWARAcAA",
+  "packageType": "DETECTOR"
+}
