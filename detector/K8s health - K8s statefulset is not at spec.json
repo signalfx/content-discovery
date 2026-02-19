@@ -5,8 +5,9 @@
       "created": 0,
       "creator": null,
       "customProperties": null,
-      "description": "Alerts when k8s statefulset current pods does not match desired pods for more than 95% of time in last 5 min",
+      "description": "Alerts when k8s StatefulSet ready pods does not match desired pods for more than 95% of time in last 5 min",
       "detectorOrigin": "Standard",
+      "entityTypes": [],
       "id": "Gxp7_r_AYAA",
       "importQualifiers": [
         {
@@ -22,7 +23,7 @@
               "values": []
             }
           ],
-          "metric": "k8s.statefulset.current_pods"
+          "metric": "k8s.statefulset.ready_pods"
         },
         {
           "filters": [
@@ -50,11 +51,11 @@
       "minDelay": 0,
       "name": "K8s statefulset is not at spec for 5 min",
       "overMTSLimit": false,
-      "packageSpecifications": "signalfx==0.1.1085",
+      "packageSpecifications": "signalfx==0.1.1356",
       "programText": "from signalfx.detectors.autodetect.infra.k8s import statefulset\nstatefulset.statefulset_pods_not_at_spec_detector().publish('K8s statefulset is not at spec for 5 min')",
       "rules": [
         {
-          "description": "The value of # (current - desired) pods is outside of 0 and 0 for 95% of 5m.",
+          "description": "The value of # (ready - desired) pods is outside of 0 and 0 for 95% of 5m.",
           "detectLabel": "K8s statefulset is not at spec for 5 min",
           "disabled": false,
           "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for A-B: {{inputs.C.value}}\n{{else}}Current signal value for A-B: {{inputs.C.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}\n\n{{#if detectorTags}}Tags: {{detectorTags}}{{/if}}\n\n{{#if detectorTeams}}\nTeams:{{#each detectorTeams}} {{name}}{{#unless @last}},{{/unless}}{{/each}}.\n{{/if}}",
@@ -63,7 +64,7 @@
       ],
       "sf_metricsInObjectProgramText": [
         "k8s.statefulset.desired_pods",
-        "k8s.statefulset.current_pods"
+        "k8s.statefulset.ready_pods"
       ],
       "status": "ACTIVE",
       "tags": null,
@@ -82,7 +83,7 @@
       }
     }
   },
-  "hashCode": 1179963610,
+  "hashCode": -794777487,
   "id": "Gxp7_r_AYAA",
   "packageType": "DETECTOR"
 }
