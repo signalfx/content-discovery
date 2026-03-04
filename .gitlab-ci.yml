@@ -3,6 +3,8 @@ include:
     ref: 1.0.65
     file: "sast-scan-template.yml"
   - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+  - project: ci-cd/templates
+    file: /cicd/sonarqube-3.0.1.yml
 
 stages:
   - code_analysis
@@ -41,6 +43,13 @@ update-ootb-inventory:
 
 
 variables:
+  ENABLE_SONARQUBE:
+    value: "true"
+    options:
+      - "true"
+      - "false"
+    description: >-
+      Enable SonarQube code quality scanning. Set to 'false' to disable.
   USER_OR_ORG_NAME:
     value: "splunk"
     description: "Provide user name for which we need to use in GitHub API calls. Default: bkanzariya"
@@ -68,3 +77,27 @@ update-o11y-doc-github:
   script:
     - pip install -r requirement.txt
     - python o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME -fn $GITHUB_FOLDER_NAME
+
+sonarqube:
+  stage: code_analysis
+  interruptible: true
+  allow_failure: true
+  rules:
+    - if: $ENABLE_SONARQUBE != "true"
+      when: never
+    - if: $CI_COMMIT_TAG
+    - if: $CI_MERGE_REQUEST_IID
+  script:
+    - |
+      SONAR_ARGS="-Dsonar.token=$SONAR_LOGIN_TOKEN -Dsonar.qualitygate.wait=true"
+      if [[ -n "$CI_COMMIT_TAG" ]]; then
+        SONAR_ARGS="${SONAR_ARGS} -Dsonar.branch.name=${CI_DEFAULT_BRANCH}"
+        echo "Tag detected: reporting analysis to branch ${CI_DEFAULT_BRANCH}"
+      fi
+      echo "Executing: sonar-scanner ${SONAR_ARGS}"
+      sonar-scanner ${SONAR_ARGS}
+  artifacts:
+    paths:
+      - .scannerwork/
+    when: on_failure
+    expire_in: 7 days
