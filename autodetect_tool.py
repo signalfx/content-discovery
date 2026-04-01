@@ -452,10 +452,10 @@ def export_detector_to_file(detector, detector_export_props, realm, token, repo_
         return DetectorExportInfo.skip_validation_errors(detector, detector_state, validation_results)
 
     for rule in detector.get(DetectorScheme.RULES, []):
-        if rule.get(DetectorScheme.TIP, "") == "":
+        if rule[DetectorScheme.TIP] == "":
             rule[DetectorScheme.TIP] = None
 
-        if rule.get(DetectorScheme.RUNBOOK_URL, "") == "":
+        if rule[DetectorScheme.RUNBOOK_URL] == "":
             rule[DetectorScheme.RUNBOOK_URL] = None
 
     detector[DetectorScheme.IMPORT_QUALIFIERS] = detector_export_props.get(DetectorScheme.IMPORT_QUALIFIERS)
