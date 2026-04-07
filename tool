@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import List
 from urllib.parse import quote
 
+import subprocess
+
 import requests
 
 SCRIPT_DIR = Path(__file__).parent
@@ -97,6 +99,13 @@ def detector_export_command(args, base_url, token):
     detector_id = args.detector_id[0]
     print(fetch_detector_export_by_id(detector_id, base_url, token, format="text"))
 
+def sync_command(args, base_url, token):
+    subprocess.run(
+        [str(SCRIPT_DIR / "syncer" / "syncer"), "sync", "--env", "master signal buddy"],
+        check=True,
+    )
+
+
 def parse_cli():
     parser = argparse.ArgumentParser(description="Built-in Dashboard Group Swiss Army Knife")
 
@@ -128,6 +137,9 @@ def parse_cli():
     detector_export_parser = subparsers.add_parser("detector-export", help="Export a detector")
     detector_export_parser.add_argument("detector_id", metavar="detector-id", nargs=1, type=str, help="ID of the detector")
     detector_export_parser.set_defaults(func=detector_export_command)
+
+    sync_parser = subparsers.add_parser("sync", help="Sync content using the syncer")
+    sync_parser.set_defaults(func=sync_command)
 
     args = parser.parse_args()
 

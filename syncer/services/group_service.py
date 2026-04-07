@@ -1,0 +1,208 @@
+"""Dashboard Group API service for fetching and updating dashboard groups."""
+
+import sys
+from typing import Dict, Any
+from .base_service import do_get, do_put, do_post
+from .crosslink_service import update_crosslinks
+
+
+def fetch_group_export_by_id(group_id: str, base_url: str, token: str, format: str = "json") -> Any:
+    """
+    Fetch a dashboard group export by ID.
+    
+    Args:
+        group_id: The dashboard group ID
+        base_url: The base API URL
+        token: The SignalFx access token
+        format: Return format, either "json" or "text"
+        
+    Returns:
+        The exported dashboard group data
+        
+    Raises:
+        RuntimeError: If the fetch fails
+    """
+    resp = do_get(f"{base_url}/v2/dashboardgroup/{group_id}/export", token)
+    if resp.status_code != 200:
+        raise RuntimeError(f"Failed to fetch dashboard group {group_id}: {resp.text}")
+    if format == "json":
+        return resp.json()
+    return resp.text
+
+
+def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: str) -> bool:
+    """
+    Update a dashboard group by intelligently updating only changed charts and dashboards.
+    
+    Args:
+        group_export: The dashboard group export data
+        base_url: The base API URL
+        token: The SignalFx access token
+        
+    Returns:
+        True if successful, False otherwise
+    """
+    group_id = group_export["groupExport"]["group"]["id"]
+    
+    # Fetch current remote state
+    try:
+        remote_export = fetch_group_export_by_id(group_id, base_url, token, format="json")
+    except RuntimeError:
+        # Group doesn't exist remotely, create everything
+        print(f"  Group not found remotely, creating new group...")
+        return _create_dashboard_group(group_export, base_url, token)
+    
+    # Compare and update group properties
+    local_group = group_export["groupExport"]["group"]
+    remote_group = remote_export["groupExport"]["group"]
+    
+    if _has_group_changed(local_group, remote_group):
+        resp = do_put(f"{base_url}/v2/dashboardgroup/{group_id}", token, local_group)
+        if resp.status_code in [200, 201]:
+            print(f"  ✏️  Updated dashboard group: {local_group.get('name', group_id)}")
+        else:
+            print(f"  ❌ Failed to update group {group_id}: {resp.text}", file=sys.stderr)
+            return False
+    else:
+        print(f"  ℹ️  Dashboard group unchanged")
+    
+    # Compare and update charts
+    local_charts = {c["chart"]["id"]: c["chart"] for c in group_export.get("chartExports", [])}
+    remote_charts = {c["chart"]["id"]: c["chart"] for c in remote_export.get("chartExports", [])}
+    
+    charts_added = set(local_charts.keys()) - set(remote_charts.keys())
+    charts_removed = set(remote_charts.keys()) - set(local_charts.keys())
+    charts_maybe_modified = set(local_charts.keys()) & set(remote_charts.keys())
+    
+    for chart_id in charts_added:
+        chart = local_charts[chart_id]
+        resp = do_post(f"{base_url}/v2/chart", token, chart)
+        if resp.status_code in [200, 201]:
+            print(f"  ➕ Created chart: {chart.get('name', chart_id)}")
+        else:
+            print(f"  ❌ Failed to create chart {chart_id}: {resp.text}", file=sys.stderr)
+    
+    for chart_id in charts_maybe_modified:
+        if _has_chart_changed(local_charts[chart_id], remote_charts[chart_id]):
+            chart = local_charts[chart_id]
+            resp = do_put(f"{base_url}/v2/chart/{chart_id}", token, chart)
+            if resp.status_code in [200, 201]:
+                print(f"  ✏️  Updated chart: {chart.get('name', chart_id)}")
+            else:
+                print(f"  ❌ Failed to update chart {chart_id}: {resp.text}", file=sys.stderr)
+    
+    if charts_removed:
+        print(f"  ℹ️  {len(charts_removed)} chart(s) exist remotely but not locally (not deleted)")
+    
+    # Compare and update dashboards
+    local_dashboards = {d["dashboard"]["id"]: d["dashboard"] for d in group_export.get("dashboardExports", [])}
+    remote_dashboards = {d["dashboard"]["id"]: d["dashboard"] for d in remote_export.get("dashboardExports", [])}
+    
+    dashboards_added = set(local_dashboards.keys()) - set(remote_dashboards.keys())
+    dashboards_removed = set(remote_dashboards.keys()) - set(local_dashboards.keys())
+    dashboards_maybe_modified = set(local_dashboards.keys()) & set(remote_dashboards.keys())
+    
+    for dashboard_id in dashboards_added:
+        dashboard = local_dashboards[dashboard_id]
+        resp = do_post(f"{base_url}/v2/dashboard", token, dashboard)
+        if resp.status_code in [200, 201]:
+            print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard_id)}")
+        else:
+            print(f"  ❌ Failed to create dashboard {dashboard_id}: {resp.text}", file=sys.stderr)
+    
+    for dashboard_id in dashboards_maybe_modified:
+        if _has_dashboard_changed(local_dashboards[dashboard_id], remote_dashboards[dashboard_id]):
+            dashboard = local_dashboards[dashboard_id]
+            resp = do_put(f"{base_url}/v2/dashboard/{dashboard_id}", token, dashboard)
+            if resp.status_code in [200, 201]:
+                print(f"  ✏️  Updated dashboard: {dashboard.get('name', dashboard_id)}")
+            else:
+                print(f"  ❌ Failed to update dashboard {dashboard_id}: {resp.text}", file=sys.stderr)
+    
+    if dashboards_removed:
+        print(f"  ℹ️  {len(dashboards_removed)} dashboard(s) exist remotely but not locally (not deleted)")
+    
+    # Compare and update crosslinks
+    local_crosslinks = group_export.get("crossLinkExports", [])
+    remote_crosslinks = remote_export.get("crossLinkExports", [])
+    
+    if local_crosslinks or remote_crosslinks:
+        updated, created = update_crosslinks(local_crosslinks, base_url, token)
+        if updated == 0 and created == 0 and len(local_crosslinks) > 0:
+            # Crosslinks exist but none were updated/created
+            pass  # They're unchanged
+    
+    return True
+
+
+def _has_group_changed(local_group: Dict[str, Any], remote_group: Dict[str, Any]) -> bool:
+    """Check if group properties have changed (excluding children)."""
+    keys_to_compare = ["name", "description", "teams"]
+    for key in keys_to_compare:
+        if local_group.get(key) != remote_group.get(key):
+            return True
+    return False
+
+
+def _has_chart_changed(local_chart: Dict[str, Any], remote_chart: Dict[str, Any]) -> bool:
+    """Check if chart has meaningful changes, ignoring metadata fields."""
+    # Fields to ignore (auto-generated or metadata)
+    ignore_fields = {"created", "lastUpdated", "lastUpdatedBy", "creator"}
+    
+    # Get all keys from both charts
+    all_keys = set(local_chart.keys()) | set(remote_chart.keys())
+    keys_to_compare = all_keys - ignore_fields
+    
+    for key in keys_to_compare:
+        if local_chart.get(key) != remote_chart.get(key):
+            return True
+    return False
+
+
+def _has_dashboard_changed(local_dashboard: Dict[str, Any], remote_dashboard: Dict[str, Any]) -> bool:
+    """Check if dashboard has meaningful changes, ignoring metadata fields."""
+    # Fields to ignore (auto-generated or metadata)
+    ignore_fields = {"created", "lastUpdated", "lastUpdatedBy", "creator"}
+    
+    # Get all keys from both dashboards
+    all_keys = set(local_dashboard.keys()) | set(remote_dashboard.keys())
+    keys_to_compare = all_keys - ignore_fields
+    
+    for key in keys_to_compare:
+        if local_dashboard.get(key) != remote_dashboard.get(key):
+            return True
+    return False
+
+
+def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: str) -> bool:
+    """Create a new dashboard group with all its charts and dashboards."""
+    group_data = group_export["groupExport"]["group"]
+    group_id = group_data["id"]
+    
+    resp = do_post(f"{base_url}/v2/dashboardgroup", token, group_data)
+    if resp.status_code in [200, 201]:
+        print(f"  ➕ Created dashboard group: {group_data.get('name', group_id)}")
+    else:
+        print(f"  ❌ Failed to create group {group_id}: {resp.text}", file=sys.stderr)
+        return False
+    
+    # Create all charts
+    for chart_export in group_export.get("chartExports", []):
+        chart = chart_export["chart"]
+        resp = do_post(f"{base_url}/v2/chart", token, chart)
+        if resp.status_code in [200, 201]:
+            print(f"  ➕ Created chart: {chart.get('name', chart['id'])}")
+        else:
+            print(f"  ❌ Failed to create chart: {resp.text}", file=sys.stderr)
+    
+    # Create all dashboards
+    for dashboard_export in group_export.get("dashboardExports", []):
+        dashboard = dashboard_export["dashboard"]
+        resp = do_post(f"{base_url}/v2/dashboard", token, dashboard)
+        if resp.status_code in [200, 201]:
+            print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard['id'])}")
+        else:
+            print(f"  ❌ Failed to create dashboard: {resp.text}", file=sys.stderr)
+    
+    return True
+

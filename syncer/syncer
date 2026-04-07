@@ -1,0 +1,620 @@
+#!/usr/bin/env python3
+
+"""
+Content Syncer - Modern TUI for syncing SignalFx content
+"""
+
+import sys
+from pathlib import Path
+from typing import Optional
+
+from textual.app import App, ComposeResult
+from textual.containers import Container, Vertical, Horizontal
+from textual.widgets import Footer, Static, Select, Label, Header, Tree, Button, RichLog
+from textual.binding import Binding
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
+from utils import (
+    get_realm_config, 
+    get_changed_files, 
+    extract_resource_info,
+    get_realm_for_env,
+    get_token_for_env,
+    base_api_url_from_realm,
+    compare_json_objects,
+    summarize_group_changes
+)
+from services.navigator_service import fetch_navigator_export_by_id, update_navigator
+from services.detector_service import fetch_detector_export_by_id, update_detector
+from services.group_service import fetch_group_export_by_id, update_dashboard_group
+import json
+
+
+class SyncerApp(App):
+    """Content Syncer - Clean and Modern TUI"""
+    
+    CSS = """
+    Screen {
+        background: $surface;
+    }
+    
+    Header {
+        background: $primary;
+        color: $text;
+    }
+    
+    Header .header--title {
+        text-style: bold;
+    }
+    
+    #main-container {
+        height: 1fr;
+        padding: 1;
+    }
+    
+    Select {
+        width: 100%;
+    }
+    
+    #content-area {
+        height: 70%;
+        width: 100%;
+    }
+    
+    #log-container {
+        height: 30%;
+        width: 100%;
+        border: solid $primary;
+    }
+    
+    #log-header {
+        height: auto;
+        background: $panel;
+        border-bottom: solid $primary;
+    }
+    
+    #log-title {
+        text-style: bold;
+        color: $text;
+    }
+    
+    #log-output {
+        height: 1fr;
+        background: $surface;
+    }
+    
+    #file-tree-container {
+        width: 40%;
+        height: 100%;
+        border: solid $primary;
+    }
+    
+    #tree-header {
+        height: auto;
+        background: $panel;
+        border-bottom: solid $primary;
+    }
+    
+    #update-all-btn {
+        width: 100%;
+        height: 3;
+        min-height: 3;
+    }
+    
+    #file-tree {
+        height: 1fr;
+    }
+    
+    #details-container {
+        width: 60%;
+        height: 100%;
+        border: solid $primary;
+    }
+    
+    #details-header {
+        height: auto;
+        background: $panel;
+        border-bottom: solid $primary;
+    }
+    
+    #update-btn {
+        width: 100%;
+        height: 3;
+        min-height: 3;
+    }
+    
+    #details-content {
+        height: 1fr;
+        overflow-y: auto;
+    }
+    
+    #status-text {
+        color: $success;
+        text-align: center;
+        height: 0;
+        display: none;
+    }
+    
+    Footer {
+        background: $panel;
+    }
+    """
+    
+    BINDINGS = [
+        Binding("q", "quit", "Quit", show=True),
+        Binding("ctrl+c", "quit", "Quit", show=False),
+    ]
+    
+    def __init__(self):
+        super().__init__()
+        self.selected_env: Optional[str] = None
+        self.available_envs: list[str] = []
+        self.changed_files: list = []
+        self.file_data: dict = {}  # Store file info by tree node
+        self.realm: Optional[str] = None
+        self.token: Optional[str] = None
+        self.base_url: Optional[str] = None
+        self.selected_file_info: Optional[dict] = None  # Track currently selected file
+    
+    def compose(self) -> ComposeResult:
+        """Create the UI layout"""
+        # Load available environments
+        config = get_realm_config()
+        if config:
+            self.available_envs = [item["env"] for item in config]
+        
+        # Ensure we have at least one option
+        if not self.available_envs:
+            self.available_envs = ["No environments configured"]
+        
+        # App title header
+        yield Header()
+        
+        # Main container
+        with Container(id="main-container"):
+            # Environment selector centered at top
+            yield Select(
+                [(env, env) for env in self.available_envs],
+                prompt="Choose env",
+                id="env-select",
+                allow_blank=False
+            )
+            
+            # Content area with file tree and details
+            with Horizontal(id="content-area"):
+                # Left: File tree with Update All button
+                with Vertical(id="file-tree-container"):
+                    with Container(id="tree-header"):
+                        yield Button("Update All", id="update-all-btn", variant="success")
+                    yield Tree("Changed Files", id="file-tree")
+                
+                # Right: Details panel with Update button
+                with Vertical(id="details-container"):
+                    with Container(id="details-header"):
+                        yield Button("Update", id="update-btn", variant="primary", disabled=True)
+                    yield Static("Select a file to view details", id="details-content")
+            
+            # Log panel at the bottom
+            with Vertical(id="log-container"):
+                with Container(id="log-header"):
+                    yield Static("Logs", id="log-title")
+                yield RichLog(id="log-output", highlight=True, markup=True)
+        
+        yield Footer()
+    
+    def on_select_changed(self, event: Select.Changed) -> None:
+        """Handle environment selection"""
+        if event.value != Select.BLANK:
+            self.selected_env = str(event.value)
+            # Get realm and token for the selected environment
+            self.realm = get_realm_for_env(self.selected_env)
+            self.token = get_token_for_env(self.selected_env)
+            self.base_url = base_api_url_from_realm(self.realm)
+            self.load_changed_files()
+    
+    def load_changed_files(self) -> None:
+        """Load changed files and populate the tree"""
+        self.changed_files = get_changed_files()
+        tree = self.query_one("#file-tree", Tree)
+        tree.clear()
+        
+        if not self.changed_files:
+            tree.root.add_leaf("No changed files found")
+            return
+        
+        # Group files by type
+        file_groups = {}
+        for file_type, file_path in self.changed_files:
+            if file_type not in file_groups:
+                file_groups[file_type] = []
+            file_groups[file_type].append(file_path)
+        
+        # Add to tree grouped by type
+        for file_type, files in sorted(file_groups.items()):
+            type_node = tree.root.add(f"📁 {file_type.upper()} ({len(files)})", expand=True)
+            for file_path in files:
+                # Extract resource info
+                resource_info = extract_resource_info(file_type, file_path)
+                if resource_info:
+                    resource_id, resource_name = resource_info
+                    label = f"📄 {resource_name}"
+                else:
+                    label = f"📄 {file_path.name}"
+                
+                # Add leaf and store file data
+                leaf = type_node.add_leaf(label)
+                self.file_data[leaf.id] = {
+                    "type": file_type,
+                    "path": str(file_path),
+                    "name": resource_name if resource_info else file_path.name
+                }
+    
+    def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
+        """Handle tree node selection"""
+        node_id = event.node.id
+        if node_id in self.file_data:
+            file_info = self.file_data[node_id]
+            self.selected_file_info = file_info
+            
+            # Show loading message immediately
+            details = self.query_one("#details-content", Static)
+            details.update("[dim]Loading changes...[/dim]")
+            
+            # Disable Update button while loading
+            update_btn = self.query_one("#update-btn", Button)
+            update_btn.disabled = True
+            
+            # Load and show changes
+            self.show_file_changes(file_info)
+            
+            # Enable the Update button after loading
+            update_btn.disabled = False
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button clicks"""
+        if event.button.id == "update-btn":
+            self.update_selected_file()
+        elif event.button.id == "update-all-btn":
+            self.update_all_files()
+    
+    def write_log(self, message: str) -> None:
+        """Write a message to the log panel"""
+        log_widget = self.query_one("#log-output", RichLog)
+        log_widget.write(message)
+    
+    def update_selected_file(self) -> None:
+        """Update the currently selected file"""
+        if not self.selected_file_info:
+            self.notify("No file selected", severity="warning")
+            return
+        
+        # Disable button immediately to prevent multiple clicks
+        update_btn = self.query_one("#update-btn", Button)
+        update_btn.disabled = True
+        update_btn.label = "Updating..."
+        
+        file_info = self.selected_file_info
+        file_type = file_info["type"]
+        file_path = Path(file_info["path"])
+        file_name = file_info["name"]
+        
+        try:
+            self.write_log(f"[bold cyan]→ Updating {file_name}...[/bold cyan]")
+            
+            # Load local data
+            local_data = json.loads(file_path.read_text())
+            
+            # Extract resource ID
+            resource_info = extract_resource_info(file_type, file_path)
+            if not resource_info:
+                self.write_log(f"[red]✗ Failed: Could not extract resource info[/red]")
+                return
+            
+            resource_id, resource_name = resource_info
+            
+            # Update based on file type
+            if file_type == "navigator":
+                self.write_log(f"  • Updating navigator via API...")
+                success = update_navigator(local_data, self.base_url, self.token)
+            elif file_type == "group":
+                self.write_log(f"  • Updating dashboard group via API...")
+                success = update_dashboard_group(local_data, self.base_url, self.token)
+            elif file_type == "detector":
+                self.write_log(f"  • Updating detector via API...")
+                success = update_detector(local_data, self.base_url, self.token)
+            else:
+                self.write_log(f"[red]✗ Unknown file type: {file_type}[/red]")
+                return
+            
+            if success:
+                self.write_log(f"  • Fetching updated export...")
+                # Fetch the updated export and save it
+                if file_type == "navigator":
+                    export_data = fetch_navigator_export_by_id(resource_id, self.base_url, self.token, format="json")
+                elif file_type == "group":
+                    export_data = fetch_group_export_by_id(resource_id, self.base_url, self.token, format="json")
+                elif file_type == "detector":
+                    export_data = fetch_detector_export_by_id(resource_id, self.base_url, self.token, format="json")
+                
+                # Write with 2-space indentation
+                formatted_json = json.dumps(export_data, indent=2)
+                file_path.write_text(formatted_json + '\n')
+                
+                self.write_log(f"[green]✓ Successfully updated {file_name}[/green]")
+                self.notify(f"✓ Updated {file_name}", severity="information")
+                
+                # Refresh the file details
+                self.show_file_changes(file_info)
+            else:
+                self.write_log(f"[red]✗ Failed to update {file_name}[/red]")
+                self.notify(f"✗ Failed to update {file_name}", severity="error")
+                
+        except Exception as e:
+            self.write_log(f"[red]✗ Error updating {file_name}: {str(e)}[/red]")
+            self.notify(f"✗ Error: {str(e)}", severity="error")
+        finally:
+            # Re-enable button
+            update_btn.disabled = False
+            update_btn.label = "Update"
+    
+    def update_all_files(self) -> None:
+        """Update all changed files"""
+        if not self.changed_files:
+            self.notify("No files to update", severity="warning")
+            return
+        
+        # Disable button immediately to prevent multiple clicks
+        update_all_btn = self.query_one("#update-all-btn", Button)
+        update_all_btn.disabled = True
+        update_all_btn.label = "Updating..."
+        
+        try:
+            total = len(self.changed_files)
+            success_count = 0
+            failed_count = 0
+            
+            self.write_log(f"[bold cyan]→ Starting bulk update for {total} file(s)[/bold cyan]")
+            
+            for idx, (file_type, file_path) in enumerate(self.changed_files, 1):
+                try:
+                    # Extract resource info
+                    resource_info = extract_resource_info(file_type, file_path)
+                    if not resource_info:
+                        self.write_log(f"[yellow]⊘ Skipped {file_path.name}: Could not extract resource info[/yellow]")
+                        failed_count += 1
+                        continue
+                    
+                    resource_id, resource_name = resource_info
+                    self.write_log(f"[{idx}/{total}] Updating {resource_name}...")
+                    
+                    # Load local data
+                    local_data = json.loads(file_path.read_text())
+                    
+                    # Update via API
+                    if file_type == "navigator":
+                        success = update_navigator(local_data, self.base_url, self.token)
+                    elif file_type == "group":
+                        success = update_dashboard_group(local_data, self.base_url, self.token)
+                    elif file_type == "detector":
+                        success = update_detector(local_data, self.base_url, self.token)
+                    else:
+                        success = False
+                    
+                    if success:
+                        # Fetch updated export and save
+                        if file_type == "navigator":
+                            export_data = fetch_navigator_export_by_id(resource_id, self.base_url, self.token, format="json")
+                        elif file_type == "group":
+                            export_data = fetch_group_export_by_id(resource_id, self.base_url, self.token, format="json")
+                        elif file_type == "detector":
+                            export_data = fetch_detector_export_by_id(resource_id, self.base_url, self.token, format="json")
+                        
+                        # Write with 2-space indentation
+                        formatted_json = json.dumps(export_data, indent=2)
+                        file_path.write_text(formatted_json + '\n')
+                        
+                        self.write_log(f"  [green]✓ {resource_name}[/green]")
+                        success_count += 1
+                    else:
+                        self.write_log(f"  [red]✗ {resource_name}[/red]")
+                        failed_count += 1
+                        
+                except Exception as e:
+                    self.write_log(f"  [red]✗ {file_path.name}: {str(e)}[/red]")
+                    failed_count += 1
+            
+            # Summary
+            self.write_log(f"\n[bold]Summary:[/bold]")
+            self.write_log(f"  [green]✓ {success_count} updated[/green]")
+            if failed_count > 0:
+                self.write_log(f"  [red]✗ {failed_count} failed[/red]")
+            
+            self.notify(f"Completed: {success_count} updated, {failed_count} failed", severity="information")
+            
+            # Reload the file tree to reflect any changes
+            self.load_changed_files()
+        finally:
+            # Re-enable button
+            update_all_btn.disabled = False
+            update_all_btn.label = "Update All"
+    
+    def show_file_changes(self, file_info: dict) -> None:
+        """Display changes for the selected file"""
+        details = self.query_one("#details-content", Static)
+        
+        if not self.realm or not self.token or not self.base_url:
+            details.update("[red]Error: Environment not configured[/red]")
+            return
+        
+        file_type = file_info["type"]
+        file_path = Path(file_info["path"])
+        
+        try:
+            # Load local data
+            local_data = json.loads(file_path.read_text())
+            
+            # Extract resource ID
+            resource_info = extract_resource_info(file_type, file_path)
+            if not resource_info:
+                details.update("[red]Error: Could not extract resource info[/red]")
+                return
+            
+            resource_id, resource_name = resource_info
+            
+            # Build header
+            output = f"[bold cyan]{resource_name}[/bold cyan]\n"
+            output += f"[dim]{file_path}[/dim]\n\n"
+            
+            # Fetch remote data and show changes
+            if file_type == "navigator":
+                remote_data = fetch_navigator_export_by_id(resource_id, self.base_url, self.token, format="json")
+                
+                # Check if navigator was modified
+                old_navigator = remote_data.get("navigatorExport", {}).get("navigator", {})
+                new_navigator = local_data.get("navigatorExport", {}).get("navigator", {})
+                navigator_changes = compare_json_objects(old_navigator, new_navigator)
+                
+                # Check crosslinks
+                old_crosslinks = remote_data.get("crossLinkExports") or []
+                new_crosslinks = local_data.get("crossLinkExports") or []
+                
+                old_crosslink_ids = {cl.get("crossLink", {}).get("id") for cl in old_crosslinks if cl.get("crossLink")}
+                new_crosslink_ids = {cl.get("crossLink", {}).get("id") for cl in new_crosslinks if cl.get("crossLink")}
+                
+                crosslinks_added = len(new_crosslink_ids - old_crosslink_ids)
+                crosslinks_removed = len(old_crosslink_ids - new_crosslink_ids)
+                crosslinks_modified = 0
+                
+                # Check for modified crosslinks
+                for new_cl in new_crosslinks:
+                    cl_id = new_cl.get("crossLink", {}).get("id")
+                    if cl_id in old_crosslink_ids:
+                        old_cl = next((cl for cl in old_crosslinks if cl.get("crossLink", {}).get("id") == cl_id), None)
+                        if old_cl and old_cl != new_cl:
+                            crosslinks_modified += 1
+                
+                total_changes = (1 if navigator_changes else 0) + crosslinks_added + crosslinks_removed + crosslinks_modified
+                
+                if total_changes > 0:
+                    output += f"[yellow]📝 {total_changes} change(s) detected:[/yellow]\n\n"
+                    
+                    if navigator_changes:
+                        output += "  • [yellow]Navigator was modified[/yellow]\n"
+                    
+                    if crosslinks_added > 0:
+                        output += f"  • [green]+{crosslinks_added} crosslink(s) added[/green]\n"
+                    if crosslinks_modified > 0:
+                        output += f"  • [yellow]✏ {crosslinks_modified} crosslink(s) modified[/yellow]\n"
+                    if crosslinks_removed > 0:
+                        output += f"  • [red]-{crosslinks_removed} crosslink(s) removed[/red]\n"
+                else:
+                    output += "[green]✓ No changes detected[/green]"
+                    
+            elif file_type == "group":
+                remote_data = fetch_group_export_by_id(resource_id, self.base_url, self.token, format="json")
+                
+                # Check group export
+                old_group = remote_data.get("groupExport", {}).get("group", {})
+                new_group = local_data.get("groupExport", {}).get("group", {})
+                group_modified = len(compare_json_objects(old_group, new_group)) > 0
+                
+                # Check charts
+                old_charts = {c["chart"]["id"]: c["chart"] for c in (remote_data.get("chartExports") or [])}
+                new_charts = {c["chart"]["id"]: c["chart"] for c in (local_data.get("chartExports") or [])}
+                
+                charts_added = len(set(new_charts.keys()) - set(old_charts.keys()))
+                charts_removed = len(set(old_charts.keys()) - set(new_charts.keys()))
+                charts_modified = sum(1 for chart_id in set(old_charts.keys()) & set(new_charts.keys())
+                                     if len(compare_json_objects(old_charts[chart_id], new_charts[chart_id])) > 0)
+                
+                # Check dashboards
+                old_dashboards = {d["dashboard"]["id"]: d["dashboard"] for d in (remote_data.get("dashboardExports") or [])}
+                new_dashboards = {d["dashboard"]["id"]: d["dashboard"] for d in (local_data.get("dashboardExports") or [])}
+                
+                dashboards_added = len(set(new_dashboards.keys()) - set(old_dashboards.keys()))
+                dashboards_removed = len(set(old_dashboards.keys()) - set(new_dashboards.keys()))
+                dashboards_modified = sum(1 for dash_id in set(old_dashboards.keys()) & set(new_dashboards.keys())
+                                         if len(compare_json_objects(old_dashboards[dash_id], new_dashboards[dash_id])) > 0)
+                
+                # Check crosslinks
+                old_crosslinks = remote_data.get("crossLinkExports") or []
+                new_crosslinks = local_data.get("crossLinkExports") or []
+                
+                old_crosslink_ids = {cl.get("crossLink", {}).get("id") for cl in old_crosslinks if cl.get("crossLink")}
+                new_crosslink_ids = {cl.get("crossLink", {}).get("id") for cl in new_crosslinks if cl.get("crossLink")}
+                
+                crosslinks_added = len(new_crosslink_ids - old_crosslink_ids)
+                crosslinks_removed = len(old_crosslink_ids - new_crosslink_ids)
+                crosslinks_modified = 0
+                
+                # Check for modified crosslinks
+                for new_cl in new_crosslinks:
+                    cl_id = new_cl.get("crossLink", {}).get("id")
+                    if cl_id in old_crosslink_ids:
+                        old_cl = next((cl for cl in old_crosslinks if cl.get("crossLink", {}).get("id") == cl_id), None)
+                        if old_cl and old_cl != new_cl:
+                            crosslinks_modified += 1
+                
+                total_changes = (
+                    (1 if group_modified else 0) +
+                    charts_added + charts_modified + charts_removed +
+                    dashboards_added + dashboards_modified + dashboards_removed +
+                    crosslinks_added + crosslinks_modified + crosslinks_removed
+                )
+                
+                if total_changes > 0:
+                    output += f"[yellow]📝 {total_changes} change(s) detected:[/yellow]\n\n"
+                    
+                    if group_modified:
+                        output += "  • [yellow]Group was modified[/yellow]\n"
+                    
+                    if charts_added > 0:
+                        output += f"  • [green]+{charts_added} chart(s) added[/green]\n"
+                    if charts_modified > 0:
+                        output += f"  • [yellow]✏ {charts_modified} chart(s) modified[/yellow]\n"
+                    if charts_removed > 0:
+                        output += f"  • [red]-{charts_removed} chart(s) removed[/red]\n"
+                    
+                    if dashboards_added > 0:
+                        output += f"  • [green]+{dashboards_added} dashboard(s) added[/green]\n"
+                    if dashboards_modified > 0:
+                        output += f"  • [yellow]✏ {dashboards_modified} dashboard(s) modified[/yellow]\n"
+                    if dashboards_removed > 0:
+                        output += f"  • [red]-{dashboards_removed} dashboard(s) removed[/red]\n"
+                    
+                    if crosslinks_added > 0:
+                        output += f"  • [green]+{crosslinks_added} crosslink(s) added[/green]\n"
+                    if crosslinks_modified > 0:
+                        output += f"  • [yellow]✏ {crosslinks_modified} crosslink(s) modified[/yellow]\n"
+                    if crosslinks_removed > 0:
+                        output += f"  • [red]-{crosslinks_removed} crosslink(s) removed[/red]\n"
+                else:
+                    output += "[green]✓ No changes detected[/green]"
+                    
+            elif file_type == "detector":
+                remote_data = fetch_detector_export_by_id(resource_id, self.base_url, self.token, format="json")
+                old_resource = remote_data.get("detectorExport", {}).get("detector", {})
+                new_resource = local_data.get("detectorExport", {}).get("detector", {})
+                changes = compare_json_objects(old_resource, new_resource)
+                
+                if changes:
+                    output += "[yellow]📝 Detector was modified[/yellow]"
+                else:
+                    output += "[green]✓ No changes detected[/green]"
+            
+            details.update(output)
+            
+        except Exception as e:
+            details.update(f"[red]Error loading changes:[/red]\n\n{str(e)}")
+
+
+def main():
+    """Run the Content Syncer app"""
+    app = SyncerApp()
+    app.run()
+
+
+if __name__ == "__main__":
+    main()
