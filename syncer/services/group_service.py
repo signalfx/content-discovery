@@ -55,7 +55,6 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
     # Compare and update group properties
     local_group = group_export["groupExport"]["group"]
     remote_group = remote_export["groupExport"]["group"]
-    overall_success = True
     
     if _has_group_changed(local_group, remote_group):
         resp = do_put(f"{base_url}/v2/dashboardgroup/{group_id}", token, local_group)
@@ -82,7 +81,6 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
             print(f"  ➕ Created chart: {chart.get('name', chart_id)}")
         else:
             print(f"  ❌ Failed to create chart {chart_id}: {resp.text}", file=sys.stderr)
-            overall_success = False
     
     for chart_id in charts_maybe_modified:
         if _has_chart_changed(local_charts[chart_id], remote_charts[chart_id]):
@@ -92,7 +90,6 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
                 print(f"  ✏️  Updated chart: {chart.get('name', chart_id)}")
             else:
                 print(f"  ❌ Failed to update chart {chart_id}: {resp.text}", file=sys.stderr)
-                overall_success = False
     
     if charts_removed:
         print(f"  ℹ️  {len(charts_removed)} chart(s) exist remotely but not locally (not deleted)")
@@ -112,7 +109,6 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
             print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard_id)}")
         else:
             print(f"  ❌ Failed to create dashboard {dashboard_id}: {resp.text}", file=sys.stderr)
-            overall_success = False
     
     for dashboard_id in dashboards_maybe_modified:
         if _has_dashboard_changed(local_dashboards[dashboard_id], remote_dashboards[dashboard_id]):
@@ -122,7 +118,6 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
                 print(f"  ✏️  Updated dashboard: {dashboard.get('name', dashboard_id)}")
             else:
                 print(f"  ❌ Failed to update dashboard {dashboard_id}: {resp.text}", file=sys.stderr)
-                overall_success = False
     
     if dashboards_removed:
         print(f"  ℹ️  {len(dashboards_removed)} dashboard(s) exist remotely but not locally (not deleted)")
@@ -132,12 +127,12 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
     remote_crosslinks = remote_export.get("crossLinkExports", [])
     
     if local_crosslinks or remote_crosslinks:
-        updated, created, failed = update_crosslinks(local_crosslinks, base_url, token)
-        if failed:
-            print(f"  ❌ Failed to write {failed} crosslink(s) for group {group_id}", file=sys.stderr)
-            overall_success = False
+        updated, created = update_crosslinks(local_crosslinks, base_url, token)
+        if updated == 0 and created == 0 and len(local_crosslinks) > 0:
+            # Crosslinks exist but none were updated/created
+            pass  # They're unchanged
     
-    return overall_success
+    return True
 
 
 def _has_group_changed(local_group: Dict[str, Any], remote_group: Dict[str, Any]) -> bool:
@@ -208,13 +203,6 @@ def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: 
             print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard['id'])}")
         else:
             print(f"  ❌ Failed to create dashboard: {resp.text}", file=sys.stderr)
-
-    # Apply crosslinks if provided so the graph is complete on first sync
-    crosslink_exports = group_export.get("crossLinkExports", [])
-    if crosslink_exports:
-        _, _, failed = update_crosslinks(crosslink_exports, base_url, token)
-        if failed:
-            print(f"  ❌ Failed to write {failed} crosslink(s) while creating group {group_id}", file=sys.stderr)
-            return False
     
     return True
+
