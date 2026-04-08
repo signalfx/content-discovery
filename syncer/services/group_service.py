@@ -183,6 +183,7 @@ def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: 
     """Create a new dashboard group with all its charts and dashboards."""
     group_data = group_export["groupExport"]["group"]
     group_id = group_data["id"]
+    overall_success = True
     
     resp = do_post(f"{base_url}/v2/dashboardgroup", token, group_data)
     if resp.status_code in [200, 201]:
@@ -199,6 +200,7 @@ def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: 
             print(f"  ➕ Created chart: {chart.get('name', chart['id'])}")
         else:
             print(f"  ❌ Failed to create chart: {resp.text}", file=sys.stderr)
+            overall_success = False
     
     # Create all dashboards
     for dashboard_export in group_export.get("dashboardExports", []):
@@ -208,6 +210,7 @@ def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: 
             print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard['id'])}")
         else:
             print(f"  ❌ Failed to create dashboard: {resp.text}", file=sys.stderr)
+            overall_success = False
 
     # Apply crosslinks if provided so the graph is complete on first sync
     crosslink_exports = group_export.get("crossLinkExports", [])
@@ -217,4 +220,4 @@ def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: 
             print(f"  ❌ Failed to write {failed} crosslink(s) while creating group {group_id}", file=sys.stderr)
             return False
     
-    return True
+    return overall_success
