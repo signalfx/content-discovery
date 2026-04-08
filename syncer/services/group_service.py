@@ -203,6 +203,10 @@ def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: 
             print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard['id'])}")
         else:
             print(f"  ❌ Failed to create dashboard: {resp.text}", file=sys.stderr)
+
+    # Apply crosslinks if provided so the graph is complete on first sync
+    crosslink_exports = group_export.get("crossLinkExports", [])
+    if crosslink_exports:
+        update_crosslinks(crosslink_exports, base_url, token)
     
     return True
-
