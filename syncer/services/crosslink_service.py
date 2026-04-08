@@ -38,25 +38,34 @@ def update_crosslink(crosslink: Dict[str, Any], base_url: str, token: str) -> bo
     Returns:
         True if successful, False otherwise
     """
-    crosslink_id = crosslink["id"]
+    crosslink_id = crosslink.get("id")
+    identifier = crosslink_id or crosslink.get("propertyName", "<unknown crosslink>")
+    
+    if not crosslink_id:
+        resp = do_post(f"{base_url}/v2/crosslink", token, crosslink)
+        if resp.status_code in [200, 201]:
+            return True
+        print(f"  ❌ Failed to create crosslink {identifier}: {resp.text}", file=sys.stderr)
+        return False
     
     resp = do_put(f"{base_url}/v2/crosslink/{crosslink_id}", token, crosslink)
     if resp.status_code in [200, 201]:
         return True
-    elif resp.status_code == 404:
+    if resp.status_code == 404:
         # Crosslink doesn't exist, create it
         resp = do_post(f"{base_url}/v2/crosslink", token, crosslink)
         if resp.status_code in [200, 201]:
             return True
-        else:
-            print(f"  ❌ Failed to create crosslink {crosslink_id}: {resp.text}", file=sys.stderr)
-            return False
-    else:
-        print(f"  ❌ Failed to update crosslink {crosslink_id}: {resp.text}", file=sys.stderr)
+        print(f"  ❌ Failed to create crosslink {identifier}: {resp.text}", file=sys.stderr)
         return False
+    
+    print(f"  ❌ Failed to update crosslink {identifier}: {resp.text}", file=sys.stderr)
+    return False
 
 
-def update_crosslinks(crosslink_exports: List[Dict[str, Any]], base_url: str, token: str) -> tuple[int, int]:
+def update_crosslinks(
+    crosslink_exports: List[Dict[str, Any]], base_url: str, token: str
+) -> tuple[int, int, int]:
     """
     Update multiple crosslinks by comparing with remote state.
     
@@ -66,18 +75,25 @@ def update_crosslinks(crosslink_exports: List[Dict[str, Any]], base_url: str, to
         token: The SignalFx access token
         
     Returns:
-        Tuple of (updated_count, created_count)
+        Tuple of (updated_count, created_count, failed_count)
     """
     updated_count = 0
     created_count = 0
+    failed_count = 0
     
     for crosslink_export in crosslink_exports:
-        crosslink = crosslink_export.get("crosslink")
+        # Exports vary between snake_case and camelCase payload keys, normalize here
+        crosslink = crosslink_export.get("crosslink") or crosslink_export.get("crossLink")
         if not crosslink:
             continue
         
         crosslink_id = crosslink.get("id")
         if not crosslink_id:
+            if update_crosslink(crosslink, base_url, token):
+                print(f"  ➕ Created crosslink: {crosslink.get('propertyName', '<unnamed crosslink>')}")
+                created_count += 1
+            else:
+                failed_count += 1
             continue
         
         # Fetch remote state to check if it changed
@@ -90,6 +106,8 @@ def update_crosslinks(crosslink_exports: List[Dict[str, Any]], base_url: str, to
                 if update_crosslink(crosslink, base_url, token):
                     print(f"  ✏️  Updated crosslink: {crosslink.get('propertyName', crosslink_id)}")
                     updated_count += 1
+                else:
+                    failed_count += 1
             # else: crosslink unchanged, skip
             
         except RuntimeError:
@@ -97,5 +115,7 @@ def update_crosslinks(crosslink_exports: List[Dict[str, Any]], base_url: str, to
             if update_crosslink(crosslink, base_url, token):
                 print(f"  ➕ Created crosslink: {crosslink.get('propertyName', crosslink_id)}")
                 created_count += 1
+            else:
+                failed_count += 1
     
-    return updated_count, created_count
+    return updated_count, created_count, failed_count
