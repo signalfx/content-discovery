@@ -132,10 +132,10 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
     remote_crosslinks = remote_export.get("crossLinkExports", [])
     
     if local_crosslinks or remote_crosslinks:
-        updated, created = update_crosslinks(local_crosslinks, base_url, token)
-        if updated == 0 and created == 0 and len(local_crosslinks) > 0:
-            # Crosslinks exist but none were updated/created
-            pass  # They're unchanged
+        updated, created, failed = update_crosslinks(local_crosslinks, base_url, token)
+        if failed:
+            print(f"  ❌ Failed to write {failed} crosslink(s) for group {group_id}", file=sys.stderr)
+            overall_success = False
     
     return overall_success
 
@@ -212,6 +212,9 @@ def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: 
     # Apply crosslinks if provided so the graph is complete on first sync
     crosslink_exports = group_export.get("crossLinkExports", [])
     if crosslink_exports:
-        update_crosslinks(crosslink_exports, base_url, token)
+        _, _, failed = update_crosslinks(crosslink_exports, base_url, token)
+        if failed:
+            print(f"  ❌ Failed to write {failed} crosslink(s) while creating group {group_id}", file=sys.stderr)
+            return False
     
     return True

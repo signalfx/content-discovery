@@ -64,8 +64,9 @@ def update_navigator(navigator_export: Dict[str, Any], base_url: str, token: str
     # Update crosslinks if present (at root level, not under navigatorExport)
     crosslinks = navigator_export.get("crossLinkExports", [])
     if crosslinks:
-        updated, created = update_crosslinks(crosslinks, base_url, token)
-        # Silently handle crosslinks (counts included in update message)
+        _, _, failed = update_crosslinks(crosslinks, base_url, token)
+        if failed:
+            print(f"  ❌ Failed to write {failed} crosslink(s) for navigator {navigator_id}", file=sys.stderr)
+            return False
     
     return True
-
