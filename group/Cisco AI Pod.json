@@ -97,6 +97,16 @@
               "valueSuffix": "°",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "GPU temperature",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "°",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -110,7 +120,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_GPU_TEMP').max(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_GPU_TEMP').max(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).publish(label='A')\nB = data('hw.temperature', filter=filter('hw.sensor_location', 'GPU_DIE')).max(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1324,6 +1334,36 @@
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.utilization.legacy - Sum by k8s.cluster.name,k8s.namespace.name,k8s.pod.name - Sum by k8s.namespace.name,k8s.pod.name - Mean(Dashboard window) - Top 499",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Dimension conversion",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Top models",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": null,
@@ -1338,7 +1378,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = (C-D).sum().publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*') and filter('namespace', 'nim')).sum(by=['k8s.cluster.name', 'namespace', 'pod']).sum(by=['namespace', 'pod']).mean(over=Args.get('ui.dashboard_window', '15m')).top(count=499).publish(label='B')\nC = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).count().publish(label='C', enable=False)\nD = (B).sum().publish(label='D', enable=False)",
+        "programText": "A = (C-D).sum().publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*') and filter('namespace', 'nim')).sum(by=['k8s.cluster.name', 'namespace', 'pod']).sum(by=['namespace', 'pod']).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='B', enable=False)\nC = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).count().publish(label='C', enable=False)\nD = (B).sum().publish(label='D', enable=False)\nE = data('hw.gpu.utilization.legacy', filter=filter('hw.gpu.task', 'general') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', 'nim')).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.name']).sum(by=['k8s.namespace.name', 'k8s.pod.name']).mean(over=Args.get('ui.dashboard_window', '15m')).scale(100).publish(label='E', enable=False)\nF = (B).dimensions(renames={'k8s.pod.name':'pod', 'k8s.namespace.name':'namespace'}, allow_missing=True).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.name']).sum(by=['k8s.namespace.name', 'k8s.pod.name']).publish(label='F', enable=False)\nG = union(F,E).top(count=499).publish(label='G')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1519,6 +1559,48 @@
               "valuePrefix": "",
               "valueSuffix": "",
               "valueUnit": null
+            },
+            {
+              "displayName": "G",
+              "label": "G",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "H",
+              "label": "H",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "I",
+              "label": "I",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "J",
+              "label": "J",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "K",
+              "label": "K",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "L",
+              "label": "L",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
             }
           ],
           "refreshInterval": 60000,
@@ -1534,7 +1616,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = ((D/C)*100).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='A')\nB = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).scale(0.01).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='B', enable=False)\nC = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).count(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='C', enable=False)\nD = (B).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='D', enable=False)\nE = alerts(detector_id='Gq3KRI_A4Ac').publish(label='E')\nF = alerts(detector_id='GyVG_F5A4AQ').publish(label='F')",
+        "programText": "A = ((D/C)*100).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).scale(0.01).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='B', enable=False)\nC = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).count(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='C', enable=False)\nD = (B).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='D', enable=False)\nG = ((J/I)*100).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='G', enable=False)\nH = data('hw.gpu.utilization.legacy', filter=filter('k8s.cluster.name', '*') and filter('hw.gpu.task', 'general')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='H', enable=False)\nI = data('hw.gpu.utilization.legacy', filter=filter('k8s.cluster.name', '*') and filter('hw.gpu.task', 'general')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).count(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='I', enable=False)\nJ = (H).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='J', enable=False)\nK = (A).dimensions(renames={'hw.id':'gpu'}, allow_missing=True).sum(by=['k8s.cluster.name', 'hw.id', 'k8s.node.name']).publish(label='K', enable=False)\nL = union(K,G).publish(label='L')\nE = alerts(detector_id='Gq3KRI_A4Ac').publish(label='E')\nF = alerts(detector_id='GyVG_F5A4AQ').publish(label='F')",
         "relatedDetectorIds": [
           "Gq3KRI_A4Ac",
           "GyVG_F5A4AQ"
@@ -1620,6 +1702,16 @@
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.utilization.legacy - Mean by host.name,hw.id",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
@@ -1634,7 +1726,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).mean(by=['k8s.node.name', 'gpu']).publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).mean(by=['k8s.node.name', 'gpu']).publish(label='A')\nB = data('hw.gpu.utilization.legacy', filter=filter('hw.gpu.task','general')).mean(by=['host.name', 'hw.id']).dimensions(aliases={'k8s.node.name':'host.name'}).scale(100).mean(by=['k8s.node.name', 'hw.id']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1866,6 +1958,26 @@
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.utilization.legacy - Sum by k8s.cluster.name,k8s.node.name - Count",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total GPU nodes",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
@@ -1881,7 +1993,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).count().publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).count().publish(label='A', enable=False)\nB = data('hw.gpu.utilization.legacy', filter=filter('k8s.cluster.name', '*') and filter('hw.gpu.task', 'general')).sum(by=['k8s.cluster.name', 'k8s.node.name']).count().publish(label='B', enable=False)\nC = (A+B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -3013,6 +3125,16 @@
               "valueSuffix": "Watts",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.power - Mean by host.name,hw.id",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "Watts",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
@@ -3027,7 +3149,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE').mean(by=['host.name', 'gpu']).publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE').mean(by=['host.name', 'gpu']).publish(label='A')\nB = data('hw.power').mean(by=['host.name', 'hw.id']).publish(label='B')\n",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -7055,6 +7177,16 @@
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "GPU utilization (OTel)",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -7068,7 +7200,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL').publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL').publish(label='A')\nB = data('hw.gpu.utilization.legacy', filter=filter('hw.gpu.task', 'general')).scale(100).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -7572,6 +7704,16 @@
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "GPU DRAM utilization",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -7585,7 +7727,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_PROF_DRAM_ACTIVE', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).scale(100).publish(label='A')",
+        "programText": "A = data('DCGM_FI_PROF_DRAM_ACTIVE', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).scale(100).publish(label='A')\nB = data('hw.gpu.memory.utilization.dram', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).scale(100).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8057,6 +8199,13 @@
               "valuePrefix": "",
               "valueSuffix": "",
               "valueUnit": null
+            },
+            {
+              "displayName": "hw.power",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
             }
           ],
           "refreshInterval": null,
@@ -8072,7 +8221,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', filter=filter('namespace', 'nim'), rollup='sum').publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', filter=filter('namespace', 'nim'), rollup='sum').publish(label='A')\nB = data('hw.power', filter=filter('namespace', 'nim'), rollup='sum').publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8153,6 +8302,16 @@
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.utilization - tensor",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -8166,7 +8325,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_PROF_PIPE_TENSOR_ACTIVE').scale(1000).publish(label='A')",
+        "programText": "A = data('DCGM_FI_PROF_PIPE_TENSOR_ACTIVE').scale(1000).publish(label='A')\nB = data('hw.gpu.utilization', filter=filter('hw.gpu.task', 'tensor')).scale(1000).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8225,6 +8384,26 @@
               "valueSuffix": "Watts",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.power - Sum",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "Watts",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total power consumption",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "Watts",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 30000,
@@ -8240,7 +8419,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', filter=filter('host.name', '*'), rollup='sum').sum(by=['host.name']).publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', filter=filter('host.name', '*') and filter('device', 'nvidia0', 'nvidia1'), rollup='latest').sum().publish(label='A', enable=False)\nB = data('hw.power', filter=filter('host.name', '*') and filter('hw.name', 'nvidia0', 'nvidia1')).sum().publish(label='B', enable=False)\nC = union(A,B).sum().publish(label='C', enable=True)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8342,6 +8521,16 @@
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.utilization.legacy - Mean by host.name,hw.id - Scale:100",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 30000,
@@ -8356,91 +8545,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL').mean(by=['host.name', 'gpu']).publish(label='A')",
-        "relatedDetectorIds": [],
-        "tags": []
-      }
-    },
-    {
-      "chart": {
-        "autoDetectRelatedDetectorIds": [],
-        "chartLinks": [],
-        "created": 0,
-        "creator": null,
-        "customProperties": {},
-        "description": "GPU memory utilization percentage by Kubernetes node with peak and average values.",
-        "id": "G3153CAAgAQ",
-        "importOf": "G1sUoXnA0CM",
-        "lastUpdated": 0,
-        "lastUpdatedBy": null,
-        "name": "GPU memory % utilization",
-        "options": {
-          "columnSizes": {},
-          "groupBy": [
-            "k8s.node.name"
-          ],
-          "groupBySort": "Descending",
-          "hideMissingValues": false,
-          "legendOptions": {
-            "fields": null
-          },
-          "maximumPrecision": null,
-          "programOptions": {
-            "disableSampling": true,
-            "maxDelay": 0,
-            "minimumResolution": 0,
-            "timezone": null
-          },
-          "publishLabelOptions": [
-            {
-              "displayName": "Memory Used (GB)",
-              "label": "A",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Memory Free (GB)",
-              "label": "B",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Utilization %",
-              "label": "C",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Peak",
-              "label": "D",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
-              "displayName": "Avg",
-              "label": "E",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            }
-          ],
-          "refreshInterval": null,
-          "sortBy": "-Peak",
-          "time": {
-            "range": 900000,
-            "rangeEnd": 0,
-            "type": "relative"
-          },
-          "timestampHidden": false,
-          "type": "TableChart",
-          "unitPrefix": "Metric"
-        },
-        "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_FB_USED', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='B', enable=False)\nC = ((A/(A+B))*100).publish(label='C', enable=False)\nD = (C).max(over=Args.get('ui.dashboard_window', '15m')).publish(label='D')\nE = (C).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='E')",
+        "programText": "A = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('device', 'nvidia1', 'nvidia0')).mean(by=['host.name', 'gpu']).publish(label='A')\nB = data('hw.gpu.utilization.legacy', filter=filter('hw.gpu.task', 'general') and filter('hw.name', 'nvidia0', 'nvidia1')).mean(by=['host.name', 'hw.id']).scale(100).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8565,6 +8670,16 @@
               "valueSuffix": "Watts",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.power - Mean by host.name,hw.id",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "Watts",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 30000,
@@ -8579,7 +8694,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE').mean(by=['host.name', 'gpu']).publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', filter=filter('device', 'nvidia0', 'nvidia1')).mean(by=['host.name', 'gpu']).publish(label='A')\nB = data('hw.power', filter=filter('hw.name', 'nvidia0', 'nvidia1')).mean(by=['host.name', 'hw.id']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8678,6 +8793,36 @@
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "Memory Used (GB)",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Memory Free (GB)",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Utilization %",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 30000,
@@ -8692,7 +8837,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C')",
+        "programText": "A = data('DCGM_FI_DEV_FB_USED', filter=filter('device', 'nvidia0', 'nvidia1')).mean(by=['host.name', 'gpu']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE', filter=filter('device', 'nvidia0', 'nvidia1')).mean(by=['host.name', 'gpu']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C')\nD = data('hw.gpu.memory.usage', filter=filter('hw.name', 'nvidia1', 'nvidia0')).mean(by=['host.name', 'hw.id']).publish(label='D', enable=False)\nE = data('hw.gpu.memory.free', filter=filter('hw.name', 'nvidia0', 'nvidia1')).mean(by=['host.name', 'hw.id']).publish(label='E', enable=False)\nF = ((D)/(D+E)*100).publish(label='F')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8773,6 +8918,16 @@
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "GPU",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -8786,7 +8941,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "B = data('DCGM_FI_DEV_GPU_UTIL').mean(by=['sf_metric']).publish(label='B')",
+        "programText": "B = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('device', 'nvidia0', 'nvidia1')).mean(by=['sf_metric']).publish(label='B')\nC = data('hw.gpu.utilization.legacy', filter=filter('hw.gpu.task', 'general') and filter('hw.name', 'nvidia0', 'nvidia1')).scale(100).mean(by=['sf_metric']).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -8867,6 +9022,16 @@
               "valueSuffix": "W",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.power - Sum by k8s.cluster.name",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "W",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -8880,7 +9045,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE').sum(by=['k8s.cluster.name']).publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', filter=filter('device', 'nvidia1', 'nvidia0')).sum(by=['k8s.cluster.name']).publish(label='A')\nB = data('hw.power', filter=filter('hw.name', 'nvidia1', 'nvidia0')).sum(by=['k8s.cluster.name']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -14625,6 +14790,41 @@
               "valuePrefix": "",
               "valueSuffix": "",
               "valueUnit": null
+            },
+            {
+              "displayName": "hw.gpu.memory.usage - Mean by host.name,hw.id",
+              "label": "E",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "hw.gpu.memory.free - Mean by host.name,hw.id",
+              "label": "F",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Utilization OTel",
+              "label": "G",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Dimension conversion",
+              "label": "H",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Combined list",
+              "label": "I",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
             }
           ],
           "refreshInterval": 60000,
@@ -14640,7 +14840,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C')\nD = alerts(detector_id='Gq6H6XWA4A4').publish(label='D')",
+        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu', 'k8s.node.name']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu', 'k8s.node.name']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C', enable=False)\nE = data('hw.gpu.memory.usage').mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='E', enable=False)\nF = data('hw.gpu.memory.free').mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='F', enable=False)\nG = ((E)/(E+F)*100).publish(label='G', enable=False)\nH = (C).dimensions(renames={'hw.id':'gpu'}, allow_missing=True).mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='H', enable=False)\nI = union(G,H).publish(label='I')\nD = alerts(detector_id='Gq6H6XWA4A4').publish(label='D')",
         "relatedDetectorIds": [
           "Gq6H6XWA4A4"
         ],
@@ -14745,6 +14945,36 @@
               "valueSuffix": "%",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.memory.usage - Mean by host.name,hw.id",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.memory.free - Mean by host.name,hw.id",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Utilization OTel",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
@@ -14759,7 +14989,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).mean(by=['k8s.node.name', 'gpu']).publish(label='C')",
+        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).mean(by=['k8s.node.name', 'gpu']).publish(label='C')\nD = data('hw.gpu.memory.usage').mean(by=['host.name', 'hw.id']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='D', enable=False)\nE = data('hw.gpu.memory.free').mean(by=['host.name', 'hw.id']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='E', enable=False)\nF = ((D)/(D+E)*100).mean(by=['k8s.node.name', 'gpu']).publish(label='F')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -14840,6 +15070,16 @@
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.power - Maximum by k8s.cluster.name,k8s.node.name",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -14853,7 +15093,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE').max(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE').max(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='A')\nB = data('hw.power').max(by=['k8s.cluster.name', 'k8s.node.name']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -14897,6 +15137,26 @@
               "valueSuffix": "Watts",
               "valueUnit": null,
               "yAxis": 0
+            },
+            {
+              "displayName": "hw.power - Sum",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "Watts",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total power",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "Watts",
+              "valueUnit": null,
+              "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
@@ -14912,7 +15172,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', rollup='sum').sum().publish(label='A')",
+        "programText": "A = data('DCGM_FI_DEV_POWER_USAGE', rollup='sum').sum().publish(label='A', enable=False)\nB = data('hw.power', rollup='sum').sum().publish(label='B', enable=False)\nC = union(A,B).sum().publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -14978,8 +15238,68 @@
               "yAxis": 0
             },
             {
+              "displayName": "K",
+              "label": "K",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
               "displayName": "(C)/4 - Sum",
               "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "%",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.memory.usage - Mean by host.name,hw.id",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "hw.gpu.memory.free - Mean by host.name,hw.id",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "(E)/(E+F)*100",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "H",
+              "label": "H",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "(G)/4 - Sum",
+              "label": "I",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -15001,7 +15321,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C', enable=False)\nD = ((C)/4).sum().publish(label='D')",
+        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C', enable=False)\nJ = (C).dimensions(renames={'hw.id':'gpu'}, allow_missing=True).sum(by=['hw.id', 'host.name']).publish(label='K', enable=False)\nD = ((J)/4).sum().publish(label='D', enable=False)\nE = data('hw.gpu.memory.usage').mean(by=['host.name', 'hw.id']).publish(label='E', enable=False)\nF = data('hw.gpu.memory.free').mean(by=['host.name', 'hw.id']).publish(label='F', enable=False)\nG = ((E)/(E+F)*100).publish(label='G', enable=False)\nH = ((G)/4).sum().publish(label='H', enable=False)\nI = union(D,H).sum().publish(label='I')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -18785,6 +19105,69 @@
         "relatedDetectorIds": [],
         "tags": []
       }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "GPU memory utilization percentage by Kubernetes node with peak and average values.",
+        "id": "HGpZfLGAYAA",
+        "importOf": "HF2OexLAwAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "GPU memory % utilization",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "k8s.node.name"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Peak",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Avg",
+              "label": "E",
+              "valuePrefix": "",
+              "valueSuffix": "%",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": null,
+          "sortBy": "-Peak",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data('DCGM_FI_DEV_FB_USED', filter=filter('k8s.cluster.name', '*') and filter('device', 'nvidia0', 'nvidia1')).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nB = data('DCGM_FI_DEV_FB_FREE', filter=filter('k8s.cluster.name', '*') and filter('device', 'nvidia1', 'nvidia0')).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nC = ((A/(A+B))*100)\nD = union(C,H).max(over=Args.get('ui.dashboard_window', '15m')).publish(label='D')\nE = union(C,H).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='E')\nF = data('hw.gpu.memory.usage', filter=filter('k8s.cluster.name', '*') and filter('hw.name', 'nvidia0', 'nvidia1')).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nG = data('hw.gpu.memory.free', filter=filter('k8s.cluster.name', '*') and filter('hw.name', 'nvidia0', 'nvidia1')).sum(by=['k8s.cluster.name', 'k8s.node.name'])\nH = ((F/(F+G))*100)",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
     }
   ],
   "crossLinkExports": [],
@@ -19728,13 +20111,6 @@
             "width": 2
           },
           {
-            "chartId": "G3153CAAgAQ",
-            "column": 2,
-            "height": 2,
-            "row": 2,
-            "width": 5
-          },
-          {
             "chartId": "G3153CAAgAg",
             "column": 7,
             "height": 2,
@@ -19742,10 +20118,10 @@
             "width": 5
           },
           {
-            "chartId": "G3153CAAgAk",
+            "chartId": "HGpZfLGAYAA",
             "column": 2,
             "height": 2,
-            "row": 4,
+            "row": 2,
             "width": 5
           },
           {
@@ -19761,6 +20137,13 @@
             "height": 2,
             "row": 4,
             "width": 5
+          },
+          {
+            "chartId": "G3153CAAgAk",
+            "column": 2,
+            "height": 2,
+            "row": 4,
+            "width": 5
           }
         ],
         "created": 0,
@@ -19770,17 +20153,7 @@
         "discoveryOptions": null,
         "eventOverlays": null,
         "filters": {
-          "sources": [
-            {
-              "NOT": false,
-              "applyIfExists": false,
-              "property": "device",
-              "value": [
-                "nvidia0",
-                "nvidia1"
-              ]
-            }
-          ],
+          "sources": [],
           "time": {
             "end": "Now",
             "start": "-1m"
@@ -20481,6 +20854,10 @@
         {
           "filters": [],
           "metric": "cisco.device.up"
+        },
+        {
+          "filters": [],
+          "metric": "hw.power"
         }
       ],
       "lastUpdated": 0,
@@ -20490,7 +20867,7 @@
       "teams": null
     }
   },
-  "hashCode": -190680438,
+  "hashCode": 545933317,
   "id": "Gvbml3QAcAA",
   "modelVersion": 1,
   "packageType": "GROUP"
