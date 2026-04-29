@@ -1,12 +1,12 @@
 {
   "crossLinkExports": null,
-  "hashCode": 1433901547,
-  "id": "FIVr7BuAYAI",
+  "hashCode": -1168617002,
+  "id": "GM4YvHKAYAA",
   "modelVersion": 1,
   "navigatorExport": {
     "navigator": {
       "aggregateDashboards": [
-        "DiVWIWUAgAE"
+        "GDexkruAYAM"
       ],
       "connectedCategory": null,
       "created": 0,
@@ -14,53 +14,73 @@
       "defaultGroupBy": null,
       "description": "",
       "entityHighlightedAttributes": [],
-      "id": "FIVr7BuAYAI",
-      "idDisplayName": null,
+      "id": "GM4YvHKAYAA",
+      "idDisplayName": "{{host.name}}",
       "importQualifiers": [
         {
           "filters": [
             {
               "not": false,
-              "property": "plugin",
-              "values": [
-                "mysql"
-              ]
+              "property": "operation",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "host.name",
+              "values": []
             }
           ],
-          "metric": "threads.connected"
+          "metric": "mysql.operations"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "host.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "command",
+              "values": []
+            }
+          ],
+          "metric": "mysql.commands"
         }
       ],
       "instanceDashboards": [
-        "DiVWN1NAcAA"
+        "GDexkruAYAQ"
       ],
       "instanceDisplayText": null,
       "lastUpdated": 0,
       "lastUpdatedBy": null,
       "metricClasses": [],
       "metricColumns": [],
-      "name": "MySQL hosts (deprecated)",
+      "name": "MySQL hosts",
       "navigatorCategory": "Datastores",
       "navigatorCategoryDisplayName": "Datastores",
-      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryGroupDisplayName": "Others",
       "navigatorCategoryInstancesName": "entity",
       "navigatorType": "elemental",
-      "ownerScope": "organization",
+      "ownerScope": "splunk",
       "pinnedFilters": [],
       "propertyDisplayFormatters": [],
       "relationships": [],
       "requiresFilter": false,
       "sites": "o11y",
-      "systemTypes": [],
+      "systemTypes": [
+        "mysql"
+      ],
       "uiModel": {
-        "alertQuery": "plugin:mysql",
+        "alertQuery": "_exists_:mysql.instance.endpoint",
         "category": "Datastores",
         "categoryPriority": 0,
         "discoveryQuery": [],
-        "displayName": "MySQL hosts (deprecated)",
+        "displayName": "MySQL hosts",
         "filterProperties": null,
-        "id": "mysqlhost",
+        "id": "mysqlotel",
         "idName": "Host",
-        "idTemplate": "{{host}}",
+        "idTemplate": "{{host.name}}",
         "listColumns": [
           {
             "aggregate": null,
@@ -94,29 +114,21 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the sum of bytes received and sent by MySQL server from all clients. Darker colors indicate higher relative values.",
-            "displayName": "Bytes/sec",
-            "id": "mysql_bytes_per_sec",
+            "description": "This metric shows the number of seconds that the server has been up. Darker colors indicate higher relative values.",
+            "displayName": "Uptime (s)",
+            "id": "mysqlotel_uptime",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "MYSQL_OCTETS_RX = data(\"mysql_octets.rx\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nMYSQL_OCTETS_TX = data(\"mysql_octets.tx\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nMYSQL_BYTES_PER_SEC = (MYSQL_OCTETS_RX + MYSQL_OCTETS_TX)",
-              "varName": "MYSQL_BYTES_PER_SEC"
+              "filters": [],
+              "resolution": 300000,
+              "template": "UPTIME = data('mysql.uptime'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='latest').sum(by=['host.name'])",
+              "varName": "UPTIME"
             },
             "metricSelectors": [
-              "mysql_octets.rx",
-              "mysql_octets.tx"
+              "mysql.uptime"
             ],
             "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Bytes / sec",
+            "valueFormat": "Seconds",
+            "valueLabel": "Uptime",
             "valueType": null
           },
           {
@@ -133,28 +145,21 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of queries in MySQL query cache. Darker colors indicate higher relative values.",
-            "displayName": "Cache size",
-            "id": "mysql_cache_size",
+            "description": "This metric shows the number of slow queries. Darker colors indicate higher relative values.",
+            "displayName": "# Slow queries",
+            "id": "mysqlotel_slow_queries",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "QCACHE_SIZE = data(\"cache_size.qcache\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"average\").sum(by=[\"host\"])",
-              "varName": "QCACHE_SIZE"
+              "filters": [],
+              "resolution": 300000,
+              "template": "SLOW_QUERIES = data('mysql.query.slow.count'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "SLOW_QUERIES"
             },
             "metricSelectors": [
-              "cache_size.qcache"
+              "mysql.query.slow.count"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Cache size",
+            "valueLabel": "Slow queries",
             "valueType": null
           },
           {
@@ -171,28 +176,83 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of MySQL DELETE commands executed. Darker colors indicate higher relative values.",
-            "displayName": "Deletes/sec",
-            "id": "mysql_commands_delete",
+            "description": "This metric shows the number of commands has been executed. Darker colors indicate higher relative values.",
+            "displayName": "# Commands",
+            "id": "mysqlotel_commands",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "MYSQL_COMMANDS_DELETE = data(\"mysql_commands.delete\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"host\"])",
-              "varName": "MYSQL_COMMANDS_DELETE"
+              "filters": [],
+              "resolution": 300000,
+              "template": "COMMANDS = data('mysql.commands'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "COMMANDS"
             },
             "metricSelectors": [
-              "mysql_commands.delete"
+              "mysql.commands"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Deletes / sec",
+            "valueLabel": "Commands",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the current number of connection attempts (successful or not) to the MySQL server. Darker colors indicate higher relative values.",
+            "displayName": "# Connections",
+            "id": "mysqlotel_connections",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "CONNECTIONS = data('mysql.connection.count'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "CONNECTIONS"
+            },
+            "metricSelectors": [
+              "mysql.connection.count"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Connections",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of errors that occur during the client connection process. Darker colors indicate higher relative values.",
+            "displayName": "# Connection errors",
+            "id": "mysqlotel_connection_errors",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "CONNECTION_ERROR = data('mysql.connection.errors'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "CONNECTION_ERROR"
+            },
+            "metricSelectors": [
+              "mysql.connection.errors"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Connection errors",
             "valueType": null
           },
           {
@@ -210,27 +270,27 @@
               ]
             },
             "description": "This metric shows the number of MySQL table locks which were granted immediately. Darker colors indicate higher relative values.",
-            "displayName": "Immediate table locks/sec",
-            "id": "mysql_locks_immediate",
+            "displayName": "# Immediate table locks",
+            "id": "mysqlotel_immediate_locks",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
+                  "property": "kind",
+                  "propertyValue": "immediate",
                   "type": "property"
                 }
               ],
-              "resolution": 60000,
-              "template": "MYSQL_LOCKS_IMMEDIATE = data(\"mysql_locks.immediate\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])",
-              "varName": "MYSQL_LOCKS_IMMEDIATE"
+              "resolution": 300000,
+              "template": "IMMEDIATE_LOCKS = data('mysql.locks'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "IMMEDIATE_LOCKS"
             },
             "metricSelectors": [
-              "mysql_locks.immediate"
+              "mysql.locks"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Immediate table locks / sec",
+            "valueLabel": "Immediate table locks",
             "valueType": null
           },
           {
@@ -247,28 +307,21 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of MySQL INSERT commands executed. Darker colors indicate higher relative values.",
-            "displayName": "Inserts/sec",
-            "id": "mysql_commands_insert",
+            "description": "This metric shows the number of InnoDB operations. Darker colors indicate higher relative values.",
+            "displayName": "# Operations",
+            "id": "mysqlotel_operations",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "MYSQL_COMMANDS_INSERT = data(\"mysql_commands.insert\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"host\"])",
-              "varName": "MYSQL_COMMANDS_INSERT"
+              "filters": [],
+              "resolution": 300000,
+              "template": "OPERATIONS = data('mysql.operations'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "OPERATIONS"
             },
             "metricSelectors": [
-              "mysql_commands.insert"
+              "mysql.operations"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Inserts / sec",
+            "valueLabel": "Operations",
             "valueType": null
           },
           {
@@ -285,69 +338,28 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows total number of mutations/sec (inserts, updates and deletes) by MySQL server. Darker colors indicate higher relative values.",
-            "displayName": "Mutations/sec",
-            "id": "mysql_mutations",
+            "description": "This metric shows the number of InnoDB row locks with type waits. Darker colors indicate higher relative values.",
+            "displayName": "# Row locks",
+            "id": "mysqlotel_row_locks",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
+                  "property": "kind",
+                  "propertyValue": "waits",
                   "type": "property"
                 }
               ],
-              "resolution": 60000,
-              "template": "MYSQL_COMMANDS_INSERT = data(\"mysql_commands.insert\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"host\"])\nMYSQL_COMMANDS_UPDATE = data(\"mysql_commands.update*\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"sf_metric\",\"host\"])\nMYSQL_COMMANDS_DELETE = data(\"mysql_commands.delete\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"host\"])\nMYSQL_MUTATIONS_PER_SEC = (MYSQL_COMMANDS_INSERT + MYSQL_COMMANDS_UPDATE + MYSQL_COMMANDS_DELETE)",
-              "varName": "MYSQL_MUTATIONS_PER_SEC"
+              "resolution": 300000,
+              "template": "ROW_LOCKS = data('mysql.row_locks'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "ROW_LOCKS"
             },
             "metricSelectors": [
-              "mysql_commands.insert",
-              "mysql_commands.update",
-              "mysql_commands.delete"
+              "mysql.row_locks"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Mutations / sec",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": null,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the hit ratio. The query cache is deprecated as of MySQL 5.7.20, and is removed in MySQL 8.0. Darker colors indicate higher relative values.",
-            "displayName": "Query cache hit (%)",
-            "id": "mysql_qcache_hits",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "QCACHE_HITS = data(\"cache_result.qcache-hits\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nQCACHE_NOT_CACHED = data(\"cache_result.qcache-not_cached\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nQCACHE_HIT=( QCACHE_HITS/(QCACHE_HITS + QCACHE_NOT_CACHED))",
-              "varName": "QCACHE_HIT"
-            },
-            "metricSelectors": [
-              "cache_result.qcache-hits",
-              "cache_result.qcache-not_cached"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Query cache hit (%)",
+            "valueLabel": "Row locks",
             "valueType": null
           },
           {
@@ -364,28 +376,28 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of MySQL SELECT commands executed. Darker colors indicate higher relative values.",
-            "displayName": "Selects/sec",
-            "id": "mysql_commands_select",
+            "description": "This metric shows the number of MySQL locks which had to wait before being granted. Darker colors indicate higher relative values.",
+            "displayName": "# Waited table locks",
+            "id": "mysqlotel_waited_locks",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
+                  "property": "kind",
+                  "propertyValue": "waited",
                   "type": "property"
                 }
               ],
-              "resolution": 60000,
-              "template": "MYSQL_COMMANDS_SELECT = data(\"mysql_commands.select\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"host\"])",
-              "varName": "MYSQL_COMMANDS_SELECT"
+              "resolution": 300000,
+              "template": "WAITED_LOCKS = data('mysql.locks'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "WAITED_LOCKS"
             },
             "metricSelectors": [
-              "mysql_commands.select"
+              "mysql.locks"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Selects / sec",
+            "valueLabel": "Waited table locks",
             "valueType": null
           },
           {
@@ -402,208 +414,44 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of threads cached by MySQL for re-use on a new client connection. A MySQL thread corresponds to a single MySQL connection. Darker colors indicate higher relative values.",
-            "displayName": "Threads cached",
-            "id": "mysql_threads_cached",
+            "description": "This metric shows the number of bytes sent. Darker colors indicate higher relative values.",
+            "displayName": "Network bytes sent (bytes)",
+            "id": "mysqlotel_network_bytes_sent",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
+                  "property": "kind",
+                  "propertyValue": "sent",
                   "type": "property"
                 }
               ],
-              "resolution": 60000,
-              "template": "THREADS_CACHED = data(\"threads.cached\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])",
-              "varName": "THREADS_CACHED"
+              "resolution": 300000,
+              "template": "TOTAL_NETWORK_BYTES_SENT = data('mysql.client.network.io'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['host.name'])",
+              "varName": "TOTAL_NETWORK_BYTES_SENT"
             },
             "metricSelectors": [
-              "threads.cached"
+              "mysql.client.network.io"
             ],
             "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Threads cached",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of currently open MySQL connections. A MySQL thread corresponds to a single MySQL connection. Darker colors indicate higher relative values.",
-            "displayName": "Threads connected",
-            "id": "mysql_threads_connected",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "THREADS_CONNECTED = data(\"threads.connected\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])",
-              "varName": "THREADS_CONNECTED"
-            },
-            "metricSelectors": [
-              "threads.connected"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Threads connected",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of MySQL threads that are processing a query. A MySQL thread corresponds to a single MySQL connection. Darker colors indicate higher relative values.",
-            "displayName": "Threads running",
-            "id": "mysql_threads_running",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "THREADS_RUNNING = data(\"threads.running\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])",
-              "varName": "THREADS_RUNNING"
-            },
-            "metricSelectors": [
-              "threads.running"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Threads running",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of MySQL UPDATE commands executed. Darker colors indicate higher relative values.",
-            "displayName": "Updates/sec",
-            "id": "mysql_commands_update",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "MYSQL_COMMANDS_UPDATE = data(\"mysql_commands.update\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"host\"])",
-              "varName": "MYSQL_COMMANDS_UPDATE"
-            },
-            "metricSelectors": [
-              "mysql_commands.update"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Updates / sec",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": null,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of MySQL table locks which had to wait before being granted. Darker colors indicate higher relative values.",
-            "displayName": "Waited table locks /sec",
-            "id": "mysql_locks_waited",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "mysql",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "MYSQL_LOCKS_WAITED = data(\"mysql_locks.waited\"{{#filter}},filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])",
-              "varName": "MYSQL_LOCKS_WAITED"
-            },
-            "metricSelectors": [
-              "mysql_locks.waited"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Waited table locks / sec",
+            "valueFormat": "Bytes",
+            "valueLabel": "Network bytes sent",
             "valueType": null
           }
         ],
         "mtsQuery": null,
-        "o11yMetricName": "Running hosts (deprecated)",
+        "o11yMetricName": "Running hosts",
         "o11yMetricUnit": null,
-        "o11yProductName": "MySQL hosts (deprecated)",
-        "o11ySignalflowTemplate": "A = data('mysql_octets.rx', filter=filter('plugin', 'mysql'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).count(by='host').count().publish(label='A')",
+        "o11yProductName": "MySQL hosts",
+        "o11ySignalflowTemplate": "A = data('mysql.operations').sum(by=['host.name']).count().publish(label='A')",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
         "requiredProperties": [],
-        "singleHostSystemDashboardName": "MySQL Host (deprecated)",
-        "systemDashboardName": "MySQL Hosts (deprecated)",
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
         "systemDashboardPrefix": null,
         "tooltipKeyList": [
-          {
-            "displayName": "Region",
-            "format": null,
-            "isSummaryProperty": true,
-            "property": "cloud.region"
-          },
-          {
-            "displayName": "Host id",
-            "format": null,
-            "isSummaryProperty": true,
-            "property": "host.id"
-          },
           {
             "displayName": "Value",
             "format": "Number",

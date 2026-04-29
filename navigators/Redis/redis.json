@@ -1,12 +1,12 @@
 {
   "crossLinkExports": null,
-  "hashCode": 2080921381,
-  "id": "FIVD_EwAYAA",
+  "hashCode": -1740855559,
+  "id": "GL1EoW7AgAA",
   "modelVersion": 1,
   "navigatorExport": {
     "navigator": {
       "aggregateDashboards": [
-        "DiVWhSUAgAA"
+        "GHZREgQAgAo"
       ],
       "connectedCategory": null,
       "created": 0,
@@ -14,57 +14,67 @@
       "defaultGroupBy": null,
       "description": "",
       "entityHighlightedAttributes": [],
-      "id": "FIVD_EwAYAA",
-      "idDisplayName": "{{plugin_instance}}",
+      "id": "GL1EoW7AgAA",
+      "idDisplayName": "{{host.name}}",
       "importQualifiers": [
         {
           "filters": [
             {
               "not": false,
-              "property": "plugin",
-              "values": [
-                "redis_info"
-              ]
+              "property": "host.name",
+              "values": []
             }
           ],
-          "metric": "bytes.used_memory"
+          "metric": "redis.cpu.time"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "host.name",
+              "values": []
+            }
+          ],
+          "metric": "redis.uptime"
         }
       ],
       "instanceDashboards": [
-        "DiVWeYqAYAA"
+        "GHZtsoiAcBE"
       ],
       "instanceDisplayText": null,
       "lastUpdated": 0,
       "lastUpdatedBy": null,
       "metricClasses": [],
       "metricColumns": [],
-      "name": "Redis instances (deprecated)",
+      "name": "Redis instances",
       "navigatorCategory": "Datastores",
       "navigatorCategoryDisplayName": "Datastores",
-      "navigatorCategoryGroupDisplayName": null,
+      "navigatorCategoryGroupDisplayName": "Others",
       "navigatorCategoryInstancesName": "entity",
       "navigatorType": "elemental",
-      "ownerScope": "organization",
+      "ownerScope": "splunk",
       "pinnedFilters": [],
       "propertyDisplayFormatters": [],
       "relationships": [],
       "requiresFilter": false,
       "sites": "o11y",
-      "systemTypes": [],
+      "systemTypes": [
+        "redis"
+      ],
       "uiModel": {
-        "alertQuery": "plugin:redis_info",
+        "alertQuery": "_exists_:redis.version",
         "category": "Datastores",
         "categoryPriority": 0,
         "discoveryQuery": [],
-        "displayName": "Redis instances (deprecated)",
+        "displayName": "Redis instances",
         "filterProperties": null,
-        "id": "redisinstance",
-        "idName": "Instance",
-        "idTemplate": "{{plugin_instance}}",
+        "id": "redisinstanceotel",
+        "idName": "Host",
+        "idTemplate": "{{host.name}}",
         "listColumns": [
           {
             "aggregate": null,
-            "displayName": "Redis instance",
+            "displayName": "Host",
             "format": "id",
             "metric": null,
             "property": "id",
@@ -83,7 +93,7 @@
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
@@ -94,34 +104,27 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of client connections (excluding connections from followers). Darker colors indicate higher relative values.",
-            "displayName": "# Connections",
-            "id": "redis_connections",
+            "description": "This metric shows the number of commands processed per second. Darker colors indicate higher relative values.",
+            "displayName": "# Commands",
+            "id": "redisinstances_commands_count",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "CONNECTED_CLIENTS= data(\"gauge.connected_clients\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"])",
-              "varName": "CONNECTED_CLIENTS"
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_COMMANDS = data(\"redis.commands\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_COMMANDS"
             },
             "metricSelectors": [
-              "gauge.connected_clients"
+              "redis.commands"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Connections",
+            "valueLabel": "Commands",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
@@ -132,106 +135,21 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the number of instances that are acting as followers. Darker colors indicate higher relative values.",
-            "displayName": "# Followers",
-            "id": "redis_followers",
+            "description": "This metric shows the current number of evicted keys due to max memory limit. Darker colors indicate higher relative values.",
+            "displayName": "# Keys evicted",
+            "id": "redisinstances_keys_evicted",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "FOLLOWER = data(\"gauge.slave_repl_offset\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])",
-              "varName": "FOLLOWER"
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_KEYS_EVICTED = data(\"redis.keys.evicted\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_KEYS_EVICTED"
             },
             "metricSelectors": [
-              "gauge.slave_repl_offset"
+              "redis.keys.evicted"
             ],
             "type": "metric",
             "valueFormat": "Number",
-            "valueLabel": "Followers",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of leader instances. Darker colors indicate higher relative values.",
-            "displayName": "# Leaders",
-            "id": "redis_leaders",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "MASTER_REPL_OFFSET = data(\"gauge.master_repl_offset\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nSLAVE_REPL_OFFSET = data(\"gauge.slave_repl_offset\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).count(by=[\"plugin_instance\"])\nTOTAL_OFFSET = (SLAVE_REPL_OFFSET+MASTER_REPL_OFFSET)\nLEADER = union(TOTAL_OFFSET ,MASTER_REPL_OFFSET).max(by=[\"plugin_instance\"]).between(0.5, 1.5, clamp=False)",
-              "varName": "LEADER"
-            },
-            "metricSelectors": [
-              "gauge.master_repl_offset",
-              "gauge.slave_repl_offset"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Leaders",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the sum of clients that are pending on a blocking call and connections that are rejected because of maxclients limit. Darker colors indicate higher relative values.",
-            "displayName": "Blocked & rejected clients",
-            "id": "redis_blocked_clients_and_rejected_connections",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "BLOCKED_CLIENTS = data(\"gauge.blocked_clients\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nREJECTED_CONNECTIONS = data(\"counter.rejected_connections\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"host\"])\nREDIS_BLOCKED_CLIENTS_AND_REJECTED_CONNECTIONS = (BLOCKED_CLIENTS + REJECTED_CONNECTIONS)",
-              "varName": "REDIS_BLOCKED_CLIENTS_AND_REJECTED_CONNECTIONS"
-            },
-            "metricSelectors": [
-              "gauge.blocked_clients",
-              "counter.rejected_connections"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Blocked & rejected clients",
+            "valueLabel": "Keys evicted",
             "valueType": null
           },
           {
@@ -239,11 +157,11 @@
               "limits": [
                 {
                   "color": "#6bd37e",
-                  "lowerLimit": 90.0
+                  "lowerLimit": 80.0
                 },
                 {
                   "color": "#e2ed6a",
-                  "lowerLimit": 80.0
+                  "lowerLimit": 20.0
                 },
                 {
                   "color": "#ea1849",
@@ -255,74 +173,28 @@
               "minValue": null,
               "range": null
             },
-            "description": "This metric shows the cache hit ratio derived from the values of cache hits and cache misses. Under 80% red, 80-90% yellow, over 90% green.",
-            "displayName": "Cache hit rate (%)",
-            "id": "redis_cache_hit_rate",
+            "description": "This metric shows the current redis cache hit ratio of hosts. Under 20% red, 20-80% yellow, over 80% green.",
+            "displayName": "Hit ratio (%)",
+            "id": "redisinstances_hit_ratio",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "CACHE_HITS = data(\"derive.keyspace_hits\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nCACHE_MISSES = data(\"derive.keyspace_misses\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nCACHE_RATIO = ( (CACHE_HITS+1) / ((CACHE_HITS+1) + CACHE_MISSES) * 100)",
-              "varName": "CACHE_RATIO"
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_HIT = data(\"redis.keyspace.hits\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"sum\").sum(by=[\"host.name\"])\nREDIS_MISS = data(\"redis.keyspace.misses\", rollup=\"sum\"){{#filter}}, filter={{{filter}}}{{/filter}}.sum(by=[\"host.name\"])\nREDIS_HIT_RATIO = (((REDIS_HIT+1)/(REDIS_HIT+1+REDIS_MISS))*100)",
+              "varName": "REDIS_HIT_RATIO"
             },
             "metricSelectors": [
-              "derive.keyspace_hits",
-              "derive.keyspace_misses"
+              "redis.keyspace.hits",
+              "redis.keyspace.misses"
             ],
             "type": "metric",
             "valueFormat": "Percentage",
-            "valueLabel": "Cache hit rate",
+            "valueLabel": "Hit ratio",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#6bd37e",
-                "#acef7f",
-                "#e2ed6a",
-                "#eac24b",
-                "#ea1849"
-              ]
-            },
-            "description": "This metric shows the sum of percentage of user CPU and system CPU consumed by the Redis server. Under 20% green, 20-80% yellow, over 80% red.",
-            "displayName": "CPU utilization (%)",
-            "id": "redis_used_cpu_user",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "USED_CPU_SYS = data(\"counter.used_cpu_sys\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).scale(100)\nUSED_CPU_USER = data(\"counter.used_cpu_user\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).scale(100)\nREDIS_USED_CPU_USER= (USED_CPU_SYS+USED_CPU_USER)",
-              "varName": "REDIS_USED_CPU_USER"
-            },
-            "metricSelectors": [
-              "counter.used_cpu_sys",
-              "counter.used_cpu_user"
-            ],
-            "type": "metric",
-            "valueFormat": "Percentage",
-            "valueLabel": "CPU utilization (%)",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
@@ -333,149 +205,27 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the sum of number of evicted keys due to maxmemory limit and total number of key expiration events. Darker colors indicate higher relative values.",
-            "displayName": "Evicted & expired (keys/sec)",
-            "id": "redis_evicted_and_expired_keys_per_sec",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "EVICTED_KEYS = data(\"counter.evicted_keys\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nEXPIRED_KEYS = data(\"counter.expired_keys\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])\nREDIS_EVICTED_AND_EXPIRED_KEYS_PER_SEC = (EVICTED_KEYS + EXPIRED_KEYS)",
-              "varName": "REDIS_EVICTED_AND_EXPIRED_KEYS_PER_SEC"
-            },
-            "metricSelectors": [
-              "counter.evicted_keys",
-              "counter.expired_keys"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Evicted & expired (keys / sec)",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the follower replication offset. Darker colors indicate higher relative values.",
-            "displayName": "Follower replication offsets",
-            "id": "redis_follower_repl_offset",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "FOLLOWER = data(\"gauge.slave_repl_offset\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"])",
-              "varName": "FOLLOWER"
-            },
-            "metricSelectors": [
-              "gauge.slave_repl_offset"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Follower replication offsets",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the leader replication offset. Darker colors indicate higher relative values.",
-            "displayName": "Leader replication offsets",
-            "id": "redis_leader_repl_offset",
-            "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "LEADER_REPL_OFFSET = data(\"gauge.master_repl_offset\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5).sum(by=[\"plugin_instance\"]).sum(by=[\"plugin_instance\"])",
-              "varName": "LEADER_REPL_OFFSET"
-            },
-            "metricSelectors": [
-              "gauge.master_repl_offset"
-            ],
-            "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Leader replication offsets",
-            "valueType": null
-          },
-          {
-            "coloring": {
-              "limits": null,
-              "maxValue": 100,
-              "method": "quantile",
-              "minValue": 0,
-              "range": [
-                "#bfd3e6",
-                "#9ebcda",
-                "#8c96c6",
-                "#8856a7",
-                "#810f7c"
-              ]
-            },
-            "description": "This metric shows the number of bytes allocated by Redis. Darker colors indicate higher relative values.",
+            "description": "This metric shows the number of bytes used by host. Darker colors indicate higher relative values.",
             "displayName": "Memory used (bytes)",
-            "id": "redis_used_memory",
+            "id": "redisinstances_memory_used",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "USED_MEMORY = data(\"bytes.used_memory\"{{#filter}},filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=5)",
-              "varName": "USED_MEMORY"
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_MEMORY_USED = data(\"redis.memory.used\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_MEMORY_USED"
             },
             "metricSelectors": [
-              "bytes.used_memory"
+              "redis.memory.used"
             ],
             "type": "metric",
-            "valueFormat": "Number",
+            "valueFormat": "Bytes",
             "valueLabel": "Memory used",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
@@ -486,35 +236,27 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the sum of total number of bytes outputted and inputted. Darker colors indicate higher relative values.",
-            "displayName": "Network (bytes/sec)",
-            "id": "redis_network_bytes_per_sec",
+            "description": "This metric shows the total number of bytes read from the network. Darker colors indicate higher relative values.",
+            "displayName": "Network byte read (bytes)",
+            "id": "redisinstances_network_read",
             "job": {
-              "filters": [
-                {
-                  "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
-                  "type": "property"
-                }
-              ],
-              "resolution": 60000,
-              "template": "TOTAL_NET_OUTPUT_BYTES = data(\"counter.total_net_output_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nTOTAL_NET_INPUT_BYTES = data(\"counter.total_net_input_bytes\"{{#filter}}, filter={{{filter}}}{{/filter}},rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5)\nREDIS_NETWORK_BYTES_PER_SEC = (TOTAL_NET_OUTPUT_BYTES+TOTAL_NET_INPUT_BYTES)",
-              "varName": "REDIS_NETWORK_BYTES_PER_SEC"
+              "filters": [],
+              "resolution": 300000,
+              "template": "REDIS_NETWORK_READ = data(\"redis.net.input\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_NETWORK_READ"
             },
             "metricSelectors": [
-              "counter.total_net_output_bytes",
-              "counter.total_net_input_bytes"
+              "redis.net.input"
             ],
             "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Network (bytes / sec)",
+            "valueFormat": "Bytes",
+            "valueLabel": "Network byte read",
             "valueType": null
           },
           {
             "coloring": {
               "limits": null,
-              "maxValue": 100,
+              "maxValue": null,
               "method": "quantile",
               "minValue": 0,
               "range": [
@@ -525,64 +267,44 @@
                 "#810f7c"
               ]
             },
-            "description": "This metric shows the total number of commands processed by the server. Darker colors indicate higher relative values.",
-            "displayName": "Operations/sec ",
-            "id": "redis_commands_processed",
+            "description": "This metric shows the total number of bytes written to the network. Darker colors indicate higher relative values.",
+            "displayName": "Network byte write (bytes)",
+            "id": "redisinstances_network_write",
             "job": {
               "filters": [
                 {
                   "not": false,
-                  "property": "plugin",
-                  "propertyValue": "redis_info",
+                  "property": "redis.version",
+                  "propertyValue": "*",
                   "type": "property"
                 }
               ],
-              "resolution": 60000,
-              "template": "COMMAND_PROCESSED = data(\"counter.commands_processed\"{{#filter}},filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=5).mean(by=[\"plugin_instance\"])",
-              "varName": "COMMAND_PROCESSED"
+              "resolution": 300000,
+              "template": "REDIS_NETWORK_WRITE = data(\"redis.net.output\"{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=[\"host.name\"])",
+              "varName": "REDIS_NETWORK_WRITE"
             },
             "metricSelectors": [
-              "counter.commands_processed"
+              "redis.net.output"
             ],
             "type": "metric",
-            "valueFormat": "Number",
-            "valueLabel": "Operations / sec",
+            "valueFormat": "Bytes",
+            "valueLabel": "Network byte write",
             "valueType": null
           }
         ],
         "mtsQuery": null,
-        "o11yMetricName": "Running instances (deprecated)",
+        "o11yMetricName": "Active hosts",
         "o11yMetricUnit": null,
-        "o11yProductName": "Redis instances (deprecated)",
-        "o11ySignalflowTemplate": "A = data('gauge.slave_repl_offset', filter=filter('plugin', 'redis_info'), extrapolation='last_value', maxExtrapolations=5).count().publish(label='A', enable=False)\nB = data('gauge.master_repl_offset', filter=filter('plugin', 'redis_info'), extrapolation='last_value', maxExtrapolations=5).count().publish(label='B', enable=True)\nC = (B-A).publish(label='C')",
+        "o11yProductName": "Redis instances",
+        "o11ySignalflowTemplate": "A = data(\"redis.uptime\").sum(by=[\"host.name\"]).count().publish(label=\"A\")",
         "o11yTrendDisplayMode": null,
         "propertyColumns": null,
         "proxyProperties": null,
-        "requiredProperties": [
-          "plugin_instance"
-        ],
-        "singleHostSystemDashboardName": "Redis Instance (deprecated)",
-        "systemDashboardName": "Redis Instances (deprecated)",
+        "requiredProperties": [],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
         "systemDashboardPrefix": null,
         "tooltipKeyList": [
-          {
-            "displayName": "Host",
-            "format": null,
-            "isSummaryProperty": true,
-            "property": "host"
-          },
-          {
-            "displayName": "Region",
-            "format": null,
-            "isSummaryProperty": true,
-            "property": "cloud.region"
-          },
-          {
-            "displayName": "Host.id",
-            "format": null,
-            "isSummaryProperty": true,
-            "property": "host.id"
-          },
           {
             "displayName": "Value",
             "format": "Number",
