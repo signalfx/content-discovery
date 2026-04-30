@@ -1589,13 +1589,6 @@
               "valueUnit": null
             },
             {
-              "displayName": "K",
-              "label": "K",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
               "displayName": "L",
               "label": "L",
               "valuePrefix": "",
@@ -1616,7 +1609,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = ((D/C)*100).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).scale(0.01).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='B', enable=False)\nC = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).count(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='C', enable=False)\nD = (B).sum(by=['k8s.cluster.name', 'gpu', 'k8s.node.name']).publish(label='D', enable=False)\nG = ((J/I)*100).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='G', enable=False)\nH = data('hw.gpu.utilization.legacy', filter=filter('k8s.cluster.name', '*') and filter('hw.gpu.task', 'general')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='H', enable=False)\nI = data('hw.gpu.utilization.legacy', filter=filter('k8s.cluster.name', '*') and filter('hw.gpu.task', 'general')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).count(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='I', enable=False)\nJ = (H).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='J', enable=False)\nK = (A).dimensions(renames={'hw.id':'gpu'}, allow_missing=True).sum(by=['k8s.cluster.name', 'hw.id', 'k8s.node.name']).publish(label='K', enable=False)\nL = union(K,G).publish(label='L')\nE = alerts(detector_id='Gq3KRI_A4Ac').publish(label='E')\nF = alerts(detector_id='GyVG_F5A4AQ').publish(label='F')",
+        "programText": "A = ((D/C)*100).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).dimensions(aliases={'hw.id':'gpu'}, allow_missing=True).scale(0.01).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='B', enable=False)\nC = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).dimensions(aliases={'hw.id':'gpu'}, allow_missing=True).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).count(by=['k8s.cluster.name', 'hw.id', 'k8s.node.name']).publish(label='C', enable=False)\nD = (B).sum(by=['k8s.cluster.name', 'hw.id', 'k8s.node.name']).publish(label='D', enable=False)\nG = ((J/I)*100).publish(label='G', enable=False)\nH = data('hw.gpu.utilization.legacy', filter=filter('k8s.cluster.name', '*') and filter('hw.gpu.task', 'general')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='H', enable=False)\nI = data('hw.gpu.utilization.legacy', filter=filter('k8s.cluster.name', '*') and filter('hw.gpu.task', 'general')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).count(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='I', enable=False)\nJ = (H).sum(by=['k8s.cluster.name', 'k8s.node.name', 'hw.id']).publish(label='J', enable=False)\nL = union(A,G).publish(label='L')\nE = alerts(detector_id='Gq3KRI_A4Ac').publish(label='E')\nF = alerts(detector_id='GyVG_F5A4AQ').publish(label='F')",
         "relatedDetectorIds": [
           "Gq3KRI_A4Ac",
           "GyVG_F5A4AQ"
@@ -14813,13 +14806,6 @@
               "valueUnit": null
             },
             {
-              "displayName": "Dimension conversion",
-              "label": "H",
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null
-            },
-            {
               "displayName": "Combined list",
               "label": "I",
               "valuePrefix": "",
@@ -14840,7 +14826,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu', 'k8s.node.name']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu', 'k8s.node.name']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C', enable=False)\nE = data('hw.gpu.memory.usage').mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='E', enable=False)\nF = data('hw.gpu.memory.free').mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='F', enable=False)\nG = ((E)/(E+F)*100).publish(label='G', enable=False)\nH = (C).dimensions(renames={'hw.id':'gpu'}, allow_missing=True).mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='H', enable=False)\nI = union(G,H).publish(label='I')\nD = alerts(detector_id='Gq6H6XWA4A4').publish(label='D')",
+        "programText": "A = data('DCGM_FI_DEV_FB_USED').dimensions(aliases={'hw.id':'gpu'}, allow_missing=True).mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').dimensions(aliases={'hw.id':'gpu'}, allow_missing=True).mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).publish(label='C', enable=False)\nE = data('hw.gpu.memory.usage').mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='E', enable=False)\nF = data('hw.gpu.memory.free').mean(by=['host.name', 'hw.id', 'k8s.node.name']).publish(label='F', enable=False)\nG = ((E)/(E+F)*100).publish(label='G', enable=False)\nI = union(C,G).publish(label='I')\nD = alerts(detector_id='Gq6H6XWA4A4').publish(label='D')",
         "relatedDetectorIds": [
           "Gq6H6XWA4A4"
         ],
@@ -14989,7 +14975,7 @@
           "unitPrefix": "Binary"
         },
         "packageSpecifications": "",
-        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).mean(by=['k8s.node.name', 'gpu']).publish(label='C')\nD = data('hw.gpu.memory.usage').mean(by=['host.name', 'hw.id']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='D', enable=False)\nE = data('hw.gpu.memory.free').mean(by=['host.name', 'hw.id']).dimensions(aliases={'k8s.node.name':'host.name'}).publish(label='E', enable=False)\nF = ((D)/(D+E)*100).mean(by=['k8s.node.name', 'gpu']).publish(label='F')",
+        "programText": "A = data('DCGM_FI_DEV_FB_USED').mean(by=['host.name', 'gpu']).publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_FB_FREE').mean(by=['host.name', 'gpu']).publish(label='B', enable=False)\nC = ((A)/(A+B)*100).mean(by=['host.name', 'gpu']).publish(label='C')\nD = data('hw.gpu.memory.usage').mean(by=['host.name', 'hw.id']).publish(label='D', enable=False)\nE = data('hw.gpu.memory.free').mean(by=['host.name', 'hw.id']).publish(label='E', enable=False)\nF = ((D)/(D+E)*100).mean(by=['host.name', 'hw.id']).publish(label='F')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -20867,7 +20853,7 @@
       "teams": null
     }
   },
-  "hashCode": 545933317,
+  "hashCode": 285725313,
   "id": "Gvbml3QAcAA",
   "modelVersion": 1,
   "packageType": "GROUP"
