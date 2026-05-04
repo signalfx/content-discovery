@@ -72,9 +72,20 @@
               ]
             }
           ],
+          "metric": "container.cpu.time"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "k8s.cluster.name"
+              ]
+            }
+          ],
           "metric": "container.cpu.usage"
-                }
-                
+        }
       ],
       "instanceDashboards": [
         "FY0_DOqAgAA"
@@ -252,7 +263,7 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CONTAINER_CPU_USAGE = data(\"container.cpu.usage\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\")\nCONTAINER_CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).scale(0.01).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\")\nCONTAINER_COUNT = combine(CONTAINER_CPU_USAGE if CONTAINER_CPU_UTILIZATION is None else CONTAINER_CPU_UTILIZATION).count(by=[\"k8s.cluster.name\"])",
+              "template": "CONTAINER_CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).scale(0.01).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\")\nCONTAINER_CPU_USAGE = data(\"container.cpu.usage\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\")\nCONTAINER_COUNT = combine(CONTAINER_CPU_USAGE if CONTAINER_CPU_UTILIZATION is None else CONTAINER_CPU_UTILIZATION).count(by=[\"k8s.cluster.name\"])",
               "varName": "CONTAINER_COUNT"
             },
             "metricSelectors": [
