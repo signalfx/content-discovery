@@ -33,7 +33,7 @@
       }
     }
   ],
-  "hashCode": 1839489595,
+    "hashCode": -213714626,
   "id": "FTwxEZhAcAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -72,7 +72,19 @@
               ]
             }
           ],
-          "metric": "container.cpu.time"
+          "metric": "container.cpu.usage"
+                },
+                {
+                    "filters": [
+                        {
+                            "not": false,
+                            "property": "sf_key",
+                            "values": [
+                                "k8s.cluster.name"
+                            ]
+                        }
+                    ],
+                    "metric": "disk.utilization"
         }
       ],
       "instanceDashboards": [
@@ -251,10 +263,11 @@
             "job": {
               "filters": [],
               "resolution": 60000,
-              "template": "CONTAINER_COUNT = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).scale(0.01).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\").count(by=[\"k8s.cluster.name\"])",
+              "template": "CONTAINER_CPU_USAGE = data(\"container.cpu.usage\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\")\nCONTAINER_CPU_UTILIZATION = data(\"container_cpu_utilization\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).scale(0.01).mean(over=Args.get('ui.dashboard_window', '15m')).mean(over=\"1m\")\nCONTAINER_COUNT = combine(CONTAINER_CPU_USAGE if CONTAINER_CPU_UTILIZATION is None else CONTAINER_CPU_UTILIZATION).count(by=[\"k8s.cluster.name\"])",
               "varName": "CONTAINER_COUNT"
             },
             "metricSelectors": [
+              "container.cpu.usage",
               "container_cpu_utilization"
             ],
             "type": "metric",
@@ -418,6 +431,7 @@
             },
             "metricSelectors": [
               "cpu.utilization",
+              "container.cpu.usage",
               "container_cpu_utilization",
               "cpu.num_processors",
               "machine_cpu_cores",

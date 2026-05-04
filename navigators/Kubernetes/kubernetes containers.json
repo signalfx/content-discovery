@@ -65,7 +65,7 @@
             }
         }
     ],
-    "hashCode": 1372150831,
+    "hashCode": 1623560820,
     "id": "FTBxJpUAgAA",
     "modelVersion": 1,
     "navigatorExport": {
@@ -708,12 +708,12 @@
                                 }
                             ],
                             "resolution": 300000,
-                            "template": "CONTAINER_CPU_UTILIZATION = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='rate').scale(0.01).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCONTAINER_CPU_TIME = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_POST_UTILIZATION = union(CONTAINER_CPU_UTILIZATION, CONTAINER_CPU_TIME)\nCONTAINER_CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_UTILIZATION = ((CPU_POST_UTILIZATION*100)/CONTAINER_CPU_LIMIT)",
+                            "template": "CPU_UTILIZATION_FALLBACK = data('container.cpu.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_UTILIZATION_PRIMARY = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='rate').scale(0.01).sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCONTAINER_CPU_LIMIT = data('k8s.container.cpu_limit'{{#filter}}, filter={{{filter}}}{{/filter}},rollup='average').sum(by=['k8s.container.name','k8s.pod.name', 'container.id', 'k8s.cluster.name', 'k8s.node.name', 'k8s.pod.uid'])\nCPU_UTILIZATION = ((combine(CPU_UTILIZATION_FALLBACK if CPU_UTILIZATION_PRIMARY is None else CPU_UTILIZATION_PRIMARY)*100)/CONTAINER_CPU_LIMIT)",
                             "varName": "CPU_UTILIZATION"
                         },
                         "metricSelectors": [
+                            "container.cpu.usage",
                             "container_cpu_utilization",
-                            "container.cpu.time",
                             "k8s.container.cpu_limit"
                         ],
                         "type": "metric",

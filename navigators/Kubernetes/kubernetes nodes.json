@@ -309,7 +309,7 @@
       }
     }
   ],
-  "hashCode": -739251598,
+    "hashCode": -926843684,
   "id": "FTByWHUAYAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -899,12 +899,11 @@
                 }
               ],
               "resolution": 60000,
-              "template": "MASTER_NODES = data(\"container_cpu_utilization\", filter=(filter(\"kubernetes_role\", \"master\") or filter(\"sf_tags\", \"node-role_kubernetes_io_master\")){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"rate\").scale(0.01).mean(by=[\"k8s.cluster.name\", \"k8s.node.name\"])\nMASTER_NODES.publish(label=\"Master Node\")\nNODE_CONDITION = data(\"k8s.node.condition_*\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\").sum(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"sf_metric\"])",
+              "template": "NODE_CONDITION = data(\"k8s.node.condition_*\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2, rollup=\"latest\").sum(by=[\"k8s.cluster.name\", \"k8s.node.name\", \"sf_metric\"])",
               "varName": "NODE_CONDITION"
             },
             "metricSelectors": [
-              "k8s.node.condition_ready",
-              "container_cpu_utilization"
+              "k8s.node.condition_ready"
             ],
             "type": "metric",
             "valueFormat": "Number",
@@ -985,9 +984,7 @@
               "varName": "CPU_UTILIZATION"
             },
             "metricSelectors": [
-              "container_cpu_utilization",
               "cpu.num_processors",
-              "container.cpu.time",
               "system.cpu.time"
             ],
             "type": "metric",

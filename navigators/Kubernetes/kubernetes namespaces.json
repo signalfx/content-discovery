@@ -33,7 +33,7 @@
       }
     }
   ],
-    "hashCode": -2066908074,
+    "hashCode": 942303496,
   "id": "Ga9J-_nAgAA",
   "modelVersion": 1,
   "navigatorExport": {
@@ -326,10 +326,11 @@
             "job": {
               "filters": [],
               "resolution": 300000,
-              "template": "CPU_POST_USAGE = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name']).scale(0.01)\nCPU_PRE_USAGE = data('container.cpu.time'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])\nCPU_USAGE=combine((CPU_POST_USAGE if CPU_POST_USAGE is not None else 0) + (CPU_PRE_USAGE if CPU_PRE_USAGE is not None else 0))",
+              "template": "CPU_USAGE_PRIMARY = data('container_cpu_utilization'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name']).scale(0.01)\nCPU_USAGE_FALLBACK = data('container.cpu.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['k8s.namespace.name', 'k8s.cluster.name'])\nCPU_USAGE = combine(CPU_USAGE_FALLBACK if CPU_USAGE_PRIMARY is None else CPU_USAGE_PRIMARY)",
               "varName": "CPU_USAGE"
             },
             "metricSelectors": [
+              "container.cpu.usage",
               "container_cpu_utilization"
             ],
             "type": "metric",
