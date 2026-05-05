@@ -1296,16 +1296,6 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Total GPU units",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
               "displayName": "In Use",
               "label": "B",
               "paletteIndex": null,
@@ -1316,38 +1306,8 @@
               "yAxis": 0
             },
             {
-              "displayName": "A-B - Sum",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "B - Sum",
-              "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
               "displayName": "hw.gpu.utilization.legacy - Sum by k8s.cluster.name,k8s.namespace.name,k8s.pod.name - Sum by k8s.namespace.name,k8s.pod.name - Mean(Dashboard window) - Top 499",
               "label": "E",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Dimension conversion",
-              "label": "F",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -1378,7 +1338,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = (C-D).sum().publish(label='A', enable=False)\nB = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*') and filter('namespace', 'nim')).sum(by=['k8s.cluster.name', 'namespace', 'pod']).sum(by=['namespace', 'pod']).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='B', enable=False)\nC = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*')).sum(by=['k8s.cluster.name', 'k8s.node.name', 'gpu']).count().publish(label='C', enable=False)\nD = (B).sum().publish(label='D', enable=False)\nE = data('hw.gpu.utilization.legacy', filter=filter('hw.gpu.task', 'general') and filter('k8s.cluster.name', '*') and filter('k8s.namespace.name', 'nim')).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.name']).sum(by=['k8s.namespace.name', 'k8s.pod.name']).mean(over=Args.get('ui.dashboard_window', '15m')).scale(100).publish(label='E', enable=False)\nF = (B).dimensions(renames={'k8s.pod.name':'pod', 'k8s.namespace.name':'namespace'}, allow_missing=True).sum(by=['k8s.cluster.name', 'k8s.namespace.name', 'k8s.pod.name']).sum(by=['k8s.namespace.name', 'k8s.pod.name']).publish(label='F', enable=False)\nG = union(F,E).top(count=499).publish(label='G')",
+        "programText": "B = data('DCGM_FI_DEV_GPU_UTIL', filter=filter('k8s.cluster.name', '*') and filter('namespace', 'nim')).sum(by=['namespace', 'pod']).mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='B', enable=False)\nE = data('hw.gpu.utilization.legacy', filter=filter('hw.gpu.task', 'general') and filter('k8s.cluster.name', '*') and filter('namespace', 'nim')).sum(by=['namespace', 'pod']).mean(over=Args.get('ui.dashboard_window', '15m')).scale(100).publish(label='E', enable=False)\nG = union(B,E).top(count=499).publish(label='G', enable=True)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -19325,13 +19285,6 @@
             "width": 6
           },
           {
-            "chartId": "G313NXOAcAE",
-            "column": 6,
-            "height": 1,
-            "row": 10,
-            "width": 6
-          },
-          {
             "chartId": "G31wWQoAcAo",
             "column": 0,
             "height": 1,
@@ -19339,10 +19292,10 @@
             "width": 6
           },
           {
-            "chartId": "G31oY0VAYAA",
+            "chartId": "G313NXOAcAE",
             "column": 6,
             "height": 1,
-            "row": 11,
+            "row": 10,
             "width": 6
           },
           {
@@ -19353,15 +19306,22 @@
             "width": 6
           },
           {
-            "chartId": "G31uA3YAgBE",
+            "chartId": "G31oY0VAYAA",
             "column": 6,
             "height": 1,
-            "row": 12,
+            "row": 11,
             "width": 6
           },
           {
             "chartId": "G31zxV3AYAA",
             "column": 0,
+            "height": 1,
+            "row": 12,
+            "width": 6
+          },
+          {
+            "chartId": "G31uA3YAgBE",
+            "column": 6,
             "height": 1,
             "row": 12,
             "width": 6
@@ -20853,7 +20813,7 @@
       "teams": null
     }
   },
-  "hashCode": 285725313,
+  "hashCode": -1032058584,
   "id": "Gvbml3QAcAA",
   "modelVersion": 1,
   "packageType": "GROUP"
