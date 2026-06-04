@@ -191,10 +191,10 @@
           },
           "onChartLegendOptions": {
             "dimensionInLegend": "host.name",
-            "showLegend": true
+            "showLegend": false
           },
           "programOptions": {
-            "disableSampling": false,
+            "disableSampling": true,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
@@ -202,16 +202,6 @@
           "publishLabelOptions": [
             {
               "displayName": "# Insert operations",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "# Insert operations - Histogram",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -221,12 +211,12 @@
               "yAxis": 0
             },
             {
-              "displayName": "Number of operations",
-              "label": "C",
+              "displayName": "# Insert operations",
+              "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -242,7 +232,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('insert_latency_count').publish(label='A', enable=False)\nB = histogram('insert_latency').count(by=['host.name']).publish(label='B', enable=False)\nC = (A if B is None else B).publish(label='C', enable=True)",
+        "programText": "B = histogram('insert_latency').count(by=['host.name', 'service.name']).sum(by=['host.name', 'service.name']).publish(label='B')\nA = data('insert_latency_count').sum(by=['host.name', 'service.name']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -279,16 +269,16 @@
                 "property": "sf_metric"
               },
               {
-                "enabled": true,
+                "enabled": false,
                 "property": "service.pod_name"
               },
               {
                 "enabled": true,
-                "property": "service.name"
+                "property": "host.name"
               },
               {
                 "enabled": true,
-                "property": "host.name"
+                "property": "service.name"
               },
               {
                 "enabled": true,
@@ -372,16 +362,6 @@
               "valueSuffix": null,
               "valueUnit": null,
               "yAxis": 0
-            },
-            {
-              "displayName": "Component queue depth by host",
-              "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
             }
           ],
           "refreshInterval": 60000,
@@ -396,7 +376,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('component_queue_depth_sum', rollup='latest').sum(by=['host.name', 'component_name']).publish(label='A', enable=False)\nB = histogram('component_queue_depth').sum(by=['component_name', 'host.name']).sum(by=['host.name', 'component_name']).publish(label='B', enable=False)\nC = combine(A if B is None else B).sum(by=['host.name', 'component_name']).publish(label='C')\n",
+        "programText": "A = data('component_queue_depth_sum', rollup='latest').sum(by=['host.name', 'component_name', 'service.name']).publish(label='A')\nB = histogram('component_queue_depth').sum(by=['component_name', 'host.name']).sum(by=['host.name', 'component_name', 'service.name']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -499,38 +479,8 @@
               "yAxis": 0
             },
             {
-              "displayName": "insert_latency - Sum by service.name,host.name",
-              "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            },
-            {
-              "displayName": "insert_latency - Sum by service.name,host.name",
-              "label": "E",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Avg latency - Histogram",
-              "label": "F",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
               "displayName": "Avg latency",
-              "label": "G",
+              "label": "D",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -550,7 +500,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('insert_latency_sum', rollup='latest').sum(by=['service.name', 'host.name']).publish(label='A', enable=False)\nB = data('insert_latency_count', rollup='latest').sum(by=['service.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)\nD = histogram('insert_latency').sum(by=['service.name', 'host.name']).sum(by=['service.name', 'host.name']).publish(label='D', enable=False)\nE = histogram('insert_latency').count(by=['service.name', 'host.name']).sum(by=['service.name', 'host.name']).publish(label='E', enable=False)\nF = (D/E).publish(label='F', enable=False)\nG = combine(C if F is None else F).publish(label='G', enable=True)",
+        "programText": "A = data('insert_latency_sum', rollup='latest').sum(by=['service.name', 'host.name']).publish(label='A', enable=False)\nB = data('insert_latency_count', rollup='latest').sum(by=['service.name', 'host.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C')\nD = histogram('insert_latency').mean(by=['service.name', 'host.name']).mean(by=['service.name', 'host.name']).publish(label='D')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -591,7 +541,7 @@
                 "property": "sf_metric"
               },
               {
-                "enabled": false,
+                "enabled": true,
                 "property": "service.name"
               }
             ]
@@ -603,7 +553,7 @@
             "noDataMessage": "Currently, no data is available for this chart"
           },
           "programOptions": {
-            "disableSampling": false,
+            "disableSampling": true,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
@@ -630,18 +580,8 @@
               "yAxis": 0
             },
             {
-              "displayName": "Queue depth for service host - Histogram",
+              "displayName": "Average Queue depth for service",
               "label": "C",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Queue depth recorded - Histogram",
-              "label": "D",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -652,26 +592,6 @@
             {
               "displayName": "Average depth",
               "label": "E",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Average depth - Histogram",
-              "label": "F",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Average depth",
-              "label": "G",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -692,7 +612,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('component_queue_depth_sum', rollup='delta').sum(by=['service.name', 'host.name', 'component_name']).publish(label='A', enable=False)\nB = data('component_queue_depth_count', rollup='delta').sum(by=['service.name', 'host.name', 'component_name']).publish(label='B', enable=False)\nC = histogram('component_queue_depth').sum(by=['service.name', 'host.name', 'component_name']).sum(by=['component_name', 'service.name', 'host.name']).publish(label='C', enable=False)\nD = histogram('component_queue_depth').count(by=['service.name', 'host.name', 'component_name']).sum(by=['service.name', 'host.name', 'component_name']).publish(label='D', enable=False)\nE = (A/B).publish(label='E', enable=False)\nF = (C/D).publish(label='F', enable=False)\nG = (F if E is None else E).publish(label='G', enable=True)",
+        "programText": "A = data('component_queue_depth_sum', rollup='delta').sum(by=['service.name', 'host.name', 'component_name']).publish(label='A', enable=False)\nB = data('component_queue_depth_count', rollup='delta').sum(by=['service.name', 'host.name', 'component_name']).publish(label='B', enable=False)\nC = histogram('component_queue_depth').mean(by=['service.name', 'host.name', 'component_name']).mean(by=['component_name', 'service.name', 'host.name']).publish(label='C', enable=True)\nE = (A/B).publish(label='E', enable=True)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1111,6 +1031,10 @@
               {
                 "enabled": true,
                 "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
               }
             ]
           },
@@ -1127,12 +1051,22 @@
             "showLegend": false
           },
           "programOptions": {
-            "disableSampling": false,
+            "disableSampling": true,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
           },
           "publishLabelOptions": [
+            {
+              "displayName": "Average latency",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
             {
               "displayName": "Total latency",
               "label": "A",
@@ -1162,46 +1096,6 @@
               "valueSuffix": null,
               "valueUnit": "Millisecond",
               "yAxis": 0
-            },
-            {
-              "displayName": "insert_latency - Sum by host.name",
-              "label": "D",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "insert_latency - Sum by host.name",
-              "label": "E",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            },
-            {
-              "displayName": "Average latency",
-              "label": "F",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            },
-            {
-              "displayName": "Average latency",
-              "label": "G",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -1215,7 +1109,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('insert_latency_sum').sum(by=['host.name']).publish(label='A', enable=False)\nB = data('insert_latency_count').sum(by=['host.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)\nD = histogram('insert_latency').sum(by=['host.name', 'hostname']).sum(by=['host.name']).publish(label='D', enable=False)\nE = histogram('insert_latency').count(by=['hostname', 'host.name']).sum(by=['host.name']).publish(label='E', enable=False)\nF = (D/E).publish(label='F', enable=False)\nG = (C if F is None else F).publish(label='G')",
+        "programText": "D = histogram('insert_latency').mean(by=['host.name', 'service.name']).mean(by=['host.name', 'service.name']).publish(label='D')\nA = data('insert_latency_sum').sum(by=['host.name', 'service.name']).publish(label='A', enable=False)\nB = data('insert_latency_count').sum(by=['host.name', 'service.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1311,10 +1205,10 @@
           },
           "onChartLegendOptions": {
             "dimensionInLegend": "host.name",
-            "showLegend": true
+            "showLegend": false
           },
           "programOptions": {
-            "disableSampling": false,
+            "disableSampling": true,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
@@ -1322,16 +1216,6 @@
           "publishLabelOptions": [
             {
               "displayName": "# Requests",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": "",
-              "valueSuffix": "",
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "# Requests - Histogram",
               "label": "B",
               "paletteIndex": null,
               "plotType": null,
@@ -1341,12 +1225,12 @@
               "yAxis": 0
             },
             {
-              "displayName": "Number requests",
-              "label": "C",
+              "displayName": "# Requests",
+              "label": "A",
               "paletteIndex": null,
               "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
               "valueUnit": null,
               "yAxis": 0
             }
@@ -1362,7 +1246,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('get_latency_count').publish(label='A', enable=False)\nB = histogram('get_latency').count(by=['host.name']).publish(label='B', enable=False)\nC = (A if B is None else B).publish(label='C', enable=True)",
+        "programText": "B = histogram('get_latency').count(by=['host.name', 'service.name']).sum(by=['host.name', 'service.name']).publish(label='B')\nA = data('get_latency_count').sum(by=['host.name', 'service.name']).publish(label='A')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1695,7 +1579,7 @@
         "options": {
           "columnSizes": {},
           "groupBy": [
-            "host.name"
+            "service.name"
           ],
           "groupBySort": "Descending",
           "hideMissingValues": false,
@@ -1706,7 +1590,7 @@
                 "property": "sf_metric"
               },
               {
-                "enabled": false,
+                "enabled": true,
                 "property": "service.name"
               },
               {
@@ -1721,7 +1605,7 @@
           },
           "maximumPrecision": null,
           "programOptions": {
-            "disableSampling": false,
+            "disableSampling": true,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
@@ -1754,7 +1638,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('create_collection').sum(by=['host.name']).publish(label='A')\nB = data('delete_collection').sum(by=['host.name']).publish(label='B')",
+        "programText": "A = data('create_collection').sum(by=['host.name', 'service.name']).publish(label='A')\nB = data('delete_collection').sum(by=['host.name', 'service.name']).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -2026,35 +1910,15 @@
             "showLegend": false
           },
           "programOptions": {
-            "disableSampling": false,
+            "disableSampling": true,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
           },
           "publishLabelOptions": [
             {
-              "displayName": "Total Get operation latency",
+              "displayName": "Avg latency",
               "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
-            },
-            {
-              "displayName": "Total number of Get operation",
-              "label": "B",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Average latency",
-              "label": "C",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
@@ -2091,16 +1955,6 @@
               "valueSuffix": null,
               "valueUnit": "Millisecond",
               "yAxis": 0
-            },
-            {
-              "displayName": "GET operation latency",
-              "label": "G",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Millisecond",
-              "yAxis": 0
             }
           ],
           "showEventLines": false,
@@ -2114,7 +1968,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = histogram('get_latency').sum(by=['hostname', 'host.name']).sum(by=['host.name']).publish(label='A', enable=False)\nB = histogram('get_latency').count(by=['hostname', 'host.name']).sum(by=['host.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C', enable=False)\nD = data('get_latency_sum').sum(by=['host.name']).publish(label='D', enable=False)\nE = data('get_latency_count').sum(by=['host.name']).publish(label='E', enable=False)\nF = (D/E).publish(label='F', enable=False)\nG = (C if F is None else F).publish(label='G')",
+        "programText": "A = histogram('get_latency').mean(by=['host.name', 'service.name']).mean(by=['host.name', 'service.name']).publish(label='A')\nD = data('get_latency_sum').sum(by=['host.name', 'service.name']).publish(label='D', enable=False)\nE = data('get_latency_count').sum(by=['host.name', 'service.name']).publish(label='E', enable=False)\nF = (D/E).publish(label='F')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -2135,7 +1989,7 @@
         "options": {
           "columnSizes": {},
           "groupBy": [
-            "host.name"
+            "service.name"
           ],
           "groupBySort": "Descending",
           "hideMissingValues": false,
@@ -2161,7 +2015,7 @@
           },
           "maximumPrecision": null,
           "programOptions": {
-            "disableSampling": false,
+            "disableSampling": true,
             "maxDelay": 0,
             "minimumResolution": 0,
             "timezone": null
@@ -2201,7 +2055,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('add_retries', rollup='latest').sum(by=['host.name']).publish(label='A')\nB = data('update_retries', rollup='latest').sum(by=['host.name']).publish(label='B')\nC = data('delete_retries', rollup='latest').sum(by=['host.name']).publish(label='C')",
+        "programText": "A = data('add_retries', rollup='latest').sum(by=['host.name', 'service.name']).publish(label='A')\nB = data('update_retries', rollup='latest').sum(by=['host.name', 'service.name']).publish(label='B')\nC = data('delete_retries', rollup='latest').sum(by=['host.name', 'service.name']).publish(label='C')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -2825,7 +2679,29 @@
       }
     }
   ],
-  "crossLinkExports": [],
+  "crossLinkExports": [
+    {
+      "crossLink": {
+        "aliases": null,
+        "contextId": "G_4-4Q9AgBI",
+        "created": 0,
+        "creator": null,
+        "id": "HJ8YLA4AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "propertyName": "service.name",
+        "targets": [
+          {
+            "dashboardGroupId": "G_44bt6AYAA",
+            "dashboardId": "G_4-4Q9AgBM",
+            "isDefault": true,
+            "name": "Drill to instance view",
+            "type": "INTERNAL_LINK"
+          }
+        ]
+      }
+    }
+  ],
   "dashboardExports": [
     {
       "dashboard": {
@@ -3043,20 +2919,19 @@
           "time": null,
           "variables": [
             {
-              "alias": "Hostname",
+              "alias": "Service name",
               "applyIfExists": false,
               "description": "",
               "preferredSuggestions": [],
-              "property": "host.name",
+              "property": "service.name",
               "propertyMappings": [
-                "host.name",
-                "host"
+                "service.name"
               ],
               "replaceOnly": false,
               "required": true,
               "restricted": false,
               "value": [
-                "Choose name"
+                "Choose service"
               ]
             }
           ]
@@ -3127,7 +3002,7 @@
       "teams": null
     }
   },
-  "hashCode": 617290510,
+  "hashCode": 1375343222,
   "id": "G_44bt6AYAA",
   "modelVersion": 1,
   "packageType": "GROUP"
