@@ -1,6 +1,6 @@
 {
   "crossLinkExports": null,
-  "hashCode": 1579527276,
+  "hashCode": -563348462,
   "id": "ExtGXIGAgDI",
   "modelVersion": 1,
   "navigatorExport": {
@@ -56,6 +56,18 @@
             }
           ],
           "metric": "system.memory.usage"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "AWSUniqueId"
+              ]
+            }
+          ],
+          "metric": "disk.utilization"
         }
       ],
       "instanceDashboards": [
@@ -334,6 +346,44 @@
             },
             "metricSelectors": [
               "system.filesystem.usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Disk use",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Color AWS EC2 hosts based on percentage of available disk space being used: under 20% (green) to over 80% (red)",
+            "displayName": "Disk utilization",
+            "id": "agent.disk.utilization",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "_exists_",
+                  "propertyValue": "AWSUniqueId",
+                  "type": "property"
+                }
+              ],
+              "resolution": 60000,
+              "template": "DISK_UTILIZATION = data(\"disk.utilization\"{{#filter}}, {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=['host.name'])",
+              "varName": "DISK_UTILIZATION"
+            },
+            "metricSelectors": [
+              "disk.utilization"
             ],
             "type": "metric",
             "valueFormat": "Percentage",
