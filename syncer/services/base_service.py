@@ -4,6 +4,17 @@ import requests
 from typing import Dict, Any
 
 
+class RemoteNotFound(RuntimeError):
+    """A resource id does not exist in the target SignalBuddy env.
+
+    Raised by ``fetch_*_export_by_id`` so callers can distinguish a
+    missing-resource (recoverable: maybe create instead) from a
+    transport / auth failure (not recoverable here). Keeps the strict
+    update / create verbs from silently falling through to the wrong
+    operation.
+    """
+
+
 def do_get(url: str, token: str) -> requests.Response:
     """
     Perform a GET request.

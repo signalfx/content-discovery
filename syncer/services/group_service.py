@@ -2,7 +2,7 @@
 
 import sys
 from typing import Dict, Any
-from .base_service import do_get, do_put, do_post
+from .base_service import do_get, do_put, do_post, RemoteNotFound
 from .crosslink_service import update_crosslinks
 
 
@@ -20,14 +20,41 @@ def fetch_group_export_by_id(group_id: str, base_url: str, token: str, format: s
         The exported dashboard group data
         
     Raises:
-        RuntimeError: If the fetch fails
+        RemoteNotFound: If the group does not exist (HTTP 404)
+        RuntimeError: For any other non-200 response
     """
     resp = do_get(f"{base_url}/v2/dashboardgroup/{group_id}/export", token)
+    if resp.status_code == 404:
+        raise RemoteNotFound(f"dashboard group {group_id} not found")
     if resp.status_code != 200:
         raise RuntimeError(f"Failed to fetch dashboard group {group_id}: {resp.text}")
     if format == "json":
         return resp.json()
     return resp.text
+
+
+def create_dashboard_group_via_import(
+    group_export: Dict[str, Any], base_url: str, token: str
+) -> Dict[str, Any]:
+    """Create a dashboard group in a fresh env via the import endpoint.
+
+    POSTs the full export payload to ``/v2/dashboardgroup/import``. The
+    backend assigns new ids to the group and every child chart,
+    dashboard, and crosslink, and rewires all cross-references
+    server-side. This is the only safe way to create a group in an env
+    where the source ids do not exist — POSTing the children one by one
+    (as the older code did) leaves dashboards pointing at dead chart
+    ids.
+
+    Returns the JSON response, which contains the new ids the caller
+    can use for a follow-up fetch and local write-back.
+    """
+    resp = do_post(f"{base_url}/v2/dashboardgroup/import", token, group_export)
+    if resp.status_code not in (200, 201):
+        raise RuntimeError(
+            f"Failed to import dashboard group: {resp.status_code} {resp.text}"
+        )
+    return resp.json()
 
 
 def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: str) -> bool:
@@ -44,7 +71,12 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
     """
     group_id = group_export["groupExport"]["group"]["id"]
     
-    # Fetch current remote state
+    # Fetch current remote state. Note: RemoteNotFound subclasses
+    # RuntimeError, so this except still catches the missing-group case
+    # and preserves the existing apply-time auto-create behavior. The
+    # new strict `update` / `create` verbs in cli.py do their own
+    # existence check before calling update_dashboard_group and so do
+    # not rely on this fallback.
     try:
         remote_export = fetch_group_export_by_id(group_id, base_url, token, format="json")
     except RuntimeError:

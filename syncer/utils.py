@@ -1,6 +1,8 @@
 """Shared utilities for syncer tools"""
 
 import json
+import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Tuple
@@ -8,52 +10,57 @@ from typing import Dict, Any, Optional, List, Tuple
 from services.base_service import do_get
 
 SCRIPT_DIR = Path(__file__).parent
+REPO_ROOT = SCRIPT_DIR.parent
+
+# Root-level credential file. By design this CLI talks to one and only
+# one SignalBuddy org — Master SignalBuddy — and the file holds nothing
+# but the API token (single line). The file is gitignored.
+TOKEN_FILE = REPO_ROOT / ".token"
+
+# Master SignalBuddy lives on the us0 realm. There is no other realm
+# this CLI talks to, so the value is a constant rather than a config
+# field. If MSB ever moves realms, change this in one place.
+MASTER_REALM = "us0"
+
+# Canonical on-disk directories per resource type. Used both for discovery
+# (scanning for the local file that matches a given id) and for write-back
+# path inference when no existing local file matches.
+RESOURCE_DIRS: Dict[str, str] = {
+    "navigator": "navigators",
+    "group": "group",
+    "detector": "detector",
+}
 
 
-def get_realm_config() -> Optional[List[Dict[str, Any]]]:
-    """Read realm configuration from .token file"""
+def load_token_file() -> str:
+    """Return the token string stored in the root ``.token`` file.
+
+    The file holds exactly one thing: the API token as a single line.
+    Surrounding whitespace and trailing newlines are stripped. Returns
+    an empty string if the file is absent — callers fall back to the
+    ``SIGNALBUDDY_TOKEN`` environment variable in that case.
+    """
+    if not TOKEN_FILE.exists():
+        return ""
     try:
-        token_file = SCRIPT_DIR.parent / "syncer" / ".token"
-        with open(token_file, 'r') as f:
-            config = json.load(f)
-        
-        if isinstance(config, list):
-            return config
-        else:
-            return None
-    except (OSError, json.JSONDecodeError, KeyError):
+        return TOKEN_FILE.read_text(encoding="utf-8").strip()
+    except OSError as e:
+        raise RuntimeError(f"failed to read {TOKEN_FILE}: {e}") from e
+
+
+def get_master_credentials() -> Optional[Tuple[str, str]]:
+    """Return ``(realm, token)`` for Master SignalBuddy, or ``None``.
+
+    Resolution order for the token: root ``.token`` file first, then
+    the ``SIGNALBUDDY_TOKEN`` process environment variable. The realm
+    is always :data:`MASTER_REALM` — it's a property of the CLI, not
+    of the user's config. Returns ``None`` when neither source
+    supplies a token so the caller can produce one clear error.
+    """
+    token = load_token_file() or os.environ.get("SIGNALBUDDY_TOKEN", "").strip()
+    if not token:
         return None
-
-
-def get_config_for_env(env_name: str) -> Optional[Dict[str, Any]]:
-    """Get the configuration for a specific environment"""
-    config = get_realm_config()
-    if not config:
-        return None
-    
-    for item in config:
-        if item.get("env") == env_name:
-            return item
-    
-    return None
-
-
-def get_token_for_env(env_name: str) -> Optional[str]:
-    """Get the access token for a specific environment"""
-    env_config = get_config_for_env(env_name)
-    if env_config and "token" in env_config:
-        return env_config["token"]
-    
-    return None
-
-
-def get_realm_for_env(env_name: str) -> Optional[str]:
-    """Get the realm for a specific environment"""
-    env_config = get_config_for_env(env_name)
-    if env_config and "realm" in env_config:
-        return env_config["realm"]
-    
-    return None
+    return MASTER_REALM, token
 
 
 def fetch_organization_info(base_url: str, token: str) -> Optional[Dict[str, Any]]:
@@ -251,3 +258,82 @@ def _has_dashboard_changed(local_dashboard: Dict[str, Any], remote_dashboard: Di
 def base_api_url_from_realm(realm: str) -> str:
     """Get base API URL from realm"""
     return f"https://api.{realm}.signalfx.com"
+
+
+# --- local file discovery / write-back -----------------------------------
+
+
+def _iter_resource_files(resource_type: str) -> List[Path]:
+    """All ``*.json`` files under the canonical directory for ``resource_type``."""
+    directory = RESOURCE_DIRS.get(resource_type)
+    if not directory:
+        return []
+    root = REPO_ROOT / directory
+    if not root.exists():
+        return []
+    return sorted(root.rglob("*.json"))
+
+
+def find_local_file_for_id(resource_type: str, resource_id: str) -> Optional[Path]:
+    """Scan canonical dirs for the local file whose JSON id matches.
+
+    Returns the first match (ids are globally unique within an org), or
+    ``None`` if no file contains the id. Silently skips unreadable /
+    malformed files so a single bad file can't break discovery.
+    """
+    if not resource_id:
+        return None
+    for candidate in _iter_resource_files(resource_type):
+        info = extract_resource_info(resource_type, candidate)
+        if info and info[0] == resource_id:
+            return candidate
+    return None
+
+
+def _safe_filename(name: str) -> str:
+    """Strip filesystem-hostile characters from a resource name.
+
+    SignalBuddy names allow slashes, colons, etc. that map to subpaths or
+    are invalid on Windows. Replace runs of unsafe characters with a
+    single space and collapse whitespace so we never silently create a
+    nested directory from a name like ``"AWS / Lambda"``.
+    """
+    cleaned = re.sub(r'[\\/:*?"<>|\x00-\x1f]+', " ", name).strip()
+    cleaned = re.sub(r"\s+", " ", cleaned)
+    return cleaned or "unnamed"
+
+
+def canonical_path_for(
+    resource_type: str, name: str, category: Optional[str] = None
+) -> Optional[Path]:
+    """Compute the on-disk path the repo would use for a fresh write.
+
+    ``group`` and ``detector`` are flat directories so the path is
+    unambiguous. ``navigator`` is grouped by category subdirectory and
+    nothing in the navigator export tells us the category — callers must
+    supply one, or fall back to requiring an explicit ``--out``. Returns
+    ``None`` when a path cannot be safely determined.
+    """
+    directory = RESOURCE_DIRS.get(resource_type)
+    if not directory:
+        return None
+    filename = f"{_safe_filename(name)}.json"
+    if resource_type == "navigator":
+        if not category:
+            return None
+        return REPO_ROOT / directory / _safe_filename(category) / filename
+    return REPO_ROOT / directory / filename
+
+
+def write_local_resource(path: Path, payload: Dict[str, Any]) -> None:
+    """Write a resource export to disk in the repo's canonical JSON shape.
+
+    Uses 2-space indent with sorted keys and ``ensure_ascii=False`` so
+    multibyte characters round-trip cleanly. The repo currently has
+    mixed formatting across ``group/`` files specifically; we normalize
+    on write so subsequent diffs are stable.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, sort_keys=True, ensure_ascii=False)
+        f.write("\n")
