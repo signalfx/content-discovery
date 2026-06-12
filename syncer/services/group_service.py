@@ -2,7 +2,7 @@
 
 import sys
 from typing import Dict, Any
-from .base_service import do_get, do_put, do_post
+from .base_service import do_get, do_put, do_post, RemoteNotFound
 from .crosslink_service import update_crosslinks
 
 
@@ -20,14 +20,41 @@ def fetch_group_export_by_id(group_id: str, base_url: str, token: str, format: s
         The exported dashboard group data
         
     Raises:
-        RuntimeError: If the fetch fails
+        RemoteNotFound: If the group does not exist (HTTP 404)
+        RuntimeError: For any other non-200 response
     """
     resp = do_get(f"{base_url}/v2/dashboardgroup/{group_id}/export", token)
+    if resp.status_code == 404:
+        raise RemoteNotFound(f"dashboard group {group_id} not found")
     if resp.status_code != 200:
         raise RuntimeError(f"Failed to fetch dashboard group {group_id}: {resp.text}")
     if format == "json":
         return resp.json()
     return resp.text
+
+
+def create_dashboard_group_via_import(
+    group_export: Dict[str, Any], base_url: str, token: str
+) -> Dict[str, Any]:
+    """Create a dashboard group in a fresh env via the import endpoint.
+
+    POSTs the full export payload to ``/v2/dashboardgroup/import``. The
+    backend assigns new ids to the group and every child chart,
+    dashboard, and crosslink, and rewires all cross-references
+    server-side. This is the only safe way to create a group in an env
+    where the source ids do not exist — POSTing the children one by one
+    (as the older code did) leaves dashboards pointing at dead chart
+    ids.
+
+    Returns the JSON response, which contains the new ids the caller
+    can use for a follow-up fetch and local write-back.
+    """
+    resp = do_post(f"{base_url}/v2/dashboardgroup/import", token, group_export)
+    if resp.status_code not in (200, 201):
+        raise RuntimeError(
+            f"Failed to import dashboard group: {resp.status_code} {resp.text}"
+        )
+    return resp.json()
 
 
 def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: str) -> bool:
@@ -43,14 +70,28 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
         True if successful, False otherwise
     """
     group_id = group_export["groupExport"]["group"]["id"]
-    
-    # Fetch current remote state
+
+    # Fetch current remote state. update_dashboard_group is strictly an
+    # update: a missing group is surfaced as a failure with a pointer
+    # to the ``create <path> --yes`` CLI verb. Auto-creating here via
+    # ``/v2/dashboardgroup/import`` would succeed at the API but leave
+    # the local JSON pinned to the now-stale source id, and the next
+    # ``apply`` would import a duplicate group. Capturing the new id
+    # requires the local-file write-back plumbing that lives in
+    # ``cli._refresh_local``, which only the ``create`` verb runs.
     try:
         remote_export = fetch_group_export_by_id(group_id, base_url, token, format="json")
-    except RuntimeError:
-        # Group doesn't exist remotely, create everything
-        print(f"  Group not found remotely, creating new group...")
-        return _create_dashboard_group(group_export, base_url, token)
+    except RemoteNotFound:
+        print(
+            f"  ❌ Dashboard group {group_id} not found in master; "
+            f"use 'create <path> --yes' so the local file is rewritten "
+            f"with the server-assigned ids",
+            file=sys.stderr,
+        )
+        return False
+    except RuntimeError as e:
+        print(f"  ❌ Failed to fetch dashboard group {group_id}: {e}", file=sys.stderr)
+        return False
     
     # Compare and update group properties
     local_group = group_export["groupExport"]["group"]
@@ -177,47 +218,3 @@ def _has_dashboard_changed(local_dashboard: Dict[str, Any], remote_dashboard: Di
         if local_dashboard.get(key) != remote_dashboard.get(key):
             return True
     return False
-
-
-def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: str) -> bool:
-    """Create a new dashboard group with all its charts and dashboards."""
-    group_data = group_export["groupExport"]["group"]
-    group_id = group_data["id"]
-    overall_success = True
-    
-    resp = do_post(f"{base_url}/v2/dashboardgroup", token, group_data)
-    if resp.status_code in [200, 201]:
-        print(f"  ➕ Created dashboard group: {group_data.get('name', group_id)}")
-    else:
-        print(f"  ❌ Failed to create group {group_id}: {resp.text}", file=sys.stderr)
-        return False
-    
-    # Create all charts
-    for chart_export in group_export.get("chartExports", []):
-        chart = chart_export["chart"]
-        resp = do_post(f"{base_url}/v2/chart", token, chart)
-        if resp.status_code in [200, 201]:
-            print(f"  ➕ Created chart: {chart.get('name', chart['id'])}")
-        else:
-            print(f"  ❌ Failed to create chart: {resp.text}", file=sys.stderr)
-            overall_success = False
-    
-    # Create all dashboards
-    for dashboard_export in group_export.get("dashboardExports", []):
-        dashboard = dashboard_export["dashboard"]
-        resp = do_post(f"{base_url}/v2/dashboard", token, dashboard)
-        if resp.status_code in [200, 201]:
-            print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard['id'])}")
-        else:
-            print(f"  ❌ Failed to create dashboard: {resp.text}", file=sys.stderr)
-            overall_success = False
-
-    # Apply crosslinks if provided so the graph is complete on first sync
-    crosslink_exports = group_export.get("crossLinkExports", [])
-    if crosslink_exports:
-        _, _, failed = update_crosslinks(crosslink_exports, base_url, token)
-        if failed:
-            print(f"  ❌ Failed to write {failed} crosslink(s) while creating group {group_id}", file=sys.stderr)
-            return False
-    
-    return overall_success
