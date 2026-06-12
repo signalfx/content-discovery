@@ -74,19 +74,20 @@ def update_navigator(navigator_export: Dict[str, Any], base_url: str, token: str
     """
     navigator = navigator_export["navigatorExport"]["navigator"]
     navigator_id = navigator["id"]
-    
-    # Update the navigator itself
+
+    # Strict update: never silently auto-create on 404. A stale or
+    # deleted navigator id must surface as a failure so the caller can
+    # decide whether to invoke ``create`` explicitly.
     resp = do_put(f"{base_url}/v2/navigator/{navigator_id}", token, navigator)
     if resp.status_code in [200, 201]:
         print(f"  ✏️  Updated navigator: {navigator.get('name', navigator_id)}")
     elif resp.status_code == 404:
-        # Navigator doesn't exist, create it
-        resp = do_post(f"{base_url}/v2/navigator", token, navigator)
-        if resp.status_code in [200, 201]:
-            print(f"  ➕ Created navigator: {navigator.get('name', navigator_id)}")
-        else:
-            print(f"  ❌ Failed to create navigator {navigator_id}: {resp.text}", file=sys.stderr)
-            return False
+        print(
+            f"  ❌ Navigator {navigator_id} not found in master; "
+            f"use 'create' instead of 'update' / 'apply'",
+            file=sys.stderr,
+        )
+        return False
     else:
         print(f"  ❌ Failed to update navigator {navigator_id}: {resp.text}", file=sys.stderr)
         return False

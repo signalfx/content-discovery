@@ -72,20 +72,21 @@ def update_detector(detector_export: Dict[str, Any], base_url: str, token: str) 
     """
     detector = detector_export["detectorExport"]["detector"]
     detector_id = detector["id"]
-    
+
+    # Strict update: never silently auto-create on 404. A stale or
+    # deleted detector id must surface as a failure so the caller can
+    # decide whether to invoke ``create`` explicitly.
     resp = do_put(f"{base_url}/v2/detector/{detector_id}", token, detector)
     if resp.status_code in [200, 201]:
         print(f"Updated detector: {detector.get('name', detector_id)}")
         return True
     elif resp.status_code == 404:
-        # Detector doesn't exist, create it
-        resp = do_post(f"{base_url}/v2/detector", token, detector)
-        if resp.status_code in [200, 201]:
-            print(f"Created detector: {detector.get('name', detector_id)}")
-            return True
-        else:
-            print(f"Failed to create detector {detector_id}: {resp.text}", file=sys.stderr)
-            return False
+        print(
+            f"Failed to update detector {detector_id}: not found in master; "
+            f"use 'create' instead of 'update' / 'apply'",
+            file=sys.stderr,
+        )
+        return False
     else:
         print(f"Failed to update detector {detector_id}: {resp.text}", file=sys.stderr)
         return False

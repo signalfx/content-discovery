@@ -70,19 +70,22 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
         True if successful, False otherwise
     """
     group_id = group_export["groupExport"]["group"]["id"]
-    
-    # Fetch current remote state. Note: RemoteNotFound subclasses
-    # RuntimeError, so this except still catches the missing-group case
-    # and preserves the existing apply-time auto-create behavior. The
-    # new strict `update` / `create` verbs in cli.py do their own
+
+    # Fetch current remote state. Only treat a confirmed missing-group
+    # (RemoteNotFound) as a signal to fall through to create — auth /
+    # transport / 5xx errors are surfaced as failures so a transient
+    # API problem can't trigger a duplicate or partial create. The new
+    # strict ``update`` / ``create`` verbs in cli.py do their own
     # existence check before calling update_dashboard_group and so do
     # not rely on this fallback.
     try:
         remote_export = fetch_group_export_by_id(group_id, base_url, token, format="json")
-    except RuntimeError:
-        # Group doesn't exist remotely, create everything
+    except RemoteNotFound:
         print(f"  Group not found remotely, creating new group...")
         return _create_dashboard_group(group_export, base_url, token)
+    except RuntimeError as e:
+        print(f"  ❌ Failed to fetch dashboard group {group_id}: {e}", file=sys.stderr)
+        return False
     
     # Compare and update group properties
     local_group = group_export["groupExport"]["group"]
