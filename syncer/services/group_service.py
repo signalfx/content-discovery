@@ -81,8 +81,19 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
     try:
         remote_export = fetch_group_export_by_id(group_id, base_url, token, format="json")
     except RemoteNotFound:
-        print(f"  Group not found remotely, creating new group...")
-        return _create_dashboard_group(group_export, base_url, token)
+        # Route the apply-time create through ``/v2/dashboardgroup/import``
+        # so the backend assigns fresh ids and rewires every child
+        # chart / dashboard / crosslink reference. Posting the group +
+        # children one by one (the old behavior) would leave dashboards
+        # pointing at chart ids that only exist in the source env.
+        print(f"  Group not found remotely, creating new group via import...")
+        try:
+            create_dashboard_group_via_import(group_export, base_url, token)
+        except RuntimeError as e:
+            print(f"  ❌ Failed to import dashboard group {group_id}: {e}", file=sys.stderr)
+            return False
+        print(f"  ➕ Created dashboard group via import: {group_export['groupExport']['group'].get('name', group_id)}")
+        return True
     except RuntimeError as e:
         print(f"  ❌ Failed to fetch dashboard group {group_id}: {e}", file=sys.stderr)
         return False
@@ -212,47 +223,3 @@ def _has_dashboard_changed(local_dashboard: Dict[str, Any], remote_dashboard: Di
         if local_dashboard.get(key) != remote_dashboard.get(key):
             return True
     return False
-
-
-def _create_dashboard_group(group_export: Dict[str, Any], base_url: str, token: str) -> bool:
-    """Create a new dashboard group with all its charts and dashboards."""
-    group_data = group_export["groupExport"]["group"]
-    group_id = group_data["id"]
-    overall_success = True
-    
-    resp = do_post(f"{base_url}/v2/dashboardgroup", token, group_data)
-    if resp.status_code in [200, 201]:
-        print(f"  ➕ Created dashboard group: {group_data.get('name', group_id)}")
-    else:
-        print(f"  ❌ Failed to create group {group_id}: {resp.text}", file=sys.stderr)
-        return False
-    
-    # Create all charts
-    for chart_export in group_export.get("chartExports", []):
-        chart = chart_export["chart"]
-        resp = do_post(f"{base_url}/v2/chart", token, chart)
-        if resp.status_code in [200, 201]:
-            print(f"  ➕ Created chart: {chart.get('name', chart['id'])}")
-        else:
-            print(f"  ❌ Failed to create chart: {resp.text}", file=sys.stderr)
-            overall_success = False
-    
-    # Create all dashboards
-    for dashboard_export in group_export.get("dashboardExports", []):
-        dashboard = dashboard_export["dashboard"]
-        resp = do_post(f"{base_url}/v2/dashboard", token, dashboard)
-        if resp.status_code in [200, 201]:
-            print(f"  ➕ Created dashboard: {dashboard.get('name', dashboard['id'])}")
-        else:
-            print(f"  ❌ Failed to create dashboard: {resp.text}", file=sys.stderr)
-            overall_success = False
-
-    # Apply crosslinks if provided so the graph is complete on first sync
-    crosslink_exports = group_export.get("crossLinkExports", [])
-    if crosslink_exports:
-        _, _, failed = update_crosslinks(crosslink_exports, base_url, token)
-        if failed:
-            print(f"  ❌ Failed to write {failed} crosslink(s) while creating group {group_id}", file=sys.stderr)
-            return False
-    
-    return overall_success

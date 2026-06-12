@@ -242,9 +242,22 @@ def _resolve_writeback_path(
     Navigators have a category subdirectory that we can't infer from
     the export — for those we require an existing match or explicit
     ``--out`` and surface a clear error otherwise.
+
+    ``--out`` is sandboxed: relative paths resolve against ``REPO_ROOT``
+    and any path that escapes the repo (symlinks included) is rejected.
+    ``write_local_resource`` would otherwise happily ``mkdir -p`` and
+    overwrite arbitrary files when invoked by automation.
     """
     if explicit_out is not None:
-        return explicit_out
+        target = explicit_out if explicit_out.is_absolute() else REPO_ROOT / explicit_out
+        target = target.resolve()
+        if not target.is_relative_to(REPO_ROOT):
+            raise CliError(
+                f"--out {explicit_out} resolves outside the repository root "
+                f"({REPO_ROOT}); refusing to write",
+                exit_code=EXIT_USAGE,
+            )
+        return target
     existing = find_local_file_for_id(rtype, rid)
     if existing:
         return existing
