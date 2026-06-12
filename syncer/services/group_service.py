@@ -71,29 +71,24 @@ def update_dashboard_group(group_export: Dict[str, Any], base_url: str, token: s
     """
     group_id = group_export["groupExport"]["group"]["id"]
 
-    # Fetch current remote state. Only treat a confirmed missing-group
-    # (RemoteNotFound) as a signal to fall through to create — auth /
-    # transport / 5xx errors are surfaced as failures so a transient
-    # API problem can't trigger a duplicate or partial create. The new
-    # strict ``update`` / ``create`` verbs in cli.py do their own
-    # existence check before calling update_dashboard_group and so do
-    # not rely on this fallback.
+    # Fetch current remote state. update_dashboard_group is strictly an
+    # update: a missing group is surfaced as a failure with a pointer
+    # to the ``create <path> --yes`` CLI verb. Auto-creating here via
+    # ``/v2/dashboardgroup/import`` would succeed at the API but leave
+    # the local JSON pinned to the now-stale source id, and the next
+    # ``apply`` would import a duplicate group. Capturing the new id
+    # requires the local-file write-back plumbing that lives in
+    # ``cli._refresh_local``, which only the ``create`` verb runs.
     try:
         remote_export = fetch_group_export_by_id(group_id, base_url, token, format="json")
     except RemoteNotFound:
-        # Route the apply-time create through ``/v2/dashboardgroup/import``
-        # so the backend assigns fresh ids and rewires every child
-        # chart / dashboard / crosslink reference. Posting the group +
-        # children one by one (the old behavior) would leave dashboards
-        # pointing at chart ids that only exist in the source env.
-        print(f"  Group not found remotely, creating new group via import...")
-        try:
-            create_dashboard_group_via_import(group_export, base_url, token)
-        except RuntimeError as e:
-            print(f"  ❌ Failed to import dashboard group {group_id}: {e}", file=sys.stderr)
-            return False
-        print(f"  ➕ Created dashboard group via import: {group_export['groupExport']['group'].get('name', group_id)}")
-        return True
+        print(
+            f"  ❌ Dashboard group {group_id} not found in master; "
+            f"use 'create <path> --yes' so the local file is rewritten "
+            f"with the server-assigned ids",
+            file=sys.stderr,
+        )
+        return False
     except RuntimeError as e:
         print(f"  ❌ Failed to fetch dashboard group {group_id}: {e}", file=sys.stderr)
         return False
