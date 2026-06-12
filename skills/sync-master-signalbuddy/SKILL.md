@@ -264,6 +264,55 @@ diff.
   file.** That is intentional — the repo is the mirror of master. Make
   sure the user expects the on-disk change.
 
+## API quirks (handled automatically — do not work around manually)
+
+The CLI hides a few asymmetries between the SignalFx export response
+and what the same endpoint accepts on write. They are listed here so
+you know the CLI is doing the right thing and you don't try to
+"fix" the resulting diffs by hand.
+
+### Navigator `metricClasses` / `metricColumns` empty-list quirk
+
+- Export (`GET /v2/navigator/<id>/export`) always returns these list
+  fields as `[]` when there are no entries.
+- Write (`PUT /v2/navigator/<id>`, `POST /v2/navigator`) rejects `[]`
+  with a 400 of the form
+  `"metricClasses size must be between 1 and 10"` or
+  `"metricColumns size must be between 1 and 50"`. The accepted way to
+  say "no entries" on write is `null`.
+
+`syncer/services/navigator_service.py::_normalize_empty_lists_for_write`
+coerces empty `metricClasses` / `metricColumns` lists to `None` right
+before PUT / POST, without mutating the in-memory export blob. Local
+files keep the `[]` the server returned, so `diff` stays meaningful and
+the repo continues to mirror the GET response. Any new "must be
+between 1 and N" field the API adds in the future belongs in that
+same allow-list.
+
+### Navigator `navigatorCategory` server-side normalization
+
+A PUT that changes `navigatorCategoryDisplayName` also causes the
+server to **rewrite the inner `navigator.navigatorCategory` and
+`uiModel.category` fields to match the new display name** on the next
+GET. This is server behaviour, not something the CLI does.
+
+Practical consequences:
+
+1. After a successful `update` of a navigator whose display name
+   changed, the write-back will show the new (server-normalized)
+   `navigatorCategory` value in the local file. That is correct — the
+   repo mirrors master.
+2. After a successful `apply` of the same change, the CLI does **not**
+   write back. The other server-normalized fields (`navigatorCategory`,
+   `uiModel.category`, `hashCode`) drift silently. Run
+   `python -m syncer.cli pull --type navigator --id <ID> --yes` for
+   each affected file to refresh local, or you'll see drift on the
+   next `plan` / `diff`.
+3. When renaming a navigator drawer label across many files, prefer
+   the `apply` + post-apply `pull` loop (or do them as `update` calls)
+   instead of editing dozens of files by hand a second time. There is
+   only one source of truth: master.
+
 ## Common failure modes
 
 | Symptom | Likely cause | Fix |
@@ -274,3 +323,5 @@ diff.
 | `error: <type> <id> not found in master; use 'create <path>' instead` (exit 3) | Tried to `update` a resource that doesn't exist | Use the suggested `create` command verbatim |
 | `error: <type> <id> already exists in master; use 'update <path>' instead` (exit 6) | Tried to `create` a resource that already exists | Use the suggested `update` command verbatim |
 | `error: could not infer output path for navigator ...; pass --out <path>` | `pull` for a navigator without a local file matching the id | Pass `--out navigators/<category>/<name>.json` explicitly |
+| `400 metricClasses size must be between 1 and 10` / `metricColumns size must be between 1 and 50` on PUT/POST | Pre-`v1.0` CLI sending `[]` instead of `null`; or a hand-edited request bypassing the CLI | The current CLI handles this automatically (see "API quirks"). If you see it, you're either on an old CLI or calling the API directly. Re-run via `python -m syncer.cli {update,apply,create}`. |
+| `plan` / `diff` shows persistent drift on `navigatorCategory`, `uiModel.category`, `hashCode` right after `apply` | `apply` does not write back, but a display-name change normalized those server-side | Run `python -m syncer.cli pull --type navigator --id <ID> --yes` for each affected file (see "API quirks"). |
