@@ -2,25 +2,30 @@
 
 import sys
 from typing import Dict, Any, List
-from .base_service import do_get, do_put, do_post
+from .base_service import do_get, do_put, do_post, RemoteNotFound
 
 
 def fetch_crosslink_by_id(crosslink_id: str, base_url: str, token: str) -> Dict[str, Any]:
     """
     Fetch a crosslink by ID.
-    
+
     Args:
         crosslink_id: The crosslink ID
         base_url: The base API URL
         token: The SignalFx access token
-        
+
     Returns:
         The crosslink data
-        
+
     Raises:
-        RuntimeError: If the fetch fails
+        RemoteNotFound: If the crosslink does not exist (HTTP 404).
+            Lets the caller distinguish "missing — fall through to
+            create" from a real API failure (auth, server, network).
+        RuntimeError: For any other non-200 response.
     """
     resp = do_get(f"{base_url}/v2/crosslink/{crosslink_id}", token)
+    if resp.status_code == 404:
+        raise RemoteNotFound(f"crosslink {crosslink_id} not found")
     if resp.status_code != 200:
         raise RuntimeError(f"Failed to fetch crosslink {crosslink_id}: {resp.text}")
     return resp.json()
@@ -96,26 +101,36 @@ def update_crosslinks(
                 failed_count += 1
             continue
         
-        # Fetch remote state to check if it changed
+        # Fetch remote state to check if it changed. Treat 404 as
+        # "fall through to create"; let any other transport / auth /
+        # server error surface as a failed crosslink so we don't issue
+        # extra writes or mask the real underlying API failure.
         try:
             remote_crosslink = fetch_crosslink_by_id(crosslink_id, base_url, token)
-            
-            # Compare local and remote
-            if remote_crosslink != crosslink:
-                # Crosslink has changed, update it
-                if update_crosslink(crosslink, base_url, token):
-                    print(f"  ✏️  Updated crosslink: {crosslink.get('propertyName', crosslink_id)}")
-                    updated_count += 1
-                else:
-                    failed_count += 1
-            # else: crosslink unchanged, skip
-            
-        except RuntimeError:
-            # Crosslink doesn't exist, create it
+        except RemoteNotFound:
             if update_crosslink(crosslink, base_url, token):
                 print(f"  ➕ Created crosslink: {crosslink.get('propertyName', crosslink_id)}")
                 created_count += 1
             else:
                 failed_count += 1
-    
+            continue
+        except RuntimeError as e:
+            print(
+                f"  ❌ Failed to fetch crosslink "
+                f"{crosslink.get('propertyName', crosslink_id)}: {e}",
+                file=sys.stderr,
+            )
+            failed_count += 1
+            continue
+
+        # Compare local and remote
+        if remote_crosslink != crosslink:
+            # Crosslink has changed, update it
+            if update_crosslink(crosslink, base_url, token):
+                print(f"  ✏️  Updated crosslink: {crosslink.get('propertyName', crosslink_id)}")
+                updated_count += 1
+            else:
+                failed_count += 1
+        # else: crosslink unchanged, skip
+
     return updated_count, created_count, failed_count
