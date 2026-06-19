@@ -47,68 +47,31 @@ publish-content-image:
 
       creds-helper init
 
-      # CI_COMMIT_BRANCH is only set in branch pipelines, not MR pipelines.
+      # CI_COMMIT_BRANCH is only set on branch pipelines, not MR pipelines.
       # Use CI_PIPELINE_SOURCE to distinguish MR builds from master merges.
       if [[ "${CI_PIPELINE_SOURCE}" == "merge_request_event" ]]; then
+        # MR build: push to docker-test for validation before merge
         DOCKER_ROLE="docker-test-deployer-role"
-        REGISTRY="docker-test.repo.splunkdev.net"
+        export REGISTRY="docker-test.repo.splunkdev.net"
       else
+        # Master merge: push to production registry
         DOCKER_ROLE="docker-deployer-role"
-        REGISTRY="docker.repo.splunkdev.net"
+        export REGISTRY="docker.repo.splunkdev.net"
       fi
 
-      # Tag format: <branch-sanitized>-<short-sha>
-      # Signalbuddy lists all tags, filters by branch prefix, and picks the latest.
-      # This avoids overwriting existing tags (docker registries are immutable by policy).
-      BRANCH_SANITIZED=$(echo "${CI_COMMIT_REF_NAME}" | sed 's/[^a-zA-Z0-9._-]/-/g')
-      TAG="${BRANCH_SANITIZED}-${CI_COMMIT_SHORT_SHA}"
-
-      # creds-helper docker writes credentials to ~/.docker/config.json
-      # skopeo picks them up via --authfile
+      # Obtain registry credentials and extract the Basic auth token for curl.
+      # creds-helper writes to ~/.docker/config.json; we read it back for curl.
       eval $(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")
+      export AUTH_TOKEN=$(python3 -c "
+import json
+with open('${HOME}/.docker/config.json') as f:
+    c = json.load(f)
+print(c.get('auths', {}).get('${REGISTRY}', {}).get('auth', ''))
+")
 
-      IMAGE="${REGISTRY}/observability/shared/content-discovery"
-
-      echo "Building content image..."
-      echo "  Registry: ${REGISTRY}"
-      echo "  Image:    ${IMAGE}:${TAG}"
-      echo "  Branch:   ${CI_COMMIT_REF_NAME}"
-      echo "  Commit:   ${CI_COMMIT_SHA}"
-
-      # Package all content as a single tar.gz layer
-      # --exclude must precede directory arguments in GNU tar
-      tar --exclude="*.DS_Store" --exclude="*._*" -czf content.tar.gz navigators/ group/ detector/
-
-      # Build OCI image layout (no Docker daemon needed)
-      TAR_DIGEST="sha256:$(sha256sum content.tar.gz | awk '{print $1}')"
-      TAR_SIZE=$(wc -c < content.tar.gz)
-
-      mkdir -p oci/blobs/sha256
-      echo '{"imageLayoutVersion":"1.0.0"}' > oci/oci-layout
-      cp content.tar.gz "oci/blobs/sha256/${TAR_DIGEST#sha256:}"
-
-      # Embed branch name and commit SHA in the image config so signalbuddy
-      # can sort by creation time using the config's "created" field.
-      CREATED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-      CONFIG="{\"architecture\":\"amd64\",\"os\":\"linux\",\"created\":\"${CREATED}\",\"config\":{\"Labels\":{\"branch\":\"${CI_COMMIT_REF_NAME}\",\"commit\":\"${CI_COMMIT_SHA}\"}},\"rootfs\":{\"type\":\"layers\",\"diff_ids\":[\"${TAR_DIGEST}\"]}}"
-      CONFIG_DIGEST="sha256:$(echo -n "${CONFIG}" | sha256sum | awk '{print $1}')"
-      CONFIG_SIZE=${#CONFIG}
-      echo -n "${CONFIG}" > "oci/blobs/sha256/${CONFIG_DIGEST#sha256:}"
-
-      MANIFEST="{\"schemaVersion\":2,\"mediaType\":\"application/vnd.oci.image.manifest.v1+json\",\"config\":{\"mediaType\":\"application/vnd.oci.image.config.v1+json\",\"digest\":\"${CONFIG_DIGEST}\",\"size\":${CONFIG_SIZE}},\"layers\":[{\"mediaType\":\"application/vnd.oci.image.layer.v1.tar+gzip\",\"digest\":\"${TAR_DIGEST}\",\"size\":${TAR_SIZE}}]}"
-      MANIFEST_DIGEST="sha256:$(echo -n "${MANIFEST}" | sha256sum | awk '{print $1}')"
-      MANIFEST_SIZE=${#MANIFEST}
-      echo -n "${MANIFEST}" > "oci/blobs/sha256/${MANIFEST_DIGEST#sha256:}"
-
-      echo "{\"schemaVersion\":2,\"manifests\":[{\"mediaType\":\"application/vnd.oci.image.manifest.v1+json\",\"digest\":\"${MANIFEST_DIGEST}\",\"size\":${MANIFEST_SIZE},\"annotations\":{\"org.opencontainers.image.ref.name\":\"${TAG}\"}}]}" > oci/index.json
-
-      echo "Pushing ${IMAGE}:${TAG}..."
-      skopeo copy --authfile ~/.docker/config.json \
-        oci:oci:${TAG} \
-        docker://${IMAGE}:${TAG}
-
-      echo "Successfully pushed:"
-      echo "  ${IMAGE}:${TAG}"
+      # All packaging and push logic lives in scripts/publish_content_image.sh
+      # See that file for step-by-step documentation of the OCI push flow.
+      bash scripts/publish_content_image.sh
 
 update-ootb-inventory:
   image: python:3
