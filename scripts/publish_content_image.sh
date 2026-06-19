@@ -31,46 +31,20 @@ else
   REGISTRY="docker.repo.splunkdev.net"
 fi
 
-# creds-helper docker --eval writes credentials to ~/.docker/config.json
-# and may also export DOCKER_AUTH_CONFIG. We try env var first, then fall back
-# to the config file.
-eval "$(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")"
+# creds-helper artifactory --eval exports ARTIFACTORY_USER and ARTIFACTORY_AUTHORIZATION.
+# We use those to construct a Basic auth token for the Docker registry API.
+# (creds-helper docker --eval configures the Docker daemon but doesn't write
+# a file or env var we can read in a daemonless environment.)
+eval "$(creds-helper artifactory "artifactory:v2/cloud/role/${DOCKER_ROLE}" --eval)"
 
-# Debug: show what creds-helper actually exported/wrote
-echo "[DEBUG] DOCKER_AUTH_CONFIG env var present: ${DOCKER_AUTH_CONFIG:+yes (set)}"
-echo "[DEBUG] DOCKER_AUTH_CONFIG env value: ${DOCKER_AUTH_CONFIG:-<not set>}"
-echo "[DEBUG] ~/.docker/config.json exists: $([ -f ~/.docker/config.json ] && echo yes || echo no)"
-if [ -f ~/.docker/config.json ]; then
-  echo "[DEBUG] ~/.docker/config.json content: $(cat ~/.docker/config.json)"
-fi
+echo "[DEBUG] ARTIFACTORY_USER=${ARTIFACTORY_USER:-<not set>}"
+echo "[DEBUG] ARTIFACTORY_AUTHORIZATION prefix=${ARTIFACTORY_AUTHORIZATION:0:20}..."
 
-# Read auth token: prefer DOCKER_AUTH_CONFIG env var, fall back to config file
-AUTH_TOKEN=$(python3 -c "
-import json, os, sys
+# ARTIFACTORY_AUTHORIZATION is "Bearer <token>" — extract just the token
+ARTIFACTORY_TOKEN="${ARTIFACTORY_AUTHORIZATION#Bearer }"
 
-registry = '${REGISTRY}'
-
-# Try env var first (exported by some creds-helper versions)
-env_cfg = os.environ.get('DOCKER_AUTH_CONFIG', '')
-if env_cfg:
-    cfg = json.loads(env_cfg)
-    token = cfg.get('auths', {}).get(registry, {}).get('auth', '')
-    if token:
-        print(token)
-        sys.exit(0)
-
-# Fall back to ~/.docker/config.json (written by creds-helper docker --eval)
-config_path = os.path.expanduser('~/.docker/config.json')
-if os.path.exists(config_path):
-    with open(config_path) as f:
-        cfg = json.load(f)
-    token = cfg.get('auths', {}).get(registry, {}).get('auth', '')
-    if token:
-        print(token)
-        sys.exit(0)
-
-sys.exit('ERROR: no auth token found for ' + registry + ' in DOCKER_AUTH_CONFIG env or ~/.docker/config.json')
-")
+# Docker registry Basic auth = base64(user:token)
+AUTH_TOKEN=$(echo -n "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" | base64 -w0)
 
 # ── Inputs ────────────────────────────────────────────────────────────────────
 BRANCH="${CI_COMMIT_REF_NAME:?CI_COMMIT_REF_NAME must be set}"
