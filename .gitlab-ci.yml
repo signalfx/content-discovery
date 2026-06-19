@@ -2,12 +2,16 @@ include:
   - project: "observability/shared/gitlab-jobs"
     ref: 1.0.65
     file: "sast-scan-template.yml"
+  - project: "observability/shared/gitlab-jobs"
+    ref: 1.0.65
+    file: "upload-zip-to-artifactory.yml"
   - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
 stages:
   - code_analysis
   - validate-content
   - validate-ai-experimental
+  - upload-to-artifactory
   - O11y-Out-of-the-Box-Inventory
   - O11y-DOC-OOTB
 
@@ -68,3 +72,14 @@ update-o11y-doc-github:
   script:
     - pip install -r requirement.txt
     - python o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME -fn $GITHUB_FOLDER_NAME
+
+upload-content-to-artifactory:
+  extends: .upload_to_artifactory
+  variables:
+    ARTIFACTORY_PROJECT_PATH: "observability/shared/content-discovery"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
