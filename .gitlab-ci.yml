@@ -41,37 +41,9 @@ publish-content-image:
       when: always
     - when: never
   script:
-    - |
-      #!/usr/bin/env bash
-      set -euo pipefail
-
-      creds-helper init
-
-      # CI_COMMIT_BRANCH is only set on branch pipelines, not MR pipelines.
-      # Use CI_PIPELINE_SOURCE to distinguish MR builds from master merges.
-      if [[ "${CI_PIPELINE_SOURCE}" == "merge_request_event" ]]; then
-        # MR build: push to docker-test for validation before merge
-        DOCKER_ROLE="docker-test-deployer-role"
-        export REGISTRY="docker-test.repo.splunkdev.net"
-      else
-        # Master merge: push to production registry
-        DOCKER_ROLE="docker-deployer-role"
-        export REGISTRY="docker.repo.splunkdev.net"
-      fi
-
-      # Obtain registry credentials and extract the Basic auth token for curl.
-      # creds-helper writes to ~/.docker/config.json; we read it back for curl.
-      eval $(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")
-      export AUTH_TOKEN=$(python3 -c "
-import json
-with open('${HOME}/.docker/config.json') as f:
-    c = json.load(f)
-print(c.get('auths', {}).get('${REGISTRY}', {}).get('auth', ''))
-")
-
-      # All packaging and push logic lives in scripts/publish_content_image.sh
-      # See that file for step-by-step documentation of the OCI push flow.
-      bash scripts/publish_content_image.sh
+    # CI_PIPELINE_SOURCE and creds-helper role selection are handled inside the script.
+    # See scripts/publish_content_image.sh for the full documented push flow.
+    - bash scripts/publish_content_image.sh
 
 update-ootb-inventory:
   image: python:3

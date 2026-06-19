@@ -21,9 +21,34 @@
 
 set -euo pipefail
 
+# ── Credentials ─────────────────────────────────────────────────────────────
+# CI_COMMIT_BRANCH is only set on branch pipelines, not MR pipelines.
+# Use CI_PIPELINE_SOURCE to select the right role and registry.
+creds-helper init
+
+if [[ "${CI_PIPELINE_SOURCE:-}" == "merge_request_event" ]]; then
+  # MR build: push to docker-test for validation before merge
+  DOCKER_ROLE="docker-test-deployer-role"
+  REGISTRY="docker-test.repo.splunkdev.net"
+else
+  # Master merge: push to production registry
+  DOCKER_ROLE="docker-deployer-role"
+  REGISTRY="docker.repo.splunkdev.net"
+fi
+
+# creds-helper writes credentials to ~/.docker/config.json
+eval $(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")
+
+# Extract the Basic auth token for the target registry — used by curl below
+AUTH_TOKEN=$(python3 - <<PYEOF
+import json
+with open("${HOME}/.docker/config.json") as f:
+    c = json.load(f)
+print(c.get("auths", {}).get("${REGISTRY}", {}).get("auth", ""))
+PYEOF
+)
+
 # ── Inputs ──────────────────────────────────────────────────────────────────
-REGISTRY="${REGISTRY:?REGISTRY must be set}"
-AUTH_TOKEN="${AUTH_TOKEN:?AUTH_TOKEN must be set}"
 BRANCH="${CI_COMMIT_REF_NAME:?CI_COMMIT_REF_NAME must be set}"
 SHORT_SHA="${CI_COMMIT_SHORT_SHA:?CI_COMMIT_SHORT_SHA must be set}"
 FULL_SHA="${CI_COMMIT_SHA:?CI_COMMIT_SHA must be set}"
