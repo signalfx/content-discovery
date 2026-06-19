@@ -76,7 +76,8 @@ publish-content-image:
       echo "  Commit:   ${CI_COMMIT_SHA}"
 
       # Package all content as a single tar.gz layer
-      tar czf content.tar.gz navigators/ group/ detector/ --exclude="*.DS_Store"
+      # --exclude must precede directory arguments in GNU tar
+      tar --exclude="*.DS_Store" --exclude="*._*" -czf content.tar.gz navigators/ group/ detector/
 
       # Build OCI image layout (no Docker daemon needed)
       TAR_DIGEST="sha256:$(sha256sum content.tar.gz | awk '{print $1}')"
