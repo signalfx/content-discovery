@@ -22,13 +22,20 @@ set -euo pipefail
 creds-helper init
 
 if [[ "${CI_PIPELINE_SOURCE:-}" == "merge_request_event" ]]; then
-  # MR build: push to docker-test for validation before merging to master
+  # MR build: push to docker-test, tag = <source-branch-sanitized>-<sha>
+  # Used by developers to test content changes before merging
   DOCKER_ROLE="docker-test-deployer-role"
   REGISTRY="docker-test.repo.splunkdev.net"
-else
-  # Master merge: push to production registry
+elif [[ "${CI_COMMIT_BRANCH:-}" == "master" ]]; then
+  # Merged to master: push to production registry, tag = master-<sha>
+  # signalbuddy production uses branchPrefix=master
   DOCKER_ROLE="docker-deployer-role"
   REGISTRY="docker.repo.splunkdev.net"
+else
+  # Merged to lab (or any other protected branch): push to docker-test, tag = lab-<sha>
+  # signalbuddy lab0 uses branchPrefix=lab pointing at docker-test registry
+  DOCKER_ROLE="docker-test-deployer-role"
+  REGISTRY="docker-test.repo.splunkdev.net"
 fi
 
 # creds-helper docker --eval writes credentials to a temp dir and exports
