@@ -31,20 +31,23 @@ else
   REGISTRY="docker.repo.splunkdev.net"
 fi
 
-# creds-helper artifactory --eval exports ARTIFACTORY_USER and ARTIFACTORY_AUTHORIZATION.
-# We use those to construct a Basic auth token for the Docker registry API.
-# (creds-helper docker --eval configures the Docker daemon but doesn't write
-# a file or env var we can read in a daemonless environment.)
-eval "$(creds-helper artifactory "artifactory:v2/cloud/role/${DOCKER_ROLE}" --eval)"
+# creds-helper docker --eval writes credentials to a temp dir and exports
+# DOCKER_CONFIG pointing to that directory. Read the auth token from there.
+eval $(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")
 
-echo "[DEBUG] ARTIFACTORY_USER=${ARTIFACTORY_USER:-<not set>}"
-echo "[DEBUG] ARTIFACTORY_AUTHORIZATION prefix=${ARTIFACTORY_AUTHORIZATION:0:20}..."
-
-# ARTIFACTORY_AUTHORIZATION is "Bearer <token>" — extract just the token
-ARTIFACTORY_TOKEN="${ARTIFACTORY_AUTHORIZATION#Bearer }"
-
-# Docker registry Basic auth = base64(user:token)
-AUTH_TOKEN=$(echo -n "${ARTIFACTORY_USER}:${ARTIFACTORY_TOKEN}" | base64 -w0)
+AUTH_TOKEN=$(python3 -c "
+import json, os, sys
+docker_cfg = os.environ.get('DOCKER_CONFIG', '')
+if not docker_cfg:
+    sys.exit('ERROR: DOCKER_CONFIG not set after creds-helper docker --eval')
+cfg_path = os.path.join(docker_cfg, 'config.json')
+with open(cfg_path) as f:
+    cfg = json.load(f)
+token = cfg.get('auths', {}).get('${REGISTRY}', {}).get('auth', '')
+if not token:
+    sys.exit('ERROR: no auth token for ${REGISTRY} in ' + cfg_path)
+print(token)
+")
 
 # ── Inputs ────────────────────────────────────────────────────────────────────
 BRANCH="${CI_COMMIT_REF_NAME:?CI_COMMIT_REF_NAME must be set}"
