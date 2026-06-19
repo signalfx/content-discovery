@@ -2,16 +2,13 @@ include:
   - project: "observability/shared/gitlab-jobs"
     ref: 1.0.65
     file: "sast-scan-template.yml"
-  - project: "observability/shared/gitlab-jobs"
-    ref: main
-    file: "upload-zip-to-artifactory.yml"
   - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
 stages:
   - code_analysis
   - validate-content
   - validate-ai-experimental
-  - upload-to-artifactory
+  - publish-content
   - O11y-Out-of-the-Box-Inventory
   - O11y-DOC-OOTB
 
@@ -30,6 +27,89 @@ validate-ai-experimental:
   script:
     - node scripts/bridge_it_validate_content.mjs
   allow_failure: true
+
+publish-content-image:
+  image: docker.repo.splunkdev.net/ci-cd/ci-container/python-3.12-bookworm:3.6.0
+  id_tokens:
+    CI_JOB_JWT:
+      aud: $CICD_VAULT_ADDR
+  stage: publish-content
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
+  script:
+    - |
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      creds-helper init
+
+      # MR builds push to docker-test, master merges push to docker (prod)
+      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+        DOCKER_ROLE="docker-deployer-role"
+        REGISTRY="docker.repo.splunkdev.net"
+      else
+        DOCKER_ROLE="docker-test-deployer-role"
+        REGISTRY="docker-test.repo.splunkdev.net"
+      fi
+
+      # creds-helper docker writes credentials to ~/.docker/config.json
+      # skopeo and docker both pick it up automatically from there
+      eval $(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")
+
+      IMAGE="${REGISTRY}/observability/shared/content-discovery"
+
+      # Tag: "main" for master, URL-safe branch name for MRs
+      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+        TAG="main"
+      else
+        TAG=$(echo "$CI_COMMIT_REF_NAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
+      fi
+
+      echo "Building content image..."
+      echo "  Registry: ${REGISTRY}"
+      echo "  Image:    ${IMAGE}:${TAG}"
+      echo "  Commit:   ${CI_COMMIT_SHA}"
+
+      # Package all content as a single tar.gz layer
+      tar czf content.tar.gz navigators/ group/ detector/ --exclude="*.DS_Store"
+
+      # Build OCI image layout (no Docker daemon needed)
+      TAR_DIGEST="sha256:$(sha256sum content.tar.gz | awk '{print $1}')"
+      TAR_SIZE=$(wc -c < content.tar.gz)
+
+      mkdir -p oci/blobs/sha256
+      echo '{"imageLayoutVersion":"1.0.0"}' > oci/oci-layout
+      cp content.tar.gz "oci/blobs/sha256/${TAR_DIGEST#sha256:}"
+
+      CONFIG="{\"architecture\":\"amd64\",\"os\":\"linux\",\"rootfs\":{\"type\":\"layers\",\"diff_ids\":[\"${TAR_DIGEST}\"]}}"
+      CONFIG_DIGEST="sha256:$(echo -n "${CONFIG}" | sha256sum | awk '{print $1}')"
+      CONFIG_SIZE=${#CONFIG}
+      echo -n "${CONFIG}" > "oci/blobs/sha256/${CONFIG_DIGEST#sha256:}"
+
+      MANIFEST="{\"schemaVersion\":2,\"mediaType\":\"application/vnd.oci.image.manifest.v1+json\",\"config\":{\"mediaType\":\"application/vnd.oci.image.config.v1+json\",\"digest\":\"${CONFIG_DIGEST}\",\"size\":${CONFIG_SIZE}},\"layers\":[{\"mediaType\":\"application/vnd.oci.image.layer.v1.tar+gzip\",\"digest\":\"${TAR_DIGEST}\",\"size\":${TAR_SIZE}}]}"
+      MANIFEST_DIGEST="sha256:$(echo -n "${MANIFEST}" | sha256sum | awk '{print $1}')"
+      MANIFEST_SIZE=${#MANIFEST}
+      echo -n "${MANIFEST}" > "oci/blobs/sha256/${MANIFEST_DIGEST#sha256:}"
+
+      echo "{\"schemaVersion\":2,\"manifests\":[{\"mediaType\":\"application/vnd.oci.image.manifest.v1+json\",\"digest\":\"${MANIFEST_DIGEST}\",\"size\":${MANIFEST_SIZE},\"annotations\":{\"org.opencontainers.image.ref.name\":\"${TAG}\"}}]}" > oci/index.json
+
+      echo "Pushing ${IMAGE}:${TAG}..."
+      skopeo copy --authfile ~/.docker/config.json \
+        oci:oci:${TAG} \
+        docker://${IMAGE}:${TAG}
+
+      # Also tag with commit SHA for traceability
+      skopeo copy --authfile ~/.docker/config.json \
+        oci:oci:${TAG} \
+        docker://${IMAGE}:${CI_COMMIT_SHORT_SHA}
+
+      echo "Successfully pushed:"
+      echo "  ${IMAGE}:${TAG}"
+      echo "  ${IMAGE}:${CI_COMMIT_SHORT_SHA}"
 
 update-ootb-inventory:
   image: python:3
@@ -72,14 +152,3 @@ update-o11y-doc-github:
   script:
     - pip install -r requirement.txt
     - python o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME -fn $GITHUB_FOLDER_NAME
-
-upload-content-to-artifactory:
-  extends: .upload_to_artifactory
-  variables:
-    ARTIFACTORY_PROJECT_PATH: "observability/shared/content-discovery"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: always
-    - when: never
