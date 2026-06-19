@@ -32,12 +32,20 @@ else
 fi
 
 # creds-helper --eval exports ARTIFACTORY_USER and ARTIFACTORY_AUTHORIZATION.
-# We use these directly instead of reading ~/.docker/config.json which may not
-# be written by all creds-helper versions.
+# creds-helper docker --eval exports DOCKER_AUTH_CONFIG into the environment
+# and optionally writes ~/.docker/config.json. We read the env var directly.
 eval "$(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")"
 
-# ARTIFACTORY_AUTHORIZATION is in "user:token" format — base64-encode for HTTP Basic auth
-AUTH_TOKEN=$(echo -n "${ARTIFACTORY_AUTHORIZATION}" | base64 | tr -d '\n')
+# creds-helper docker --eval exports DOCKER_AUTH_CONFIG (full docker config JSON as env var).
+# Parse the Basic auth token for our registry from it directly — no file read needed.
+AUTH_TOKEN=$(python3 -c "
+import json, os, sys
+cfg = json.loads(os.environ.get('DOCKER_AUTH_CONFIG', '{}'))
+token = cfg.get('auths', {}).get('${REGISTRY}', {}).get('auth', '')
+if not token:
+    sys.exit('ERROR: no auth token found for ${REGISTRY} in DOCKER_AUTH_CONFIG')
+print(token)
+")
 
 # ── Inputs ────────────────────────────────────────────────────────────────────
 BRANCH="${CI_COMMIT_REF_NAME:?CI_COMMIT_REF_NAME must be set}"
