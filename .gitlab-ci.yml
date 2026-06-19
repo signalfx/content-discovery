@@ -47,31 +47,32 @@ publish-content-image:
 
       creds-helper init
 
-      # MR builds push to docker-test, master merges push to docker (prod)
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        DOCKER_ROLE="docker-deployer-role"
-        REGISTRY="docker.repo.splunkdev.net"
-      else
+      # CI_COMMIT_BRANCH is only set in branch pipelines, not MR pipelines.
+      # Use CI_PIPELINE_SOURCE to distinguish MR builds from master merges.
+      if [[ "${CI_PIPELINE_SOURCE}" == "merge_request_event" ]]; then
         DOCKER_ROLE="docker-test-deployer-role"
         REGISTRY="docker-test.repo.splunkdev.net"
+      else
+        DOCKER_ROLE="docker-deployer-role"
+        REGISTRY="docker.repo.splunkdev.net"
       fi
 
+      # Tag format: <branch-sanitized>-<short-sha>
+      # Signalbuddy lists all tags, filters by branch prefix, and picks the latest.
+      # This avoids overwriting existing tags (docker registries are immutable by policy).
+      BRANCH_SANITIZED=$(echo "${CI_COMMIT_REF_NAME}" | sed 's/[^a-zA-Z0-9._-]/-/g')
+      TAG="${BRANCH_SANITIZED}-${CI_COMMIT_SHORT_SHA}"
+
       # creds-helper docker writes credentials to ~/.docker/config.json
-      # skopeo and docker both pick it up automatically from there
+      # skopeo picks them up via --authfile
       eval $(creds-helper docker --eval "artifactory:v2/cloud/role/${DOCKER_ROLE}")
 
       IMAGE="${REGISTRY}/observability/shared/content-discovery"
 
-      # Tag: "main" for master, URL-safe branch name for MRs
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        TAG="main"
-      else
-        TAG=$(echo "$CI_COMMIT_REF_NAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
-      fi
-
       echo "Building content image..."
       echo "  Registry: ${REGISTRY}"
       echo "  Image:    ${IMAGE}:${TAG}"
+      echo "  Branch:   ${CI_COMMIT_REF_NAME}"
       echo "  Commit:   ${CI_COMMIT_SHA}"
 
       # Package all content as a single tar.gz layer
@@ -85,7 +86,10 @@ publish-content-image:
       echo '{"imageLayoutVersion":"1.0.0"}' > oci/oci-layout
       cp content.tar.gz "oci/blobs/sha256/${TAR_DIGEST#sha256:}"
 
-      CONFIG="{\"architecture\":\"amd64\",\"os\":\"linux\",\"rootfs\":{\"type\":\"layers\",\"diff_ids\":[\"${TAR_DIGEST}\"]}}"
+      # Embed branch name and commit SHA in the image config so signalbuddy
+      # can sort by creation time using the config's "created" field.
+      CREATED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      CONFIG="{\"architecture\":\"amd64\",\"os\":\"linux\",\"created\":\"${CREATED}\",\"config\":{\"Labels\":{\"branch\":\"${CI_COMMIT_REF_NAME}\",\"commit\":\"${CI_COMMIT_SHA}\"}},\"rootfs\":{\"type\":\"layers\",\"diff_ids\":[\"${TAR_DIGEST}\"]}}"
       CONFIG_DIGEST="sha256:$(echo -n "${CONFIG}" | sha256sum | awk '{print $1}')"
       CONFIG_SIZE=${#CONFIG}
       echo -n "${CONFIG}" > "oci/blobs/sha256/${CONFIG_DIGEST#sha256:}"
@@ -102,14 +106,8 @@ publish-content-image:
         oci:oci:${TAG} \
         docker://${IMAGE}:${TAG}
 
-      # Also tag with commit SHA for traceability
-      skopeo copy --authfile ~/.docker/config.json \
-        oci:oci:${TAG} \
-        docker://${IMAGE}:${CI_COMMIT_SHORT_SHA}
-
       echo "Successfully pushed:"
       echo "  ${IMAGE}:${TAG}"
-      echo "  ${IMAGE}:${CI_COMMIT_SHORT_SHA}"
 
 update-ootb-inventory:
   image: python:3
