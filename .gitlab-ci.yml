@@ -73,13 +73,23 @@ update-o11y-doc-github:
     - pip install -r requirement.txt
     - python o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME -fn $GITHUB_FOLDER_NAME
 
-upload-content-to-artifactory:
+upload-repo-to-generic-test:
   extends: .upload_to_artifactory
-  variables:
-    ARTIFACTORY_PROJECT_PATH: "observability/shared/content-discovery"
+  needs: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
+  variables:
+    ARTIFACTORY_REPO_KEY: "generic-test"
+  before_script:
+    - creds-helper init
+    - eval "$(creds-helper artifactory artifactory:v2/cloud/role/generic-test-deployer-role --eval)"
+
+upload-repo-to-generic:
+  extends: .upload_to_artifactory
+  needs: []
+  rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: always
-    - when: never
+  before_script:
+    - creds-helper init
+    - eval "$(creds-helper artifactory artifactory:v2/cloud/role/generic-deployer-role --eval)"
+
