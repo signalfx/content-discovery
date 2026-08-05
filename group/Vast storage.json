@@ -1056,7 +1056,7 @@
           ],
           "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
+          "defaultPlotType": "LineChart",
           "eventPublishLabelOptions": [],
           "histogramChartOptions": {
             "colorThemeIndex": 16
@@ -1085,18 +1085,38 @@
           },
           "publishLabelOptions": [
             {
+              "displayName": "Read latency",
+              "label": "Read latency",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "B",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
               "displayName": "Read BW",
               "label": "A",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Byte",
+              "valueUnit": "Second",
               "yAxis": 0
             }
           ],
           "showEventLines": false,
-          "stacked": true,
+          "stacked": false,
           "time": {
             "range": 60000,
             "rangeEnd": 0,
@@ -1106,7 +1126,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('vast_cluster_metrics_ProtoMetrics_rd_bw', filter=filter('proto_name', 'S3Common', 'NFS4Common', 'NFSCommon', 'SMBCommon'), rollup='latest').sum(by=['proto_name']).publish(label='A')",
+        "programText": "A = data('vast_cluster_metrics_ProtoMetrics_read_latency_sum', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='A', enable=False)\nC = (A/B).publish(label='Read latency')\nB = data('vast_cluster_metrics_ProtoMetrics_read_latency_count', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='B', enable=False)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -4563,7 +4583,7 @@
           ],
           "axisPrecision": null,
           "colorBy": "Dimension",
-          "defaultPlotType": "AreaChart",
+          "defaultPlotType": "LineChart",
           "eventPublishLabelOptions": [],
           "histogramChartOptions": {
             "colorThemeIndex": 16
@@ -4598,12 +4618,32 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Byte",
+              "valueUnit": "Second",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Write latency",
+              "label": "Write latency",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "B",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
               "yAxis": 0
             }
           ],
           "showEventLines": false,
-          "stacked": true,
+          "stacked": false,
           "time": {
             "range": 60000,
             "rangeEnd": 0,
@@ -4613,7 +4653,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('vast_cluster_metrics_ProtoMetrics_wr_bw', filter=filter('proto_name', 'S3Common', 'NFS4Common', 'NFSCommon', 'SMBCommon'), rollup='latest').sum(by=['proto_name']).publish(label='A')",
+        "programText": "C = (A/B).publish(label='Write latency')\nB = data('vast_cluster_metrics_ProtoMetrics_write_latency_count', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='B', enable=False)\nA = data('vast_cluster_metrics_ProtoMetrics_write_latency_sum', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='A', enable=False)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -6826,13 +6866,12 @@
         {"filters": [], "metric": "vast_cluster_online"},
         {"filters": [], "metric": "csi_node_nfs_xprt_mounts"}
       ],
-
       "name": "VAST Storage",
       "permissions": null,
       "teams": null
     }
   },
-  "hashCode": 1154081671,
+  "hashCode": -1054977926,
   "id": "HOeI3F8AcAk",
   "modelVersion": 1,
   "packageType": "GROUP"
