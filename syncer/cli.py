@@ -406,9 +406,20 @@ def cmd_apply(args: argparse.Namespace) -> int:
         try:
             local = _load_local_json(path)
             ok = _apply_resource(rtype, local, base_url, token)
-            entry["status"] = "applied" if ok else "failed"
             if not ok:
+                entry["status"] = "failed"
                 failures += 1
+            elif getattr(args, "refresh_local", False):
+                target = _refresh_local(rtype, rid, base_url, token, path)
+                rel = (
+                    str(target.relative_to(REPO_ROOT))
+                    if REPO_ROOT in target.parents
+                    else str(target)
+                )
+                entry["status"] = "applied"
+                entry["local_file_written"] = rel
+            else:
+                entry["status"] = "applied"
         except (RuntimeError, CliError) as e:
             entry["status"] = "failed"
             entry["error"] = str(e)
@@ -768,6 +779,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional list of files to include; defaults to all changed JSON files.",
     )
     apply_p.add_argument("--yes", action="store_true", help="Required to confirm destructive write.")
+    apply_p.add_argument(
+        "--refresh-local",
+        action="store_true",
+        help="After each successful push, re-fetch from master and overwrite the local file (updates hashCode).",
+    )
     apply_p.set_defaults(func=cmd_apply)
 
     update_p = sub.add_parser(

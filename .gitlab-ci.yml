@@ -6,8 +6,10 @@ include:
 
 stages:
   - code_analysis
+  - chatops
   - validate-content
   - validate-ai-experimental
+  - sync-signalbuddy
   - O11y-Out-of-the-Box-Inventory
   - O11y-DOC-OOTB
 
@@ -26,6 +28,51 @@ validate-ai-experimental:
   script:
     - node scripts/bridge_it_validate_content.mjs
   allow_failure: true
+
+# OOTB bug automation — trigger from Slack via GitLab ChatOps:
+#   /gitlab run ootb-bug-fix <bug description>
+# Or pipeline trigger with variable OOTB_BUG_INPUT
+ootb-bug-fix:
+  image: python:3
+  stage: chatops
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "chat"
+    - if: $OOTB_BUG_INPUT
+  variables:
+    GIT_DEPTH: "0"
+  script:
+    - pip install -r requirement.txt
+    - apt-get update && apt-get install -y jq git
+    - |
+      if [ "$CI_PIPELINE_SOURCE" = "chat" ]; then
+        python3 -m automation.bug_pipeline run --chatops-reply
+      else
+        python3 -m automation.bug_pipeline run
+      fi
+  allow_failure: false
+
+# Manual job: push MR JSON changes to Master SignalBuddy and refresh hashCodes.
+# Trigger on MRs labeled "sync-signalbuddy". Requires SIGNALBUDDY_TOKEN CI variable.
+sync-signalbuddy:
+  image: python:3
+  stage: sync-signalbuddy
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+  script:
+    - pip install -r requirement.txt
+    - apt-get update && apt-get install -y jq git
+    - python -m syncer.cli plan
+    - python -m syncer.cli apply --yes --refresh-local
+    - |
+      if [ -n "$(git status --porcelain -- navigators/ group/ detector/)" ]; then
+        git config user.email "ci-bot@content-discovery"
+        git config user.name "content-discovery CI"
+        git add navigators/ group/ detector/
+        git commit -m "chore: refresh hashCode after SignalBuddy sync [skip ci]"
+        git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${CI_COMMIT_REF_NAME}"
+      fi
+  allow_failure: false
 
 update-ootb-inventory:
   image: python:3
