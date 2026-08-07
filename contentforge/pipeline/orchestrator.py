@@ -90,6 +90,36 @@ def slugify(text: str, max_len: int = 48) -> str:
     return slug[:max_len].rstrip("-") or "bugfix"
 
 
+def jira_rest_base(cfg: dict[str, Any], token: str) -> tuple[str, str]:
+    """Return (api_base, browse_base) for Jira REST calls.
+
+    Scoped API tokens (ATATT3…) must use the platform gateway:
+      https://api.atlassian.com/ex/jira/{cloudId}/rest/api/3
+    Classic tokens use the site URL:
+      https://signalfuse.atlassian.net/rest/api/3
+
+    See: https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/
+    """
+    jira = cfg.get("jira", {})
+    browse_base = jira.get("base_url", "https://signalfuse.atlassian.net").rstrip("/")
+    cloud_id = env_var("CONTENT_FORGE_JIRA_CLOUD_ID") or jira.get("cloud_id", "")
+    use_gateway = env_var("CONTENT_FORGE_JIRA_USE_GATEWAY").lower() in ("1", "true", "yes")
+    if not use_gateway and token.startswith("ATATT3"):
+        use_gateway = True
+
+    if use_gateway and cloud_id:
+        api_base = f"https://api.atlassian.com/ex/jira/{cloud_id}/rest/api/3"
+        return api_base, browse_base
+
+    if use_gateway and not cloud_id:
+        raise SystemExit(
+            "Scoped Jira API token detected. Set jira.cloud_id in contentforge/settings.yaml "
+            "or CONTENT_FORGE_JIRA_CLOUD_ID (see https://signalfuse.atlassian.net/_edge/tenant_info)."
+        )
+
+    return f"{browse_base}/rest/api/3", browse_base
+
+
 def create_jira_issue(
     cfg: dict[str, Any],
     *,
@@ -106,8 +136,8 @@ def create_jira_issue(
         )
 
     jira = cfg.get("jira", {})
-    base_url = jira.get("base_url", "https://signalfuse.atlassian.net").rstrip("/")
-    project_key = jira.get("project_key", "BITS")
+    api_base, browse_base = jira_rest_base(cfg, token)
+    project_key = env_var("CONTENT_FORGE_JIRA_PROJECT_KEY") or jira.get("project_key", "BITS")
     issue_type = jira.get("issue_type", "Bug")
     labels = jira.get("default_labels") or []
 
@@ -135,7 +165,7 @@ def create_jira_issue(
     }
 
     resp = requests.post(
-        f"{base_url}/rest/api/3/issue",
+        f"{api_base}/issue",
         auth=(email, token),
         headers={"Accept": "application/json", "Content-Type": "application/json"},
         json=payload,
@@ -148,7 +178,7 @@ def create_jira_issue(
     key = data.get("key")
     return {
         "key": key,
-        "url": f"{base_url}/browse/{key}",
+        "url": f"{browse_base}/browse/{key}",
         "id": data.get("id"),
     }
 
