@@ -59,9 +59,10 @@ Writes all the detectors that require changes to the files in your local reposit
 python3 autodetect_tool.py --env us0 --access-token <MasterSignalBuddyOrgToken> export apply
 ```
 
-# Syncing content with the `syncer` CLI
+# Syncing content with **contentforge**
 
-`syncer/cli.py` is a non-interactive CLI for pushing local JSON edits
+All sync tooling lives under [`contentforge/`](contentforge/README.md).
+The CLI is at `contentforge/syncer/cli.py` — a non-interactive tool for pushing local JSON edits
 to Master SignalBuddy, pulling current state back into the repo, and
 previewing diffs. It is the same tool that the
 `sync-master-signalbuddy` skill drives — these examples work whether
@@ -80,7 +81,7 @@ in `.gitignore`) as a single line — nothing else:
 For CI / agent runs, export the same value as `SIGNALBUDDY_TOKEN`
 instead.
 
-The realm is hardcoded in `syncer/utils.MASTER_REALM` (currently
+The realm is hardcoded in `contentforge/syncer/utils.MASTER_REALM` (currently
 `us0`); it is not a config field.
 
 ## Five common workflows
@@ -88,8 +89,8 @@ The realm is hardcoded in `syncer/utils.MASTER_REALM` (currently
 ### 1. Push all my local changes to Master SignalBuddy
 
 ```bash
-python -m syncer.cli plan
-python -m syncer.cli apply --yes
+python -m contentforge.syncer.cli plan
+python -m contentforge.syncer.cli apply --yes
 ```
 
 Plan first, review the JSON output, then apply. The bulk path is
@@ -99,7 +100,7 @@ and `detector/`.
 ### 2. Update one file in master and refresh it locally
 
 ```bash
-python -m syncer.cli update "detector/APM Error Rate Increased.json" --yes
+python -m contentforge.syncer.cli update "detector/APM Error Rate Increased.json" --yes
 ```
 
 Strict update — fails fast if the resource doesn't exist (use
@@ -110,7 +111,7 @@ of master.
 ### 3. Create a brand-new resource in master from a local file
 
 ```bash
-python -m syncer.cli create "group/AWS Lambda.json" --yes
+python -m contentforge.syncer.cli create "group/AWS Lambda.json" --yes
 ```
 
 For groups this uses `POST /v2/dashboardgroup/import`, so the backend
@@ -121,7 +122,7 @@ so it now carries the new server-assigned id.
 ### 4. Refresh a local file from master without pushing anything
 
 ```bash
-python -m syncer.cli pull --type group --id <GROUP_ID> --yes
+python -m contentforge.syncer.cli pull --type group --id <GROUP_ID> --yes
 ```
 
 If the id is already present in the repo, the matching local file is
@@ -133,8 +134,8 @@ navigators without an existing local match, pass
 ### 5. Inspect remote state or preview a local change
 
 ```bash
-python -m syncer.cli fetch detector <DETECTOR_ID>
-python -m syncer.cli diff   "detector/K8s Node CPU.json"
+python -m contentforge.syncer.cli fetch detector <DETECTOR_ID>
+python -m contentforge.syncer.cli diff   "detector/K8s Node CPU.json"
 ```
 
 `fetch` prints the current master state to stdout; `diff` shows
@@ -153,5 +154,5 @@ state. Neither writes to disk.
 | Inspect remote state | `fetch <type> <id>` |
 | Preview local vs master | `diff <path>` |
 
-See `skills/sync-master-signalbuddy/SKILL.md` for the full reference
+See `contentforge/skills/sync-master-signalbuddy/SKILL.md` for the full reference
 (exit codes, error messages, safety rails).

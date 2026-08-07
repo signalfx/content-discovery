@@ -18,7 +18,7 @@ CI job ootb-bug-fix → JIRA + draft MR → bot posts completion in thread
 
 ## Prerequisites checklist
 
-- [ ] Automation pushed to **`lab`** on GitLab (includes `automation/` + `.gitlab-ci.yml`)
+- [ ] Automation pushed to **`lab`** on GitLab (includes `contentforge/` + `.gitlab-ci.yml`)
 - [ ] **Pipeline trigger token** created (Settings → CI/CD → Pipeline triggers)
 - [ ] **GitLab CI variables** set on project 9336 (see below)
 - [ ] **Slack bot** invited to `#test_ai_ootb` (`/invite @YourBot`)

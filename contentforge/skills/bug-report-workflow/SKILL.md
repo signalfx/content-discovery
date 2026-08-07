@@ -15,7 +15,7 @@ Automates the path from Slack bug report → JIRA ticket → GitLab draft MR →
 
 ## Prerequisites
 
-- `automation/config.yaml` exists (copy from `automation/config.yaml.example`)
+- `contentforge/config.yaml` exists (copy from `contentforge/config.yaml.example`)
 - Env vars: `JIRA_EMAIL`, `JIRA_API_TOKEN`, `GITLAB_TOKEN`
 - SignalBuddy: root `.token` file or `SIGNALBUDDY_TOKEN`
 - `jq` installed for local validation
@@ -48,7 +48,7 @@ rg -l "keyword" group/ navigators/ detector/
 ### Step 2 — Triage (JIRA + draft MR)
 
 ```bash
-python -m automation.orchestrator triage \
+python -m contentforge.pipeline.orchestrator triage \
   --title "<title>" \
   --description "<description>" \
   --slack-permalink "<slack-url>" \
@@ -76,14 +76,14 @@ Rules (enforced by CI):
 Always plan first, then apply with local refresh:
 
 ```bash
-python -m syncer.cli plan
-python -m syncer.cli apply --yes --refresh-local
+python -m contentforge.syncer.cli plan
+python -m contentforge.syncer.cli apply --yes --refresh-local
 ```
 
 Or for specific files:
 
 ```bash
-python -m syncer.cli apply --yes --refresh-local --paths "detector/K8s Node CPU.json"
+python -m contentforge.syncer.cli apply --yes --refresh-local --paths "detector/K8s Node CPU.json"
 ```
 
 The `--refresh-local` flag re-fetches each resource from master, writing the updated `hashCode` to disk.
@@ -116,7 +116,7 @@ Notify Slack with MR link and summary of changes.
 
 ## Configuration
 
-Reviewer IDs and labels live in `automation/config.yaml`:
+Reviewer IDs and labels live in `contentforge/config.yaml`:
 
 ```yaml
 gitlab:
@@ -135,4 +135,4 @@ Report failures verbatim from the `error` fields in syncer JSON output.
 ## Related skills
 
 - `sync-master-signalbuddy` — detailed SignalBuddy sync reference
-- `automation/README.md` — setup and architecture
+- `contentforge/README.md` — setup and architecture

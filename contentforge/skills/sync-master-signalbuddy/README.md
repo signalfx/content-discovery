@@ -98,18 +98,18 @@ The skill always forces the order **plan → human approval → apply**.
 git diff --name-only HEAD -- 'navigators/*' 'group/*' 'detector/*'
 
 # 2. Dry-run against MSB
-python -m syncer.cli plan
+python -m contentforge.syncer.cli plan
 
 # 3. Review the JSON the agent shows you. If it looks good:
-python -m syncer.cli apply --yes
+python -m contentforge.syncer.cli apply --yes
 ```
 
 Restrict to a subset (the agent does this when you only approve some
 items in the plan):
 
 ```bash
-python -m syncer.cli plan  --paths "navigators/AWS/AWS Instances - unified.json"
-python -m syncer.cli apply --paths "navigators/AWS/AWS Instances - unified.json" --yes
+python -m contentforge.syncer.cli plan  --paths "navigators/AWS/AWS Instances - unified.json"
+python -m contentforge.syncer.cli apply --paths "navigators/AWS/AWS Instances - unified.json" --yes
 ```
 
 Exit codes worth knowing:
@@ -127,14 +127,14 @@ Exit codes worth knowing:
 
 ```bash
 # Update one existing resource in MSB and refresh the local file
-python -m syncer.cli update "detector/APM Error Rate Increased.json" --yes
+python -m contentforge.syncer.cli update "detector/APM Error Rate Increased.json" --yes
 
 # Create a brand-new resource in MSB from a local file (and rewrite
 # the local file with the server-assigned id)
-python -m syncer.cli create "group/AWS Lambda.json" --yes
+python -m contentforge.syncer.cli create "group/AWS Lambda.json" --yes
 
 # Pull one resource from MSB into the local file (overwrites existing)
-python -m syncer.cli pull --type group --id <ID> --yes
+python -m contentforge.syncer.cli pull --type group --id <ID> --yes
 ```
 
 `update` and `create` are strict:
@@ -150,15 +150,15 @@ For navigators with no existing local match, `pull` needs an explicit
 export:
 
 ```bash
-python -m syncer.cli pull --type navigator --id <ID> \
+python -m contentforge.syncer.cli pull --type navigator --id <ID> \
     --out "navigators/AWS/aws lambda.json" --yes
 ```
 
 ## Workflow C — see what differs without writing
 
 ```bash
-python -m syncer.cli diff "navigators/AWS/AWS Instances - unified.json"
-python -m syncer.cli fetch navigator <ID>
+python -m contentforge.syncer.cli diff "navigators/AWS/AWS Instances - unified.json"
+python -m contentforge.syncer.cli fetch navigator <ID>
 ```
 
 `diff` infers the resource type from the path (`navigators/`, `group/`,
@@ -195,22 +195,22 @@ The agent will refuse to:
 
 ## Runtime discovery
 
-The canonical files live at `skills/sync-master-signalbuddy/`. Each agent
+The canonical files live at `contentforge/skills/sync-master-signalbuddy/`. Each agent
 runtime expects skills in its own directory, so the per-runtime
 directories contain a **symlink** back to the canonical `SKILL.md`. One
 file, four discovery paths:
 
 ```
 content-discovery/
-├── skills/sync-master-signalbuddy/
+├── contentforge/skills/sync-master-signalbuddy/
 │   ├── SKILL.md          # canonical instructions the agent reads
 │   └── README.md         # this file (canonical human docs)
 ├── .cursor/skills/sync-master-signalbuddy/
-│   └── SKILL.md -> ../../../skills/sync-master-signalbuddy/SKILL.md
+│   └── SKILL.md -> ../../../contentforge/skills/sync-master-signalbuddy/SKILL.md
 ├── .codex/skills/sync-master-signalbuddy/
-│   └── SKILL.md -> ../../../skills/sync-master-signalbuddy/SKILL.md
+│   └── SKILL.md -> ../../../contentforge/skills/sync-master-signalbuddy/SKILL.md
 └── .gitlab/duo/skills/sync-master-signalbuddy/
-    └── SKILL.md -> ../../../../skills/sync-master-signalbuddy/SKILL.md
+    └── SKILL.md -> ../../../../contentforge/skills/sync-master-signalbuddy/SKILL.md
 ```
 
 | Runtime          | Discovery path                                    | Auto-loads in this repo? |
@@ -220,7 +220,7 @@ content-discovery/
 | GitLab Duo Agent | `.gitlab/duo/skills/sync-master-signalbuddy/`     | ✅ when Duo opens repo    |
 | Claude Code      | not wired by default — add a symlink under `.claude/skills/` if needed | ⛔ |
 
-Edit `skills/sync-master-signalbuddy/SKILL.md` once — every runtime sees
+Edit `contentforge/skills/sync-master-signalbuddy/SKILL.md` once — every runtime sees
 the change on the next `git pull` (or immediately, locally).
 
 > **Note on Codex path:** The `.codex/skills/` location follows the
@@ -235,11 +235,11 @@ runtime into your user-scope dir:
 
 ```bash
 mkdir -p ~/.cursor/skills/sync-master-signalbuddy
-ln -s "$PWD/skills/sync-master-signalbuddy/SKILL.md" \
+ln -s "$PWD/contentforge/skills/sync-master-signalbuddy/SKILL.md" \
       ~/.cursor/skills/sync-master-signalbuddy/SKILL.md
 
 mkdir -p ~/.codex/skills/sync-master-signalbuddy
-ln -s "$PWD/skills/sync-master-signalbuddy/SKILL.md" \
+ln -s "$PWD/contentforge/skills/sync-master-signalbuddy/SKILL.md" \
       ~/.codex/skills/sync-master-signalbuddy/SKILL.md
 ```
 
@@ -250,13 +250,14 @@ ln -s "$PWD/skills/sync-master-signalbuddy/SKILL.md" \
 
 ```
 content-discovery/
-├── skills/sync-master-signalbuddy/{SKILL.md, README.md}   # canonical
+├── contentforge/skills/sync-master-signalbuddy/{SKILL.md, README.md}   # canonical
 ├── .cursor/skills/sync-master-signalbuddy/SKILL.md        # symlink
 ├── .codex/skills/sync-master-signalbuddy/SKILL.md         # symlink
 ├── .gitlab/duo/skills/sync-master-signalbuddy/SKILL.md    # symlink
 ├── .token                # gitignored Master SignalBuddy credentials
-├── syncer/
-│   ├── cli.py            # the only entry point — `python -m syncer.cli ...`
+├── contentforge/
+│   └── syncer/
+│       ├── cli.py        # entry point — `python -m contentforge.syncer.cli ...`
 │   ├── __init__.py
 │   ├── services/         # navigator / group / detector update + create logic
 │   └── utils.py          # token + diff helpers

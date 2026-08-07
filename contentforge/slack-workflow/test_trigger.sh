@@ -5,7 +5,7 @@
 #   export CI_TRIGGER_TOKEN="..."
 #   export SLACK_CHANNEL_ID="C0XXXXXXXX"   # #test_ai_ootb
 #   export SLACK_THREAD_TS="1234567890.123456"  # optional; omit to post to channel root
-#   ./automation/slack-workflow/test_trigger.sh "ootb-bug: K8s Node CPU detector fires at 70% instead of 90%"
+#   ./contentforge/slack-workflow/test_trigger.sh "ootb-bug: K8s Node CPU detector fires at 70% instead of 90%"
 
 set -euo pipefail
 

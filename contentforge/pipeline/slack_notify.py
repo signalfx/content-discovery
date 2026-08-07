@@ -160,7 +160,7 @@ def notify_slack(
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("Usage: python -m automation.slack_notify '<json result>'", file=sys.stderr)
+        print("Usage: python -m contentforge.pipeline.slack_notify '<json result>'", file=sys.stderr)
         return 2
     result = json.loads(sys.argv[1])
     notify_slack(result, chatops_reply="--chatops" in sys.argv)

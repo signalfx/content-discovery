@@ -1,0 +1,334 @@
+#!/usr/bin/env python3
+"""Orchestrate bug-report workflow: JIRA ticket, GitLab draft MR, SignalBuddy sync.
+
+Usage:
+  python -m contentforge.pipeline.orchestrator triage \\
+    --title "Fix K8s Node CPU detector threshold" \\
+    --description "Reported in #o11y-ootb-content ..." \\
+    --slack-permalink "https://..."
+
+  python -m contentforge.pipeline.orchestrator sync-json --paths "detector/K8s Node CPU.json"
+
+Environment variables (never commit these):
+  JIRA_EMAIL, JIRA_API_TOKEN     — Atlassian API token auth
+  GITLAB_TOKEN                   — GitLab personal/project access token
+  SIGNALBUDDY_TOKEN              — Master SignalBuddy API token (or use .token)
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+import requests
+import yaml
+
+CONTENTFORGE_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = CONTENTFORGE_DIR.parent
+SETTINGS_PATH = CONTENTFORGE_DIR / "settings.yaml"
+CONFIG_PATH = CONTENTFORGE_DIR / "config.yaml"
+
+
+def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(base)
+    for key, value in override.items():
+        if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
+            merged[key] = _deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def load_config() -> dict[str, Any]:
+    cfg: dict[str, Any] = {}
+    if SETTINGS_PATH.exists():
+        with SETTINGS_PATH.open(encoding="utf-8") as f:
+            cfg = yaml.safe_load(f) or {}
+    if CONFIG_PATH.exists():
+        with CONFIG_PATH.open(encoding="utf-8") as f:
+            cfg = _deep_merge(cfg, yaml.safe_load(f) or {})
+
+    reviewer_env = os.environ.get("GITLAB_REVIEWER_IDS", "").strip()
+    if reviewer_env:
+        ids = [int(x.strip()) for x in reviewer_env.split(",") if x.strip().isdigit()]
+        cfg.setdefault("gitlab", {})["default_reviewer_ids"] = ids
+
+    mentions_env = os.environ.get("SLACK_OWNER_MENTIONS", "").strip()
+    if mentions_env:
+        cfg.setdefault("slack", {})["owner_mentions"] = [
+            x.strip() for x in mentions_env.split(",") if x.strip()
+        ]
+
+    if not cfg:
+        example = CONTENTFORGE_DIR / "config.yaml.example"
+        raise SystemExit(
+            f"No contentforge config found. Add {SETTINGS_PATH.name} or copy {example} "
+            f"to config.yaml under contentforge/."
+        )
+    return cfg
+
+
+def slugify(text: str, max_len: int = 48) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+    return slug[:max_len].rstrip("-") or "bugfix"
+
+
+def create_jira_issue(
+    cfg: dict[str, Any],
+    *,
+    title: str,
+    description: str,
+    slack_permalink: str | None = None,
+) -> dict[str, Any]:
+    email = os.environ.get("JIRA_EMAIL", "").strip()
+    token = os.environ.get("JIRA_API_TOKEN", "").strip()
+    if not email or not token:
+        raise SystemExit("Set JIRA_EMAIL and JIRA_API_TOKEN environment variables.")
+
+    jira = cfg.get("jira", {})
+    base_url = jira.get("base_url", "https://signalfuse.atlassian.net").rstrip("/")
+    project_key = jira.get("project_key", "BITS")
+    issue_type = jira.get("issue_type", "Bug")
+    labels = jira.get("default_labels") or []
+
+    body_parts = [description]
+    if slack_permalink:
+        body_parts.append(f"\n\nSlack thread: {slack_permalink}")
+
+    payload = {
+        "fields": {
+            "project": {"key": project_key},
+            "summary": title,
+            "description": {
+                "type": "doc",
+                "version": 1,
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [{"type": "text", "text": "\n".join(body_parts)}],
+                    }
+                ],
+            },
+            "issuetype": {"name": issue_type},
+            "labels": labels,
+        }
+    }
+
+    resp = requests.post(
+        f"{base_url}/rest/api/3/issue",
+        auth=(email, token),
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        json=payload,
+        timeout=60,
+    )
+    if resp.status_code >= 400:
+        raise SystemExit(f"JIRA create failed ({resp.status_code}): {resp.text}")
+
+    data = resp.json()
+    key = data.get("key")
+    return {
+        "key": key,
+        "url": f"{base_url}/browse/{key}",
+        "id": data.get("id"),
+    }
+
+
+def create_gitlab_draft_mr(
+    cfg: dict[str, Any],
+    *,
+    title: str,
+    description: str,
+    jira_key: str | None = None,
+) -> dict[str, Any]:
+    gitlab_token = os.environ.get("GITLAB_TOKEN", "").strip()
+    if not gitlab_token:
+        raise SystemExit("Set GITLAB_TOKEN environment variable.")
+
+    gl = cfg.get("gitlab", {})
+    base_url = gl.get("base_url", "https://cd.splunkdev.com").rstrip("/")
+    project_id = gl.get("project_id", 9336)
+    target_branch = gl.get("target_branch", "master")
+    reviewer_ids = gl.get("default_reviewer_ids") or []
+    labels = ",".join(gl.get("default_labels") or [])
+    branch_prefix = cfg.get("workflow", {}).get("branch_prefix", "fix/bits-")
+    draft = cfg.get("workflow", {}).get("mr_draft", True)
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d")
+    branch_name = f"{branch_prefix}{jira_key or slugify(title)}-{timestamp}"
+
+    headers = {"PRIVATE-TOKEN": gitlab_token}
+
+    # Create branch from target
+    branch_resp = requests.post(
+        f"{base_url}/api/v4/projects/{project_id}/repository/branches",
+        headers=headers,
+        params={"branch": branch_name, "ref": target_branch},
+        timeout=60,
+    )
+    if branch_resp.status_code >= 400:
+        raise SystemExit(
+            f"GitLab branch create failed ({branch_resp.status_code}): {branch_resp.text}"
+        )
+
+    mr_description = description
+    if jira_key:
+        jira_url = f"{cfg.get('jira', {}).get('base_url', 'https://signalfuse.atlassian.net')}/browse/{jira_key}"
+        mr_description = f"{description}\n\nCloses #{jira_key}\nJIRA: {jira_url}"
+
+    mr_payload: dict[str, Any] = {
+        "source_branch": branch_name,
+        "target_branch": target_branch,
+        "title": title if jira_key is None else f"{jira_key}: {title}",
+        "description": mr_description,
+        "draft": draft,
+        "remove_source_branch": True,
+    }
+    if reviewer_ids:
+        mr_payload["reviewer_ids"] = reviewer_ids
+    if labels:
+        mr_payload["labels"] = labels
+
+    mr_resp = requests.post(
+        f"{base_url}/api/v4/projects/{project_id}/merge_requests",
+        headers=headers,
+        json=mr_payload,
+        timeout=60,
+    )
+    if mr_resp.status_code >= 400:
+        raise SystemExit(
+            f"GitLab MR create failed ({mr_resp.status_code}): {mr_resp.text}"
+        )
+
+    mr = mr_resp.json()
+    return {
+        "iid": mr.get("iid"),
+        "web_url": mr.get("web_url"),
+        "branch": branch_name,
+        "draft": draft,
+    }
+
+
+def checkout_branch(branch: str) -> None:
+    subprocess.run(["git", "fetch", "origin", branch], cwd=REPO_ROOT, check=False)
+    subprocess.run(["git", "checkout", branch], cwd=REPO_ROOT, check=True)
+
+
+def commit_and_push_json_changes(branch: str, message: str) -> dict[str, Any]:
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--", "navigators/", "group/", "detector/"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    changed = [line[3:] for line in status.stdout.splitlines() if line.strip()]
+    if not changed:
+        return {"committed": False, "changed_files": []}
+
+    subprocess.run(["git", "add", *changed], cwd=REPO_ROOT, check=True)
+    subprocess.run(["git", "commit", "-m", message], cwd=REPO_ROOT, check=True)
+    subprocess.run(["git", "push", "origin", branch], cwd=REPO_ROOT, check=True)
+    return {"committed": True, "changed_files": changed}
+
+
+def cmd_triage(args: argparse.Namespace) -> int:
+    cfg = load_config()
+    jira = create_jira_issue(
+        cfg,
+        title=args.title,
+        description=args.description,
+        slack_permalink=args.slack_permalink,
+    )
+    mr = create_gitlab_draft_mr(
+        cfg,
+        title=args.title,
+        description=args.description,
+        jira_key=jira.get("key"),
+    )
+
+    if args.checkout:
+        checkout_branch(mr["branch"])
+
+    result = {
+        "command": "triage",
+        "jira": jira,
+        "merge_request": mr,
+    }
+    print(json.dumps(result, indent=2))
+    return 0
+
+
+def cmd_sync_json(args: argparse.Namespace) -> int:
+    from contentforge.pipeline.signalbuddy_sync import sync_changed_json
+
+    paths = args.paths or None
+    result = sync_changed_json(paths, refresh_local=not args.no_refresh)
+    print(json.dumps(result, indent=2))
+
+    if args.commit and result.get("ok"):
+        branch = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        commit_msg = args.commit_message or "chore: refresh hashCode after SignalBuddy sync"
+        commit_result = commit_and_push_json_changes(branch, commit_msg)
+        result["git"] = commit_result
+        print(json.dumps(result, indent=2))
+
+    return 0 if result.get("ok") else 1
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="OOTB bug-report workflow orchestrator")
+    sub = p.add_subparsers(dest="command", required=True)
+
+    triage = sub.add_parser("triage", help="Create JIRA ticket and GitLab draft MR")
+    triage.add_argument("--title", required=True)
+    triage.add_argument("--description", required=True)
+    triage.add_argument("--slack-permalink", default=None)
+    triage.add_argument(
+        "--checkout",
+        action="store_true",
+        help="Check out the new MR branch locally after creation",
+    )
+    triage.set_defaults(func=cmd_triage)
+
+    sync = sub.add_parser(
+        "sync-json",
+        help="Push changed JSON to Master SignalBuddy and refresh hashCodes",
+    )
+    sync.add_argument("--paths", nargs="*", help="Specific JSON files to sync")
+    sync.add_argument(
+        "--no-refresh",
+        action="store_true",
+        help="Skip local hashCode refresh (not recommended for MRs)",
+    )
+    sync.add_argument(
+        "--commit",
+        action="store_true",
+        help="Commit and push refreshed JSON files to the current branch",
+    )
+    sync.add_argument("--commit-message", default=None)
+    sync.set_defaults(func=cmd_sync_json)
+
+    return p
+
+
+def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 CONTENT_DIRS = ("navigators", "group", "detector")
 
 STOPWORDS = frozenset(
@@ -141,7 +141,8 @@ def build_rca(bug_text: str, matches: list[FileMatch]) -> str:
             "labels, import qualifiers, or chart/detector rules in that file.",
             "",
             "**Suggested fix:** Edit the JSON on the MR branch, then run "
-            "`python -m syncer.cli plan` and `python -m syncer.cli apply --yes --refresh-local`.",
+            "`python -m contentforge.syncer.cli plan` and "
+            "`python -m contentforge.syncer.cli apply --yes --refresh-local`.",
         ]
     )
     return "\n".join(lines)

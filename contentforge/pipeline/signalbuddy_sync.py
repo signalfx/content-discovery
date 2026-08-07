@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 def sync_changed_json(
@@ -25,7 +25,7 @@ def sync_changed_json(
     cmd = [
         sys.executable,
         "-m",
-        "syncer.cli",
+        "contentforge.syncer.cli",
         "apply",
         "--yes",
     ]
@@ -58,7 +58,7 @@ def sync_changed_json(
 
 def plan_changed_json(paths: list[str] | None = None) -> dict[str, Any]:
     """Dry-run: show what would be synced without writing."""
-    cmd = [sys.executable, "-m", "syncer.cli", "plan"]
+    cmd = [sys.executable, "-m", "contentforge.syncer.cli", "plan"]
     if paths:
         cmd.extend(["--paths", *paths])
 

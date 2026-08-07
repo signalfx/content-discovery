@@ -45,7 +45,7 @@ That triggers a pipeline on **`lab`** and replies in the thread with JIRA + MR l
 ## Local dry-run (no credentials)
 
 ```bash
-python3 -m automation.bug_pipeline run --dry-run \
+python3 -m contentforge.pipeline.bug_pipeline run --dry-run \
   --input "ootb-bug: K8s Node CPU detector fires at 70% instead of 90%"
 ```
 
@@ -54,7 +54,7 @@ python3 -m automation.bug_pipeline run --dry-run \
 ## After the MR is created
 
 1. Fix JSON on the MR branch
-2. `python3 -m syncer.cli apply --yes --refresh-local`
+2. `python3 -m contentforge.syncer.cli apply --yes --refresh-local`
 3. Push; CI validates; optional `sync-signalbuddy` job on MR
 
 See [README.md](./README.md) for command reference.

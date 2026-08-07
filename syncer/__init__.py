@@ -1,1 +1,1 @@
-"""SignalFx content syncer package."""
+"""Deprecated shim — use contentforge.syncer instead."""

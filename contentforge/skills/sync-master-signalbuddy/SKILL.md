@@ -79,7 +79,7 @@ git diff --name-only HEAD -- 'navigators/*' 'group/*' 'detector/*'
 ### Step 2 — run plan
 
 ```bash
-python -m syncer.cli plan
+python -m contentforge.syncer.cli plan
 ```
 
 Output is JSON with a `resources` array. Each entry has `type`, `path`,
@@ -89,7 +89,7 @@ Output is JSON with a `resources` array. Each entry has `type`, `path`,
 To restrict to specific files:
 
 ```bash
-python -m syncer.cli plan --paths "navigators/AWS/AWS Instances - unified.json"
+python -m contentforge.syncer.cli plan --paths "navigators/AWS/AWS Instances - unified.json"
 ```
 
 ### Step 3 — show the plan summary and get approval
@@ -111,7 +111,7 @@ Wait for explicit user confirmation. Never auto-apply.
 ### Step 4 — apply
 
 ```bash
-python -m syncer.cli apply --yes
+python -m contentforge.syncer.cli apply --yes
 ```
 
 `--yes` is required; without it the command aborts.
@@ -131,9 +131,9 @@ from the `error` fields.
 ### Fetch the current state of one resource
 
 ```bash
-python -m syncer.cli fetch navigator <ID>
-python -m syncer.cli fetch group     <ID>
-python -m syncer.cli fetch detector  <ID>
+python -m contentforge.syncer.cli fetch navigator <ID>
+python -m contentforge.syncer.cli fetch group     <ID>
+python -m contentforge.syncer.cli fetch detector  <ID>
 ```
 
 Output JSON has a `resource` field with the full export payload.
@@ -142,7 +142,7 @@ Output JSON has a `resource` field with the full export payload.
 ### Diff a single local file vs master
 
 ```bash
-python -m syncer.cli diff "navigators/AWS/AWS Instances - unified.json"
+python -m contentforge.syncer.cli diff "navigators/AWS/AWS Instances - unified.json"
 ```
 
 The CLI infers the resource type from the file path or the JSON
@@ -157,7 +157,7 @@ All operate against master (the only org this CLI knows about).
 ### `update` — push a single local file
 
 ```bash
-python -m syncer.cli update "group/AWS Lambda.json" --yes
+python -m contentforge.syncer.cli update "group/AWS Lambda.json" --yes
 ```
 
 Behaviour:
@@ -173,7 +173,7 @@ Behaviour:
 ### `create` — POST a new resource into master
 
 ```bash
-python -m syncer.cli create "group/AWS Lambda.json" --yes
+python -m contentforge.syncer.cli create "group/AWS Lambda.json" --yes
 ```
 
 Behaviour:
@@ -195,7 +195,7 @@ Behaviour:
 ### `pull` — export a resource from master into the repo
 
 ```bash
-python -m syncer.cli pull --type group --id DASH_xyz --yes
+python -m contentforge.syncer.cli pull --type group --id DASH_xyz --yes
 ```
 
 Resolution order for the output path:
@@ -210,7 +210,7 @@ the export — for navigators with no existing local match, `--out` is
 **required**:
 
 ```bash
-python -m syncer.cli pull --type navigator --id NAV_xyz \
+python -m contentforge.syncer.cli pull --type navigator --id NAV_xyz \
   --out "navigators/AWS/aws lambda.json" --yes
 ```
 

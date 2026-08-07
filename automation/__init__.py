@@ -1,1 +1,1 @@
-"""OOTB content bug-report automation orchestrator."""
+"""Deprecated shim — use contentforge.pipeline instead."""
