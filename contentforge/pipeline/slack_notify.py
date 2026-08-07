@@ -10,9 +10,17 @@ from typing import Any
 import requests
 
 
+def env_var(*names: str) -> str:
+    for name in names:
+        value = os.environ.get(name, "").strip()
+        if value:
+            return value
+    return ""
+
+
 def bot_api_configured(*, channel: str | None = None) -> bool:
     return bool(
-        os.environ.get("SLACK_BOT_TOKEN", "").strip()
+        env_var("CONTENT_FORGE_SLACK_BOT_TOKEN", "SLACK_BOT_TOKEN")
         and (channel or os.environ.get("SLACK_CHANNEL_ID", "")).strip()
     )
 
@@ -100,13 +108,13 @@ def post_via_bot_api(
     thread_ts: str | None = None,
     token: str | None = None,
 ) -> dict[str, Any]:
-    bot_token = (token or os.environ.get("SLACK_BOT_TOKEN", "")).strip()
+    bot_token = token or env_var("CONTENT_FORGE_SLACK_BOT_TOKEN", "SLACK_BOT_TOKEN")
     channel_id = (channel or os.environ.get("SLACK_CHANNEL_ID", "")).strip()
     if not bot_token or not channel_id:
         return {
             "ok": False,
             "skipped": True,
-            "reason": "SLACK_BOT_TOKEN or SLACK_CHANNEL_ID not set",
+            "reason": "CONTENT_FORGE_SLACK_BOT_TOKEN (or SLACK_BOT_TOKEN) or SLACK_CHANNEL_ID not set",
         }
 
     payload: dict[str, Any] = {"channel": channel_id, "text": text, "mrkdwn": True}

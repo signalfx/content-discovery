@@ -10,9 +10,10 @@ Usage:
   python -m contentforge.pipeline.orchestrator sync-json --paths "detector/K8s Node CPU.json"
 
 Environment variables (never commit these):
-  JIRA_EMAIL, JIRA_API_TOKEN     — Atlassian API token auth
-  GITLAB_TOKEN                   — GitLab personal/project access token
-  SIGNALBUDDY_TOKEN              — Master SignalBuddy API token (or use .token)
+  CONTENT_FORGE_JIRA_EMAIL, CONTENT_FORGE_JIRA_TOKEN — Atlassian API auth
+  CONTENT_FORGE_GIT_TOKEN                            — GitLab PAT
+  (legacy aliases: JIRA_EMAIL, JIRA_API_TOKEN, GITLAB_TOKEN)
+  SIGNALBUDDY_TOKEN                                  — Master SignalBuddy API token
 """
 
 from __future__ import annotations
@@ -34,6 +35,15 @@ CONTENTFORGE_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = CONTENTFORGE_DIR.parent
 SETTINGS_PATH = CONTENTFORGE_DIR / "settings.yaml"
 CONFIG_PATH = CONTENTFORGE_DIR / "config.yaml"
+
+
+def env_var(*names: str) -> str:
+    """Return the first set environment variable among ``names``."""
+    for name in names:
+        value = os.environ.get(name, "").strip()
+        if value:
+            return value
+    return ""
 
 
 def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
@@ -87,10 +97,13 @@ def create_jira_issue(
     description: str,
     slack_permalink: str | None = None,
 ) -> dict[str, Any]:
-    email = os.environ.get("JIRA_EMAIL", "").strip()
-    token = os.environ.get("JIRA_API_TOKEN", "").strip()
+    email = env_var("CONTENT_FORGE_JIRA_EMAIL", "JIRA_EMAIL")
+    token = env_var("CONTENT_FORGE_JIRA_TOKEN", "JIRA_API_TOKEN")
     if not email or not token:
-        raise SystemExit("Set JIRA_EMAIL and JIRA_API_TOKEN environment variables.")
+        raise SystemExit(
+            "Set CONTENT_FORGE_JIRA_EMAIL and CONTENT_FORGE_JIRA_TOKEN "
+            "(or JIRA_EMAIL and JIRA_API_TOKEN)."
+        )
 
     jira = cfg.get("jira", {})
     base_url = jira.get("base_url", "https://signalfuse.atlassian.net").rstrip("/")
@@ -147,9 +160,9 @@ def create_gitlab_draft_mr(
     description: str,
     jira_key: str | None = None,
 ) -> dict[str, Any]:
-    gitlab_token = os.environ.get("GITLAB_TOKEN", "").strip()
+    gitlab_token = env_var("CONTENT_FORGE_GIT_TOKEN", "GITLAB_TOKEN")
     if not gitlab_token:
-        raise SystemExit("Set GITLAB_TOKEN environment variable.")
+        raise SystemExit("Set CONTENT_FORGE_GIT_TOKEN (or GITLAB_TOKEN).")
 
     gl = cfg.get("gitlab", {})
     base_url = gl.get("base_url", "https://cd.splunkdev.com").rstrip("/")
