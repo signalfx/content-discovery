@@ -533,7 +533,7 @@
         "created": 0,
         "creator": null,
         "customProperties": {},
-        "description": "Shows average read and write latency across active users.",
+        "description": "Shows average read and write latency across active users summarized over the selected dashboard time range.",
         "id": "HOeI3F8AcBA",
         "importOf": "HLkI-hCAYB4",
         "lastUpdated": 0,
@@ -566,7 +566,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Second",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             },
             {
@@ -576,7 +576,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Second",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             }
           ],
@@ -592,7 +592,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('vast_user_read_latency', rollup='latest').max(by=['uid', 'more_info']).mean().publish(label='A')\nB = data('vast_user_write_latency', rollup='latest').max(by=['uid', 'more_info']).mean().publish(label='B')",
+        "programText": "A = data('vast_user_read_latency', rollup='latest').max(by=['uid', 'more_info']).mean().mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')\nB = data('vast_user_write_latency', rollup='latest').max(by=['uid', 'more_info']).mean().mean(over=Args.get('ui.dashboard_window', '15m')).publish(label='B')",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -1085,13 +1085,23 @@
           },
           "publishLabelOptions": [
             {
+              "displayName": "Read BW",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
+              "yAxis": 0
+            },
+            {
               "displayName": "Read latency",
               "label": "Read latency",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Millisecond",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             },
             {
@@ -1102,16 +1112,6 @@
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
-              "yAxis": 0
-            },
-            {
-              "displayName": "Read BW",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Second",
               "yAxis": 0
             }
           ],
@@ -1126,7 +1126,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "A = data('vast_cluster_metrics_ProtoMetrics_read_latency_sum', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='A', enable=False)\nC = (A/B).publish(label='Read latency')\nB = data('vast_cluster_metrics_ProtoMetrics_read_latency_count', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='B', enable=False)",
+        "programText": "C = (A/B).publish(label='Read latency')\nB = data('vast_cluster_metrics_ProtoMetrics_read_latency_count', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='B', enable=False)\nA = data('vast_cluster_metrics_ProtoMetrics_read_latency_sum', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='A', enable=False)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -2009,14 +2009,14 @@
               "label": "A",
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Byte"
+              "valueUnit": "Megabit"
             },
             {
               "displayName": "Write BW",
               "label": "B",
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Byte"
+              "valueUnit": "Megabit"
             }
           ],
           "refreshInterval": null,
@@ -2184,7 +2184,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Millisecond",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             }
           ],
@@ -2501,14 +2501,14 @@
               "label": "A",
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Second"
+              "valueUnit": "Microsecond"
             },
             {
               "displayName": "Write latency",
               "label": "B",
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Second"
+              "valueUnit": "Microsecond"
             }
           ],
           "refreshInterval": null,
@@ -2602,7 +2602,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Second",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             }
           ],
@@ -3117,7 +3117,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Millisecond",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             },
             {
@@ -3127,7 +3127,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Millisecond",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             }
           ],
@@ -4267,7 +4267,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Second",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             }
           ],
@@ -4420,7 +4420,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Bit",
+              "valueUnit": "Byte",
               "yAxis": 0
             }
           ],
@@ -4612,23 +4612,13 @@
           },
           "publishLabelOptions": [
             {
-              "displayName": "Write BW",
-              "label": "A",
-              "paletteIndex": null,
-              "plotType": null,
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Second",
-              "yAxis": 0
-            },
-            {
               "displayName": "Write latency",
               "label": "Write latency",
               "paletteIndex": null,
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Millisecond",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             },
             {
@@ -4639,6 +4629,16 @@
               "valuePrefix": null,
               "valueSuffix": null,
               "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Write BW",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
               "yAxis": 0
             }
           ],
@@ -4653,7 +4653,7 @@
           "unitPrefix": "Metric"
         },
         "packageSpecifications": "",
-        "programText": "C = (A/B).publish(label='Write latency')\nB = data('vast_cluster_metrics_ProtoMetrics_write_latency_count', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='B', enable=False)\nA = data('vast_cluster_metrics_ProtoMetrics_write_latency_sum', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='A', enable=False)",
+        "programText": "A = data('vast_cluster_metrics_ProtoMetrics_write_latency_sum', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='A', enable=False)\nC = (A/B).publish(label='Write latency')\nB = data('vast_cluster_metrics_ProtoMetrics_write_latency_count', filter=filter('proto_name', 'NFS4Common', 'NFSCommon', 'S3Common', 'SMBCommon'), rollup='sum').delta().sum(by=['proto_name']).publish(label='B', enable=False)",
         "relatedDetectorIds": [],
         "tags": []
       }
@@ -5036,7 +5036,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Byte",
+              "valueUnit": "Megabit",
               "yAxis": 0
             }
           ],
@@ -5411,7 +5411,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Millisecond",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             },
             {
@@ -5421,7 +5421,7 @@
               "plotType": null,
               "valuePrefix": null,
               "valueSuffix": null,
-              "valueUnit": "Millisecond",
+              "valueUnit": "Microsecond",
               "yAxis": 0
             }
           ],
@@ -5828,16 +5828,16 @@
             {
               "displayName": "Read IOPS",
               "label": "A",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte"
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
             },
             {
               "displayName": "Write IOPS",
               "label": "B",
-              "valuePrefix": null,
-              "valueSuffix": null,
-              "valueUnit": "Byte"
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
             }
           ],
           "refreshInterval": null,
@@ -6662,7 +6662,7 @@
               "required": true,
               "restricted": false,
               "value": [
-                "choose cluster"
+                "VAST-RTP1"
               ]
             }
           ]
@@ -6799,50 +6799,6 @@
       "authorizedWriters": null,
       "created": 0,
       "creator": null,
-      "dashboardConfigs": [
-        {
-          "configId": "HK6cZMfAgAA",
-          "dashboardId": "HOeI3F8AcFA",
-          "descriptionOverride": null,
-          "filtersOverride": null,
-          "nameOverride": null
-        },
-        {
-          "configId": "HK7m3_kAYAA",
-          "dashboardId": "HOeI3F8AcFE",
-          "descriptionOverride": null,
-          "filtersOverride": null,
-          "nameOverride": null
-        },
-        {
-          "configId": "HK9dGRxAYAA",
-          "dashboardId": "HOeI3F8AcFI",
-          "descriptionOverride": null,
-          "filtersOverride": null,
-          "nameOverride": null
-        },
-        {
-          "configId": "HLe1jwkAgAA",
-          "dashboardId": "HOeI3F8AcFM",
-          "descriptionOverride": null,
-          "filtersOverride": null,
-          "nameOverride": null
-        },
-        {
-          "configId": "HLkHlAqAgAA",
-          "dashboardId": "HOeI3F8AcFQ",
-          "descriptionOverride": null,
-          "filtersOverride": null,
-          "nameOverride": null
-        },
-        {
-          "configId": "HOcp49bAYBc",
-          "dashboardId": "HOeI3F8AcFU",
-          "descriptionOverride": null,
-          "filtersOverride": null,
-          "nameOverride": null
-        }
-      ],
       "dashboards": [
         "HOeI3F8AcFA",
         "HOeI3F8AcFE",
@@ -6871,7 +6827,7 @@
       "teams": null
     }
   },
-  "hashCode": -1771619783,
+  "hashCode": 514002464,
   "id": "HOeI3F8AcAk",
   "modelVersion": 1,
   "packageType": "GROUP"
