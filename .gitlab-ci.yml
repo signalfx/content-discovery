@@ -4,6 +4,16 @@ include:
     file: "sast-scan-template.yml"
   - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
 
+# MergeRequest-Pipelines only allows merge_request_event by default.
+# Extend workflow so contentforge bug automation can run from Run pipeline / trigger / ChatOps.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "chat"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+    - if: $OOTB_BUG_INPUT
+
 stages:
   - code_analysis
   - chatops
@@ -15,16 +25,20 @@ stages:
 
 validate:
   stage: validate-content
-  except:
-    - schedules
+  rules:
+    - if: $OOTB_BUG_INPUT
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
 
 validate-ai-experimental:
   image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
   stage: validate-ai-experimental
-  except:
-    - schedules
+  rules:
+    - if: $OOTB_BUG_INPUT
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - node scripts/bridge_it_validate_content.mjs
   allow_failure: true
@@ -37,6 +51,8 @@ ootb-bug-fix:
   stage: chatops
   rules:
     - if: $CI_PIPELINE_SOURCE == "chat"
+    - if: $CI_PIPELINE_SOURCE == "web" && $OOTB_BUG_INPUT
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $OOTB_BUG_INPUT
     - if: $OOTB_BUG_INPUT
   variables:
     GIT_DEPTH: "0"
