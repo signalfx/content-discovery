@@ -30,7 +30,7 @@ Environment variables:
   GITLAB_TRIGGER_PROJECT_ID                 — GitLab project id (default: CI_PROJECT_ID)
   GITLAB_BASE_URL                           — GitLab base URL (default: CI_SERVER_URL)
   POLL_PROJECT                              — Jira project key (default: BITS)
-  POLL_WINDOW_MINUTES                       — JQL 'created >= -Nm' window (default: 30)
+  POLL_WINDOW_MINUTES                       — JQL 'created >= -Nm' window (default: 43200 / 30d)
   POLL_DRY_RUN=1                            — skip labeling + trigger, just print
 """
 
@@ -127,33 +127,6 @@ def add_label_to_ticket(cfg: dict[str, Any], key: str, label: str) -> None:
         )
 
 
-def remove_label_from_ticket(cfg: dict[str, Any], key: str, label: str) -> None:
-    """Best-effort rollback used only when trigger fails after labeling.
-
-    Non-fatal (we don't want the poller to die because of cleanup problems),
-    but we log status/body on 4xx/5xx so we can tell whether the label is
-    still on the ticket and blocking future runs.
-    """
-    email, token = _jira_auth()
-    api_base, _ = jira_rest_base(cfg, token)
-    payload = {"update": {"labels": [{"remove": label}]}}
-    try:
-        resp = requests.put(
-            f"{api_base}/issue/{key}",
-            auth=(email, token),
-            headers={"Accept": "application/json", "Content-Type": "application/json"},
-            json=payload,
-            timeout=30,
-        )
-        if resp.status_code >= 400:
-            print(
-                f"[poll] {key}: label rollback returned {resp.status_code}: {resp.text}",
-                file=sys.stderr,
-            )
-    except requests.RequestException as exc:
-        print(f"[poll] {key}: label rollback failed: {exc}", file=sys.stderr)
-
-
 def trigger_pipeline(key: str, summary: str) -> dict[str, Any]:
     """Kick off a downstream pipeline for one Jira ticket via a trigger token.
 
@@ -204,14 +177,17 @@ def trigger_pipeline(key: str, summary: str) -> dict[str, Any]:
 
 
 def process_ticket(cfg: dict[str, Any], ticket: dict[str, Any]) -> dict[str, Any]:
+    """Label + trigger one ticket.
+
+    The label is added BEFORE the trigger and is **never** rolled back —
+    every attempted ticket is marked so future poller runs skip it, even
+    if the downstream trigger failed. To retry a ticket, remove the
+    ``ootb-auto-triaged`` label from Jira manually.
+    """
     key = ticket.get("key") or ""
     summary = (ticket.get("fields") or {}).get("summary") or ""
     add_label_to_ticket(cfg, key, AUTO_TRIAGED_LABEL)
-    try:
-        pipeline = trigger_pipeline(key, summary)
-    except PollError:
-        remove_label_from_ticket(cfg, key, AUTO_TRIAGED_LABEL)
-        raise
+    pipeline = trigger_pipeline(key, summary)
     return {
         "key": key,
         "summary": summary,
@@ -229,8 +205,11 @@ def main() -> int:
     parser.add_argument(
         "--window-minutes",
         type=int,
-        default=int(env_var("POLL_WINDOW_MINUTES") or "30"),
-        help="Match tickets created within this many minutes (default: 30)",
+        # Default is 30 days (43_200 min). Idempotency is guaranteed by the
+        # ``ootb-auto-triaged`` label, so a wide window is safe: already-
+        # attempted tickets are filtered out by JQL.
+        default=int(env_var("POLL_WINDOW_MINUTES") or "43200"),
+        help="Match tickets created within this many minutes (default: 43200 / 30 days)",
     )
     parser.add_argument(
         "--dry-run",

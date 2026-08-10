@@ -60,7 +60,10 @@ poll-forge-tickets:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $POLL_JIRA_TICKETS == "true"
   variables:
     POLL_PROJECT: "BITS"
-    POLL_WINDOW_MINUTES: "30"
+    # 30 days. Idempotency is enforced by the ootb-auto-triaged label
+    # (added on every attempt, never rolled back), so widening the window
+    # is safe — already-attempted tickets are filtered out by JQL.
+    POLL_WINDOW_MINUTES: "43200"
   script:
     - pip install -r requirement.txt
     - python -m contentforge.pipeline.poll_forge_tickets
