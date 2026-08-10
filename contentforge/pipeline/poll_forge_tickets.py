@@ -77,15 +77,31 @@ def _jira_auth() -> tuple[str, str]:
 
 
 def query_forge_tickets(cfg: dict[str, Any], jql: str) -> list[dict[str, Any]]:
+    """Search Jira via the modern ``POST /rest/api/3/search/jql`` endpoint.
+
+    Atlassian removed the legacy ``/search`` endpoint in 2026 (returns 410
+    Gone). The replacement takes a JSON body and returns ``{issues,
+    nextPageToken}`` — we don't paginate because a 30-minute window on one
+    project can't realistically exceed maxResults=50.
+
+    See: https://developer.atlassian.com/changelog/#CHANGE-2046
+    """
     email, token = _jira_auth()
     api_base, _ = jira_rest_base(cfg, token)
-    resp = requests.get(
-        f"{api_base}/search",
+    resp = requests.post(
+        f"{api_base}/search/jql",
         auth=(email, token),
-        headers={"Accept": "application/json"},
-        params={
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        json={
             "jql": jql,
-            "fields": "summary,labels,created,reporter,issuetype,status",
+            "fields": [
+                "summary",
+                "labels",
+                "created",
+                "reporter",
+                "issuetype",
+                "status",
+            ],
             "maxResults": 50,
         },
         timeout=60,
