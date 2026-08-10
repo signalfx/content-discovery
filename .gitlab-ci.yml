@@ -132,15 +132,28 @@ ootb-propose-fix:
     - JIRA_KEY=$(jq -r '.jira_key // empty' triage.json)
     - test -n "$BRANCH" || { echo "triage.json has no branch"; exit 1; }
     - 'echo "Auto-fix target branch: $BRANCH ($JIRA_KEY)"'
+    # The MR branch was created off master and doesn't yet contain
+    # scripts/bridge_it_propose_fix.mjs (still on rajthakk/ootb-e2e-test).
+    # Switching into the MR branch would delete the tooling. Instead we
+    # check the MR branch out into a separate git worktree, keeping the
+    # pipeline-checkout tree ($CI_PROJECT_DIR) — with all its scripts —
+    # intact. Node then edits the MR-branch worktree in place.
     - git fetch --no-tags origin "$BRANCH"
-    - git checkout -B "$BRANCH" "origin/$BRANCH"
-    - node scripts/bridge_it_propose_fix.mjs
+    - MR_DIR="/tmp/mr-branch"
+    - rm -rf "$MR_DIR"
+    - git worktree add "$MR_DIR" "origin/$BRANCH" -B "$BRANCH"
+    - cp triage.json "$MR_DIR/triage.json"
+    - export OOTB_PROPOSE_FIX_SUMMARY="$CI_PROJECT_DIR/propose_fix_summary.json"
     - |
+      cd "$MR_DIR"
+      node "$CI_PROJECT_DIR/scripts/bridge_it_propose_fix.mjs"
       PUSHED=false
-      if [ -n "$(git status --porcelain)" ]; then
+      # Restrict git-add to OOTB content dirs so triage.json / summary /
+      # untracked test artifacts can't accidentally ride along in the commit.
+      if [ -n "$(git status --porcelain -- group/ detector/ navigators/)" ]; then
         git config user.email "ci-bot@content-discovery"
         git config user.name "content-discovery CI"
-        git add -A
+        git add group/ detector/ navigators/
         git commit -m "chore(ai): CircuIT-proposed fix for ${JIRA_KEY}"
         if git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${BRANCH}"; then
           PUSHED=true
@@ -151,7 +164,8 @@ ootb-propose-fix:
       else
         echo "No changes proposed — MR left as triage-only for manual fix."
       fi
-      OOTB_PROPOSE_FIX_PUSHED="$PUSHED" node scripts/slack_post_propose_fix_update.mjs || true
+      cd "$CI_PROJECT_DIR"
+      OOTB_PROPOSE_FIX_PUSHED="$PUSHED" node "$CI_PROJECT_DIR/scripts/slack_post_propose_fix_update.mjs" || true
   artifacts:
     when: always
     paths:
