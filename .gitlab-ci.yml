@@ -34,7 +34,10 @@ validate:
     - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
 
 validate-ai-experimental:
-  image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
+  # Public Docker Hub image (same pull path as python:3 in poll-forge-tickets).
+  # The previous internal tag ci-cd/ci-container/node-20-alpine:3.2.1 was
+  # removed from Artifactory, so pulls fail with "manifest unknown".
+  image: node:20-alpine
   stage: validate-ai-experimental
   rules:
     - if: $OOTB_JIRA_KEY
@@ -109,7 +112,9 @@ ootb-bug-fix:
 # allow_failure keeps the pipeline green even when the LLM has nothing useful
 # to say — the human reviewer still has the Jira ticket + placeholder MR.
 ootb-propose-fix:
-  image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
+  # Public Docker Hub image — the internal ci-container/node-20-alpine:3.2.1
+  # tag was removed from Artifactory, so pulls fail with "manifest unknown".
+  image: node:20-alpine
   stage: propose-fix
   needs:
     - job: ootb-bug-fix
