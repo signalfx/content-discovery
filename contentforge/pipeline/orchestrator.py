@@ -120,6 +120,117 @@ def jira_rest_base(cfg: dict[str, Any], token: str) -> tuple[str, str]:
     return f"{browse_base}/rest/api/3", browse_base
 
 
+def _extract_adf_text(node: Any) -> str:
+    """Best-effort extraction of plain text from an Atlassian Document Format node.
+
+    Jira returns descriptions and comments as nested ADF JSON. We only need a
+    text summary for downstream heuristic search, so we walk the tree and
+    concatenate every ``text`` leaf we find.
+    """
+    if node is None:
+        return ""
+    if isinstance(node, str):
+        return node
+    if isinstance(node, list):
+        return "\n".join(x for x in (_extract_adf_text(n) for n in node) if x)
+    if isinstance(node, dict):
+        parts: list[str] = []
+        if node.get("type") == "text" and isinstance(node.get("text"), str):
+            parts.append(node["text"])
+        content = node.get("content")
+        if content:
+            parts.append(_extract_adf_text(content))
+        return " ".join(p for p in parts if p)
+    return ""
+
+
+def get_jira_issue(cfg: dict[str, Any], key: str) -> dict[str, Any]:
+    """Fetch an existing Jira issue by key.
+
+    Returns the same shape as :func:`create_jira_issue` plus ``summary`` and
+    ``description_text`` fields, so callers can drop-in either result.
+    Used when the pipeline is triggered against an already-created ticket
+    (Forge → Jira → automation flow).
+    """
+    email = env_var("CONTENT_FORGE_JIRA_EMAIL", "JIRA_EMAIL")
+    token = env_var("CONTENT_FORGE_JIRA_TOKEN", "JIRA_API_TOKEN")
+    if not email or not token:
+        raise SystemExit(
+            "Set CONTENT_FORGE_JIRA_EMAIL and CONTENT_FORGE_JIRA_TOKEN "
+            "(or JIRA_EMAIL and JIRA_API_TOKEN)."
+        )
+
+    api_base, browse_base = jira_rest_base(cfg, token)
+    resp = requests.get(
+        f"{api_base}/issue/{key}",
+        auth=(email, token),
+        headers={"Accept": "application/json"},
+        params={"fields": "summary,description,status,assignee,reporter"},
+        timeout=60,
+    )
+    if resp.status_code >= 400:
+        raise SystemExit(f"JIRA fetch failed ({resp.status_code}): {resp.text}")
+
+    data = resp.json()
+    fields = data.get("fields", {}) or {}
+    return {
+        "key": data.get("key") or key,
+        "url": f"{browse_base}/browse/{key}",
+        "id": data.get("id"),
+        "summary": fields.get("summary") or "",
+        "description_text": _extract_adf_text(fields.get("description")),
+        "status": (fields.get("status") or {}).get("name"),
+        "reused": True,
+    }
+
+
+def comment_on_jira_issue(
+    cfg: dict[str, Any], key: str, comment_text: str
+) -> dict[str, Any]:
+    """Append a plain-text comment to an existing Jira issue.
+
+    Comment failures are treated as non-fatal (logged, returned as
+    ``{"ok": False, ...}``) so a Jira permissions issue never blocks an
+    otherwise-successful MR + Slack notification.
+    """
+    email = env_var("CONTENT_FORGE_JIRA_EMAIL", "JIRA_EMAIL")
+    token = env_var("CONTENT_FORGE_JIRA_TOKEN", "JIRA_API_TOKEN")
+    if not email or not token:
+        print(
+            "[orchestrator] JIRA comment skipped: credentials not set",
+            file=sys.stderr,
+        )
+        return {"ok": False, "error": "missing_credentials"}
+
+    api_base, _ = jira_rest_base(cfg, token)
+    payload = {
+        "body": {
+            "type": "doc",
+            "version": 1,
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [{"type": "text", "text": comment_text}],
+                }
+            ],
+        }
+    }
+    resp = requests.post(
+        f"{api_base}/issue/{key}/comment",
+        auth=(email, token),
+        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        json=payload,
+        timeout=60,
+    )
+    if resp.status_code >= 400:
+        print(
+            f"[orchestrator] JIRA comment failed ({resp.status_code}): {resp.text}",
+            file=sys.stderr,
+        )
+        return {"ok": False, "status_code": resp.status_code}
+    return {"ok": True, "comment_id": resp.json().get("id")}
+
+
 def create_jira_issue(
     cfg: dict[str, Any],
     *,

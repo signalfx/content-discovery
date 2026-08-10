@@ -12,7 +12,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "chat"
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
-    - if: $OOTB_BUG_INPUT
+    - if: $OOTB_JIRA_KEY
 
 stages:
   - code_analysis
@@ -27,7 +27,7 @@ stages:
 validate:
   stage: validate-content
   rules:
-    - if: $OOTB_BUG_INPUT
+    - if: $OOTB_JIRA_KEY
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
@@ -37,24 +37,50 @@ validate-ai-experimental:
   image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
   stage: validate-ai-experimental
   rules:
-    - if: $OOTB_BUG_INPUT
+    - if: $OOTB_JIRA_KEY
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     - node scripts/bridge_it_validate_content.mjs
   allow_failure: true
 
-# OOTB bug automation — trigger from Slack via GitLab ChatOps:
-#   /gitlab run ootb-bug-fix <bug description>
-# Or pipeline trigger with variable OOTB_BUG_INPUT
+# Scheduled poller — bridges Jira → GitLab without needing Jira Automation
+# admin. Runs from a scheduled pipeline every ~5 min, finds Forge-created
+# BITS tickets that haven't been auto-triaged yet, labels them
+# `ootb-auto-triaged` (idempotency lock), and fires one downstream pipeline
+# per ticket via the pipeline trigger token.
+#
+# Gated on POLL_JIRA_TICKETS=true so it only fires on a schedule that
+# explicitly opts in, keeping it isolated from other scheduled jobs like
+# update-o11y-doc-github.
+poll-forge-tickets:
+  image: python:3
+  stage: chatops
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" && $POLL_JIRA_TICKETS == "true"
+  variables:
+    POLL_PROJECT: "BITS"
+    POLL_WINDOW_MINUTES: "30"
+  script:
+    - pip install -r requirement.txt
+    - python -m contentforge.pipeline.poll_forge_tickets
+  artifacts:
+    when: always
+    paths:
+      - poll_summary.json
+    expire_in: 7 days
+  allow_failure: false
+
+# OOTB bug automation — Forge creates the Jira ticket upstream, then Jira
+# Automation (or the scheduled poller above) triggers this pipeline with
+# OOTB_JIRA_KEY. Optional OOTB_BUG_INPUT overrides the bug text (defaults
+# to ticket summary).
 ootb-bug-fix:
   image: python:3
   stage: chatops
   rules:
+    - if: $OOTB_JIRA_KEY
     - if: $CI_PIPELINE_SOURCE == "chat"
-    - if: $CI_PIPELINE_SOURCE == "web" && $OOTB_BUG_INPUT
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $OOTB_BUG_INPUT
-    - if: $OOTB_BUG_INPUT
   variables:
     GIT_DEPTH: "0"
   script:
@@ -86,10 +112,8 @@ ootb-propose-fix:
     - job: ootb-bug-fix
       artifacts: true
   rules:
+    - if: $OOTB_JIRA_KEY
     - if: $CI_PIPELINE_SOURCE == "chat"
-    - if: $CI_PIPELINE_SOURCE == "web" && $OOTB_BUG_INPUT
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $OOTB_BUG_INPUT
-    - if: $OOTB_BUG_INPUT
   variables:
     GIT_DEPTH: "0"
     PROPOSE_FIX_MIN_CONFIDENCE: "0.7"
