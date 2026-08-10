@@ -14,16 +14,15 @@ For each newly-created ticket that Forge posted (reporter =
      ``ootb-propose-fix`` for the single ticket.
 
 Auth model:
-  The downstream pipeline is triggered with GitLab's built-in ``CI_JOB_TOKEN``
-  (auto-injected into every CI job). No dedicated pipeline trigger token
-  needed — CI_JOB_TOKEN can create pipelines in the same project since
-  GitLab 16.7 via ``POST /api/v4/projects/:id/pipeline`` with the
-  ``JOB-TOKEN`` header.
+  Downstream pipelines are triggered via ``POST /api/v4/projects/:id/trigger/pipeline``
+  using a **pipeline trigger token** (Settings → CI/CD → Pipeline trigger tokens).
+  Splunk's GitLab returns 401 for ``CI_JOB_TOKEN`` on ``POST /pipeline``, so we
+  use the classic trigger endpoint.
 
 Environment variables:
   CONTENT_FORGE_JIRA_EMAIL / JIRA_EMAIL     — Jira Basic auth email
   CONTENT_FORGE_JIRA_TOKEN / JIRA_API_TOKEN — Jira API token
-  CI_JOB_TOKEN                              — auto-injected by GitLab CI
+  GITLAB_TRIGGER_TOKEN                      — required, pipeline trigger token
   GITLAB_TRIGGER_REF                        — target branch for the triggered
                                               pipeline (default: current
                                               CI_COMMIT_REF_NAME, i.e. the
@@ -129,36 +128,46 @@ def add_label_to_ticket(cfg: dict[str, Any], key: str, label: str) -> None:
 
 
 def remove_label_from_ticket(cfg: dict[str, Any], key: str, label: str) -> None:
-    """Best-effort rollback used only when trigger fails after labeling."""
+    """Best-effort rollback used only when trigger fails after labeling.
+
+    Non-fatal (we don't want the poller to die because of cleanup problems),
+    but we log status/body on 4xx/5xx so we can tell whether the label is
+    still on the ticket and blocking future runs.
+    """
     email, token = _jira_auth()
     api_base, _ = jira_rest_base(cfg, token)
     payload = {"update": {"labels": [{"remove": label}]}}
     try:
-        requests.put(
+        resp = requests.put(
             f"{api_base}/issue/{key}",
             auth=(email, token),
             headers={"Accept": "application/json", "Content-Type": "application/json"},
             json=payload,
             timeout=30,
         )
+        if resp.status_code >= 400:
+            print(
+                f"[poll] {key}: label rollback returned {resp.status_code}: {resp.text}",
+                file=sys.stderr,
+            )
     except requests.RequestException as exc:
         print(f"[poll] {key}: label rollback failed: {exc}", file=sys.stderr)
 
 
 def trigger_pipeline(key: str, summary: str) -> dict[str, Any]:
-    """Kick off a downstream pipeline for one Jira ticket using CI_JOB_TOKEN.
+    """Kick off a downstream pipeline for one Jira ticket via a trigger token.
 
-    GitLab's ``POST /api/v4/projects/:id/pipeline`` endpoint (not the older
-    ``/trigger/pipeline``) accepts the auto-injected ``CI_JOB_TOKEN`` when
-    creating pipelines in the same project. That means no additional CI
-    variable is required — the job's own identity is enough.
+    Splunk's GitLab returns 401 for ``CI_JOB_TOKEN`` on ``POST /projects/:id/pipeline``
+    (either pre-16.7 or same-project job-token pipeline creation is disabled),
+    so we use the classic ``POST /projects/:id/trigger/pipeline`` endpoint with
+    a pipeline trigger token supplied via ``GITLAB_TRIGGER_TOKEN``.
     """
-    job_token = env_var("CI_JOB_TOKEN")
-    if not job_token:
+    trigger_token = env_var("GITLAB_TRIGGER_TOKEN")
+    if not trigger_token:
         raise SystemExit(
-            "CI_JOB_TOKEN not available. poll_forge_tickets is designed to run "
-            "inside a GitLab CI job; outside of CI you need a pipeline trigger "
-            "token or a personal access token instead."
+            "GITLAB_TRIGGER_TOKEN is required. Create one at "
+            "Settings → CI/CD → Pipeline trigger tokens, then add it as a "
+            "masked/protected CI variable named GITLAB_TRIGGER_TOKEN."
         )
 
     ref = (
@@ -173,16 +182,18 @@ def trigger_pipeline(key: str, summary: str) -> dict[str, Any]:
         or "https://cd.splunkdev.com"
     ).rstrip("/")
 
+    # ``token`` and ``ref`` go as form fields; per-pipeline variables are
+    # passed as ``variables[KEY]=value`` form fields (this is the classic
+    # trigger contract — no JSON body).
+    form: dict[str, str] = {
+        "token": trigger_token,
+        "ref": ref,
+        "variables[OOTB_JIRA_KEY]": key,
+        "variables[OOTB_BUG_INPUT]": summary,
+    }
     resp = requests.post(
-        f"{base_url}/api/v4/projects/{project_id}/pipeline",
-        headers={"JOB-TOKEN": job_token, "Content-Type": "application/json"},
-        json={
-            "ref": ref,
-            "variables": [
-                {"key": "OOTB_JIRA_KEY", "value": key},
-                {"key": "OOTB_BUG_INPUT", "value": summary},
-            ],
-        },
+        f"{base_url}/api/v4/projects/{project_id}/trigger/pipeline",
+        data=form,
         timeout=60,
     )
     if resp.status_code >= 400:
