@@ -1,17 +1,28 @@
 #!/usr/bin/env python3
-"""End-to-end OOTB bug pipeline: fetch existing Jira ticket → analyze repo → draft MR → comment on Jira → notify Slack.
+"""End-to-end OOTB bug pipeline: fetch existing Jira ticket → analyze repo → create GitLab issue → comment on Jira → notify Slack.
 
 Forge creates the Jira ticket upstream from a Slack bug report; this pipeline
 only reacts to an already-existing ticket. It never creates Jira tickets.
 
-Triggered by pipeline trigger variable OOTB_JIRA_KEY (e.g. BITS-1583), typically
-via a Jira Automation rule ("Send Web Request" on Issue Created).
+The pipeline does NOT produce an MR. Instead, it opens a GitLab **issue**
+with the bug context + heuristic search hints and assigns it to the Duo
+Agent Platform service account (see ``gitlab.duo_flow_assignee_id`` in
+``contentforge/settings.yaml`` or the ``DUO_FLOW_ASSIGNEE_ID`` CI variable).
+
+The Duo Flow, configured in AI → Triggers with an "Assign" trigger against
+that same service account, fires from the assignment event, reads the issue
+body via the GitLab API (``DUO_WORKFLOW_GOAL`` is the issue URL), and
+produces the fix MR autonomously.
+
+Triggered by pipeline trigger variable OOTB_JIRA_KEY (e.g. BITS-1583) —
+typically populated by ``poll_forge_tickets.py`` running on a schedule.
 
 Environment variables:
   OOTB_JIRA_KEY                                  — required, existing Jira issue key
   OOTB_BUG_INPUT                                 — optional bug-text override
                                                    (defaults to ticket summary/description)
-  JIRA_EMAIL, JIRA_API_TOKEN, GITLAB_TOKEN       — required for Jira read/comment + MR
+  JIRA_EMAIL, JIRA_API_TOKEN, GITLAB_TOKEN       — required for Jira read/comment + issue create
+  DUO_FLOW_ASSIGNEE_ID                           — GitLab user id of the Duo service account
   SLACK_WEBHOOK_URL / SLACK_BOT_TOKEN + SLACK_CHANNEL_ID — Slack notify
   SLACK_THREAD_TS                                — reply in thread (bot API)
   SIGNALBUDDY_TOKEN                              — optional; with OOTB_SYNC_MSB=true
@@ -27,7 +38,7 @@ import re
 import sys
 from typing import Any
 
-from contentforge.pipeline.repo_search import build_rca, search_repo, summarize_for_jira
+from contentforge.pipeline.repo_search import build_rca, search_repo
 
 
 def _emit_chatops_reply(text: str) -> None:
@@ -60,10 +71,64 @@ def _comment_on_jira_issue(cfg, key, comment_text):
     return comment_on_jira_issue(cfg, key, comment_text)
 
 
-def _create_gitlab_draft_mr(cfg, **kwargs):
-    from contentforge.pipeline.orchestrator import create_gitlab_draft_mr
+def _create_gitlab_issue(cfg, **kwargs):
+    from contentforge.pipeline.orchestrator import create_gitlab_issue
 
-    return create_gitlab_draft_mr(cfg, **kwargs)
+    return create_gitlab_issue(cfg, **kwargs)
+
+
+def _build_issue_body(
+    *,
+    jira_key: str,
+    jira_url: str,
+    bug_text: str,
+    rca: str,
+    matches: list[Any],
+) -> str:
+    """Format the GitLab issue body that Duo Flow will read as its task.
+
+    The Duo Flow's ``DUO_WORKFLOW_GOAL`` env var is set to the URL of this
+    issue — the agent fetches this body from the GitLab API and uses it as
+    its task description. All fix constraints live here so the flow's own
+    system prompt only needs to encode *how* to fix (edit JSON, run
+    validate_content.sh, open an MR), not *what* to fix.
+    """
+    lines: list[str] = []
+    lines.append(f"**Jira:** [{jira_key}]({jira_url})")
+    lines.append("")
+    lines.append("## Bug summary")
+    lines.append(bug_text.strip() or "_(no summary provided)_")
+    lines.append("")
+
+    if matches:
+        lines.append("## Heuristic search results")
+        primary = matches[0]
+        lines.append(f"**Primary suspect:** `{primary.path}` (score: {primary.score})")
+        if len(matches) > 1:
+            lines.append("")
+            lines.append("Other matches:")
+            for m in matches[1:5]:
+                lines.append(f"- `{m.path}` (score: {m.score})")
+        lines.append("")
+
+    if rca:
+        lines.append("## RCA notes")
+        lines.append(rca)
+        lines.append("")
+
+    lines.append("## Fix constraints")
+    lines.append("- Only modify JSON files under `group/`, `detector/`, or `navigators/`.")
+    lines.append("- Do NOT modify `hashCode`, `id`, `version`, or `importQualifier` fields "
+                 "(these are managed by Master SignalBuddy).")
+    lines.append("- Do NOT add or remove top-level keys — value edits only.")
+    lines.append("- Prefer the smallest possible change that addresses the bug.")
+    lines.append("- Run `scripts/validate_content.sh` before opening the MR.")
+    lines.append("")
+    lines.append("## MR requirements")
+    lines.append(f"- Include `{jira_key}` in the MR title so Jira auto-links.")
+    lines.append("- Base the branch off `master`.")
+    lines.append("- Reference this issue in the MR description (`Fixes #<this-iid>`).")
+    return "\n".join(lines)
 
 
 def normalize_bug_input(bug_text: str) -> str:
@@ -97,12 +162,16 @@ def run_pipeline(
     sync_msb: bool = False,
     dry_run: bool = False,
 ) -> dict[str, Any]:
-    """Analyze an existing Jira ticket, create a draft MR, notify Slack.
+    """Analyze an existing Jira ticket, create a GitLab triage issue, notify Slack.
 
     The Jira ticket is expected to already exist (created upstream by Forge
     from a Slack bug report). We fetch its summary/description, run repo
-    search, open the draft MR, and post a comment linking the MR back on the
-    ticket. No Jira ticket is created here.
+    search, open a GitLab issue assigned to the Duo Flow service account,
+    and post a comment linking the issue back on the ticket.
+
+    The actual code fix + MR is performed asynchronously by the Duo Flow,
+    which fires from the "Assign" trigger event. This function only produces
+    the triage artifacts needed for that handoff.
     """
     if not jira_key:
         raise SystemExit(
@@ -144,21 +213,31 @@ def run_pipeline(
             "slack_ack": ack,
         }
 
-    full_description = summarize_for_jira(bug_text, matches, rca)
-    mr_description = f"{full_description}\n\n---\n\n{rca}"
-    mr = _create_gitlab_draft_mr(
+    issue_body = _build_issue_body(
+        jira_key=jira_key,
+        jira_url=ticket.get("url") or "",
+        bug_text=bug_text,
+        rca=rca,
+        matches=matches,
+    )
+    issue = _create_gitlab_issue(
         cfg,
         title=title,
-        description=mr_description,
+        description=issue_body,
         jira_key=jira_key,
     )
 
+    assigned_note = (
+        "assigned to Duo Flow service account"
+        if issue.get("assigned")
+        else "UNASSIGNED — set DUO_FLOW_ASSIGNEE_ID to activate the Duo Flow"
+    )
     comment_result = _comment_on_jira_issue(
         cfg,
         jira_key,
         (
-            f"Automated triage: draft MR opened at {mr.get('web_url')} "
-            f"(branch {mr.get('branch')}).\n"
+            f"Automated triage: GitLab issue opened at {issue.get('web_url')} "
+            f"({assigned_note}).\n"
             f"Likely affected: "
             f"{', '.join(m.path for m in matches[:3]) if matches else 'no clear match'}"
         ),
@@ -182,10 +261,7 @@ def run_pipeline(
         "matches": match_dicts,
         "jira": ticket,
         "jira_comment": comment_result,
-        "merge_request": mr,
-        "reviewers": {
-            "gitlab_reviewer_ids": (cfg.get("gitlab") or {}).get("default_reviewer_ids") or [],
-        },
+        "gitlab_issue": issue,
         "signalbuddy_sync": sync_result,
         "slack_ack": ack,
     }
@@ -198,7 +274,7 @@ def run_pipeline(
         channel=os.environ.get("SLACK_CHANNEL_ID"),
     )
 
-    _write_triage_artifact(bug_text, title, matches, ticket, mr)
+    _write_triage_artifact(bug_text, title, matches, ticket, issue)
     return result
 
 
@@ -207,13 +283,14 @@ def _write_triage_artifact(
     title: str,
     matches: list[Any],
     jira: dict[str, Any],
-    mr: dict[str, Any],
+    issue: dict[str, Any],
 ) -> None:
-    """Emit a triage.json artifact for the downstream ootb-propose-fix CI job.
+    """Emit a ``triage.json`` artifact for debugging / audit.
 
-    The auto-fix job consumes this via `needs:` + `artifacts:` and refuses to
-    touch any file that isn't in `allowed_files`, so this artifact is the trust
-    boundary between the heuristic search and the LLM.
+    The artifact is not consumed by any downstream job — the Duo Flow reads
+    the GitLab issue body directly via ``DUO_WORKFLOW_GOAL``. We keep this
+    file so operators can eyeball the pipeline's heuristic search result
+    without opening GitLab.
     """
     if not os.environ.get("CI"):
         return
@@ -225,11 +302,11 @@ def _write_triage_artifact(
         "title": title,
         "jira_key": jira.get("key"),
         "jira_url": jira.get("url"),
-        "mr_iid": mr.get("iid"),
-        "mr_url": mr.get("web_url"),
-        "branch": mr.get("branch"),
+        "issue_iid": issue.get("iid"),
+        "issue_url": issue.get("web_url"),
+        "issue_assigned": issue.get("assigned", False),
+        "duo_flow_assignee_id": issue.get("assignee_id"),
         "primary_file": primary,
-        "allowed_files": [m.path for m in matches[:1]],
         "matches": [
             {"path": m.path, "score": m.score, "reasons": m.reasons}
             for m in matches
@@ -296,7 +373,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument(
         "--dry-run",
         action="store_true",
-        help="Search + RCA only; skip MR/Slack (no GitLab credentials needed)",
+        help="Search + RCA only; skip GitLab issue creation and Slack (no GitLab credentials needed)",
     )
     run.set_defaults(func=cmd_run)
 

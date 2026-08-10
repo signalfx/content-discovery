@@ -31,7 +31,7 @@ def format_working_ack(title: str) -> str:
     # webhook triggers, and GitLab ChatOps chat_reply blocks.
     return (
         f"⏳ Working on OOTB bug: {title}\n"
-        "Searching content repo, creating JIRA + draft MR…"
+        "Searching content repo, creating GitLab triage issue for Duo Flow…"
     )
 
 
@@ -54,25 +54,34 @@ def format_slack_message(result: dict[str, Any], *, owner_mentions: list[str] | 
     Uses Unicode emoji and full URLs on their own lines so Slack's auto-linkify
     handles them without needing mrkdwn — which is not parsed by Workflow
     Builder webhook triggers, only by Bot API and Incoming Webhooks.
+
+    The pipeline's terminal state is now "GitLab triage issue opened,
+    assigned to Duo Flow". The actual fix MR is produced asynchronously by
+    Duo; we don't wait for it here.
     """
     jira = result.get("jira") or {}
-    mr = result.get("merge_request") or {}
+    issue = result.get("gitlab_issue") or {}
     rca = result.get("rca") or ""
     matches = result.get("matches") or []
     pipeline_url = os.environ.get("CI_PIPELINE_URL", "").strip()
 
     jira_key = jira.get("key") or "n/a"
     jira_url = jira.get("url")
-    mr_iid = mr.get("iid") or "?"
-    mr_url = mr.get("web_url")
-    branch = mr.get("branch") or "n/a"
+    issue_iid = issue.get("iid") or "?"
+    issue_url = issue.get("web_url")
+    assigned = issue.get("assigned", False)
 
-    lines = [f"✅ OOTB bug automation complete — {jira_key} · MR !{mr_iid}"]
+    lines = [f"✅ OOTB triage complete — {jira_key} · GitLab issue #{issue_iid}"]
     if jira_url:
-        lines.append(f"JIRA: {jira_url}")
-    if mr_url:
-        lines.append(f"MR:   {mr_url}")
-    lines.append(f"Branch: {branch}")
+        lines.append(f"JIRA:  {jira_url}")
+    if issue_url:
+        lines.append(f"Issue: {issue_url}")
+    if assigned:
+        lines.append("Assigned to Duo Flow service account — auto-fix MR will follow.")
+    else:
+        lines.append(
+            "⚠️ Issue is UNASSIGNED — set DUO_FLOW_ASSIGNEE_ID to activate Duo Flow."
+        )
     lines.append("")
 
     if pipeline_url:
@@ -93,16 +102,11 @@ def format_slack_message(result: dict[str, Any], *, owner_mentions: list[str] | 
         lines.append(f"RCA: {excerpt}")
         lines.append("")
 
-    reviewers = result.get("reviewers") or {}
-    if reviewers.get("gitlab_reviewer_ids"):
-        lines.append(f"GitLab reviewers assigned: {reviewers['gitlab_reviewer_ids']}")
-
     mentions = owner_mentions or []
     if mentions:
-        lines.append("")
         # <@UID> mentions only render as pings in Bot API messages, but they
         # degrade gracefully to plain text elsewhere.
-        lines.append("Review requested: " + " ".join(f"<@{uid}>" for uid in mentions))
+        lines.append("Watching: " + " ".join(f"<@{uid}>" for uid in mentions))
 
     return "\n".join(lines)
 

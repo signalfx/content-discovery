@@ -10,8 +10,10 @@ For each newly-created ticket that Forge posted (reporter =
      crash can only ever *skip* a ticket, never re-fire.
   2. POST to GitLab's pipeline trigger endpoint with
      ``variables[OOTB_JIRA_KEY]=<key>`` and ``variables[OOTB_BUG_INPUT]=<summary>``.
-     That kicks off a fresh pipeline which runs ``ootb-bug-fix`` +
-     ``ootb-propose-fix`` for the single ticket.
+     That kicks off a fresh pipeline which runs ``ootb-bug-fix`` — the
+     single-step triage job that opens a GitLab issue assigned to the Duo
+     Agent Platform service account. Duo produces the fix MR asynchronously
+     from that assignment event.
 
 Auth model:
   Downstream pipelines are triggered via ``POST /api/v4/projects/:id/trigger/pipeline``

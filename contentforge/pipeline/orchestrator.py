@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Orchestrate bug-report workflow: JIRA ticket, GitLab draft MR, SignalBuddy sync.
+"""Orchestrate bug-report workflow: JIRA ticket, GitLab triage issue, SignalBuddy sync.
+
+The pipeline no longer opens a merge request directly. Instead, it creates
+a GitLab **issue** with the Jira context and heuristic search hints, and
+assigns it to a GitLab Duo Agent Platform service account. The Duo Flow
+(bound to an "Assign" trigger in AI → Triggers) fires from that assignment
+and produces the actual fix MR autonomously.
 
 Usage:
   python -m contentforge.pipeline.orchestrator triage \\
@@ -13,6 +19,9 @@ Environment variables (never commit these):
   CONTENT_FORGE_JIRA_EMAIL, CONTENT_FORGE_JIRA_TOKEN — Atlassian API auth
   CONTENT_FORGE_GIT_TOKEN                            — GitLab PAT
   (legacy aliases: JIRA_EMAIL, JIRA_API_TOKEN, GITLAB_TOKEN)
+  DUO_FLOW_ASSIGNEE_ID                               — GitLab user id of the
+                                                       Duo service account
+                                                       (overrides settings.yaml)
   SIGNALBUDDY_TOKEN                                  — Master SignalBuddy API token
 """
 
@@ -24,7 +33,6 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -294,13 +302,55 @@ def create_jira_issue(
     }
 
 
-def create_gitlab_draft_mr(
+def _duo_flow_assignee_id(cfg: dict[str, Any]) -> int | None:
+    """Return the GitLab user id of the Duo Flow service account, if configured.
+
+    Precedence: ``DUO_FLOW_ASSIGNEE_ID`` env var (CI) > ``gitlab.duo_flow_assignee_id``
+    in ``settings.yaml`` / ``config.yaml``. Missing config is not fatal — the
+    issue is still created (unassigned), a loud warning is logged, and the
+    caller can manually assign to trigger the Flow.
+    """
+    raw = (env_var("DUO_FLOW_ASSIGNEE_ID") or "").strip()
+    if not raw:
+        raw = str((cfg.get("gitlab") or {}).get("duo_flow_assignee_id") or "").strip()
+    if not raw or raw.lower() in ("none", "null"):
+        return None
+    try:
+        return int(raw)
+    except ValueError:
+        print(
+            f"[orchestrator] WARNING: duo_flow_assignee_id={raw!r} is not an integer; "
+            "issue will be created unassigned.",
+            file=sys.stderr,
+        )
+        return None
+
+
+def create_gitlab_issue(
     cfg: dict[str, Any],
     *,
     title: str,
     description: str,
     jira_key: str | None = None,
 ) -> dict[str, Any]:
+    """Create a GitLab issue and assign to the Duo Flow service account.
+
+    We create an **issue**, not a merge request. The Duo Agent Platform Flow
+    (configured with an "Assign" trigger against ``duo_flow_assignee_id``)
+    picks up the assignment event, reads the issue body as its task context,
+    and produces the fix MR autonomously.
+
+    The issue title includes the Jira key so any MR the Flow opens can
+    reference it (``Fixes #<iid>`` or ``Related: BITS-XXXX``) for Jira/GitLab
+    auto-linking.
+
+    Idempotency is intentionally NOT enforced here — the poller (see
+    ``poll_forge_tickets.py``) applies a permanent ``ootb-auto-triaged``
+    label on Jira before triggering us, so this function only runs once per
+    ticket. If it runs twice (e.g. manual re-trigger), we create a second
+    issue on purpose — cheaper than teaching the pipeline about "which of
+    the two open issues counts".
+    """
     gitlab_token = env_var("CONTENT_FORGE_GIT_TOKEN", "GITLAB_TOKEN")
     if not gitlab_token:
         raise SystemExit("Set CONTENT_FORGE_GIT_TOKEN (or GITLAB_TOKEN).")
@@ -308,109 +358,62 @@ def create_gitlab_draft_mr(
     gl = cfg.get("gitlab", {})
     base_url = gl.get("base_url", "https://cd.splunkdev.com").rstrip("/")
     project_id = gl.get("project_id", 9336)
-    target_branch = gl.get("target_branch", "master")
-    reviewer_ids = gl.get("default_reviewer_ids") or []
     labels = ",".join(gl.get("default_labels") or [])
-    branch_prefix = cfg.get("workflow", {}).get("branch_prefix", "fix/bits-")
-    draft = cfg.get("workflow", {}).get("mr_draft", True)
+    assignee_id = _duo_flow_assignee_id(cfg)
 
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d")
-    branch_name = f"{branch_prefix}{jira_key or slugify(title)}-{timestamp}"
-
-    headers = {"PRIVATE-TOKEN": gitlab_token}
-
-    # Create branch from target. Idempotent: the branch name is
-    # deterministic per (jira_key, UTC date), so a re-run on the same day
-    # collides with the prior run. Treat 400 "Branch already exists" as a
-    # normal reuse case — we'll find the associated open MR below.
-    branch_resp = requests.post(
-        f"{base_url}/api/v4/projects/{project_id}/repository/branches",
-        headers=headers,
-        params={"branch": branch_name, "ref": target_branch},
-        timeout=60,
-    )
-    branch_reused = False
-    if branch_resp.status_code == 400 and "already exists" in (branch_resp.text or "").lower():
-        branch_reused = True
-        print(f"[orchestrator] branch {branch_name} already exists — reusing")
-    elif branch_resp.status_code >= 400:
-        raise SystemExit(
-            f"GitLab branch create failed ({branch_resp.status_code}): {branch_resp.text}"
-        )
-
-    # If the branch already existed, look for an open MR pointing at it and
-    # reuse that instead of trying to create a duplicate (GitLab would return
-    # 409 "another MR already exists"). Only reuse OPEN MRs — a closed/merged
-    # one means the branch is stale and we let the create call fail loudly.
-    if branch_reused:
-        list_resp = requests.get(
-            f"{base_url}/api/v4/projects/{project_id}/merge_requests",
-            headers=headers,
-            params={
-                "source_branch": branch_name,
-                "target_branch": target_branch,
-                "state": "opened",
-            },
-            timeout=60,
-        )
-        if list_resp.status_code < 400:
-            existing = list_resp.json() or []
-            if existing:
-                mr = existing[0]
-                print(
-                    f"[orchestrator] reusing open MR !{mr.get('iid')} "
-                    f"({mr.get('web_url')})"
-                )
-                return {
-                    "iid": mr.get("iid"),
-                    "web_url": mr.get("web_url"),
-                    "branch": branch_name,
-                    "draft": bool(mr.get("draft") or mr.get("work_in_progress")),
-                    "reused": True,
-                }
-
-    mr_description = description
+    issue_title = title if jira_key is None else f"[{jira_key}] {title}"
+    issue_description = description
     if jira_key:
-        jira_url = f"{cfg.get('jira', {}).get('base_url', 'https://splunk.atlassian.net')}/browse/{jira_key}"
-        mr_description = f"{description}\n\nCloses #{jira_key}\nJIRA: {jira_url}"
-
-    mr_payload: dict[str, Any] = {
-        "source_branch": branch_name,
-        "target_branch": target_branch,
-        "title": title if jira_key is None else f"{jira_key}: {title}",
-        "description": mr_description,
-        "draft": draft,
-        "remove_source_branch": True,
-    }
-    if reviewer_ids:
-        mr_payload["reviewer_ids"] = reviewer_ids
-    if labels:
-        mr_payload["labels"] = labels
-
-    mr_resp = requests.post(
-        f"{base_url}/api/v4/projects/{project_id}/merge_requests",
-        headers=headers,
-        json=mr_payload,
-        timeout=60,
-    )
-    if mr_resp.status_code >= 400:
-        raise SystemExit(
-            f"GitLab MR create failed ({mr_resp.status_code}): {mr_resp.text}"
+        jira_url = (
+            f"{cfg.get('jira', {}).get('base_url', 'https://splunk.atlassian.net')}"
+            f"/browse/{jira_key}"
+        )
+        issue_description = (
+            f"{description}\n\n---\n\nJira: {jira_url}\nJira key: `{jira_key}`"
         )
 
-    mr = mr_resp.json()
-    return {
-        "iid": mr.get("iid"),
-        "web_url": mr.get("web_url"),
-        "branch": branch_name,
-        "draft": draft,
-        "reused": False,
+    issue_payload: dict[str, Any] = {
+        "title": issue_title,
+        "description": issue_description,
     }
+    if labels:
+        issue_payload["labels"] = labels
+    if assignee_id is not None:
+        # GitLab accepts either assignee_id (single) or assignee_ids (array);
+        # both fields fire an "Assign" webhook. We use the array form so the
+        # same code path can be extended to co-assign a human reviewer later.
+        issue_payload["assignee_ids"] = [assignee_id]
+    else:
+        print(
+            "[orchestrator] WARNING: no duo_flow_assignee_id resolved. "
+            "Issue will be created UNASSIGNED and Duo Flow will NOT fire. "
+            "Set DUO_FLOW_ASSIGNEE_ID as a CI variable, or "
+            "gitlab.duo_flow_assignee_id in contentforge/settings.yaml, "
+            "then re-run.",
+            file=sys.stderr,
+        )
 
+    resp = requests.post(
+        f"{base_url}/api/v4/projects/{project_id}/issues",
+        headers={
+            "PRIVATE-TOKEN": gitlab_token,
+            "Content-Type": "application/json",
+        },
+        json=issue_payload,
+        timeout=60,
+    )
+    if resp.status_code >= 400:
+        raise SystemExit(
+            f"GitLab issue create failed ({resp.status_code}): {resp.text}"
+        )
 
-def checkout_branch(branch: str) -> None:
-    subprocess.run(["git", "fetch", "origin", branch], cwd=REPO_ROOT, check=False)
-    subprocess.run(["git", "checkout", branch], cwd=REPO_ROOT, check=True)
+    issue = resp.json()
+    return {
+        "iid": issue.get("iid"),
+        "web_url": issue.get("web_url"),
+        "assignee_id": assignee_id,
+        "assigned": assignee_id is not None,
+    }
 
 
 def commit_and_push_json_changes(branch: str, message: str) -> dict[str, Any]:
@@ -439,20 +442,17 @@ def cmd_triage(args: argparse.Namespace) -> int:
         description=args.description,
         slack_permalink=args.slack_permalink,
     )
-    mr = create_gitlab_draft_mr(
+    issue = create_gitlab_issue(
         cfg,
         title=args.title,
         description=args.description,
         jira_key=jira.get("key"),
     )
 
-    if args.checkout:
-        checkout_branch(mr["branch"])
-
     result = {
         "command": "triage",
         "jira": jira,
-        "merge_request": mr,
+        "gitlab_issue": issue,
     }
     print(json.dumps(result, indent=2))
     return 0
@@ -485,15 +485,13 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="OOTB bug-report workflow orchestrator")
     sub = p.add_subparsers(dest="command", required=True)
 
-    triage = sub.add_parser("triage", help="Create JIRA ticket and GitLab draft MR")
+    triage = sub.add_parser(
+        "triage",
+        help="Create JIRA ticket and GitLab issue assigned to Duo Flow service account",
+    )
     triage.add_argument("--title", required=True)
     triage.add_argument("--description", required=True)
     triage.add_argument("--slack-permalink", default=None)
-    triage.add_argument(
-        "--checkout",
-        action="store_true",
-        help="Check out the new MR branch locally after creation",
-    )
     triage.set_defaults(func=cmd_triage)
 
     sync = sub.add_parser(

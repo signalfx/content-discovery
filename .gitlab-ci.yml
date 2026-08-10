@@ -17,7 +17,6 @@ workflow:
 stages:
   - code_analysis
   - chatops
-  - propose-fix
   - validate-content
   - validate-ai-experimental
   - sync-signalbuddy
@@ -77,10 +76,25 @@ poll-forge-tickets:
     expire_in: 7 days
   allow_failure: false
 
-# OOTB bug automation — Forge creates the Jira ticket upstream, then Jira
-# Automation (or the scheduled poller above) triggers this pipeline with
+# OOTB bug automation — Forge creates the Jira ticket upstream, then the
+# scheduled poller (poll-forge-tickets above) triggers this pipeline with
 # OOTB_JIRA_KEY. Optional OOTB_BUG_INPUT overrides the bug text (defaults
 # to ticket summary).
+#
+# This job is now the ONLY step of the fix pipeline. It:
+#   1. Fetches the Jira ticket
+#   2. Runs heuristic content search to identify the primary suspect file
+#   3. Creates a GitLab **issue** with the bug context + fix constraints
+#   4. Assigns the issue to the Duo Agent Platform service account
+#      (DUO_FLOW_ASSIGNEE_ID CI variable, or gitlab.duo_flow_assignee_id
+#      in contentforge/settings.yaml)
+#   5. Comments the issue URL back on the Jira ticket
+#   6. Posts a Slack update
+#
+# The actual code fix + MR is produced ASYNCHRONOUSLY by the Duo Flow that
+# is configured in AI → Triggers with an "Assign" trigger against the same
+# service account. When the flow opens the MR, GitLab/Jira auto-links it
+# to the Jira ticket via the Jira key in the MR title/description.
 ootb-bug-fix:
   image: python:3
   stage: chatops
@@ -103,101 +117,6 @@ ootb-bug-fix:
     paths:
       - triage.json
     expire_in: 7 days
-  allow_failure: false
-
-# Auto-fix stage: reads triage.json produced by ootb-bug-fix, then delegates
-# the actual code change to GitLab Duo Agent Platform via the Duo Workflows
-# API. The workflow clones the repo, edits the OOTB JSON, and commits back
-# to the same branch $BRANCH — updating the draft MR that ootb-bug-fix
-# already opened.
-#
-# allow_failure: false — we want a visible red job if Duo isn't enabled on
-# the group, or the token isn't authorized, so we can react instead of
-# silently producing empty MRs (which is what the old BridgeIT path was
-# doing when it broke).
-#
-# Requires:
-#   CONTENT_FORGE_GIT_TOKEN — GitLab PAT (or Project Access Token) with
-#     `api` scope. Must be authorized to trigger Duo Workflows for the
-#     content-discovery project.
-ootb-duo-fix:
-  image: python:3
-  stage: propose-fix
-  needs:
-    - job: ootb-bug-fix
-      artifacts: true
-  rules:
-    - if: $OOTB_JIRA_KEY
-    - if: $CI_PIPELINE_SOURCE == "chat"
-  variables:
-    DUO_WORKFLOW_DEFINITION: "developer/v1"
-  script:
-    - apt-get update && apt-get install -y --no-install-recommends jq curl
-    - test -f triage.json || { echo "triage.json missing from ootb-bug-fix artifacts"; exit 1; }
-    - BRANCH=$(jq -r '.branch // empty' triage.json)
-    - JIRA_KEY=$(jq -r '.jira_key // empty' triage.json)
-    - PRIMARY_FILE=$(jq -r '.primary_file // empty' triage.json)
-    - MR_URL=$(jq -r '.mr_url // empty' triage.json)
-    - BUG_TEXT=$(jq -r '.bug_text // empty' triage.json)
-    - test -n "$JIRA_KEY" || { echo "triage.json has no jira_key"; exit 1; }
-    - test -n "$BRANCH"   || { echo "triage.json has no branch"; exit 1; }
-    - 'echo "Duo target: $JIRA_KEY on $BRANCH (primary: $PRIMARY_FILE)"'
-    # Compose the goal string. Duo reads this as the task description and
-    # has repo + git + MR-create privileges by default, so we constrain
-    # explicitly to keep the blast radius tight.
-    - |
-      GOAL=$(cat <<EOF
-      Fix the following Splunk Observability OOTB content bug reported in Jira ticket ${JIRA_KEY}.
-
-      ## Bug summary
-      ${BUG_TEXT}
-
-      ## Working constraints
-      - Check out the existing branch: ${BRANCH}
-      - Primary suspect file (heuristic search): ${PRIMARY_FILE}
-      - Only modify JSON files under group/, detector/, or navigators/.
-      - Do NOT modify hashCode, id, version, or importQualifier fields.
-      - Do NOT add or remove top-level keys — value edits only.
-      - Prefer the smallest possible change that addresses the bug.
-      - Commit to branch ${BRANCH} so the existing draft MR (${MR_URL}) picks up your changes automatically. Do NOT open a new MR.
-
-      ## Acceptance criteria
-      - Reported bug is addressed.
-      - Existing tests / lint pass (run scripts/validate_content.sh if unsure).
-      - File remains valid JSON with the same overall structure.
-      EOF
-      )
-    - |
-      REQ_BODY=$(jq -n \
-        --arg pid  "$CI_PROJECT_ID" \
-        --arg goal "$GOAL" \
-        --arg wd   "$DUO_WORKFLOW_DEFINITION" \
-        '{project_id: $pid, goal: $goal, workflow_definition: $wd, start_workflow: true}')
-      echo "Calling Duo Workflows API..."
-      HTTP=$(curl -sS -o duo_workflow_response.json -w "%{http_code}" \
-        --request POST \
-        --header "PRIVATE-TOKEN: $CONTENT_FORGE_GIT_TOKEN" \
-        --header "Content-Type: application/json" \
-        --data "$REQ_BODY" \
-        "$CI_SERVER_URL/api/v4/ai/duo_workflows/workflows")
-      echo "HTTP $HTTP"
-      cat duo_workflow_response.json
-      echo
-      if [ "$HTTP" -ge 400 ]; then
-        echo "Duo Workflows trigger failed ($HTTP). Common causes:"
-        echo "  - Duo Agent Platform not enabled for the group"
-        echo "  - CONTENT_FORGE_GIT_TOKEN lacks 'api' scope or Duo authorization"
-        echo "  - workflow_definition '$DUO_WORKFLOW_DEFINITION' not available in this GitLab version"
-        exit 1
-      fi
-      WF_ID=$(jq -r '.id // empty' duo_workflow_response.json)
-      echo "Triggered Duo Workflow id=$WF_ID"
-  artifacts:
-    when: always
-    paths:
-      - triage.json
-      - duo_workflow_response.json
-    expire_in: 30 days
   allow_failure: false
 
 # Manual job: push MR JSON changes to Master SignalBuddy and refresh hashCodes.

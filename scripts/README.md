@@ -34,59 +34,27 @@ When running locally, you can set these variables in your environment or pass th
 
 ```EXPORT BRIDGE_API_CLIENT_ID=client_id```
 
-### BridgeIT/CircuIT auto-fix proposer (bridge_it_propose_fix.mjs)
+### OOTB auto-fix (delegated to GitLab Duo Agent Platform)
 
-This script is the auto-fix companion to the validator. Instead of pointing out
-issues, it asks the same BridgeIT/CircuIT model to *propose a minimal
-RFC-6902 JSON patch* that fixes a triaged OOTB bug, and applies that patch on
-disk so a downstream CI step can commit and push it to the MR branch.
+The auto-fix step is no longer a script in this repo. `bug_pipeline.py`
+creates a GitLab **issue** with the bug context + fix constraints and
+assigns it to a Duo Agent Platform service account. A custom Flow (defined
+in the AI Catalog and bound to an "Assign" trigger against the same
+service account) picks up the assignment event, reads the issue body as
+its task context, and produces the fix MR autonomously.
 
-It runs in the `propose-fix` stage of `.gitlab-ci.yml` as the `ootb-propose-fix`
-job, and consumes the `triage.json` artifact emitted by `ootb-bug-fix`
-(populated by `contentforge/pipeline/bug_pipeline.py`).
+Related config:
 
-Conservative defaults (v1):
+- `contentforge/settings.yaml` → `gitlab.duo_flow_assignee_id` — user id of
+  the Duo Flow service account (override with `DUO_FLOW_ASSIGNEE_ID` CI var)
+- `.gitlab/duo/agent-config.yml` — Duo runtime configuration (setup scripts,
+  caching, ID tokens) if custom behavior is needed
+- GitLab UI: AI → Triggers — where the "Assign" event is wired to the flow
+- GitLab UI: AI Catalog — where the flow's `config.yaml` (agents, prompts,
+  routers, tools) lives
 
-- Only the top-1 "primary suspect" file may be modified.
-- Only `replace` operations are accepted (no `add`/`remove`/`move`/`copy`).
-- Paths pointing at `hashCode`, `id`, `version`, `importQualifier`, or any
-  `*_id` field are hard-blocked (these are managed by Master SignalBuddy).
-- Applied only if the model reports `confidence >= 0.7`
-  (override with `PROPOSE_FIX_MIN_CONFIDENCE`).
-- `allow_failure: true` — the human still has a Jira + placeholder MR even if
-  the LLM proposes nothing usable.
-
-Reuses the same GitLab CI/CD variables as the validator
-(`BRIDGE_API_CLIENT_ID`, `_SECRET`, `_APP_KEY`, and optional
-`BRIDGE_API_MODEL_NAME`). Adds one optional knob:
-
-- `PROPOSE_FIX_MIN_CONFIDENCE`: minimum LLM self-reported confidence to apply
-  the patch. Defaults to `0.7`.
-
-A summary of what was applied/rejected is written to `propose_fix_summary.json`
-and kept as a CI artifact for 30 days for debugging.
-
-### OOTB auto-fix Slack update (slack_post_propose_fix_update.mjs)
-
-Reads `propose_fix_summary.json` + `triage.json` and posts a status update to
-Slack. Runs as the final step of the `ootb-propose-fix` CI job, so the same
-Slack thread that got the initial "Working on OOTB bug…" ack also gets a
-follow-up message telling reviewers whether the AI:
-
-- pushed a patch (with confidence, op count, and reviewer risk notes), or
-- declined for low confidence, or
-- proposed ops that were all blocked by the guardrails.
-
-Posting is best-effort and uses whichever mechanism is configured (Bot API
-threaded reply preferred, webhook fallback, plus a GitLab ChatOps
-`chat_reply` block when the pipeline was triggered by `/gitlab run`). If no
-Slack config is present in the environment the script exits cleanly. It never
-fails the CI job — the propose-fix job is already `allow_failure: true`, and
-this notifier catches all exceptions to `exit 0`.
-
-Env (same names the Python notifier already uses; all optional):
-
-- `CONTENT_FORGE_SLACK_BOT_TOKEN` or `SLACK_BOT_TOKEN`
-- `SLACK_CHANNEL_ID`
-- `SLACK_THREAD_TS` — reply in-thread when set (propagated from the trigger)
-- `SLACK_WEBHOOK_URL` — fallback if the Bot API path is not configured
+Historical note: an earlier iteration used a BridgeIT/CircuIT-based
+`bridge_it_propose_fix.mjs` script running in a `propose-fix` stage. That
+path was removed once the Duo Flow model became available — it consolidates
+prompt configuration, git operations, and MR creation into GitLab-native
+tooling with proper composite-identity commits.
