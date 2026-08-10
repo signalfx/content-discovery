@@ -319,17 +319,55 @@ def create_gitlab_draft_mr(
 
     headers = {"PRIVATE-TOKEN": gitlab_token}
 
-    # Create branch from target
+    # Create branch from target. Idempotent: the branch name is
+    # deterministic per (jira_key, UTC date), so a re-run on the same day
+    # collides with the prior run. Treat 400 "Branch already exists" as a
+    # normal reuse case — we'll find the associated open MR below.
     branch_resp = requests.post(
         f"{base_url}/api/v4/projects/{project_id}/repository/branches",
         headers=headers,
         params={"branch": branch_name, "ref": target_branch},
         timeout=60,
     )
-    if branch_resp.status_code >= 400:
+    branch_reused = False
+    if branch_resp.status_code == 400 and "already exists" in (branch_resp.text or "").lower():
+        branch_reused = True
+        print(f"[orchestrator] branch {branch_name} already exists — reusing")
+    elif branch_resp.status_code >= 400:
         raise SystemExit(
             f"GitLab branch create failed ({branch_resp.status_code}): {branch_resp.text}"
         )
+
+    # If the branch already existed, look for an open MR pointing at it and
+    # reuse that instead of trying to create a duplicate (GitLab would return
+    # 409 "another MR already exists"). Only reuse OPEN MRs — a closed/merged
+    # one means the branch is stale and we let the create call fail loudly.
+    if branch_reused:
+        list_resp = requests.get(
+            f"{base_url}/api/v4/projects/{project_id}/merge_requests",
+            headers=headers,
+            params={
+                "source_branch": branch_name,
+                "target_branch": target_branch,
+                "state": "opened",
+            },
+            timeout=60,
+        )
+        if list_resp.status_code < 400:
+            existing = list_resp.json() or []
+            if existing:
+                mr = existing[0]
+                print(
+                    f"[orchestrator] reusing open MR !{mr.get('iid')} "
+                    f"({mr.get('web_url')})"
+                )
+                return {
+                    "iid": mr.get("iid"),
+                    "web_url": mr.get("web_url"),
+                    "branch": branch_name,
+                    "draft": bool(mr.get("draft") or mr.get("work_in_progress")),
+                    "reused": True,
+                }
 
     mr_description = description
     if jira_key:
@@ -366,6 +404,7 @@ def create_gitlab_draft_mr(
         "web_url": mr.get("web_url"),
         "branch": branch_name,
         "draft": draft,
+        "reused": False,
     }
 
 
