@@ -17,6 +17,7 @@ workflow:
 stages:
   - code_analysis
   - chatops
+  - propose-fix
   - validate-content
   - validate-ai-experimental
   - sync-signalbuddy
@@ -65,7 +66,67 @@ ootb-bug-fix:
       else
         python3 -m contentforge.pipeline.bug_pipeline run
       fi
+  artifacts:
+    when: on_success
+    paths:
+      - triage.json
+    expire_in: 7 days
   allow_failure: false
+
+# Auto-fix stage: reads triage.json produced by ootb-bug-fix, asks CircuIT/BridgeIT
+# (same OAuth flow as validate-ai-experimental) to propose a minimal RFC-6902
+# patch for the primary suspect file, applies it, and pushes the diff to the MR
+# branch. Conservative defaults: replace-only, confidence >= 0.7, single file.
+# allow_failure keeps the pipeline green even when the LLM has nothing useful
+# to say — the human reviewer still has the Jira ticket + placeholder MR.
+ootb-propose-fix:
+  image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
+  stage: propose-fix
+  needs:
+    - job: ootb-bug-fix
+      artifacts: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "chat"
+    - if: $CI_PIPELINE_SOURCE == "web" && $OOTB_BUG_INPUT
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $OOTB_BUG_INPUT
+    - if: $OOTB_BUG_INPUT
+  variables:
+    GIT_DEPTH: "0"
+    PROPOSE_FIX_MIN_CONFIDENCE: "0.7"
+  script:
+    - apk add --no-cache git jq curl
+    - test -f triage.json || { echo "triage.json missing from ootb-bug-fix artifacts"; exit 1; }
+    - BRANCH=$(jq -r '.branch // empty' triage.json)
+    - JIRA_KEY=$(jq -r '.jira_key // empty' triage.json)
+    - test -n "$BRANCH" || { echo "triage.json has no branch"; exit 1; }
+    - echo "Auto-fix target branch: $BRANCH ($JIRA_KEY)"
+    - git fetch --no-tags origin "$BRANCH"
+    - git checkout -B "$BRANCH" "origin/$BRANCH"
+    - node scripts/bridge_it_propose_fix.mjs
+    - |
+      PUSHED=false
+      if [ -n "$(git status --porcelain)" ]; then
+        git config user.email "ci-bot@content-discovery"
+        git config user.name "content-discovery CI"
+        git add -A
+        git commit -m "chore(ai): CircuIT-proposed fix for ${JIRA_KEY}"
+        if git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:${BRANCH}"; then
+          PUSHED=true
+          echo "Pushed AI-proposed patch to $BRANCH"
+        else
+          echo "WARN: git push failed; MR unchanged."
+        fi
+      else
+        echo "No changes proposed — MR left as triage-only for manual fix."
+      fi
+      OOTB_PROPOSE_FIX_PUSHED="$PUSHED" node scripts/slack_post_propose_fix_update.mjs || true
+  artifacts:
+    when: always
+    paths:
+      - propose_fix_summary.json
+      - triage.json
+    expire_in: 30 days
+  allow_failure: true
 
 # Manual job: push MR JSON changes to Master SignalBuddy and refresh hashCodes.
 # Trigger on MRs labeled "sync-signalbuddy". Requires SIGNALBUDDY_TOKEN CI variable.

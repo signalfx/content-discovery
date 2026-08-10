@@ -163,7 +163,50 @@ def run_pipeline(
         thread_ts=os.environ.get("SLACK_THREAD_TS"),
         channel=os.environ.get("SLACK_CHANNEL_ID"),
     )
+
+    _write_triage_artifact(bug_text, title, matches, jira, mr)
     return result
+
+
+def _write_triage_artifact(
+    bug_text: str,
+    title: str,
+    matches: list[Any],
+    jira: dict[str, Any],
+    mr: dict[str, Any],
+) -> None:
+    """Emit a triage.json artifact for the downstream ootb-propose-fix CI job.
+
+    The auto-fix job consumes this via `needs:` + `artifacts:` and refuses to
+    touch any file that isn't in `allowed_files`, so this artifact is the trust
+    boundary between the heuristic search and the LLM.
+    """
+    if not os.environ.get("CI"):
+        return
+
+    artifact_path = os.environ.get("OOTB_TRIAGE_ARTIFACT", "triage.json")
+    primary = matches[0].path if matches else None
+    payload = {
+        "bug_text": bug_text,
+        "title": title,
+        "jira_key": jira.get("key"),
+        "jira_url": jira.get("url"),
+        "mr_iid": mr.get("iid"),
+        "mr_url": mr.get("web_url"),
+        "branch": mr.get("branch"),
+        "primary_file": primary,
+        "allowed_files": [m.path for m in matches[:1]],
+        "matches": [
+            {"path": m.path, "score": m.score, "reasons": m.reasons}
+            for m in matches
+        ],
+    }
+    try:
+        with open(artifact_path, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=2)
+        print(f"[bug_pipeline] wrote triage artifact -> {artifact_path}")
+    except OSError as exc:
+        print(f"[bug_pipeline] failed to write triage artifact: {exc}", file=sys.stderr)
 
 
 def cmd_run(args: argparse.Namespace) -> int:

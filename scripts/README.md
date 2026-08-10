@@ -33,3 +33,60 @@ Variables that must be set in Gitlab CI/CD settings for the repo for this to wor
 When running locally, you can set these variables in your environment or pass them as command line arguments. For example:
 
 ```EXPORT BRIDGE_API_CLIENT_ID=client_id```
+
+### BridgeIT/CircuIT auto-fix proposer (bridge_it_propose_fix.mjs)
+
+This script is the auto-fix companion to the validator. Instead of pointing out
+issues, it asks the same BridgeIT/CircuIT model to *propose a minimal
+RFC-6902 JSON patch* that fixes a triaged OOTB bug, and applies that patch on
+disk so a downstream CI step can commit and push it to the MR branch.
+
+It runs in the `propose-fix` stage of `.gitlab-ci.yml` as the `ootb-propose-fix`
+job, and consumes the `triage.json` artifact emitted by `ootb-bug-fix`
+(populated by `contentforge/pipeline/bug_pipeline.py`).
+
+Conservative defaults (v1):
+
+- Only the top-1 "primary suspect" file may be modified.
+- Only `replace` operations are accepted (no `add`/`remove`/`move`/`copy`).
+- Paths pointing at `hashCode`, `id`, `version`, `importQualifier`, or any
+  `*_id` field are hard-blocked (these are managed by Master SignalBuddy).
+- Applied only if the model reports `confidence >= 0.7`
+  (override with `PROPOSE_FIX_MIN_CONFIDENCE`).
+- `allow_failure: true` — the human still has a Jira + placeholder MR even if
+  the LLM proposes nothing usable.
+
+Reuses the same GitLab CI/CD variables as the validator
+(`BRIDGE_API_CLIENT_ID`, `_SECRET`, `_APP_KEY`, and optional
+`BRIDGE_API_MODEL_NAME`). Adds one optional knob:
+
+- `PROPOSE_FIX_MIN_CONFIDENCE`: minimum LLM self-reported confidence to apply
+  the patch. Defaults to `0.7`.
+
+A summary of what was applied/rejected is written to `propose_fix_summary.json`
+and kept as a CI artifact for 30 days for debugging.
+
+### OOTB auto-fix Slack update (slack_post_propose_fix_update.mjs)
+
+Reads `propose_fix_summary.json` + `triage.json` and posts a status update to
+Slack. Runs as the final step of the `ootb-propose-fix` CI job, so the same
+Slack thread that got the initial "Working on OOTB bug…" ack also gets a
+follow-up message telling reviewers whether the AI:
+
+- pushed a patch (with confidence, op count, and reviewer risk notes), or
+- declined for low confidence, or
+- proposed ops that were all blocked by the guardrails.
+
+Posting is best-effort and uses whichever mechanism is configured (Bot API
+threaded reply preferred, webhook fallback, plus a GitLab ChatOps
+`chat_reply` block when the pipeline was triggered by `/gitlab run`). If no
+Slack config is present in the environment the script exits cleanly. It never
+fails the CI job — the propose-fix job is already `allow_failure: true`, and
+this notifier catches all exceptions to `exit 0`.
+
+Env (same names the Python notifier already uses; all optional):
+
+- `CONTENT_FORGE_SLACK_BOT_TOKEN` or `SLACK_BOT_TOKEN`
+- `SLACK_CHANNEL_ID`
+- `SLACK_THREAD_TS` — reply in-thread when set (propagated from the trigger)
+- `SLACK_WEBHOOK_URL` — fallback if the Bot API path is not configured
