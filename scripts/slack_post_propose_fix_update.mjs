@@ -80,9 +80,6 @@ function formatMessage(summary, triage, opts) {
   const pipelineUrl = (process.env.CI_PIPELINE_URL || "").trim();
   const jobUrl = (process.env.CI_JOB_URL || "").trim();
 
-  const jiraLink = jiraUrl ? `<${jiraUrl}|${jiraKey}>` : `\`${jiraKey}\``;
-  const mrLink = mrUrl ? `<${mrUrl}|!${mrIid}>` : `!${mrIid}`;
-
   const status = summary?.status || "unknown";
   const confidence =
     typeof summary?.confidence === "number"
@@ -93,56 +90,59 @@ function formatMessage(summary, triage, opts) {
 
   if (status === "applied" && pushed) {
     const ops = Array.isArray(summary.applied) ? summary.applied.length : 0;
-    lines.push(
-      `:robot_face: *CircuIT auto-fix applied* to MR ${mrLink} (JIRA ${jiraLink})`
-    );
-    lines.push(`*File:* \`${primary}\``);
-    lines.push(`*Operations:* ${ops} \`replace\` op(s)   *Confidence:* ${confidence}`);
+    lines.push(`🤖 CircuIT auto-fix applied — MR !${mrIid} (${jiraKey})`);
+    if (mrUrl) lines.push(`MR: ${mrUrl}`);
+    if (jiraUrl) lines.push(`JIRA: ${jiraUrl}`);
+    lines.push("");
+    lines.push(`File: ${primary}`);
+    lines.push(`Operations: ${ops} replace op(s)   |   Confidence: ${confidence}`);
     if (summary.explanation) {
-      lines.push(`*Why:* ${truncate(summary.explanation, 400)}`);
+      lines.push(`Why: ${truncate(summary.explanation, 400)}`);
     }
     if (summary.risk_notes) {
-      lines.push(`:warning: *Reviewer must double-check:* ${truncate(summary.risk_notes, 300)}`);
+      lines.push(`⚠️  Reviewer must double-check: ${truncate(summary.risk_notes, 300)}`);
     }
     lines.push("");
     lines.push(
-      "The MR pipeline will now re-run the validators against the AI-generated diff. Please review before merging."
+      "Validators will re-run against the AI-generated diff. Please review before merging."
     );
   } else if (status === "applied" && !pushed) {
-    lines.push(
-      `:warning: *CircuIT auto-fix produced a patch but git push failed* for MR ${mrLink}. Check the CI job.`
-    );
-    if (jobUrl) lines.push(`*Job:* <${jobUrl}|view logs>`);
+    lines.push(`⚠️  CircuIT proposed a patch but git push failed — MR !${mrIid}`);
+    if (mrUrl) lines.push(`MR: ${mrUrl}`);
+    if (jobUrl) lines.push(`Job logs: ${jobUrl}`);
   } else if (status === "low_confidence") {
     lines.push(
-      `:mag: *CircuIT auto-fix declined* (confidence ${confidence} < threshold ${summary?.threshold ?? "0.70"}) for MR ${mrLink} (JIRA ${jiraLink}).`
+      `🔍 CircuIT auto-fix declined (confidence ${confidence} < ${summary?.threshold ?? "0.70"}) — MR !${mrIid} (${jiraKey})`
     );
+    if (mrUrl) lines.push(`MR: ${mrUrl}`);
+    if (jiraUrl) lines.push(`JIRA: ${jiraUrl}`);
     if (summary.explanation) {
-      lines.push(`*Model note:* ${truncate(summary.explanation, 400)}`);
+      lines.push("");
+      lines.push(`Model note: ${truncate(summary.explanation, 400)}`);
     }
     lines.push("");
-    lines.push("The MR is still open with the RCA — please review and fix manually.");
+    lines.push("MR is open with the RCA — please review and fix manually.");
   } else if (status === "no_applied_ops") {
     const rejected = Array.isArray(summary.rejected) ? summary.rejected.length : 0;
     lines.push(
-      `:no_entry_sign: *CircuIT auto-fix proposed ${rejected} op(s), all rejected by guardrails* for MR ${mrLink} (JIRA ${jiraLink}).`
+      `🚫 CircuIT proposed ${rejected} op(s), all rejected by guardrails — MR !${mrIid} (${jiraKey})`
     );
+    if (mrUrl) lines.push(`MR: ${mrUrl}`);
+    lines.push("");
     lines.push(
-      "This is expected when the model wants to touch immutable fields (hashCode/id/version) or a file outside the primary suspect. MR left as triage-only."
+      "Model wanted to touch immutable fields (hashCode/id/version) or a file outside the primary suspect. MR left as triage-only."
     );
   } else if (status === "no_primary_file") {
-    lines.push(
-      `:mag: *CircuIT auto-fix skipped* — no primary suspect file identified during triage for MR ${mrLink}.`
-    );
+    lines.push(`🔍 CircuIT auto-fix skipped — no primary suspect file — MR !${mrIid}`);
+    if (mrUrl) lines.push(`MR: ${mrUrl}`);
   } else {
-    lines.push(
-      `:grey_question: *CircuIT auto-fix finished with status:* \`${status}\` for MR ${mrLink} (JIRA ${jiraLink}).`
-    );
-    if (jobUrl) lines.push(`*Job:* <${jobUrl}|view logs>`);
+    lines.push(`❓ CircuIT auto-fix finished with status: ${status} — MR !${mrIid} (${jiraKey})`);
+    if (mrUrl) lines.push(`MR: ${mrUrl}`);
+    if (jobUrl) lines.push(`Job logs: ${jobUrl}`);
   }
 
   if (pipelineUrl) {
-    lines.push(`*Pipeline:* <${pipelineUrl}|view run>`);
+    lines.push(`Pipeline: ${pipelineUrl}`);
   }
 
   return lines.join("\n");

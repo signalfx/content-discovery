@@ -26,8 +26,11 @@ def bot_api_configured(*, channel: str | None = None) -> bool:
 
 
 def format_working_ack(title: str) -> str:
+    # Plain text (no mrkdwn) + Unicode emoji, so the same message renders
+    # correctly through Slack Bot API, Incoming Webhooks, Workflow Builder
+    # webhook triggers, and GitLab ChatOps chat_reply blocks.
     return (
-        f":hourglass_flowing_sand: Working on OOTB bug: *{title}*\n"
+        f"⏳ Working on OOTB bug: {title}\n"
         "Searching content repo, creating JIRA + draft MR…"
     )
 
@@ -46,47 +49,59 @@ def post_working_ack(
 
 
 def format_slack_message(result: dict[str, Any], *, owner_mentions: list[str] | None = None) -> str:
+    """Plain-text message that renders identically across all Slack channels.
+
+    Uses Unicode emoji and full URLs on their own lines so Slack's auto-linkify
+    handles them without needing mrkdwn — which is not parsed by Workflow
+    Builder webhook triggers, only by Bot API and Incoming Webhooks.
+    """
     jira = result.get("jira") or {}
     mr = result.get("merge_request") or {}
     rca = result.get("rca") or ""
     matches = result.get("matches") or []
     pipeline_url = os.environ.get("CI_PIPELINE_URL", "").strip()
 
-    lines = [
-        "*OOTB bug automation complete*",
-        "",
-        f"*JIRA:* <{jira.get('url', 'n/a')}|{jira.get('key', 'n/a')}>",
-        f"*Draft MR:* <{mr.get('web_url', 'n/a')}|!{mr.get('iid', '?')}>",
-        f"*Branch:* `{mr.get('branch', 'n/a')}`",
-        "",
-    ]
+    jira_key = jira.get("key") or "n/a"
+    jira_url = jira.get("url")
+    mr_iid = mr.get("iid") or "?"
+    mr_url = mr.get("web_url")
+    branch = mr.get("branch") or "n/a"
+
+    lines = [f"✅ OOTB bug automation complete — {jira_key} · MR !{mr_iid}"]
+    if jira_url:
+        lines.append(f"JIRA: {jira_url}")
+    if mr_url:
+        lines.append(f"MR:   {mr_url}")
+    lines.append(f"Branch: {branch}")
+    lines.append("")
 
     if pipeline_url:
-        lines.append(f"*Pipeline:* <{pipeline_url}|view run>")
+        lines.append(f"Pipeline: {pipeline_url}")
         lines.append("")
 
     if matches:
-        lines.append("*Likely affected files:*")
+        lines.append("Likely affected files:")
         for m in matches[:5]:
-            lines.append(f"• `{m.get('path', m)}`")
+            lines.append(f"  • {m.get('path', m)}")
         lines.append("")
 
     if rca:
-        # Slack mrkdwn: shorten for chat; full RCA stays in JIRA/MR
         summary = rca.split("**Primary suspect:**")
-        if len(summary) > 1:
-            lines.append(f"*RCA:* {summary[1].strip()[:400]}")
-        else:
-            lines.append(f"*RCA:* {rca[:400]}...")
+        excerpt = summary[1].strip() if len(summary) > 1 else rca
+        excerpt = excerpt[:400] + ("…" if len(excerpt) > 400 else "")
+        excerpt = excerpt.replace("**", "").replace("`", "")
+        lines.append(f"RCA: {excerpt}")
         lines.append("")
 
     reviewers = result.get("reviewers") or {}
     if reviewers.get("gitlab_reviewer_ids"):
-        lines.append(f"*GitLab reviewers assigned:* {reviewers['gitlab_reviewer_ids']}")
+        lines.append(f"GitLab reviewers assigned: {reviewers['gitlab_reviewer_ids']}")
 
     mentions = owner_mentions or []
     if mentions:
         lines.append("")
+        # <@UID> mentions only render as pings in Bot API messages, but they
+        # degrade gracefully to plain text elsewhere.
         lines.append("Review requested: " + " ".join(f"<@{uid}>" for uid in mentions))
 
     return "\n".join(lines)
