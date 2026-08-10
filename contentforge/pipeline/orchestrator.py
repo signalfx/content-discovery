@@ -96,12 +96,12 @@ def jira_rest_base(cfg: dict[str, Any], token: str) -> tuple[str, str]:
     Scoped API tokens (ATATT3…) must use the platform gateway:
       https://api.atlassian.com/ex/jira/{cloudId}/rest/api/3
     Classic tokens use the site URL:
-      https://signalfuse.atlassian.net/rest/api/3
+      https://splunk.atlassian.net/rest/api/3
 
     See: https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/
     """
     jira = cfg.get("jira", {})
-    browse_base = jira.get("base_url", "https://signalfuse.atlassian.net").rstrip("/")
+    browse_base = jira.get("base_url", "https://splunk.atlassian.net").rstrip("/")
     cloud_id = env_var("CONTENT_FORGE_JIRA_CLOUD_ID") or jira.get("cloud_id", "")
     use_gateway = env_var("CONTENT_FORGE_JIRA_USE_GATEWAY").lower() in ("1", "true", "yes")
     if not use_gateway and token.startswith("ATATT3"):
@@ -114,7 +114,7 @@ def jira_rest_base(cfg: dict[str, Any], token: str) -> tuple[str, str]:
     if use_gateway and not cloud_id:
         raise SystemExit(
             "Scoped Jira API token detected. Set jira.cloud_id in contentforge/settings.yaml "
-            "or CONTENT_FORGE_JIRA_CLOUD_ID (see https://signalfuse.atlassian.net/_edge/tenant_info)."
+            "or CONTENT_FORGE_JIRA_CLOUD_ID (see https://splunk.atlassian.net/_edge/tenant_info)."
         )
 
     return f"{browse_base}/rest/api/3", browse_base
@@ -222,7 +222,7 @@ def create_gitlab_draft_mr(
 
     mr_description = description
     if jira_key:
-        jira_url = f"{cfg.get('jira', {}).get('base_url', 'https://signalfuse.atlassian.net')}/browse/{jira_key}"
+        jira_url = f"{cfg.get('jira', {}).get('base_url', 'https://splunk.atlassian.net')}/browse/{jira_key}"
         mr_description = f"{description}\n\nCloses #{jira_key}\nJIRA: {jira_url}"
 
     mr_payload: dict[str, Any] = {
