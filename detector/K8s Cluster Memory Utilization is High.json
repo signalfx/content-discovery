@@ -5,7 +5,7 @@
       "created": 0,
       "creator": null,
       "customProperties": null,
-      "description": "Triggers alerts when node MEM utilization is high for >1% nodes",
+      "description": "Triggers alerts when node memory utilization is high for >1% of nodes in the cluster.",
       "detectorOrigin": "Standard",
       "entityTypeSummary": {
         "contributing": true,
@@ -13,22 +13,23 @@
           "k8s:node"
         ]
       },
+      "entityTypes": [
+        "k8s:node"
+      ],
       "id": "G_QGMjCAcAM",
-      "labelResolutions": {
-        "Node Memory Utilization": 1000
-      },
+      "labelResolutions": null,
       "lastUpdated": 0,
       "lastUpdatedBy": null,
       "locked": false,
-      "maxDelay": null,
+      "maxDelay": 0,
       "minDelay": null,
-      "name": "K8s Node MEM",
+      "name": "K8s Cluster Memory Utilization is High",
       "overMTSLimit": false,
       "packageSpecifications": "",
       "programText": "from signalfx.detectors.autodetect.infra.k8s.scoped import node\nnode.node_memory_utilization_detector().publish('Node Memory Utilization')",
       "rules": [
         {
-          "description": "Node MEM utilization is high for >1% of nodes.",
+          "description": "Node memory utilization is high for >1% of nodes in the cluster.",
           "detectLabel": "Node Memory Utilization",
           "disabled": false,
           "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: More than 1% of nodes in the {{dimensions.[k8s.cluster.name]}} cluster have MEM utilization above 95% for the last 3 minutes, or above 90% for the last 8 minutes, or above 80% for the last 15 minutes.\nClearing condition: Less than 1% of nodes have MEM utilization above 95% for the last 10 minutes, above 90% for the last 14 minutes and above 80% for the last 25 minutes.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
@@ -40,12 +41,79 @@
       "sf_metricsInObjectProgramText": [
         "memory.utilization"
       ],
-      "status": "ACTIVE",
+      "status": "ABORTED",
       "tags": null,
       "teams": null,
       "timezone": null,
+      "type": "METRIC",
       "visualizationOptions": {
         "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "MEM",
+            "label": "MEM",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "TOTAL",
+            "label": "TOTAL",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "MEM95",
+            "label": "MEM95",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "MEM90",
+            "label": "MEM90",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "MEM80",
+            "label": "MEM80",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "MEM95_PCT",
+            "label": "MEM95_PCT",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "MEM90_PCT",
+            "label": "MEM90_PCT",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "MEM80_PCT",
+            "label": "MEM80_PCT",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
         "showDataMarkers": true,
         "showEventLines": false,
         "time": {
@@ -73,7 +141,7 @@
       ]
     }
   },
-  "hashCode": 1009461724,
+  "hashCode": 1485611323,
   "id": "G_QGMjCAcAM",
   "packageType": "DETECTOR"
 }
