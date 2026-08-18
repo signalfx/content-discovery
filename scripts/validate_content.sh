@@ -34,22 +34,36 @@ while read file; do
     set -e # fail if any json parse errors
 
     # get hash code from the current version and the previous version in git
-    hash_code=$(jq -r '.hashCode' "$file")
-    hash_code_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.hashCode')
+    if ! hash_code=$(jq -r '.hashCode' "$file" 2>/dev/null); then
+      echo
+      echo "  error: $file contains invalid json."
+      VALIDATION_FAILED=true
+      set +e
+      continue
+    fi
+    previous_content=$(git show "$DIFF_BRANCH:$file")
+
+    set +e
+
+    if ! hash_code_prev=$(printf '%s\n' "$previous_content" | jq -r '.hashCode' 2>/dev/null); then
+      echo
+      echo "  warning: previous version of $file contains invalid json; skipping id and hashcode checks."
+      continue
+    fi
 
     # get the id from the current version and the previous version in git
     if [[ $file =~ ^navigators ]]; then
       id=$(jq -r '.navigatorExport.navigator.id' "$file")
-      id_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.navigatorExport.navigator.id')
+      id_prev=$(printf '%s\n' "$previous_content" | jq -r '.navigatorExport.navigator.id')
       # get the uiModel.id from the current version and the previous version in git
       navigator_code=$(jq -r '.navigatorExport.navigator.uiModel.id' "$file")
-      navigator_code_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.navigatorExport.navigator.uiModel.id')
+      navigator_code_prev=$(printf '%s\n' "$previous_content" | jq -r '.navigatorExport.navigator.uiModel.id')
     elif [[ $file =~ ^group ]]; then
       id=$(jq -r '.groupExport.group.id' "$file")
-      id_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.groupExport.group.id')
+      id_prev=$(printf '%s\n' "$previous_content" | jq -r '.groupExport.group.id')
     elif [[ $file =~ ^detector ]]; then
       id=$(jq -r '.detectorExport.detector.id' "$file")
-      id_prev=$(git show "$DIFF_BRANCH:$file" | jq -r '.detectorExport.detector.id')
+      id_prev=$(printf '%s\n' "$previous_content" | jq -r '.detectorExport.detector.id')
     fi
 
     set +e
