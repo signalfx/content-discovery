@@ -1,19 +1,18 @@
 import json
-import gspread
 import argparse
-import base64
 import os
 import requests
 import re
 
 from datetime import datetime
-from oauth2client.service_account import ServiceAccountCredentials
 from dateutil import parser
+from openpyxl import load_workbook
+from openpyxl.utils.cell import range_boundaries
 
 
 class GitlabInventory:
     """
-    Class is used to have methods related to cicd pipeline for gsheet inventory update.
+    Class is used to have methods related to cicd pipeline for SharePoint inventory update.
     """
     # This variable is set in GitLab CICD variable using user:"bkanzariya" gitlab account to
     # make gitlab file meta-data api calls to get the file creation data.
@@ -22,26 +21,24 @@ class GitlabInventory:
     GITLAB_COMMIT_URL = "https://cd.splunkdev.com/api/v4/projects/9336/repository/files/{}/blame"
     NAVIGATOR_EXCLUDE_LIST = ['Pods', 'Containers', 'Nodes']
 
-    # Todo: While 2-3 interation of testing will keep this beta spreadsheet and after
-    #  that will update the actual spreadsheet
-    INVENTORY_G_SHEET_NAME = "O11y Out of the Box Inventory Test"
-    G_SHEET_CONTENT = {
+    INVENTORY_WORKBOOK_NAME = "O11y Out of the Box Content Inventory.xlsx"
+    INVENTORY_WORKSHEETS = {
         'navigator':
             {
-                'gsheet_name_content': 'Navigators',
-                'gsheet_name_unique_metrics': 'Metrics in Navigators',
+                'content_sheet_name': 'Navigators',
+                'unique_metrics_sheet_name': 'Metrics in Navigators',
                 'area': 'A2:E500'
             },
         'dashboard':
             {
-                'gsheet_name_content': 'Dashboards',
-                'gsheet_name_unique_metrics': 'Metrics in Dashboard groups',
+                'content_sheet_name': 'Dashboards',
+                'unique_metrics_sheet_name': 'Metrics in Dashboard groups',
                 'area': 'A2:C500'
             },
         'detector':
             {
-                'gsheet_name_content': 'Detectors',
-                'gsheet_name_unique_metrics': 'Metrics in Detectors',
+                'content_sheet_name': 'Detectors',
+                'unique_metrics_sheet_name': 'Metrics in Detectors',
                 'area': 'A2:C500'
             },
 
@@ -156,29 +153,110 @@ class GitlabInventory:
         return sorted(content_list, key=lambda x: x[0].lower())
 
     @classmethod
-    def write_to_gsheet_file(cls, content_type, data_list, unique_mertic_list, creds):
+    def clear_worksheet_range(cls, worksheet, cell_range, row_count):
         """
-        Helper method to write the content on google spread sheet.
+        Clear the configured data range plus any rows needed for the current data set.
         """
-        file = gspread.authorize(creds)
-        workbook = file.open(cls.INVENTORY_G_SHEET_NAME)
+        min_col, min_row, max_col, max_row = range_boundaries(cell_range)
+        max_row = max(max_row, min_row + row_count - 1)
 
-        gsheet_info = cls.G_SHEET_CONTENT[content_type]
-        sheet_iqs = workbook.worksheet(gsheet_info['gsheet_name_content'])
-        sheet_uni_metrics = workbook.worksheet(gsheet_info['gsheet_name_unique_metrics'])
+        for row in worksheet.iter_rows(min_row=min_row, max_row=max_row, min_col=min_col, max_col=max_col):
+            for cell in row:
+                cell.value = None
 
+    @classmethod
+    def write_rows_to_worksheet(cls, worksheet, cell_range, rows):
+        """
+        Write rows to a worksheet starting at the top-left cell of the configured range.
+        """
+        min_col, min_row, _, _ = range_boundaries(cell_range)
 
-        # Clearing the Cells
-        sheet_iqs.batch_clear([gsheet_info['area']])
-        sheet_uni_metrics.batch_clear([gsheet_info['area']])
+        for row_index, row_values in enumerate(rows, start=min_row):
+            for col_offset, value in enumerate(row_values):
+                worksheet.cell(row=row_index, column=min_col + col_offset, value=value)
+
+    @classmethod
+    def write_to_workbook(cls, workbook, content_type, data_list, unique_mertic_list):
+        """
+        Helper method to write the content into the SharePoint Excel workbook.
+        """
+        worksheet_info = cls.INVENTORY_WORKSHEETS[content_type]
+        required_sheets = [worksheet_info['content_sheet_name'], worksheet_info['unique_metrics_sheet_name']]
+        missing_sheets = [sheet_name for sheet_name in required_sheets if sheet_name not in workbook.sheetnames]
+        if missing_sheets:
+            print(f"Missing required sheet(s) in SharePoint workbook: {missing_sheets}")
+            exit(1)
+
+        sheet_iqs = workbook[worksheet_info['content_sheet_name']]
+        sheet_uni_metrics = workbook[worksheet_info['unique_metrics_sheet_name']]
 
         # Sort the list alphabetically
         data_list = cls.sort_list(data_list)
         unique_mertic_list = cls.sort_list(unique_mertic_list)
 
-        # Writing into GSheet
-        sheet_iqs.update(gsheet_info['area'], data_list)
-        sheet_uni_metrics.update(gsheet_info['area'], unique_mertic_list)
+        # Clearing the cells
+        cls.clear_worksheet_range(sheet_iqs, worksheet_info['area'], len(data_list))
+        cls.clear_worksheet_range(sheet_uni_metrics, worksheet_info['area'], len(unique_mertic_list))
+
+        # Writing into workbook
+        cls.write_rows_to_worksheet(sheet_iqs, worksheet_info['area'], data_list)
+        cls.write_rows_to_worksheet(sheet_uni_metrics, worksheet_info['area'], unique_mertic_list)
+
+    @staticmethod
+    def get_graph_access_token(tenant_id, client_id, client_secret):
+        """
+        Get Microsoft Graph app-only access token using client credentials.
+        """
+        response = requests.post(
+            f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+            data={
+                "client_id": client_id,
+                "scope": "https://graph.microsoft.com/.default",
+                "client_secret": client_secret,
+                "grant_type": "client_credentials"
+            }
+        )
+        if response.status_code != 200:
+            print(f"Failed to get Microsoft Graph access token: {response.status_code} and {response.text}")
+            exit(1)
+        return response.json()["access_token"]
+
+    @staticmethod
+    def download_sharepoint_workbook(access_token, drive_id, item_id, workbook_path):
+        """
+        Download existing SharePoint Excel workbook from Microsoft Graph.
+        """
+        response = requests.get(
+            f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/content",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+        if response.status_code != 200:
+            print(f"Failed to download SharePoint workbook: {response.status_code} and {response.text}")
+            exit(1)
+
+        with open(workbook_path, "wb") as workbook_file:
+            workbook_file.write(response.content)
+
+    @staticmethod
+    def upload_sharepoint_workbook(access_token, drive_id, item_id, workbook_path):
+        """
+        Upload updated Excel workbook back to SharePoint using Microsoft Graph.
+        """
+        with open(workbook_path, "rb") as workbook_file:
+            response = requests.put(
+                f"https://graph.microsoft.com/v1.0/drives/{drive_id}/items/{item_id}/content",
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                data=workbook_file
+            )
+
+        if response.status_code not in [200, 201]:
+            print(f"Failed to upload SharePoint workbook: {response.status_code} and {response.text}")
+            exit(1)
+
+        print(f"Updated SharePoint workbook: {response.json().get('webUrl')}")
 
     @classmethod
     def get_pi_from_date(cls, date):
@@ -343,53 +421,58 @@ class GitlabInventory:
         To prepare argument parser.
         """
         parser = argparse.ArgumentParser()
-        parser.add_argument("-pki", "--private_key_id", help="Service account's private key id")
-        parser.add_argument("-pk", "--private_key", help="Service account's private key")
-        parser.add_argument("-ci", "--client_id", help="Service account's client id")
-        parser.add_argument("-ce", "--client_email", help="Service account's client email")
-        parser.add_argument("-pi", "--project_id", help="Service account's project id")
+        parser.add_argument("-ti", "--tenant_id", help="Microsoft Entra tenant id")
+        parser.add_argument("-mci", "--ms_client_id", help="Microsoft Graph app registration client id")
+        parser.add_argument("-mcs", "--ms_client_secret", help="Microsoft Graph app registration client secret")
+        parser.add_argument("-gdi", "--graph_drive_id", help="Microsoft Graph SharePoint drive id")
+        parser.add_argument("-gii", "--graph_item_id", help="Microsoft Graph SharePoint workbook item id")
         parser.add_argument("-gpt", "--gitlab_private_token", help="Gitlab private token, to use the gitlab APIs")
         args = parser.parse_args()
         return args
 
     @classmethod
-    def get_credentials(cls):
+    def prepare_config(cls):
         """
-        To get the useful creds from argparse and set those creds at require places.
+        To get the useful config from argparse and set those values at required places.
         """
         args = cls.parse_args()
+        required_args = {
+            "tenant_id": args.tenant_id,
+            "ms_client_id": args.ms_client_id,
+            "ms_client_secret": args.ms_client_secret,
+            "graph_drive_id": args.graph_drive_id,
+            "graph_item_id": args.graph_item_id,
+            "gitlab_private_token": args.gitlab_private_token
+        }
+        missing_args = [arg_name for arg_name, arg_value in required_args.items() if not arg_value]
+        if missing_args:
+            print(f"Missing required argument(s): {missing_args}")
+            exit(1)
 
         # Update the gitlab private token
         cls.GITLAB_API_PRIVATE_TOKEN = args.gitlab_private_token
 
-        # Update the credential json
-        cred_file = json.load(open('credentials.json'))
-        cred_file["private_key_id"] = args.private_key_id
-
-        # Decode the base64 encoded private key
-        encoded_private_key = args.private_key
-        decoded_private_key = base64.b64decode(encoded_private_key).decode('utf-8')
-
-        cred_file["private_key"] = decoded_private_key.replace("\\n", "\n")
-        cred_file["client_email"] = args.client_email
-        cred_file["client_id"] = args.client_id
-        cred_file["project_id"] = args.project_id
-
-        return cred_file
+        return args
 
     @classmethod
     def inventory_update(cls):
         """
         For inventory data update.
         """
-        cred_file = cls.get_credentials()
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(cred_file)
+        args = cls.prepare_config()
+        access_token = cls.get_graph_access_token(args.tenant_id, args.ms_client_id, args.ms_client_secret)
+        workbook_path = cls.INVENTORY_WORKBOOK_NAME
+        cls.download_sharepoint_workbook(access_token, args.graph_drive_id, args.graph_item_id, workbook_path)
+        workbook = load_workbook(workbook_path)
 
         for content in cls.INVENTORY_CONTENTS:
             content_files = cls.collect_json_files(content["path"])
             content_list = cls.collect_inventory_data(content_files)
             unique_mertic_list = cls.collect_unique_metric_data(content_files)
-            cls.write_to_gsheet_file(content["content_type"], content_list, unique_mertic_list, creds)
+            cls.write_to_workbook(workbook, content["content_type"], content_list, unique_mertic_list)
+
+        workbook.save(workbook_path)
+        cls.upload_sharepoint_workbook(access_token, args.graph_drive_id, args.graph_item_id, workbook_path)
 
 
 if __name__ == "__main__":
