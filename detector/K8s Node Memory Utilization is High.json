@@ -1,0 +1,88 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when node memory utilization is above threshold.",
+      "detectorOrigin": "Standard",
+      "entityTypeSummary": {
+        "contributing": true,
+        "types": [
+          "k8s:node"
+        ]
+      },
+      "entityTypes": [
+        "k8s:node"
+      ],
+      "id": "FAdmGEaAYAA",
+      "labelResolutions": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "K8s Node Memory Utilization is High",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import nodes\nnodes.node_memory_utilization_detector().publish('Node Memory Utilization')",
+      "rules": [
+        {
+          "description": "Node memory utilization > 90% for 15 minutes.",
+          "detectLabel": "Node Memory Utilization",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}",
+          "parameterizedSubject": "Splunk Observability {{ruleSeverity}} Alert: {{{ruleName}}} ({{{detectorName}}})",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "memory.utilization"
+      ],
+      "status": "ABORTED",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "type": "METRIC",
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [],
+        "showDataMarkers": false,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "memory.utilization",
+          "filters": [
+            {
+              "values": [],
+              "property": "k8s.node.name",
+              "not": false
+            },
+            {
+              "values": [],
+              "property": "k8s.cluster.name",
+              "not": false
+            },
+            {
+              "values": [],
+              "property": "host",
+              "not": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": -131199938,
+  "id": "FAdmGEaAYAA",
+  "packageType": "DETECTOR"
+}

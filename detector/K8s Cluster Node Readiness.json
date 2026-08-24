@@ -1,0 +1,96 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Alerts when percentage of ready nodes per cluster is below threshold.",
+      "detectorOrigin": "Standard",
+      "entityTypeSummary": {
+        "contributing": true,
+        "types": [
+          "k8s:node"
+        ]
+      },
+      "entityTypes": [
+        "k8s:node"
+      ],
+      "id": "G_QGH7AAYA0",
+      "labelResolutions": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "K8s Cluster Node Readiness",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s.scoped import node\nnode.node_readiness_detector().publish('Cluster Node Readiness')",
+      "rules": [
+        {
+          "description": "Percentage of ready nodes per cluster is below threshold.",
+          "detectLabel": "Cluster Node Readiness",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: The percentage of nodes ready in the {{dimensions.[k8s.cluster.name]}} cluster is less than 90% for 100% the last minute or less than 95% for at least 80% the last 5 minutes.\nClearing condition: The percentage of nodes ready is more than 90% for 100% of the last 8 minutes or more than 95% for at least 80% of the last 15 minutes\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.node.condition_ready"
+      ],
+      "status": "ABORTED",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "type": "METRIC",
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "TOTAL",
+            "label": "TOTAL",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "READY",
+            "label": "READY",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          },
+          {
+            "displayName": "READY_PCT",
+            "label": "READY_PCT",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "k8s.node.condition_ready",
+          "filters": []
+        }
+      ]
+    }
+  },
+  "hashCode": 2029307963,
+  "id": "G_QGH7AAYA0",
+  "packageType": "DETECTOR"
+}
