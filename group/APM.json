@@ -237,7 +237,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B).publish(label='C')\nL = (J/K).publish(label='L')\nE = (A/D).publish(label='E')\nM = (J/D).publish(label='M')\nN = (C*G).publish(label='N')\nH = (L*G).publish(label='H')\nI = (E*G).publish(label='I')\nO = (M*G).publish(label='O')\nA = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nJ = data('container.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).scale(100).publish(label='J', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nK = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'idle')).count(by=['kubernetes_node']).publish(label='K', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)\nG = (F/F).publish(label='G', enable=False)",
+      "programText" : "C = (A/B).publish(label='C')\nL = (J/K).publish(label='L')\nE = (A/D).publish(label='E')\nM = (J/D).publish(label='M')\nN = (C*G).publish(label='N')\nH = (L*G).publish(label='H')\nI = (E*G).publish(label='I')\nO = (M*G).publish(label='O')\nA = data('container.cpu.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.pod.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.node.name']).publish(label='A', enable=False)\nJ = data('container.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.node.name']).scale(100).publish(label='J', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.node.name']).publish(label='B', enable=False)\nK = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'idle')).count(by=['k8s.node.name']).publish(label='K', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.node.name']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.pod.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.node.name']).publish(label='F', enable=False)\nG = (F/F).publish(label='G', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -340,7 +340,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_fs_usage_bytes', filter=filter('cluster', '*') and filter('service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')",
+      "programText" : "A = data('container.filesystem.usage', filter=filter('cluster', '*') and filter('service', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1551,7 +1551,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_memory_usage_bytes', filter=filter('cluster', '*') and filter('service', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')\nB = data('container_spec_memory_limit_bytes', filter=filter('cluster', '*') and filter('service', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C')",
+      "programText" : "A = data('container.memory.usage', filter=filter('cluster', '*') and filter('service', '*')).mean(by=['k8s.pod.uid', 'container.id']).publish(label='A')\nB = data('k8s.container.memory_limit', filter=filter('cluster', '*') and filter('service', '*')).max(by=['k8s.pod.uid', 'container.id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -1828,7 +1828,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('pod_network_receive_bytes_total', filter=filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')\nB = data('pod_network_transmit_bytes_total', filter=filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B')",
+      "programText" : "A = data('k8s.pod.network.io', filter=filter('direction', 'receive') and filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['k8s.pod.uid', 'container.id']).publish(label='A')\nB = data('k8s.pod.network.io', filter=filter('direction', 'transmit') and filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['k8s.pod.uid', 'container.id']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2496,7 +2496,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = (A/B).publish(label='C')\nL = (J/K).publish(label='L')\nE = (A/D).publish(label='E')\nM = (J/D).publish(label='M')\nN = (C*G).publish(label='N')\nH = (L*G).publish(label='H')\nI = (E*G).publish(label='I')\nO = (M*G).publish(label='O')\nA = data('container_cpu_utilization', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='A', enable=False)\nJ = data('container.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).scale(100).publish(label='J', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='B', enable=False)\nK = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'idle')).count(by=['kubernetes_node']).publish(label='K', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_node']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['kubernetes_pod_name', 'kubernetes_namespace', 'kubernetes_cluster', 'kubernetes_node']).publish(label='F', enable=False)\nG = (F/F).publish(label='G', enable=False)",
+      "programText" : "C = (A/B).publish(label='C')\nL = (J/K).publish(label='L')\nE = (A/D).publish(label='E')\nM = (J/D).publish(label='M')\nN = (C*G).publish(label='N')\nH = (L*G).publish(label='H')\nI = (E*G).publish(label='I')\nO = (M*G).publish(label='O')\nA = data('container.cpu.usage', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.pod.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.node.name']).publish(label='A', enable=False)\nJ = data('container.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.node.name']).scale(100).publish(label='J', enable=False)\nB = data('cpu.num_processors', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.node.name']).publish(label='B', enable=False)\nK = data('system.cpu.time', filter=filter('sf_environment', '*') and filter('sf_service', '*') and filter('state', 'idle')).count(by=['k8s.node.name']).publish(label='K', enable=False)\nD = data('machine_cpu_cores', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.node.name']).publish(label='D', enable=False)\nF = data('k8s.container.ready', filter=filter('sf_environment', '*') and filter('sf_service', '*')).sum(by=['k8s.pod.name', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.node.name']).publish(label='F', enable=False)\nG = (F/F).publish(label='G', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2975,7 +2975,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_memory_usage_bytes', filter=filter('cluster', '*') and filter('service', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')\nB = data('container_spec_memory_limit_bytes', filter=filter('cluster', '*') and filter('service', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C')",
+      "programText" : "A = data('container.memory.usage', filter=filter('cluster', '*') and filter('service', '*')).mean(by=['k8s.pod.uid', 'container.id']).publish(label='A')\nB = data('k8s.container.memory_limit', filter=filter('cluster', '*') and filter('service', '*')).max(by=['k8s.pod.uid', 'container.id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3205,7 +3205,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container_fs_usage_bytes', filter=filter('cluster', '*') and filter('service', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')",
+      "programText" : "A = data('container.filesystem.usage', filter=filter('cluster', '*') and filter('service', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3800,7 +3800,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('pod_network_receive_bytes_total', filter=filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A')\nB = data('pod_network_transmit_bytes_total', filter=filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B')",
+      "programText" : "A = data('k8s.pod.network.io', filter=filter('direction', 'receive') and filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['k8s.pod.uid', 'container.id']).publish(label='A')\nB = data('k8s.pod.network.io', filter=filter('direction', 'transmit') and filter('cluster', '*') and filter('service', '*'), extrapolation='zero',rollup='rate').sum(by=['k8s.pod.uid', 'container.id']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4327,7 +4327,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -2029487273,
+  "hashCode" : -2029487272,
   "id" : "DsK5nuJAcAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
