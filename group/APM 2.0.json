@@ -1684,7 +1684,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "D = (A*C).publish(label='D')\nB = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nA = data('container.filesystem.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='A', enable=False)",
+      "programText" : "D = (A*C).publish(label='D')\nB = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nA = data('container_fs_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2015,7 +2015,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='A', enable=False)\nB = data('container.cpu.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='B', enable=False)\nC = combine(A if B is None else B).publish(label='C')",
+      "programText" : "A = data('container.cpu.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='A', enable=False)\nB = data('container_cpu_utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).scale(0.01).publish(label='B', enable=False)\nC = combine(A if B is None else B).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2198,7 +2198,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.memory.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).mean(by=['k8s.pod.uid', 'container.id']).publish(label='A', enable=False)\nB = data('k8s.container.memory_limit', filter=filter('deployment.environment', '*') and filter('service.name', '*')).max(by=['k8s.pod.uid', 'container.id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')\nD = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)",
+      "programText" : "A = data('container_memory_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('container_spec_memory_limit_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')\nD = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2512,7 +2512,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.pod.network.io', filter=filter('direction', 'receive') and filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.pod.uid']).publish(label='A', enable=False)\nB = data('k8s.pod.network.io', filter=filter('direction', 'transmit') and filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.pod.uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')\nC = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)",
+      "programText" : "A = data('pod_network_receive_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A', enable=False)\nB = data('pod_network_transmit_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')\nC = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2665,7 +2665,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)\nA = data('k8s.pod.network.io', filter=filter('direction', 'receive') and filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.pod.uid']).publish(label='A', enable=False)\nB = data('k8s.pod.network.io', filter=filter('direction', 'transmit') and filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['k8s.pod.uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')",
+      "programText" : "C = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid']).publish(label='C', enable=False)\nD = (C/C).publish(label='D', enable=False)\nA = data('pod_network_receive_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='A', enable=False)\nB = data('pod_network_transmit_bytes_total', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate', extrapolation='zero').sum(by=['kubernetes_pod_uid']).publish(label='B', enable=False)\nE = (A*D).publish(label='E')\nF = (B*D).publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3291,7 +3291,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "D = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)\nA = data('container.memory.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).mean(by=['k8s.pod.uid', 'container.id']).publish(label='A', enable=False)\nB = data('k8s.container.memory_limit', filter=filter('deployment.environment', '*') and filter('service.name', '*')).max(by=['k8s.pod.uid', 'container.id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')",
+      "programText" : "D = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='D', enable=False)\nE = (D/D).publish(label='E', enable=False)\nA = data('container_memory_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).mean(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('container_spec_memory_limit_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).max(by=['kubernetes_pod_uid', 'container_id']).above(0, inclusive=True).publish(label='B', enable=False)\nC = (100*A/B).publish(label='C', enable=False)\nF = (A*E).publish(label='F')\nG = (C*E).publish(label='G')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3427,7 +3427,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='A', enable=False)\nB = data('container.cpu.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='B', enable=False)\nC = combine(A if B is None else B).publish(label='C')",
+      "programText" : "A = data('container.cpu.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).publish(label='A', enable=False)\nB = data('container_cpu_utilization', filter=filter('deployment.environment', '*') and filter('service.name', '*'), rollup='rate').sum(by=['k8s.pod.name', 'k8s.node.name', 'k8s.cluster.name', 'k8s.pod.uid']).scale(0.01).publish(label='B', enable=False)\nC = combine(A if B is None else B).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3562,7 +3562,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.filesystem.usage', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='A', enable=False)\nB = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['k8s.pod.uid', 'container.id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nD = (A*C).publish(label='D')",
+      "programText" : "A = data('container_fs_usage_bytes', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='A', enable=False)\nB = data('k8s.container.ready', filter=filter('deployment.environment', '*') and filter('service.name', '*')).sum(by=['kubernetes_pod_uid', 'container_id']).publish(label='B', enable=False)\nC = (B/B).publish(label='C', enable=False)\nD = (A*C).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4074,7 +4074,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 2026062602,
+  "hashCode" : 2026062601,
   "id" : "EPK1YluAgAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
