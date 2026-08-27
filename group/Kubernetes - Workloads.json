@@ -1710,7 +1710,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -2854,7 +2854,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.statefulset.name','k8s.statefulset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
+      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).count(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.statefulset.name','k8s.statefulset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3511,7 +3511,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization').sum(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.job.name', 'k8s.job.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -3928,7 +3928,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', rollup='rate').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization', rollup='rate').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4218,7 +4218,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', rollup='rate').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization', rollup='rate').sum(by=['k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.daemonset.uid', 'k8s.daemonset.name', 'k8s.node.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4332,7 +4332,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time', filter=filter('k8s.workload.kind', 'StatefulSet')).sum(by=['k8s.statefulset.name', 'k8s.statefulset.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4599,7 +4599,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'Deployment'), rollup='rate').sum(by=['k8s.cluster.name', 'k8s.deployment.name', 'k8s.namespace.name', 'k8s.deployment.uid']).scale(0.01).publish(label='A')\nD = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.cluster.name', 'k8s.deployment.name', 'k8s.namespace.name', 'k8s.deployment.uid']).publish(label='D')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'Deployment'), rollup='rate').sum(by=['k8s.cluster.name', 'k8s.deployment.name', 'k8s.namespace.name', 'k8s.deployment.uid']).scale(0.01).publish(label='A')\nD = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.cluster.name', 'k8s.deployment.name', 'k8s.namespace.name', 'k8s.deployment.uid']).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -6949,7 +6949,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', rollup='rate').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization', rollup='rate').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7219,7 +7219,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container.cpu.utilization').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.replicaset.name','k8s.replicaset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
+      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.replicaset.name', 'k8s.replicaset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.replicaset.name','k8s.replicaset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7345,7 +7345,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container.cpu.utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
+      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7459,7 +7459,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')",
+      "programText" : "A = data('container_cpu_utilization').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time').sum(by=['k8s.replicaset.uid', 'k8s.replicaset.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -7641,7 +7641,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.deployment.name','k8s.deployment.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
+      "programText" : "A = data('k8s.container.cpu_limit', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).count(by=['k8s.deployment.name', 'k8s.deployment.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.deployment.name','k8s.deployment.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -8663,7 +8663,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9433,7 +9433,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.deployment.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.deployment.uid']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.deployment.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.deployment.uid']).publish(label='C')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.deployment.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.deployment.uid']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'Deployment')).sum(by=['k8s.deployment.name', 'k8s.cluster.name', 'k8s.namespace.name', 'k8s.deployment.uid']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -9936,7 +9936,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container.cpu.utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
+      "programText" : "A = data('k8s.container.cpu_limit').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.pod.name', 'k8s.pod.uid', 'k8s.container.name', 'container.id']).publish(label='A', enable=False)\r\nB = data('container_cpu_utilization').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='B', enable=False)\r\nI = data('container.cpu.time').count(by=['k8s.daemonset.name', 'k8s.daemonset.uid', 'k8s.namespace.name', 'k8s.cluster.name', 'k8s.container.name', 'container.id', 'k8s.pod.name', 'k8s.pod.uid']).publish(label='I', enable=False)\r\nJ = union(B,I).publish(label='J', enable=False)\r\n\r\n# if cpu limit not set then set mts value to 0 that show that cpu limit is not set otherwise it has value as 1\r\n# if cpu utilization is not reported or cpu utilization is 0 then set value to 2 because it will ensure that sum of limit and utilization will exclude 1\r\n# take only MTS values 1 that shows limmit is not set but utilization is there\r\nC = combine((0 if A is None else A)+(2 if J is None or J == 0 else J)).between(0.5, 1.5, low_inclusive=True, high_inclusive=True).count(by=['k8s.daemonset.name','k8s.daemonset.uid','k8s.namespace.name','k8s.cluster.name']).above(0).publish(label='C')\r\n",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -11101,7 +11101,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization').sum(by=['k8s.job.uid', 'k8s.job.name', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.job.uid', 'k8s.job.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
+      "programText" : "A = data('container_cpu_utilization').sum(by=['k8s.job.uid', 'k8s.job.name', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nB = data('container.cpu.time').sum(by=['k8s.job.uid', 'k8s.job.name', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -11733,7 +11733,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('container.cpu.utilization', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')",
+      "programText" : "A = data('container_cpu_utilization', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).scale(0.01).publish(label='A')\nC = data('container.cpu.time', filter=filter('k8s.workload.kind', 'CronJob')).sum(by=['k8s.cronjob.name', 'k8s.cronjob.uid', 'k8s.namespace.name', 'k8s.cluster.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -14144,7 +14144,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -1932130582,
+  "hashCode" : -1932130584,
   "id" : "GZmMGz9AgAc",
   "modelVersion" : 1,
   "packageType" : "GROUP"
