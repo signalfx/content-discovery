@@ -10,6 +10,7 @@ stages:
   - validate-ai-experimental
   - O11y-Out-of-the-Box-Inventory
   - O11y-DOC-OOTB
+  - public-catalog
 
 validate:
   stage: validate-content
@@ -26,6 +27,74 @@ validate-ai-experimental:
   script:
     - node scripts/bridge_it_validate_content.mjs
   allow_failure: true
+
+validate-public-catalog:
+  stage: validate-content
+  image: python:3.12-slim
+  script:
+    - bash gitlab-ci/validate-public-catalog.sh
+
+# GitLab remains authoritative. These jobs publish a read-only, sanitized
+# catalog to GitHub; only paths accepted by validate-public-catalog.sh can
+# reach the public repository.
+.public-catalog-mirror-base:
+  stage: public-catalog
+  image: python:3.12-slim
+  resource_group: public-catalog-mirror
+  variables:
+    GIT_STRATEGY: clone
+    MIRROR_TARGET_REPO: "splunk/content-discovery"
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends ca-certificates curl git jq openssl
+    - python -m pip install --no-cache-dir git-filter-repo
+    - test -n "${PIPELINE_GITHUB_APP_ID:-}"
+    - test -n "${PIPELINE_GITHUB_APP_PRIVATE_KEY:-}"
+    - mkdir -p "${CI_PROJECT_DIR}/.ci-secrets"
+    - chmod 0700 "${CI_PROJECT_DIR}/.ci-secrets"
+    - |
+      if [ -f "${PIPELINE_GITHUB_APP_PRIVATE_KEY}" ]; then
+        cp "${PIPELINE_GITHUB_APP_PRIVATE_KEY}" "${CI_PROJECT_DIR}/.ci-secrets/github-app.pem"
+      else
+        printf '%s' "${PIPELINE_GITHUB_APP_PRIVATE_KEY}" | base64 -d > "${CI_PROJECT_DIR}/.ci-secrets/github-app.pem"
+      fi
+    - chmod 0600 "${CI_PROJECT_DIR}/.ci-secrets/github-app.pem"
+    - export GITHUB_APP_ID="${PIPELINE_GITHUB_APP_ID}"
+    - export GITHUB_APP_PRIVATE_KEY_FILE="${CI_PROJECT_DIR}/.ci-secrets/github-app.pem"
+    - export GITHUB_APP_INSTALLATION_ID="${PIPELINE_GITHUB_APP_INSTALLATION_ID:-}"
+  after_script:
+    - rm -rf "${CI_PROJECT_DIR}/.ci-secrets"
+
+# Steady state is dormant until explicitly armed after the first cutover.
+# It refuses any non-fast-forward update.
+public-catalog-mirror:
+  extends: .public-catalog-mirror-base
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$PIPELINE_GITHUB_MIRROR_PUSH_ENABLED != "true"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master" && $PIPELINE_GITHUB_APP_ID'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true" && $CI_COMMIT_BRANCH == "master" && $PIPELINE_GITHUB_APP_ID'
+  script:
+    - bash gitlab-ci/github-mirror-push.sh
+    - bash gitlab-ci/github-mirror-verify.sh
+
+# First publication and allowlist changes rewrite public history and therefore
+# require an explicit, manual cutover.
+public-catalog-mirror-cutover:
+  extends: .public-catalog-mirror-base
+  variables:
+    MIRROR_ALLOW_NON_FF: "1"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true" && $CI_COMMIT_BRANCH == "master" && $PIPELINE_GITHUB_APP_ID'
+      when: manual
+      allow_failure: true
+  script:
+    - bash gitlab-ci/github-mirror-push.sh
+    - bash gitlab-ci/github-mirror-verify.sh
 
 update-ootb-inventory:
   image: python:3
