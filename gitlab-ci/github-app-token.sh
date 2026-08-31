@@ -9,8 +9,8 @@ set -euo pipefail
 api="${GITHUB_API:-https://api.github.com}"
 
 command -v curl >/dev/null 2>&1 || { printf 'ERROR: curl is required\n' >&2; exit 1; }
-command -v jq >/dev/null 2>&1 || { printf 'ERROR: jq is required\n' >&2; exit 1; }
 command -v openssl >/dev/null 2>&1 || { printf 'ERROR: openssl is required\n' >&2; exit 1; }
+command -v python3 >/dev/null 2>&1 || { printf 'ERROR: python3 is required\n' >&2; exit 1; }
 [ -r "${GITHUB_APP_PRIVATE_KEY_FILE}" ] || { printf 'ERROR: GitHub App key is unreadable\n' >&2; exit 1; }
 
 b64url() {
@@ -37,7 +37,8 @@ if [ -z "${installation_id}" ]; then
   installation_id="$(curl -fsS -K "${jwt_cfg}" \
     -H 'Accept: application/vnd.github+json' \
     -H 'X-GitHub-Api-Version: 2022-11-28' \
-    "${api}/app/installations" | jq -r '.[0].id')"
+    "${api}/app/installations" | python3 -c \
+      'import json, sys; data = json.load(sys.stdin); print(data[0]["id"] if data else "")')"
 fi
 [ -n "${installation_id}" ] && [ "${installation_id}" != "null" ] || {
   printf 'ERROR: could not resolve the GitHub App installation id\n' >&2
@@ -48,7 +49,8 @@ response="$(curl -fsS -X POST -K "${jwt_cfg}" \
   -H 'Accept: application/vnd.github+json' \
   -H 'X-GitHub-Api-Version: 2022-11-28' \
   "${api}/app/installations/${installation_id}/access_tokens")"
-token="$(printf '%s' "${response}" | jq -r '.token')"
+token="$(printf '%s' "${response}" | python3 -c \
+  'import json, sys; print(json.load(sys.stdin).get("token", ""))')"
 [ -n "${token}" ] && [ "${token}" != "null" ] || {
   printf 'ERROR: GitHub returned no installation token\n' >&2
   exit 1

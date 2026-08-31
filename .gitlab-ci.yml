@@ -30,7 +30,7 @@ validate-ai-experimental:
 
 validate-public-catalog:
   stage: validate-content
-  image: python:3.12-slim
+  image: docker.repo.splunkdev.net/ci-cd/ci-container/python-3.12-bookworm:3.6.0
   script:
     - bash gitlab-ci/validate-public-catalog.sh
 
@@ -39,15 +39,21 @@ validate-public-catalog:
 # reach the public repository.
 .public-catalog-mirror-base:
   stage: public-catalog
-  image: python:3.12-slim
+  # Vetted, versioned internal image. Do not install publishing tools at runtime:
+  # changes to this image version must be reviewed as publishing-code changes.
+  image: docker.repo.splunkdev.net/ci-cd/ci-container/python-3.12-bookworm:3.6.0
   resource_group: public-catalog-mirror
   variables:
     GIT_STRATEGY: clone
     MIRROR_TARGET_REPO: "splunk/content-discovery"
   before_script:
-    - apt-get update
-    - apt-get install -y --no-install-recommends ca-certificates curl git jq openssl
-    - python -m pip install --no-cache-dir git-filter-repo
+    - |
+      for required_tool in bash git curl openssl tar python3; do
+        command -v "${required_tool}" >/dev/null 2>&1 || {
+          printf 'ERROR: vetted mirror image is missing required tool: %s\n' "${required_tool}" >&2
+          exit 1
+        }
+      done
     - test -n "${PIPELINE_GITHUB_APP_ID:-}"
     - test -n "${PIPELINE_GITHUB_APP_PRIVATE_KEY:-}"
     - mkdir -p "${CI_PROJECT_DIR}/.ci-secrets"

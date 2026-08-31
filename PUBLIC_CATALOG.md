@@ -26,3 +26,8 @@ content URLs under
 Only catalog data and this public metadata are mirrored. Internal CI,
 credentials, service configuration, scripts, and operational documentation are
 excluded from every commit in the public repository's history.
+
+Public commits are generated snapshots. Their author, committer, message, and
+timestamp are fixed publication metadata; internal Git authors, email
+addresses, commit messages, merge-request links, and commit identifiers are not
+copied to GitHub.
