@@ -4,6 +4,7 @@ import time
 import yaml
 import requests
 import base64
+from pathlib import Path
 from o11y_ootb_inventory import GitlabInventory
 
 
@@ -311,6 +312,7 @@ if __name__ == "__main__":
     # Todo: Above code can be moved class's method
     dashboard_file_path = "dashboards_builtin_content.yaml"
     nav_file_path = "navigators_builtin_content.yaml"
+    release_notes_file_path = "content_release_notes.yaml"
 
     # Create the YAML file for dashboards built-in content (OOTB)
     with open(dashboard_file_path, 'w') as yaml_file:
@@ -325,3 +327,10 @@ if __name__ == "__main__":
 
     # Commit navigators builtin content yaml file
     inventory.upload_gitlab_file_to_github_repo(file_path=nav_file_path)
+
+    # Commit release notes yaml file (if it exists)
+    if Path(release_notes_file_path).exists():
+        print(color_print(f"Uploading release notes: {release_notes_file_path}", GREEN))
+        inventory.upload_gitlab_file_to_github_repo(file_path=release_notes_file_path)
+    else:
+        print(color_print(f"Release notes file not found: {release_notes_file_path}", YELLOW))

@@ -120,13 +120,17 @@ After that, `git commit` automatically handles staged navigator,
 detector, and group JSON files. The hook validates the repository,
 plans and applies only those staged content paths to Master
 SignalBuddy, exports the canonical objects back into the same files,
-re-stages them, and validates again. The commit itself is approval for
-this hook-managed remote update, so there is no second prompt.
+re-stages them, and validates again. The repository hook then runs the
+`content-changelog` skill's deterministic CLI to generate, stage, and
+validate release-note entries for those final staged exports. The commit
+itself is approval for this hook-managed remote update, so there is no
+second prompt.
 
-The commit is blocked if a selected content file also has unstaged
-edits, or if validation, credentials, network access, planning, update,
-export, or re-staging fails. Commits without selected content still run
-normal validation but do not contact Master SignalBuddy.
+The commit is blocked if a selected content or changelog file has
+unstaged edits, or if validation, credentials, network access, planning,
+update, export, changelog coverage, or re-staging fails. Commits without
+selected content still run normal validation but do not contact Master
+SignalBuddy or modify the changelog.
 
 Exit codes worth knowing:
 

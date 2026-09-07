@@ -12,6 +12,8 @@
 - reminder interval;
 - allowed repository paths and remote-write policy.
 
+When content JSON is in scope, `content_release_notes.yaml` is an allowed required generated file and must be included in changed-file and diff-size accounting.
+
 Refuse apply mode when a required write setting is absent. Read-only inventory and planning may still run.
 
 ## Run phases

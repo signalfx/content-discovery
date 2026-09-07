@@ -5,7 +5,7 @@ description: Run or plan the daily content-discovery engineering loop across Jir
 
 # Maintain content-discovery work items
 
-This is the orchestration skill. Delegate Jira writes and transitions to `$jira-work-item`, GitLab delivery and MR status to `$content-mr`, and SignalFx operations to `$sfx-api` through `$sync-master-signalbuddy` when repository content changes.
+This is the orchestration skill. Delegate Jira writes and transitions to `$jira-work-item`, GitLab delivery and MR status to `$content-mr`, changelog generation and coverage to `$content-changelog`, and SignalFx operations to `$sfx-api` through `$sync-master-signalbuddy` when repository content changes.
 
 Read [references/run-contract.md](references/run-contract.md) before a run. Read [references/state-machine.md](references/state-machine.md) when choosing a ticket's next action.
 
@@ -42,8 +42,8 @@ If material questions remain, use `$jira-work-item` to post them with configured
 4. Make only the planned changes.
 5. Run focused tests, content validation, JSON checks, and whitespace checks.
 6. Review the complete diff against acceptance criteria and configured size/path limits.
-7. Commit the ticket change. For staged navigator, detector, or group JSON files, allow the installed pre-commit workflow to synchronize and export canonical Master SignalBuddy content.
-8. Re-run relevant validation if the canonical export changed files.
+7. Commit the ticket change. For staged navigator, detector, or group JSON files, allow the installed pre-commit workflow to synchronize and export canonical Master SignalBuddy content, then use `$content-changelog` to generate and stage one release-note entry per final staged content file.
+8. Review the generated changelog descriptions and re-run relevant validation if the canonical export or changelog generation changed files.
 9. Use `$content-mr` to push, create or reuse the MR, assign reviewers, and verify it remotely.
 10. Use `$jira-work-item` to record the verified MR.
 
