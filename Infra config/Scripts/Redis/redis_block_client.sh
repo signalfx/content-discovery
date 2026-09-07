@@ -1,1 +1,0 @@
-echo -e "BLPOP list1 120" | redis-cli -h 172.31.32.208 -a ***** -p 6379

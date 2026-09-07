@@ -1,6 +1,6 @@
 # Important
 Please always export dashboards from SBMO using the `tool` in this repo.
-e.g. `./tool export $dashboard_id > group/$your_dashboard_name`
+e.g. `.venv/bin/python tools/scripts/tool group-export $dashboard_group_id > group/$your_dashboard_name`
 This ensures clean diffs when making pull requests.
 
 Splunk/SignalFx Employees: 
@@ -11,23 +11,23 @@ Others:
     Make a pull request to master, or open an issue. We will help you resolve.
 
 
-# git pre-commit hook
+# Git pre-commit hook
 
-Copy the `scripts/pre-commit` hook to this git repo; this will run validation against the content files to ensure that 
-content id's haven't inadvertently changed. (That situation can cause issues with existing content
-if it gets deployed, and requires remediation against production realms).
+Enable the tracked hook once for this checkout. It validates content on every commit. When staged navigator, detector, or group JSON files are present, it also updates those exact files in Master SignalBuddy, exports the canonical objects back, and stages the refreshed exports before the commit continues.
 
 ```
-mkdir -p .git/hooks && cp scripts/pre-commit .git/hooks
+git config core.hooksPath tools/scripts
 ```
 
-(to force skip of the commit validation, you can run `git commit --no-verify`)
+The commit is blocked on validation, credentials, API, export, or staging failures. It also blocks a selected file that has both staged and unstaged edits, preventing the hook from including changes you did not stage.
+
+To explicitly bypass all hook checks and synchronization, run `git commit --no-verify`.
 
 Note: The hook script uses the `jq` library to parse json files. You'll need this installed if not already: `brew install jq`
 
-# Syncing content with the `syncer` CLI
+# Syncing content with the skill CLI
 
-`syncer/cli.py` is a non-interactive CLI for pushing local JSON edits
+`skills/sync-master-signalbuddy/scripts/sync_changed.py` is a non-interactive CLI for pushing local JSON edits
 to Master SignalBuddy, pulling current state back into the repo, and
 previewing diffs. It is the same tool that the
 `sync-master-signalbuddy` skill drives — these examples work whether
@@ -46,7 +46,7 @@ in `.gitignore`) as a single line — nothing else:
 For CI / agent runs, export the same value as `SIGNALBUDDY_TOKEN`
 instead.
 
-The realm is hardcoded in `syncer/utils.MASTER_REALM` (currently
+The realm is hardcoded in `skills/sync-master-signalbuddy/scripts/sync_utils.py` (currently
 `us0`); it is not a config field.
 
 ## Five common workflows
@@ -54,8 +54,8 @@ The realm is hardcoded in `syncer/utils.MASTER_REALM` (currently
 ### 1. Push all my local changes to Master SignalBuddy
 
 ```bash
-python -m syncer.cli plan
-python -m syncer.cli apply --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py plan
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py apply --yes
 ```
 
 Plan first, review the JSON output, then apply. The bulk path is
@@ -65,7 +65,7 @@ and `detector/`.
 ### 2. Update one file in master and refresh it locally
 
 ```bash
-python -m syncer.cli update "detector/APM Error Rate Increased.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py update "detector/APM Error Rate Increased.json" --yes
 ```
 
 Strict update — fails fast if the resource doesn't exist (use
@@ -76,7 +76,7 @@ of master.
 ### 3. Create a brand-new resource in master from a local file
 
 ```bash
-python -m syncer.cli create "group/AWS Lambda.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py create "group/AWS Lambda.json" --yes
 ```
 
 For groups this uses `POST /v2/dashboardgroup/import`, so the backend
@@ -87,7 +87,7 @@ so it now carries the new server-assigned id.
 ### 4. Refresh a local file from master without pushing anything
 
 ```bash
-python -m syncer.cli pull --type group --id <GROUP_ID> --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py pull --type group --id <GROUP_ID> --yes
 ```
 
 If the id is already present in the repo, the matching local file is
@@ -99,8 +99,8 @@ navigators without an existing local match, pass
 ### 5. Inspect remote state or preview a local change
 
 ```bash
-python -m syncer.cli fetch detector <DETECTOR_ID>
-python -m syncer.cli diff   "detector/K8s Node CPU.json"
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py fetch detector <DETECTOR_ID>
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py diff "detector/K8s Node CPU.json"
 ```
 
 `fetch` prints the current master state to stdout; `diff` shows

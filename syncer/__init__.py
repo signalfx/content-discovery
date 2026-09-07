@@ -1,1 +1,0 @@
-"""SignalFx content syncer package."""
