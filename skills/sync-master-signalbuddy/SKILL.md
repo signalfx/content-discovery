@@ -1,276 +1,116 @@
 ---
 name: sync-master-signalbuddy
-description: Pushes content-discovery JSON changes (navigators, dashboard groups, detectors) from this repo to the Master SignalBuddy org, fetches the current state of a resource from SignalBuddy, or previews the diff without writing. Use when the user asks to sync, publish, push, deploy, or apply changed content to SignalBuddy / SignalFx / Master SignalBuddy, or when they want to see what would change before pushing, or when they want to inspect the live state of a navigator / group / detector by id.
+description: Detect changed content-discovery navigator, detector, and dashboard-group exports in local work, staged commits, or a feature branch; update those objects in the Master SignalBuddy org through the SFX API skill; and export the server-canonical objects back into the same files. Use for pre-commit synchronization, planning, publishing, or refreshing repository content against Master SignalBuddy.
 ---
 
 # Sync content to Master SignalBuddy
 
-This repo is the source-of-truth mirror of the Master SignalBuddy org.
-The `syncer/cli.py` tool talks to exactly one place — Master SignalBuddy
-— via the SignalFx REST API. There is no multi-env support and there
-are no env flags. The credentials in the root `.token` file are always
-the master token.
+This skill orchestrates repository changes. Use `$sfx-api` as its API execution layer; do not duplicate endpoints or issue ad hoc HTTP calls.
 
-The bulk flow is always: **plan → review → apply**. Never apply without
-showing the user the plan first.
+The required lifecycle is:
 
-## When to use
+1. Detect changed content files.
+2. Export the current objects from Master SignalBuddy and build a plan.
+3. Show the plan and obtain explicit approval, or use the commit action as approval in the installed pre-commit workflow.
+4. Apply updates in dependency order.
+5. Export every successfully updated top-level object back into its original file.
 
-- The user asks to "sync", "push", "publish", "deploy", "release", or
-  "apply" content to Master SignalBuddy / SignalFx / SignalBuddy.
-- The user asks "what would change?" before a sync.
-- The user asks for the current state of a navigator / group / detector
-  by id.
-- The user asks to **update one specific resource** in master by file
-  path (e.g. "just push this one dashboard").
-- The user asks to **create a brand-new resource** in master from a
-  local file.
-- The user asks to **pull / export** a resource from master back into
-  the local repo (refresh a file, or bootstrap a new local file from an
-  existing master id).
+## Target and credentials
 
-## Credentials
+This workflow targets only the Master SignalBuddy org in realm `us0`. The repository `.token` file contains its API token; `SIGNALBUDDY_TOKEN` is the fallback. Never display the token or place it on a command line.
 
-One file, one org, one line. Root `.token` (gitignored) holds only the
-API token — no keys, no quotes, just the token string:
-
-```
-<your-master-signalbuddy-api-token>
-```
-
-Fallback: `SIGNALBUDDY_TOKEN` as a process environment variable (used
-in CI / agent runs).
-
-The realm is hardcoded to Master SignalBuddy's realm in
-`syncer/utils.MASTER_REALM` (currently `us0`); it is not a config field.
-
-If neither the file nor the env var is set, every command other than
-`plan` errors out with a single clear message.
-
-## Prerequisites (verify before any command)
-
-For the bulk repo-driven workflow, local changes must exist:
+Run the sync engine from the repository root:
 
 ```bash
-git diff --name-only HEAD -- 'navigators/*' 'group/*' 'detector/*'
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py <command>
 ```
 
-If empty, tell the user there is nothing to bulk-sync and stop. (The
-single-resource `update` / `create` / `pull` verbs do not require a
-git change.)
+## Detect local and branch changes
 
-## Standard workflow (bulk push of locally changed files)
+The engine considers JSON files under `navigators/`, `detector/`, and `group/` from:
 
-```
-Task progress:
-- [ ] Step 1: List changed files
-- [ ] Step 2: Run plan
-- [ ] Step 3: Show plan summary to the user and get explicit approval
-- [ ] Step 4: Run apply with --yes
-- [ ] Step 5: Report results
-```
+- commits on the current feature branch since its merge-base with the mainline;
+- staged and unstaged working-tree changes;
+- untracked content files.
 
-### Step 1 — list changed files
+On `main` or `master`, it compares the working tree with `HEAD`. On a feature branch, it automatically selects the available mainline ref. Pass `--base <ref>` when the target branch must be explicit.
+
+## Automatic pre-commit synchronization
+
+The repository hook at `tools/scripts/pre-commit` runs `scripts/pre_commit_sync.py`. For commits containing staged JSON files under `navigators/`, `detector/`, or `group/`, it automatically:
+
+1. Validates repository content.
+2. Refuses partially staged content files that also have unstaged edits.
+3. Plans only the staged content paths and stops on remote fetch errors.
+4. Applies those paths to Master SignalBuddy without another prompt; invoking `git commit` is the approval for this hook-managed sync.
+5. Exports the canonical server objects, stages those refreshed files, and validates again.
+
+Unrelated commits run validation but do not contact Master SignalBuddy. Any validation, credential, network, planning, update, export, or staging failure blocks the commit. `git commit --no-verify` remains Git's explicit emergency bypass.
+
+## Plan, approve, apply
+
+Always plan first:
 
 ```bash
-git diff --name-only HEAD -- 'navigators/*' 'group/*' 'detector/*'
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py plan
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py plan --base origin/master
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py plan --paths "group/Kubernetes.json"
 ```
 
-### Step 2 — run plan
+Summarize each file, object ID, and meaningful difference from Master SignalBuddy. Do not apply when the plan has authentication or fetch errors. Obtain explicit user approval before running this command manually:
 
 ```bash
-python -m syncer.cli plan
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py apply --yes
 ```
 
-Output is JSON with a `resources` array. Each entry has `type`, `path`,
-`id`, `name`, `remote_state`, and either `change_summary` (groups) or
-`changes` (navigators / detectors). Parse it and summarise for the user.
+Use the same `--base` and `--paths` values from the approved plan. Approval for one subset does not authorize other changed files.
 
-To restrict to specific files:
+## Apply and export behavior
+
+For a navigator:
+
+1. Update the navigator through `$sfx-api` using its existing ID.
+2. Update associated data links when present.
+3. Export the navigator from Master SignalBuddy into the same local file.
+
+For a detector:
+
+1. Update the detector through `$sfx-api` using its existing ID.
+2. Export the detector from Master SignalBuddy into the same local file.
+
+For a dashboard group:
+
+1. Export the current complete group from Master SignalBuddy.
+2. Create or update changed charts first.
+3. Remap IDs for newly created charts in dependent dashboards.
+4. Create or update changed dashboards.
+5. Remap IDs for newly created dashboards in the dashboard group.
+6. Update the dashboard-group object.
+7. Create or update associated data links.
+8. Export the complete group from Master SignalBuddy into the same local file.
+
+Do not delete remote charts, dashboards, or data links merely because they are absent locally. Deletion requires a separate explicit request and plan.
+
+If any API operation for a file fails, mark that file failed and do not overwrite it with a partial export. Successful files are refreshed independently. Report partial failures and their API errors.
+
+## Single-file operations
+
+Use these when the user names one file:
 
 ```bash
-python -m syncer.cli plan --paths "navigators/AWS/AWS Instances - unified.json"
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py diff "detector/example.json"
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py update "detector/example.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py fetch detector <id>
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py pull --type detector --id <id> --yes
 ```
 
-### Step 3 — show the plan summary and get approval
+`update` must verify that the ID exists, apply the same API flow, and export the result back into the named file. Use `create` only for an explicitly requested new object; dashboard-group creation uses the complete import endpoint so chart and dashboard IDs are rewired atomically.
 
-Format the summary like this:
+## Completion criteria
 
-```
-Master SignalBuddy sync plan (realm: us0)
-3 resources would be updated:
-  * navigator "AWS Instances"     navigators/AWS/AWS Instances - unified.json   3 field changes
-  * group     "K8s health"        group/K8s health.json                          1 chart modified, 0 dashboards
-  * detector  "K8s Node CPU"      detector/K8s Node CPU.json                     2 field changes
+A sync is complete only when:
 
-Proceed with apply?
-```
-
-Wait for explicit user confirmation. Never auto-apply.
-
-### Step 4 — apply
-
-```bash
-python -m syncer.cli apply --yes
-```
-
-`--yes` is required; without it the command aborts.
-
-Restrict to a subset with `--paths` (same syntax as `plan`). Useful
-when the user approved only some of the planned changes.
-
-### Step 5 — report results
-
-Output JSON has a `results` array. Each entry has `status` of
-`applied`, `failed`, or `skipped`. Exit code is 0 on full success, 5
-on partial failure. Report the counts and list any failures verbatim
-from the `error` fields.
-
-## Read-only operations
-
-### Fetch the current state of one resource
-
-```bash
-python -m syncer.cli fetch navigator <ID>
-python -m syncer.cli fetch group     <ID>
-python -m syncer.cli fetch detector  <ID>
-```
-
-Output JSON has a `resource` field with the full export payload.
-`fetch` prints to stdout; it never writes to disk.
-
-### Diff a single local file vs master
-
-```bash
-python -m syncer.cli diff "navigators/AWS/AWS Instances - unified.json"
-```
-
-The CLI infers the resource type from the file path or the JSON
-structure (`navigatorExport`, `groupExport`, `detectorExport`).
-
-## Single-resource operations
-
-Three strict verbs target one resource at a time. None of them are
-git-diff-driven. All require `--yes` to confirm destructive writes.
-All operate against master (the only org this CLI knows about).
-
-### `update` — push a single local file
-
-```bash
-python -m syncer.cli update "group/AWS Lambda.json" --yes
-```
-
-Behaviour:
-
-- Pre-checks that the resource id exists in master with a `GET`. Fails
-  with a clear error if not (no silent fall-through to create — that's
-  `create`'s job). The error names `create` as the right verb.
-- After a successful `PUT`, re-fetches the resource from master and
-  **overwrites the local file** so it carries the latest
-  server-normalized fields (`lastUpdated`, etc.) and stays a faithful
-  mirror.
-
-### `create` — POST a new resource into master
-
-```bash
-python -m syncer.cli create "group/AWS Lambda.json" --yes
-```
-
-Behaviour:
-
-- If the local file already has an id, the CLI checks master for that
-  id first and refuses with a clear error if it exists (use `update`
-  instead). The error names `update` as the right verb.
-- For dashboard **groups** the create hits
-  `POST /v2/dashboardgroup/import`, so the backend rewires all child
-  chart and dashboard ids server-side.
-- For **navigator** and **detector** the inner object is POSTed with
-  server-managed metadata stripped (`id`, `created`, `lastUpdated`,
-  etc.) so the backend assigns fresh values.
-- After a successful create the new server-assigned id is captured and
-  the local file is **overwritten with the fresh export**. The file
-  now describes the new resource going forward; the old id (if any)
-  is gone.
-
-### `pull` — export a resource from master into the repo
-
-```bash
-python -m syncer.cli pull --type group --id DASH_xyz --yes
-```
-
-Resolution order for the output path:
-
-1. `--out` if provided;
-2. existing local file whose JSON contains this id;
-3. canonical path computed from the resource name (`group/<name>.json`,
-   `detector/<name>.json`).
-
-Navigators have a category subdirectory that cannot be inferred from
-the export — for navigators with no existing local match, `--out` is
-**required**:
-
-```bash
-python -m syncer.cli pull --type navigator --id NAV_xyz \
-  --out "navigators/AWS/aws lambda.json" --yes
-```
-
-Files are written with 2-space indent and sorted keys for a stable
-diff.
-
-## When to pick which verb
-
-| Goal | Verb |
-|---|---|
-| Push all locally changed files to master | `plan` → `apply` |
-| Update one specific resource in master and refresh local | `update <path> --yes` |
-| Push a brand-new local resource into master | `create <path> --yes` |
-| Refresh a local file from master | `pull --type T --id I --yes` |
-| Bootstrap a brand-new local file from a master id | `pull --type T --id I --out <path> --yes` |
-| Inspect remote state without writing | `fetch <type> <id>` |
-| Preview a local change vs remote | `diff <path>` |
-
-## Exit codes
-
-| Code | Meaning |
-|---|---|
-| 0 | Success |
-| 2 | Usage error (bad flags, missing `--yes`, no credentials, malformed `.token`) |
-| 3 | Local file or remote resource not found |
-| 4 | SignalBuddy API failure (auth, 5xx, network) |
-| 5 | Partial: some resources applied, some failed (`apply` only) |
-| 6 | Refused: `create` of an id that already exists on master |
-
-## Safety rails
-
-- **Never run `apply` without first running `plan` and getting user approval.**
-- **Never print or log the access token.** The CLI itself never echoes it.
-- Tokens live in the root `.token` file (gitignored) or env vars; never
-  paste them into shell history or commit messages.
-- If `plan` reports `fetch_errors > 0`, surface that to the user — it
-  may mean a missing resource that `apply` will create, or it may mean
-  credential / network trouble.
-- Dashboard groups intentionally do not delete remote charts or
-  dashboards that no longer exist locally; the `change_summary` reports
-  the count for visibility but no destructive action is taken.
-- **`update` and `create` are strict.** `update` refuses to create a
-  missing resource; `create` refuses to overwrite an existing one. The
-  CLI's error message always names the correct verb to use instead —
-  pass that suggestion through to the user verbatim.
-- **`create` rewrites the local file with the new server-assigned id.**
-  Confirm with the user before running `create` against a path whose
-  existing id is real and in use, because the file will stop pointing
-  at the original resource.
-- **Every successful `update`, `create`, and `pull` overwrites a local
-  file.** That is intentional — the repo is the mirror of master. Make
-  sure the user expects the on-disk change.
-
-## Common failure modes
-
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| `error: No credentials available for Master SignalBuddy. ...` | Root `.token` missing/empty and `SIGNALBUDDY_TOKEN` env var unset | Put the API token in `.token` as a single line, or export it as `SIGNALBUDDY_TOKEN` |
-| `apply` returns exit code 5 | One or more resources failed to write | Read the `error` field of each failed entry; usually 401/403 (token) or 4xx (schema) |
-| `fetch_error: Failed to fetch ... 404` in plan | Resource id exists locally but not yet in master | Expected for brand-new resources; `apply` will create them |
-| `error: <type> <id> not found in master; use 'create <path>' instead` (exit 3) | Tried to `update` a resource that doesn't exist | Use the suggested `create` command verbatim |
-| `error: <type> <id> already exists in master; use 'update <path>' instead` (exit 6) | Tried to `create` a resource that already exists | Use the suggested `update` command verbatim |
-| `error: could not infer output path for navigator ...; pass --out <path>` | `pull` for a navigator without a local file matching the id | Pass `--out navigators/<category>/<name>.json` explicitly |
+- every approved changed file has status `applied`;
+- each successful file was exported from Master SignalBuddy after its update;
+- the local file contains that fresh export;
+- failures and intentionally skipped deletions are reported clearly.

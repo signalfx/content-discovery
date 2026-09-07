@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+python_bin="$repo_root/.venv/bin/python"
+if [[ ! -x "$python_bin" ]]; then
+  python_bin="$(command -v python3 || true)"
+fi
+
+if [[ -z "$python_bin" ]]; then
+  echo "pre-commit blocked: Python 3 is required for the Master SignalBuddy sync." >&2
+  exit 1
+fi
+
+exec "$python_bin" skills/sync-master-signalbuddy/scripts/pre_commit_sync.py
