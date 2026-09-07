@@ -13,17 +13,19 @@ Others:
 
 # Git pre-commit hook
 
-Enable the tracked hook once for this checkout. It validates content on every commit. When staged navigator, detector, or group JSON files are present, it also updates those exact files in Master SignalBuddy, exports the canonical objects back, and stages the refreshed exports before the commit continues.
+Enable the tracked hook once for this checkout. It validates content on every commit. When staged navigator, detector, or group JSON files are present, it updates those exact files in Master SignalBuddy, exports and stages the canonical objects, and then generates and stages one `content_release_notes.yaml` entry per final staged content file.
 
 ```
 git config core.hooksPath tools/scripts
 ```
 
-The commit is blocked on validation, credentials, API, export, or staging failures. It also blocks a selected file that has both staged and unstaged edits, preventing the hook from including changes you did not stage.
+The commit is blocked on validation, credentials, API, export, changelog coverage, or staging failures. It also blocks a selected content or changelog file that has unstaged edits, preventing the hook from including changes you did not stage.
 
 To explicitly bypass all hook checks and synchronization, run `git commit --no-verify`.
 
 Note: The hook script uses the `jq` library to parse json files. You'll need this installed if not already: `brew install jq`
+
+See `RELEASE_NOTES.md` and the `content-changelog` skill for manual changelog update and validation commands.
 
 # Syncing content with the skill CLI
 

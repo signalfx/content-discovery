@@ -45,6 +45,8 @@ The repository hook at `tools/scripts/pre-commit` runs `scripts/pre_commit_sync.
 4. Applies those paths to Master SignalBuddy without another prompt; invoking `git commit` is the approval for this hook-managed sync.
 5. Exports the canonical server objects, stages those refreshed files, and validates again.
 
+After this sync step succeeds, the repository hook invokes `$content-changelog` to generate, stage, and validate release-note entries from the final staged exports. The changelog step is deterministic and does not make additional SignalBuddy calls.
+
 Unrelated commits run validation but do not contact Master SignalBuddy. Any validation, credential, network, planning, update, export, or staging failure blocks the commit. `git commit --no-verify` remains Git's explicit emergency bypass.
 
 ## Plan, approve, apply
