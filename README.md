@@ -10,6 +10,16 @@ Splunk/SignalFx Employees:
 Others:
     Make a pull request to master, or open an issue. We will help you resolve.
 
+# Install the Codex content maintainer
+
+The recurring content-maintainer job is versioned with this repository. After cloning the repository and opening it as a Codex project:
+
+1. Copy `configs/content-maintainer.example.yaml` to `configs/content-maintainer.local.yaml` and fill in the non-secret project settings. The local file is ignored by Git.
+2. Configure Jira, GitLab, and Master SignalBuddy authentication for your local Codex environment. Do not put credentials in either configuration file.
+3. Ask Codex: `Use $content-maintainer to install or update this repository's Content Maintainer automation.`
+
+Codex will create or update one active project automation that runs every four hours. Re-run the same request after pulling repository changes to refresh the installed job from the canonical definition in `configs/codex/content-maintainer-automation.md`.
+
 
 # Git pre-commit hook
 
@@ -25,7 +35,7 @@ To explicitly bypass all hook checks and synchronization, run `git commit --no-v
 
 Note: The hook script uses the `jq` library to parse json files. You'll need this installed if not already: `brew install jq`
 
-See `RELEASE_NOTES.md` and the `content-changelog` skill for manual changelog update and validation commands.
+See `content_release_notes.yaml` and the `content-changelog` skill for changelog data and manual update or validation commands.
 
 # Syncing content with the skill CLI
 

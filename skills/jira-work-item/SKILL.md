@@ -1,6 +1,6 @@
 ---
 name: jira-work-item
-description: Read, track, comment on, and transition content-discovery Jira work items with idempotent daily follow-up. Use when gathering ticket requirements, asking owners questions, recording a verified merge request, detecting new answers, or moving a merged fix to Ready for verification.
+description: Read, track, comment on, and transition content-discovery Jira work items with idempotent scheduled follow-up. Use when gathering ticket requirements, asking owners questions, recording a verified merge request, detecting new answers, or moving a merged fix to Ready for verification.
 ---
 
 # Manage content-discovery Jira work items
