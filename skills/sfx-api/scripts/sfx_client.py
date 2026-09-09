@@ -21,11 +21,8 @@ RESOURCE_PATHS = {
 # endpoint for data links, charts, or dashboards, so those use their GET form.
 DEDICATED_EXPORT_RESOURCES = {"navigator", "detector", "dashboard-group"}
 
-CONTENT_TYPES = {
-    "navigator": "application/vnd.splunk.observability.navigator+json",
-}
-
 SERVER_MANAGED_FIELDS = ("id", "created", "creator", "lastUpdated", "lastUpdatedBy")
+NAVIGATOR_NULLABLE_ARRAY_FIELDS = ("metricClasses", "metricColumns")
 
 
 def prepare_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -33,6 +30,16 @@ def prepare_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     prepared = dict(payload)
     for field in SERVER_MANAGED_FIELDS:
         prepared.pop(field, None)
+    return prepared
+
+
+def _prepare_update_payload(resource: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize API constraints without changing the exported local object."""
+    prepared = dict(payload)
+    if resource == "navigator":
+        for field in NAVIGATOR_NULLABLE_ARRAY_FIELDS:
+            if prepared.get(field) == []:
+                prepared[field] = None
     return prepared
 
 
@@ -90,7 +97,7 @@ def create_object(
         f"{base_url}/v2/{_path(resource)}",
         token,
         payload,
-        CONTENT_TYPES.get(resource, "application/json"),
+        "application/json",
     )
     return _require_success(response, (200, 201), "create", resource)
 
@@ -102,11 +109,12 @@ def update_object(
     base_url: str,
     token: str,
 ) -> Any:
+    request_payload = _prepare_update_payload(resource, payload)
     response = do_put(
         f"{base_url}/v2/{_path(resource)}/{resource_id}",
         token,
-        payload,
-        CONTENT_TYPES.get(resource, "application/json"),
+        request_payload,
+        "application/json",
     )
     return _require_success(response, (200,), "update", resource, resource_id)
 

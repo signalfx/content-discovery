@@ -49,7 +49,7 @@ class SfxClientTest(unittest.TestCase):
         getter.assert_called_once_with("chart", "1", "https://api", "token")
         self.assertEqual(result, {"id": "1"})
 
-    def test_navigator_create_uses_vendor_content_type(self) -> None:
+    def test_navigator_create_uses_full_model_content_type(self) -> None:
         with mock.patch.object(
             sfx_client, "do_post", return_value=FakeResponse(201, {"id": "1"})
         ) as request:
@@ -59,8 +59,58 @@ class SfxClientTest(unittest.TestCase):
             "https://api/v2/navigator",
             "token",
             {"name": "N"},
-            "application/vnd.splunk.observability.navigator+json",
+            "application/json",
         )
+
+    def test_navigator_update_uses_full_model_content_type(self) -> None:
+        with mock.patch.object(
+            sfx_client, "do_put", return_value=FakeResponse(200, {"id": "1"})
+        ) as request:
+            sfx_client.update_object(
+                "navigator",
+                "1",
+                {
+                    "connectedCategory": "APACHE",
+                    "metricClasses": [],
+                    "metricColumns": [],
+                },
+                "https://api",
+                "token",
+            )
+
+        request.assert_called_once_with(
+            "https://api/v2/navigator/1",
+            "token",
+            {
+                "connectedCategory": "APACHE",
+                "metricClasses": None,
+                "metricColumns": None,
+            },
+            "application/json",
+        )
+
+    def test_navigator_update_preserves_nonempty_metric_arrays(self) -> None:
+        payload = {
+            "metricClasses": [{"id": "requests"}],
+            "metricColumns": [{"metric": "apache.requests"}],
+        }
+        with mock.patch.object(
+            sfx_client, "do_put", return_value=FakeResponse(200, {"id": "1"})
+        ) as request:
+            sfx_client.update_object(
+                "navigator", "1", payload, "https://api", "token"
+            )
+
+        self.assertEqual(request.call_args.args[2], payload)
+
+    def test_non_navigator_update_preserves_empty_metric_arrays(self) -> None:
+        payload = {"metricClasses": [], "metricColumns": []}
+        with mock.patch.object(
+            sfx_client, "do_put", return_value=FakeResponse(200, {"id": "1"})
+        ) as request:
+            sfx_client.update_object("chart", "1", payload, "https://api", "token")
+
+        self.assertEqual(request.call_args.args[2], payload)
 
     def test_update_is_strict_on_not_found(self) -> None:
         with mock.patch.object(
