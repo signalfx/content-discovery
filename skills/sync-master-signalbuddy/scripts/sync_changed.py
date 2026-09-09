@@ -41,6 +41,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -160,7 +161,13 @@ def _fetch_resource(rtype: str, rid: str, base_url: str, token: str) -> dict[str
         ) from exc
 
 
-def _apply_resource(rtype: str, local: dict[str, Any], base_url: str, token: str) -> bool:
+def _apply_resource(
+    rtype: str,
+    local: dict[str, Any],
+    base_url: str,
+    token: str,
+    baseline: dict[str, Any] | None = None,
+) -> bool:
     if rtype == "navigator":
         navigator = local["navigatorExport"]["navigator"]
         navigator_id = navigator["id"]
@@ -172,7 +179,7 @@ def _apply_resource(rtype: str, local: dict[str, Any], base_url: str, token: str
         )
         return failed == 0
     if rtype == "group":
-        return update_dashboard_group(local, base_url, token)
+        return update_dashboard_group(local, base_url, token, baseline)
     if rtype == "detector":
         detector = local["detectorExport"]["detector"]
         detector_id = detector["id"]
@@ -320,6 +327,121 @@ def _load_local_json(path: Path) -> dict[str, Any]:
         raise CliError(f"Failed to parse JSON {path}: {e}", exit_code=EXIT_USAGE) from e
 
 
+def _load_baseline_json(
+    path: Path, base_ref: str | None
+) -> dict[str, Any] | None:
+    """Load the repository version that the local content change is based on."""
+    try:
+        relative = path.resolve().relative_to(REPO_ROOT.resolve())
+    except ValueError:
+        return None
+    selected = base_ref
+    if not selected:
+        branch = subprocess.run(
+            ["git", "branch", "--show-current"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        selected = "HEAD" if branch in ("main", "master") else None
+        if selected is None:
+            for candidate in ("origin/master", "master", "origin/main", "main"):
+                result = subprocess.run(
+                    ["git", "rev-parse", "--verify", "--quiet", candidate],
+                    cwd=REPO_ROOT,
+                    capture_output=True,
+                    check=False,
+                )
+                if result.returncode == 0:
+                    selected = candidate
+                    break
+    selected = selected or "HEAD"
+    anchor = selected
+    if selected != "HEAD":
+        anchor = subprocess.run(
+            ["git", "merge-base", selected, "HEAD"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    result = subprocess.run(
+        ["git", "show", f"{anchor}:{relative.as_posix()}"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise CliError(f"failed to parse baseline JSON for {relative}: {exc}") from exc
+
+
+def _merge_changed_export_values(base: Any, local: Any, fresh: Any) -> Any:
+    """Take server values only at paths changed locally from ``base``."""
+    from sync_utils import export_values_equal
+
+    if export_values_equal(base, local):
+        return local
+    if isinstance(base, dict) and isinstance(local, dict) and isinstance(fresh, dict):
+        merged: dict[str, Any] = {}
+        for key, local_value in local.items():
+            if key in base and key in fresh:
+                merged[key] = _merge_changed_export_values(
+                    base[key], local_value, fresh[key]
+                )
+            elif key in fresh:
+                merged[key] = fresh[key]
+            else:
+                merged[key] = local_value
+        return merged
+    if isinstance(base, list) and isinstance(local, list) and isinstance(fresh, list):
+        base_by_id = _export_items_by_id(base)
+        local_by_id = _export_items_by_id(local)
+        fresh_by_id = _export_items_by_id(fresh)
+        if (
+            base_by_id is not None
+            and local_by_id is not None
+            and fresh_by_id is not None
+            and set(base_by_id) == set(local_by_id) == set(fresh_by_id)
+        ):
+            return [
+                _merge_changed_export_values(
+                    base_by_id[item_id], local_by_id[item_id], fresh_by_id[item_id]
+                )
+                for item_id in local_by_id
+            ]
+        if len(base) == len(local) == len(fresh):
+            return [
+                _merge_changed_export_values(base_item, local_item, fresh_item)
+                for base_item, local_item, fresh_item in zip(base, local, fresh)
+            ]
+    return fresh
+
+
+def _export_items_by_id(items: list[Any]) -> dict[str, Any] | None:
+    """Index wrapped chart/dashboard/data-link exports when IDs are stable."""
+    indexed: dict[str, Any] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            return None
+        object_id = item.get("id")
+        if not object_id:
+            for wrapper in ("chart", "dashboard", "crosslink"):
+                child = item.get(wrapper)
+                if isinstance(child, dict) and child.get("id"):
+                    object_id = child["id"]
+                    break
+        if not isinstance(object_id, str) or object_id in indexed:
+            return None
+        indexed[object_id] = item
+    return indexed or None
+
+
 def _filter_changed_by_paths(
     changed: list[tuple[str, Path]], wanted: list[str] | None
 ) -> list[tuple[str, Path]]:
@@ -361,7 +483,10 @@ def cmd_plan(args: argparse.Namespace) -> int:
                 remote = _fetch_resource(rtype, rid, base_url, token)
                 local = _load_local_json(path)
                 if rtype == "group":
-                    entry["change_summary"] = summarize_group_changes(remote, local)
+                    baseline = _load_baseline_json(path, args.base)
+                    entry["change_summary"] = summarize_group_changes(
+                        baseline or remote, local
+                    )
                 else:
                     entry["changes"] = compare_json_objects(remote, local)
                 entry["remote_state"] = "exists"
@@ -410,9 +535,18 @@ def cmd_apply(args: argparse.Namespace) -> int:
             continue
         try:
             local = _load_local_json(path)
-            ok = _apply_resource(rtype, local, base_url, token)
+            baseline = _load_baseline_json(path, args.base)
+            ok = _apply_resource(rtype, local, base_url, token, baseline)
             if ok:
-                target = _refresh_local(rtype, rid, base_url, token, path)
+                target = _refresh_local(
+                    rtype,
+                    rid,
+                    base_url,
+                    token,
+                    path,
+                    local_payload=local,
+                    baseline=baseline,
+                )
                 entry["status"] = "applied"
                 entry["local_file_written"] = (
                     str(target.relative_to(REPO_ROOT))
@@ -565,6 +699,8 @@ def _refresh_local(
     base_url: str,
     token: str,
     explicit_out: Path | None = None,
+    local_payload: dict[str, Any] | None = None,
+    baseline: dict[str, Any] | None = None,
 ) -> Path:
     """Re-fetch ``rid`` from master and write the export to disk.
 
@@ -581,7 +717,9 @@ def _refresh_local(
             exit_code=EXIT_API_FAILURE,
         ) from e
     target = _resolve_writeback_path(rtype, rid, fresh, explicit_out)
-    write_local_resource(target, fresh)
+    if rtype == "group" and local_payload is not None and baseline is not None:
+        fresh = _merge_changed_export_values(baseline, local_payload, fresh)
+    write_local_resource(target, fresh, preserve_format=rtype == "group")
     return target
 
 
@@ -616,7 +754,8 @@ def cmd_update(args: argparse.Namespace) -> int:
         )
 
     try:
-        ok = _apply_resource(rtype, payload, base_url, token)
+        baseline = _load_baseline_json(local_path, None)
+        ok = _apply_resource(rtype, payload, base_url, token, baseline)
     except RuntimeError as e:
         raise CliError(str(e), exit_code=EXIT_API_FAILURE) from e
     if not ok:
@@ -625,7 +764,15 @@ def cmd_update(args: argparse.Namespace) -> int:
             exit_code=EXIT_API_FAILURE,
         )
 
-    target = _refresh_local(rtype, rid, base_url, token, local_path)
+    target = _refresh_local(
+        rtype,
+        rid,
+        base_url,
+        token,
+        local_path,
+        local_payload=payload,
+        baseline=baseline,
+    )
     rel = str(target.relative_to(REPO_ROOT)) if REPO_ROOT in target.parents else str(target)
 
     emit(
@@ -742,7 +889,7 @@ def cmd_pull(args: argparse.Namespace) -> int:
 
     explicit_out = Path(args.out) if args.out else None
     target = _resolve_writeback_path(args.type, args.id, fresh, explicit_out)
-    write_local_resource(target, fresh)
+    write_local_resource(target, fresh, preserve_format=args.type == "group")
     rel = str(target.relative_to(REPO_ROOT)) if REPO_ROOT in target.parents else str(target)
     emit(
         {
