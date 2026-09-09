@@ -2,8 +2,8 @@
 
 ## Required configuration
 
-- complete Jira JQL;
-- Jira site/project and automation identity;
+- Jira site and complete JQL, including its project scope;
+- an authenticated Jira identity that preflight can discover and persist;
 - exact `Ready for verification` transition name or ID;
 - Jira owner account IDs for mentions;
 - internal GitLab project URL;
@@ -18,12 +18,27 @@ Refuse apply mode when a required write setting is absent. Read-only inventory a
 
 ## Run phases
 
-1. `preflight`: credentials, tools, repository, lock, configuration, and state readability.
-2. `reconcile`: inspect every ticket with an unfinished lifecycle state.
-3. `discover`: query Jira and normalize eligible tickets.
-4. `process`: investigate and optionally execute bounded new work.
-5. `persist`: atomically record each completed external operation before moving on.
-6. `summarize`: report outcomes and release the lock.
+1. `initialize`: assign a run ID and create its unique local log.
+2. `preflight`: credentials, tools, repository, lock, configuration, and state readability.
+3. `reconcile`: inspect every ticket with an unfinished lifecycle state.
+4. `discover`: query Jira and normalize eligible tickets.
+5. `process`: investigate and optionally execute bounded new work.
+6. `persist`: atomically record each completed external operation before moving on.
+7. `summarize`: report outcomes and release the lock.
+
+## Per-run local logs
+
+Every invocation, including inventory, planning, dry-run, ticket-scoped, and scheduled apply runs, must create a new log before service preflight or any external write. Store it under the repository-ignored directory:
+
+```text
+tools/content-maintainer/.state/runs/<UTC timestamp>-<run ID>.log
+```
+
+Use a UTC timestamp with second precision and a random UUID run ID so concurrent starts never share a filename. Create a new file exclusively; never append a new run to, reuse, or overwrite an earlier run log. If the directory or log cannot be created, make no external changes and report the logging failure in the Codex run output.
+
+Append a timestamped record for run mode, configuration fingerprint, each phase start and result, tickets inspected, lifecycle decisions, intended and verified external operations, relevant returned IDs or URLs, validation outcomes, retryable failures, blockers, and final status. Record failures before stopping whenever the log remains writable. Full dry runs must record rendered comments, transitions, repository changes, SignalBuddy calls, and MR actions that would have occurred.
+
+Logs must be useful without exposing credentials. Never record tokens, cookies, authorization headers, raw credential-bearing environment values, or unsanitized command/API output. Do not stage run logs, include them in ticket file/diff limits, or delete old logs automatically.
 
 ## Durable state
 

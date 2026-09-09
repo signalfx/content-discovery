@@ -20,6 +20,8 @@ The recurring content-maintainer job is versioned with this repository. After cl
 
 Codex will create or update one active project automation that runs every four hours. Re-run the same request after pulling repository changes to refresh the installed job from the canonical definition in `configs/codex/content-maintainer-automation.md`.
 
+Every maintainer invocation writes a separate secret-free local log under `tools/content-maintainer/.state/runs/`. The entire `.state` directory is ignored by Git, so run logs do not appear in repository changes. Logs are retained locally, including for dry runs and failed runs, and are not deleted automatically.
+
 
 # Git pre-commit hook
 

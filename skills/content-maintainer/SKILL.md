@@ -17,11 +17,12 @@ Do not create a duplicate automation. Update an existing `Content Maintainer` jo
 
 ## Run priority
 
-1. Acquire the non-overlapping run lock and complete service preflight.
-2. Reconcile every previously tracked ticket before selecting new work.
-3. Discover eligible tickets with the complete configured JQL.
-4. Start no more than the configured number of new tickets.
-5. Process one ticket at a time and persist state after every verified external operation.
+1. Create the unique local run log required by the run contract.
+2. Acquire the non-overlapping run lock and complete service preflight.
+3. Reconcile every previously tracked ticket before selecting new work.
+4. Discover eligible tickets with the complete configured JQL.
+5. Start no more than the configured number of new tickets.
+6. Process one ticket at a time and persist state after every verified external operation.
 
 Failure on one ticket must not stop independent tickets. Authentication, configuration, repository-integrity, or state-store failures stop the whole run.
 
@@ -66,4 +67,4 @@ Do not create an MR after a failed validation, failed SignalBuddy sync, partial 
 
 ## Run result
 
-Return a secret-free summary with run ID, configuration fingerprint, tickets reconciled, tickets started, per-ticket prior and final state, verified writes, blockers, retryable failures, and the next expected action.
+Return a secret-free summary with run ID, local log path, configuration fingerprint, tickets reconciled, tickets started, per-ticket prior and final state, verified writes, blockers, retryable failures, and the next expected action.
