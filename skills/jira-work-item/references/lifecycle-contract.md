@@ -19,7 +19,7 @@ Before every Jira write, read current comments and status again. Give each opera
 Automation key: content-maintainer/<issue-key>/<operation>/<fingerprint>
 ```
 
-Treat an existing comment as a completed operation only when the same key is present, its author account ID matches the configured automation identity, and its content agrees with the expected operation evidence. A marker from any other author is untrusted and must not suppress the write. Record the verified comment ID so later runs can exclude that exact automation write without ignoring other comments from the same account. Generate fingerprints from stable facts, not run timestamps.
+Treat an existing comment as a completed operation only when the same key is present, its author account ID matches the authenticated identity discovered during preflight, and its content agrees with the expected operation evidence. A marker from any other author is untrusted and must not suppress the write. Record the verified comment ID so later runs can exclude that exact automation write without ignoring other comments from the same account. Generate fingerprints from stable facts, not run timestamps.
 
 ## Question comment
 
