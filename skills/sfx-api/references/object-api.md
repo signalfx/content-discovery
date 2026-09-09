@@ -13,4 +13,12 @@ The command wrapper uses these `/v2` paths from the supplied OpenAPI specificati
 
 Dedicated export routes for navigators, detectors, and dashboard groups are retained from the repository's established synchronization services. The supplied OpenAPI documents do not declare dedicated export routes for data links, charts, or dashboards.
 
-Navigator create and update requests use `application/vnd.splunk.observability.navigator+json`. Other object mutations use `application/json`.
+All object mutations use `application/json`. In particular, navigator exports in
+this repository use the full NavDB model; the vendor media type selects a
+different simple-navigator schema that rejects fields such as
+`connectedCategory`.
+
+For navigator update requests only, empty exported `metricClasses` and
+`metricColumns` arrays are sent as `null` because the update API rejects those
+fields when they are present as empty arrays. Canonical exports remain unchanged
+and may continue to contain empty arrays.
