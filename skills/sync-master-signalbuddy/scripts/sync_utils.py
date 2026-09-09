@@ -226,9 +226,15 @@ def summarize_group_changes(old_data: Dict[str, Any], new_data: Dict[str, Any]) 
     old_group = old_export.get("group", {})
     new_group = new_export.get("group", {})
     
-    group_keys_to_compare = ["name", "description", "teams"]
+    group_keys_to_compare = [
+        "name",
+        "description",
+        "teams",
+        "dashboards",
+        "dashboardConfigs",
+    ]
     for key in group_keys_to_compare:
-        if old_group.get(key) != new_group.get(key):
+        if not export_values_equal(old_group.get(key), new_group.get(key)):
             summary["group_modified"] = True
             break
     
@@ -266,10 +272,40 @@ def summarize_group_changes(old_data: Dict[str, Any], new_data: Dict[str, Any]) 
     summary["crosslinks_removed"] = len(set(old_crosslinks.keys()) - set(new_crosslinks.keys()))
     
     for cl_id in set(old_crosslinks.keys()) & set(new_crosslinks.keys()):
-        if cl_id and old_crosslinks[cl_id] != new_crosslinks[cl_id]:
+        if cl_id and not export_values_equal(
+            old_crosslinks[cl_id], new_crosslinks[cl_id]
+        ):
             summary["crosslinks_modified"] += 1
     
     return summary
+
+
+def export_values_equal(local_value: Any, remote_value: Any) -> bool:
+    """Compare exported values while ignoring harmless API normalization.
+
+    SignalBuddy commonly turns nullable collection fields such as ``tags``,
+    ``filters.sources``, and ``chartLinks`` into empty lists or objects on
+    export. Those representations are operationally equivalent and must not
+    cause every child object in a dashboard group to be updated.
+    """
+    if local_value == remote_value:
+        return True
+    if local_value is None and remote_value in ([], {}):
+        return True
+    if remote_value is None and local_value in ([], {}):
+        return True
+    if isinstance(local_value, dict) and isinstance(remote_value, dict):
+        keys = set(local_value) | set(remote_value)
+        return all(
+            export_values_equal(local_value.get(key), remote_value.get(key))
+            for key in keys
+        )
+    if isinstance(local_value, list) and isinstance(remote_value, list):
+        return len(local_value) == len(remote_value) and all(
+            export_values_equal(local_item, remote_item)
+            for local_item, remote_item in zip(local_value, remote_value)
+        )
+    return False
 
 
 def _has_chart_changed(local_chart: Dict[str, Any], remote_chart: Dict[str, Any]) -> bool:
@@ -282,7 +318,7 @@ def _has_chart_changed(local_chart: Dict[str, Any], remote_chart: Dict[str, Any]
     keys_to_compare = all_keys - ignore_fields
     
     for key in keys_to_compare:
-        if local_chart.get(key) != remote_chart.get(key):
+        if not export_values_equal(local_chart.get(key), remote_chart.get(key)):
             return True
     return False
 
@@ -297,7 +333,7 @@ def _has_dashboard_changed(local_dashboard: Dict[str, Any], remote_dashboard: Di
     keys_to_compare = all_keys - ignore_fields
     
     for key in keys_to_compare:
-        if local_dashboard.get(key) != remote_dashboard.get(key):
+        if not export_values_equal(local_dashboard.get(key), remote_dashboard.get(key)):
             return True
     return False
 
@@ -372,15 +408,126 @@ def canonical_path_for(
     return REPO_ROOT / directory / filename
 
 
-def write_local_resource(path: Path, payload: Dict[str, Any]) -> None:
-    """Write a resource export to disk in the repo's canonical JSON shape.
+class _JsonSpanParser:
+    """Locate JSON value spans without changing the source representation."""
 
-    Uses 2-space indent with sorted keys and ``ensure_ascii=False`` so
-    multibyte characters round-trip cleanly. The repo currently has
-    mixed formatting across ``group/`` files specifically; we normalize
-    on write so subsequent diffs are stable.
-    """
+    def __init__(self, source: str) -> None:
+        self.source = source
+        self.decoder = json.JSONDecoder()
+
+    def parse(self) -> Tuple[Any, int, int, Any]:
+        node = self._value(self._skip(0))
+        if self._skip(node[2]) != len(self.source):
+            raise ValueError("unexpected content after JSON document")
+        return node
+
+    def _skip(self, offset: int) -> int:
+        while offset < len(self.source) and self.source[offset].isspace():
+            offset += 1
+        return offset
+
+    def _value(self, start: int) -> Tuple[Any, int, int, Any]:
+        if start >= len(self.source):
+            raise ValueError("unexpected end of JSON document")
+        token = self.source[start]
+        if token == "{":
+            return self._object(start)
+        if token == "[":
+            return self._array(start)
+        value, length = self.decoder.raw_decode(self.source[start:])
+        return value, start, start + length, None
+
+    def _object(self, start: int) -> Tuple[Any, int, int, Any]:
+        offset = self._skip(start + 1)
+        values: Dict[str, Any] = {}
+        children: Dict[str, Any] = {}
+        if self.source[offset] == "}":
+            return values, start, offset + 1, children
+        while True:
+            key, length = self.decoder.raw_decode(self.source[offset:])
+            if not isinstance(key, str):
+                raise ValueError("JSON object key must be a string")
+            offset = self._skip(offset + length)
+            if self.source[offset] != ":":
+                raise ValueError("expected ':' after JSON object key")
+            child = self._value(self._skip(offset + 1))
+            values[key] = child[0]
+            children[key] = child
+            offset = self._skip(child[2])
+            if self.source[offset] == "}":
+                return values, start, offset + 1, children
+            if self.source[offset] != ",":
+                raise ValueError("expected ',' between JSON object values")
+            offset = self._skip(offset + 1)
+
+    def _array(self, start: int) -> Tuple[Any, int, int, Any]:
+        offset = self._skip(start + 1)
+        values: List[Any] = []
+        children: List[Any] = []
+        if self.source[offset] == "]":
+            return values, start, offset + 1, children
+        while True:
+            child = self._value(offset)
+            values.append(child[0])
+            children.append(child)
+            offset = self._skip(child[2])
+            if self.source[offset] == "]":
+                return values, start, offset + 1, children
+            if self.source[offset] != ",":
+                raise ValueError("expected ',' between JSON array values")
+            offset = self._skip(offset + 1)
+
+
+def _format_preserving_replacements(
+    node: Tuple[Any, int, int, Any], fresh: Any, *, root: bool = False
+) -> List[Tuple[int, int, str]]:
+    current, start, end, children = node
+    if export_values_equal(current, fresh):
+        return []
+    if isinstance(current, dict) and isinstance(fresh, dict):
+        if set(current) == set(fresh):
+            replacements: List[Tuple[int, int, str]] = []
+            for key in current:
+                replacements.extend(
+                    _format_preserving_replacements(children[key], fresh[key])
+                )
+            return replacements
+    elif isinstance(current, list) and isinstance(fresh, list):
+        if len(current) == len(fresh):
+            replacements = []
+            for child, fresh_item in zip(children, fresh):
+                replacements.extend(
+                    _format_preserving_replacements(child, fresh_item)
+                )
+            return replacements
+    if root:
+        raise ValueError("exported dashboard-group structure cannot be mapped safely")
+    return [(start, end, json.dumps(fresh, ensure_ascii=False, separators=(",", ":")))]
+
+
+def _write_preserving_json_format(path: Path, payload: Dict[str, Any]) -> None:
+    source = path.read_text(encoding="utf-8")
+    root = _JsonSpanParser(source).parse()
+    replacements = _format_preserving_replacements(root, payload, root=True)
+    for start, end, rendered in sorted(replacements, reverse=True):
+        source = source[:start] + rendered + source[end:]
+    with path.open("w", encoding="utf-8") as f:
+        f.write(source)
+
+
+def write_local_resource(
+    path: Path, payload: Dict[str, Any], *, preserve_format: bool = False
+) -> None:
+    """Write an export, optionally retaining an existing file's JSON layout."""
     path.parent.mkdir(parents=True, exist_ok=True)
+    if preserve_format and path.exists():
+        try:
+            _write_preserving_json_format(path, payload)
+        except (IndexError, OSError, ValueError, json.JSONDecodeError) as exc:
+            raise RuntimeError(
+                f"cannot safely preserve dashboard-group formatting in {path}: {exc}"
+            ) from exc
+        return
     with path.open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, sort_keys=True, ensure_ascii=False)
         f.write("\n")

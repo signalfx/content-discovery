@@ -82,14 +82,18 @@ For a detector:
 
 For a dashboard group:
 
-1. Export the current complete group from Master SignalBuddy.
-2. Create or update changed charts first.
-3. Remap IDs for newly created charts in dependent dashboards.
-4. Create or update changed dashboards.
-5. Remap IDs for newly created dashboards in the dashboard group.
-6. Update the dashboard-group object.
-7. Create or update associated data links.
-8. Export the complete group from Master SignalBuddy into the same local file.
+1. Compare the local export with its repository base and select only charts,
+   dashboards, group fields, and data links changed by the branch or working tree.
+2. Export the current complete group from Master SignalBuddy.
+3. Create or update only the selected charts first.
+4. Remap IDs for newly created charts in dependent dashboards.
+5. Create or update only selected dashboards.
+6. Remap IDs for newly created dashboards in the dashboard group.
+7. Update the dashboard-group object only when selected group fields changed.
+8. Create or update only selected associated data links.
+9. Export the complete group from Master SignalBuddy into the same local file,
+   updating changed JSON values without reordering keys or reformatting untouched
+   content. Treat API-normalized null and empty collection values as equivalent.
 
 Do not delete remote charts, dashboards, or data links merely because they are absent locally. Deletion requires a separate explicit request and plan.
 

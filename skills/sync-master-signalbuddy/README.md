@@ -119,9 +119,12 @@ git config core.hooksPath tools/scripts
 After that, `git commit` automatically handles staged navigator,
 detector, and group JSON files. The hook validates the repository,
 plans and applies only those staged content paths to Master
-SignalBuddy, exports the canonical objects back into the same files,
-re-stages them, and validates again. The repository hook then runs the
-`content-changelog` skill's deterministic CLI to generate, stage, and
+SignalBuddy, exports the canonical objects back into the same files, and
+re-stages and validates them. Dashboard-group updates are scoped by the
+repository baseline so only locally changed charts, dashboards, group fields,
+and data links are written. Their writeback preserves existing JSON spacing,
+key order, and semantically equivalent null/empty collection values. The hook
+then runs the `content-changelog` skill's deterministic CLI to generate, stage, and
 validate release-note entries for those final staged exports. The commit
 itself is approval for this hook-managed remote update, so there is no
 second prompt.

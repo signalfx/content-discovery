@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import contextlib
 import io
 import json
@@ -48,7 +49,7 @@ class SyncApplyTest(unittest.TestCase):
             mock.patch.object(
                 cli,
                 "_refresh_local",
-                side_effect=lambda *_: events.append("export") or path,
+                side_effect=lambda *_, **__: events.append("export") or path,
             ),
             contextlib.redirect_stdout(io.StringIO()),
             contextlib.redirect_stderr(io.StringIO()),
@@ -101,6 +102,117 @@ class ChangeDetectionTest(unittest.TestCase):
             changed = utils.get_changed_files()
 
         self.assertEqual(changed, [("navigator", navigator)])
+
+
+class FormatPreservingWriteTest(unittest.TestCase):
+    def test_group_write_changes_values_without_reformatting_existing_json(self) -> None:
+        path = Path(tempfile.NamedTemporaryFile(suffix=".json", delete=False).name)
+        self.addCleanup(path.unlink, missing_ok=True)
+        original = """{
+  \"chartExports\" : [ {
+    \"chart\" : {
+      \"id\" : \"chart-1\",
+      \"programText\" : \"old program\",
+      \"tags\" : null
+    }
+  } ],
+  \"hashCode\" : 1
+}
+"""
+        path.write_text(original, encoding="utf-8")
+        fresh = {
+            "chartExports": [
+                {
+                    "chart": {
+                        "id": "chart-1",
+                        "programText": "new program",
+                        "tags": [],
+                    }
+                }
+            ],
+            "hashCode": 2,
+        }
+
+        utils.write_local_resource(path, fresh, preserve_format=True)
+
+        expected = original.replace("old program", "new program").replace(
+            '"hashCode" : 1', '"hashCode" : 2'
+        )
+        self.assertEqual(path.read_text(encoding="utf-8"), expected)
+        self.assertIn('"tags" : null', path.read_text(encoding="utf-8"))
+
+    def test_group_write_refuses_unmappable_root_instead_of_reformatting(self) -> None:
+        path = Path(tempfile.NamedTemporaryFile(suffix=".json", delete=False).name)
+        self.addCleanup(path.unlink, missing_ok=True)
+        original = '{\n  "hashCode" : 1\n}\n'
+        path.write_text(original, encoding="utf-8")
+
+        with self.assertRaisesRegex(RuntimeError, "cannot safely preserve"):
+            utils.write_local_resource(
+                path,
+                {"hashCode": 2, "chartExports": []},
+                preserve_format=True,
+            )
+
+        self.assertEqual(path.read_text(encoding="utf-8"), original)
+
+    def test_export_comparison_ignores_null_empty_collection_normalization(self) -> None:
+        local = {
+            "tags": None,
+            "filters": {"sources": None, "variables": None},
+        }
+        remote = {
+            "tags": [],
+            "filters": {"sources": [], "variables": []},
+        }
+
+        self.assertTrue(utils.export_values_equal(local, remote))
+        self.assertFalse(group_sync._has_chart_changed(local, remote))
+        self.assertFalse(group_sync._has_dashboard_changed(local, remote))
+        summary = utils.summarize_group_changes(
+            {"groupExport": {"group": {"teams": None}}},
+            {"groupExport": {"group": {"teams": []}}},
+        )
+        self.assertFalse(summary["group_modified"])
+
+    def test_export_comparison_still_detects_meaningful_change(self) -> None:
+        local = {"programText": "A = data('metric').mean()", "tags": None}
+        remote = {"programText": "A = data('metric').sum()", "tags": []}
+
+        self.assertFalse(utils.export_values_equal(local, remote))
+        self.assertTrue(group_sync._has_chart_changed(local, remote))
+
+    def test_three_way_writeback_keeps_unrelated_remote_drift_out(self) -> None:
+        baseline = {
+            "chartExports": [
+                {"chart": {"id": "chart-1", "programText": "old", "tags": None}},
+                {"chart": {"id": "chart-2", "programText": "unchanged"}},
+            ],
+            "hashCode": 1,
+        }
+        local = {
+            "chartExports": [
+                {"chart": {"id": "chart-1", "programText": "new", "tags": None}},
+                {"chart": {"id": "chart-2", "programText": "unchanged"}},
+            ],
+            "hashCode": 2,
+        }
+        fresh = {
+            "chartExports": [
+                {"chart": {"id": "chart-2", "programText": "remote drift"}},
+                {"chart": {"id": "chart-1", "programText": "new", "tags": []}},
+            ],
+            "hashCode": 3,
+        }
+
+        merged = cli._merge_changed_export_values(baseline, local, fresh)
+
+        self.assertEqual(merged["chartExports"][0]["chart"]["programText"], "new")
+        self.assertIsNone(merged["chartExports"][0]["chart"]["tags"])
+        self.assertEqual(
+            merged["chartExports"][1]["chart"]["programText"], "unchanged"
+        )
+        self.assertEqual(merged["hashCode"], 3)
 
 
 class GroupOrderTest(unittest.TestCase):
@@ -221,6 +333,42 @@ class GroupOrderTest(unittest.TestCase):
         self.assertEqual(
             created_payloads["dashboard"]["charts"][0]["chartId"], "new-chart"
         )
+
+    def test_group_update_only_writes_children_changed_from_baseline(self) -> None:
+        baseline = {
+            "chartExports": [
+                {"chart": {"id": "chart-1", "programText": "old"}},
+                {"chart": {"id": "chart-2", "programText": "same"}},
+            ],
+            "dashboardExports": [
+                {"dashboard": {"id": "dash-1", "name": "Dashboard"}}
+            ],
+            "groupExport": {"group": {"id": "group-1", "name": "Group"}},
+            "crossLinkExports": [],
+        }
+        local = copy.deepcopy(baseline)
+        local["chartExports"][0]["chart"]["programText"] = "new"
+        remote = copy.deepcopy(baseline)
+        remote["chartExports"][1]["chart"]["programText"] = "remote drift"
+        remote["dashboardExports"][0]["dashboard"]["locked"] = False
+        updates: list[tuple[str, str]] = []
+
+        def update(resource, object_id, *_args):
+            updates.append((resource, object_id))
+            return {"id": object_id}
+
+        with (
+            mock.patch.object(group_sync, "fetch_group_export_by_id", return_value=remote),
+            mock.patch.object(group_sync, "update_object", side_effect=update),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            result = group_sync.update_dashboard_group(
+                local, "https://api", "token", baseline
+            )
+
+        self.assertTrue(result)
+        self.assertEqual(updates, [("chart", "chart-1")])
 
 
 class CrosslinkOutputTest(unittest.TestCase):

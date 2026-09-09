@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Optional
 
 SFX_SCRIPT_DIR = Path(__file__).resolve().parents[2] / "sfx-api" / "scripts"
 if str(SFX_SCRIPT_DIR) not in sys.path:
@@ -19,6 +19,7 @@ from sfx_client import (
     prepare_payload,
     update_object,
 )
+from sync_utils import export_values_equal
 
 
 def fetch_group_export_by_id(
@@ -124,10 +125,14 @@ def _sync_children(
 
 
 def update_dashboard_group(
-    group_export: Dict[str, Any], base_url: str, token: str
+    group_export: Dict[str, Any],
+    base_url: str,
+    token: str,
+    baseline_export: Optional[Dict[str, Any]] = None,
 ) -> bool:
     """Apply a group export in chart → dashboard → group → data-link order."""
     local_export = copy.deepcopy(group_export)
+    baseline = baseline_export or {}
     local_group = local_export["groupExport"]["group"]
     group_id = local_group["id"]
 
@@ -135,21 +140,44 @@ def update_dashboard_group(
         remote_export = fetch_group_export_by_id(group_id, base_url, token)
 
         local_charts = _objects(local_export.get("chartExports", []), "chart")
+        baseline_charts = _objects(baseline.get("chartExports", []), "chart")
         remote_charts = _objects(remote_export.get("chartExports", []), "chart")
+        selected_chart_ids = _changed_ids(
+            local_charts, baseline_charts, _has_chart_changed
+        )
         chart_ids = _sync_children(
-            "chart", local_charts, remote_charts, {}, base_url, token
+            "chart",
+            {key: local_charts[key] for key in selected_chart_ids},
+            {
+                key: remote_charts[key]
+                for key in selected_chart_ids
+                if key in remote_charts
+            },
+            {},
+            base_url,
+            token,
         )
 
         local_dashboards = _objects(
             local_export.get("dashboardExports", []), "dashboard"
         )
+        baseline_dashboards = _objects(
+            baseline.get("dashboardExports", []), "dashboard"
+        )
         remote_dashboards = _objects(
             remote_export.get("dashboardExports", []), "dashboard"
         )
+        selected_dashboard_ids = _changed_ids(
+            local_dashboards, baseline_dashboards, _has_dashboard_changed
+        )
         dashboard_ids = _sync_children(
             "dashboard",
-            local_dashboards,
-            remote_dashboards,
+            {key: local_dashboards[key] for key in selected_dashboard_ids},
+            {
+                key: remote_dashboards[key]
+                for key in selected_dashboard_ids
+                if key in remote_dashboards
+            },
             chart_ids,
             base_url,
             token,
@@ -158,7 +186,11 @@ def update_dashboard_group(
         replacements = {**chart_ids, **dashboard_ids}
         prepared_group = prepare_payload(_replace_ids(local_group, replacements))
         remote_group = remote_export["groupExport"]["group"]
-        if _has_group_changed(prepared_group, remote_group):
+        baseline_group = baseline.get("groupExport", {}).get("group")
+        group_selected = baseline_group is None or _has_group_changed(
+            local_group, baseline_group
+        )
+        if group_selected and _has_group_changed(prepared_group, remote_group):
             update_object(
                 "dashboard-group", group_id, prepared_group, base_url, token
             )
@@ -172,6 +204,15 @@ def update_dashboard_group(
         local_crosslinks = _replace_ids(
             local_export.get("crossLinkExports", []), replacements
         )
+        if baseline_export is not None:
+            baseline_crosslinks = baseline.get("crossLinkExports", [])
+            local_crosslinks = [
+                item
+                for item in local_crosslinks
+                if not any(
+                    export_values_equal(item, old) for old in baseline_crosslinks
+                )
+            ]
         if local_crosslinks:
             _, _, failed = update_crosslinks(local_crosslinks, base_url, token)
             if failed:
@@ -190,15 +231,38 @@ def update_dashboard_group(
     return False
 
 
+def _changed_ids(
+    local_objects: Dict[str, Dict[str, Any]],
+    baseline_objects: Dict[str, Dict[str, Any]],
+    changed: Callable[[Dict[str, Any], Dict[str, Any]], bool],
+) -> set[str]:
+    """Return IDs added or meaningfully changed from the repository baseline."""
+    if not baseline_objects:
+        return set(local_objects)
+    added = set(local_objects) - set(baseline_objects)
+    modified = {
+        object_id
+        for object_id in set(local_objects) & set(baseline_objects)
+        if changed(local_objects[object_id], baseline_objects[object_id])
+    }
+    return added | modified
+
+
 def _has_group_changed(local_group: Dict[str, Any], remote_group: Dict[str, Any]) -> bool:
     keys_to_compare = ("name", "description", "teams", "dashboards", "dashboardConfigs")
-    return any(local_group.get(key) != remote_group.get(key) for key in keys_to_compare)
+    return any(
+        not export_values_equal(local_group.get(key), remote_group.get(key))
+        for key in keys_to_compare
+    )
 
 
 def _has_chart_changed(local_chart: Dict[str, Any], remote_chart: Dict[str, Any]) -> bool:
     ignored = {"created", "lastUpdated", "lastUpdatedBy", "creator"}
     keys = (set(local_chart) | set(remote_chart)) - ignored
-    return any(local_chart.get(key) != remote_chart.get(key) for key in keys)
+    return any(
+        not export_values_equal(local_chart.get(key), remote_chart.get(key))
+        for key in keys
+    )
 
 
 def _has_dashboard_changed(
@@ -206,4 +270,7 @@ def _has_dashboard_changed(
 ) -> bool:
     ignored = {"created", "lastUpdated", "lastUpdatedBy", "creator"}
     keys = (set(local_dashboard) | set(remote_dashboard)) - ignored
-    return any(local_dashboard.get(key) != remote_dashboard.get(key) for key in keys)
+    return any(
+        not export_values_equal(local_dashboard.get(key), remote_dashboard.get(key))
+        for key in keys
+    )
