@@ -1,6 +1,6 @@
 # Content maintainer state machine
 
-| State | Entry evidence | Next daily action | Valid exits |
+| State | Entry evidence | Next scheduled action | Valid exits |
 |---|---|---|---|
 | `discovered` | Ticket matched configured JQL | Hydrate and investigate | `needs_information`, `ready`, `blocked` |
 | `needs_information` | Verified Jira question comment | Read comments after cursor | `ready`, `needs_information`, `blocked` |

@@ -1,6 +1,6 @@
 ---
 name: content-maintainer
-description: Run or plan the daily content-discovery engineering loop across Jira, repository research, isolated implementation, Master SignalBuddy synchronization, GitLab review, and Jira follow-up. Use for processing eligible content tickets or reconciling work from earlier runs.
+description: Run, plan, or install the recurring content-discovery engineering workflow across Jira, repository research, isolated implementation, Master SignalBuddy synchronization, GitLab review, and Jira follow-up. Use for processing eligible content tickets, reconciling earlier work, or adding the repository-owned Codex automation.
 ---
 
 # Maintain content-discovery work items
@@ -8,6 +8,12 @@ description: Run or plan the daily content-discovery engineering loop across Jir
 This is the orchestration skill. Delegate Jira writes and transitions to `$jira-work-item`, GitLab delivery and MR status to `$content-mr`, changelog generation and coverage to `$content-changelog`, and SignalFx operations to `$sfx-api` through `$sync-master-signalbuddy` when repository content changes.
 
 Read [references/run-contract.md](references/run-contract.md) before a run. Read [references/state-machine.md](references/state-machine.md) when choosing a ticket's next action.
+
+## Install the Codex automation
+
+When asked to install or update the scheduled job, read [`../../configs/codex/content-maintainer-automation.md`](../../configs/codex/content-maintainer-automation.md) completely and follow its installation contract. The repository file is the canonical job definition; the installed automation is a per-user Codex setting.
+
+Do not create a duplicate automation. Update an existing `Content Maintainer` job for this project when one exists. Never copy credentials into the automation prompt or committed configuration.
 
 ## Run priority
 
@@ -56,7 +62,7 @@ Do not create an MR after a failed validation, failed SignalBuddy sync, partial 
 - Never guess Jira account IDs, GitLab reviewer usernames, transition IDs, or project targets.
 - Never expose service credentials to an editing subprocess or log.
 - Never process outside configured JQL, repository, allowed paths, ticket limits, or diff limits.
-- Manual runs require normal authorization for external writes. A configured daily run may perform only the operations explicitly enabled in its run policy.
+- Manual runs require normal authorization for external writes. A configured scheduled run may perform only the operations explicitly enabled in its run policy.
 
 ## Run result
 

@@ -1,4 +1,4 @@
-# Daily run contract
+# Scheduled run contract
 
 ## Required configuration
 
@@ -45,7 +45,7 @@ Write state atomically. Remote Jira and GitLab reads remain authoritative after 
 - `plan`: gather context and produce ticket plans without external writes.
 - `run --dry-run`: simulate lifecycle choices and rendered comments/MRs.
 - `run --ticket <key>`: bounded pilot for one eligible ticket.
-- `run`: configured daily apply mode.
+- `run`: configured scheduled apply mode.
 
 ## Failure policy
 
