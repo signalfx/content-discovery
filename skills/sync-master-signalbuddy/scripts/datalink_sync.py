@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 SFX_SCRIPT_DIR = Path(__file__).resolve().parents[2] / "sfx-api" / "scripts"
 if str(SFX_SCRIPT_DIR) not in sys.path:
@@ -70,7 +70,7 @@ def update_crosslink(crosslink: Dict[str, Any], base_url: str, token: str) -> bo
 
 
 def update_crosslinks(
-    crosslink_exports: List[Dict[str, Any]], base_url: str, token: str
+    crosslink_exports: Optional[List[Dict[str, Any]]], base_url: str, token: str
 ) -> tuple[int, int, int]:
     """
     Update multiple crosslinks by comparing with remote state.
@@ -87,7 +87,7 @@ def update_crosslinks(
     created_count = 0
     failed_count = 0
     
-    for crosslink_export in crosslink_exports:
+    for crosslink_export in crosslink_exports or []:
         # Exports vary between snake_case and camelCase payload keys, normalize here
         crosslink = crosslink_export.get("crosslink") or crosslink_export.get("crossLink")
         if not crosslink:

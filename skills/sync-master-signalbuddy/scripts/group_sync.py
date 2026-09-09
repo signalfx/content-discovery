@@ -202,10 +202,10 @@ def update_dashboard_group(
             print("  ℹ️  Dashboard group unchanged", file=sys.stderr)
 
         local_crosslinks = _replace_ids(
-            local_export.get("crossLinkExports", []), replacements
+            local_export.get("crossLinkExports") or [], replacements
         )
         if baseline_export is not None:
-            baseline_crosslinks = baseline.get("crossLinkExports", [])
+            baseline_crosslinks = baseline.get("crossLinkExports") or []
             local_crosslinks = [
                 item
                 for item in local_crosslinks

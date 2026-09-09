@@ -264,9 +264,9 @@ def summarize_group_changes(old_data: Dict[str, Any], new_data: Dict[str, Any]) 
     
     # Extract crosslinks
     old_crosslinks = {cl.get("crosslink", {}).get("id"): cl.get("crosslink") 
-                      for cl in old_data.get("crossLinkExports", [])}
+                      for cl in old_data.get("crossLinkExports") or []}
     new_crosslinks = {cl.get("crosslink", {}).get("id"): cl.get("crosslink") 
-                      for cl in new_data.get("crossLinkExports", [])}
+                      for cl in new_data.get("crossLinkExports") or []}
     
     summary["crosslinks_added"] = len(set(new_crosslinks.keys()) - set(old_crosslinks.keys()))
     summary["crosslinks_removed"] = len(set(old_crosslinks.keys()) - set(new_crosslinks.keys()))
