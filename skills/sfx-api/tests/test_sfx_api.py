@@ -45,18 +45,16 @@ class SfxApiTest(unittest.TestCase):
             set(sfx_api.OPERATIONS), {"get", "export", "create", "update", "delete"}
         )
 
-    def test_get_chart_dispatches_to_object_service(self) -> None:
+    def test_get_chart_dispatches_to_master_signalbuddy(self) -> None:
         with mock.patch.object(sfx_api, "get_object", return_value={"id": "chart-1"}) as getter:
-            exit_code, stdout, stderr = self.run_cli(
-                ["get", "chart", "chart-1", "--realm", "eu0"]
-            )
+            exit_code, stdout, stderr = self.run_cli(["get", "chart", "chart-1"])
 
         self.assertEqual(exit_code, 0)
         self.assertEqual(stderr, "")
         getter.assert_called_once_with(
             "chart",
             "chart-1",
-            "https://api.eu0.observability.splunkcloud.com",
+            "https://api.us0.observability.splunkcloud.com",
             "secret",
         )
         self.assertEqual(json.loads(stdout)["result"], {"id": "chart-1"})
@@ -69,7 +67,7 @@ class SfxApiTest(unittest.TestCase):
 
         self.assertEqual(exit_code, 2)
         self.assertEqual(stdout, "")
-        self.assertIn("HTTPS Splunk Observability API host", stderr)
+        self.assertIn("approved Master SignalBuddy HTTPS API host", stderr)
         getter.assert_not_called()
 
     def test_custom_splunk_base_url_is_normalized(self) -> None:
@@ -79,13 +77,13 @@ class SfxApiTest(unittest.TestCase):
                 "chart",
                 "chart-1",
                 "--base-url",
-                "https://api.eu0.observability.splunkcloud.com/v2/",
+                "https://api.us0.observability.splunkcloud.com/v2/",
             ]
         )
 
         self.assertEqual(
             sfx_api.resolve_base_url(args),
-            "https://api.eu0.observability.splunkcloud.com",
+            "https://api.us0.observability.splunkcloud.com",
         )
 
     def test_custom_base_url_requires_https(self) -> None:
@@ -101,6 +99,15 @@ class SfxApiTest(unittest.TestCase):
 
         with self.assertRaises(sfx_api.CliError):
             sfx_api.resolve_base_url(args)
+
+    def test_realm_override_is_not_supported(self) -> None:
+        with (
+            contextlib.redirect_stderr(io.StringIO()),
+            self.assertRaises(SystemExit),
+        ):
+            sfx_api.build_parser().parse_args(
+                ["get", "chart", "chart-1", "--realm", "attacker.example/path"]
+            )
 
     def test_export_group_alias_writes_raw_export(self) -> None:
         output = self.write_payload({})

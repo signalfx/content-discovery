@@ -31,7 +31,11 @@ from sfx_client import (  # noqa: E402
 
 
 OPERATIONS = ("get", "export", "create", "update", "delete")
-LEGACY_API_HOST = "api.signalfx.com"
+MASTER_REALM = "us0"
+MASTER_API_HOSTS = {
+    "api.us0.observability.splunkcloud.com",
+    "api.us0.signalfx.com",
+}
 RESOURCE_ALIASES = {
     "navigator": "navigator",
     "detector": "detector",
@@ -78,11 +82,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the raw export JSON to this file; valid only with export",
     )
     parser.add_argument("--yes", action="store_true", help="Confirm a remote mutation")
-    endpoint = parser.add_mutually_exclusive_group()
-    endpoint.add_argument("--realm", default="us0", help="Splunk Observability realm")
-    endpoint.add_argument(
+    parser.add_argument(
         "--base-url",
-        help="HTTPS Splunk Observability API host, optionally ending in /v2",
+        help="Approved Master SignalBuddy HTTPS API host, optionally ending in /v2",
     )
     return parser
 
@@ -134,26 +136,22 @@ def resolve_base_url(args: argparse.Namespace) -> str:
             port = parsed.port
         except ValueError as exc:
             raise CliError(f"invalid --base-url: {exc}") from exc
-        is_splunk_observability_host = (
-            hostname.startswith("api.")
-            and hostname.endswith(".observability.splunkcloud.com")
-        )
         if (
             parsed.scheme != "https"
             or parsed.username is not None
             or parsed.password is not None
             or port not in (None, 443)
-            or not (is_splunk_observability_host or hostname == LEGACY_API_HOST)
+            or hostname not in MASTER_API_HOSTS
             or parsed.path.rstrip("/") not in ("", "/v2")
             or parsed.query
             or parsed.fragment
         ):
             raise CliError(
-                "--base-url must be an HTTPS Splunk Observability API host "
+                "--base-url must be an approved Master SignalBuddy HTTPS API host "
                 "without credentials, query parameters, or a path other than /v2"
             )
         return f"https://{hostname}"
-    return f"https://api.{args.realm}.observability.splunkcloud.com"
+    return f"https://api.{MASTER_REALM}.observability.splunkcloud.com"
 
 
 def _nested_object(raw: dict[str, Any], path: tuple[str, ...]) -> dict[str, Any] | None:
