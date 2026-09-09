@@ -4,6 +4,7 @@
 
 - Jira site and complete JQL, including its project scope;
 - an authenticated Codex Atlassian connection with Jira and Confluence access, from which preflight can discover and persist the logged-in Jira identity;
+- exact `In Progress` transition name or ID;
 - exact `Ready for verification` transition name or ID;
 - Jira owner email addresses that preflight can resolve uniquely to active account IDs for mentions;
 - internal GitLab project URL;
@@ -15,6 +16,10 @@
 When content JSON is in scope, `content_release_notes.yaml` is an allowed required generated file and must be included in changed-file and diff-size accounting.
 
 Refuse apply mode when a required write setting is absent. Read-only inventory and planning may still run.
+
+For an actionable ticket in apply mode, the work-start boundary is: discover the configured `In Progress` transition, execute it when the ticket is not already in that status, re-read Jira to verify the status, and create or verify the idempotent work-started comment. Complete this boundary before creating a worktree or editing repository files. If it fails, leave the ticket's agent state at `ready` or `blocked`, record any verified partial Jira operation, and do not begin implementation. A dry run renders these operations without performing them.
+
+Apply mode requires both `remote_writes.jira_in_progress_transition` and `remote_writes.jira_comments` to be `true` before starting new ticket work. A false value is an intentional policy restriction, not permission to skip that part of the boundary.
 
 Preflight must perform a real Jira read through the Codex Atlassian connection and verify Confluence access before a run that may need linked documentation. Configuration metadata or a successful process exit alone is not proof of access. If the connection is absent, disconnected, or requires reauthentication, stop before external writes and prompt the user to set up or reconnect Atlassian in Codex. Never ask for an Atlassian token or make scheduled runs depend on `dev-login`. Ghost may be used only as an explicitly chosen manual diagnostic fallback, not as the scheduled authentication path.
 
@@ -63,6 +68,7 @@ Store state under the repository-ignored `tools/content-maintainer/.state/` dire
 - schema version and configuration fingerprint;
 - run history and lock owner;
 - per-ticket lifecycle and Jira cursor;
+- verified work-start transition and progress-comment IDs;
 - question fingerprints and reminder dates;
 - worktree, branch, and base SHA;
 - verified MR identity, SHA, pipeline, discussions, and reviewers;

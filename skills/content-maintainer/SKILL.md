@@ -47,18 +47,21 @@ Use `$jira-work-item` to post questions and persist `needs_information` only whe
 
 ## Execute an actionable ticket
 
-1. Refresh the remote default branch.
-2. Create or reuse the ticket's isolated worktree and branch.
-3. Confirm the worktree is clean and contains no unrelated work.
-4. Make only the planned changes.
-5. Run focused tests, content validation, JSON checks, and whitespace checks.
-6. Review the complete diff against acceptance criteria and configured size/path limits.
-7. Commit the ticket change. For staged navigator, detector, or group JSON files, allow the installed pre-commit workflow to synchronize and export canonical Master SignalBuddy content, then use `$content-changelog` to generate and stage one release-note entry per final staged content file.
-8. Review the generated changelog descriptions and re-run relevant validation if the canonical export or changelog generation changed files.
-9. Use `$content-mr` to push, create or reuse the MR, assign reviewers, and verify it remotely.
-10. Use `$jira-work-item` to record the verified MR.
+1. Use `$jira-work-item` to transition the ticket through the configured `In Progress` transition, re-read Jira to verify the resulting status, and post the idempotent work-started comment with the interpreted scope and plan. If any step fails, do not begin repository work.
+2. Refresh the remote default branch.
+3. Create or reuse the ticket's isolated worktree and branch.
+4. Confirm the worktree is clean and contains no unrelated work.
+5. Make only the planned changes.
+6. Run focused tests, content validation, JSON checks, and whitespace checks.
+7. Review the complete diff against acceptance criteria and configured size/path limits.
+8. Commit the ticket change. For staged navigator, detector, or group JSON files, allow the installed pre-commit workflow to synchronize and export canonical Master SignalBuddy content, then use `$content-changelog` to generate and stage one release-note entry per final staged content file.
+9. Review the generated changelog descriptions and re-run relevant validation if the canonical export or changelog generation changed files.
+10. Use `$content-mr` to push, create or reuse the MR, assign reviewers, and verify it remotely.
+11. Use `$jira-work-item` to record the verified MR.
 
 Do not create an MR after a failed validation, failed SignalBuddy sync, partial commit, or unverified push.
+
+If work fails after Jira was moved to `In Progress`, post one idempotent progress update with the concrete blocker, completed work, and next retry action. Do not automatically move the ticket backward.
 
 ## Boundaries
 

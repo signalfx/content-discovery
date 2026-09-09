@@ -19,6 +19,14 @@ During preflight, discover the authenticated Jira account ID and persist it with
 
 Never request or print Jira tokens. A scheduled run may perform only the comment and transition operations enabled by its configuration.
 
+## Start actionable work
+
+Before repository implementation begins, re-read the issue and its comments. Discover the available transition matching the configured `In Progress` name or ID. If the issue is not already in that status, execute the transition and then fetch the issue again to verify the resulting Jira status. After status verification, create or verify the work-started comment from the lifecycle contract.
+
+The comment must state the evidence-backed interpretation, planned files or content objects, intended validation and delivery steps, and any non-blocking assumptions. Use a stable plan fingerprint so reruns do not duplicate it. Treat an existing comment as valid only when its marker, author, and expected content satisfy the idempotency contract.
+
+If the transition or status verification fails, do not post a comment claiming work started and do not authorize repository changes. If the transition succeeded but the comment failed, preserve that verified partial result and retry only the missing comment on the next run.
+
 ## Read a work item
 
 Hydrate the issue before making a decision:
@@ -42,6 +50,8 @@ Record the comment ID, newest observed comment ID, question fingerprint, and men
 ## Record a merge request
 
 Comment only after `$content-mr` has verified the MR remotely. Include the MR URL, source branch, commit SHA, concise change summary, validation evidence, and assigned reviewers. Use the stable operation marker from the lifecycle contract to prevent duplicates.
+
+When implementation fails after the verified work-start boundary, post one idempotent progress comment describing completed work, the concrete blocker, whether any remote operation succeeded, and the next retry action. Do not automatically transition the Jira ticket backward.
 
 ## Transition after merge
 
