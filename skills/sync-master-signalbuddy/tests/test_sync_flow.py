@@ -79,6 +79,24 @@ class SyncApplyTest(unittest.TestCase):
         self.assertEqual(exit_code, cli.EXIT_PARTIAL)
         refresh.assert_not_called()
 
+    def test_navigator_apply_normalizes_null_crosslink_exports(self) -> None:
+        payload = {
+            "navigatorExport": {"navigator": {"id": "nav-1", "name": "Navigator"}},
+            "crossLinkExports": None,
+        }
+        with (
+            mock.patch.object(cli, "update_object"),
+            mock.patch.object(
+                cli, "update_crosslinks", return_value=(0, 0, 0)
+            ) as crosslinks,
+        ):
+            result = cli._apply_resource(
+                "navigator", payload, "https://api", "token"
+            )
+
+        self.assertTrue(result)
+        crosslinks.assert_called_once_with([], "https://api", "token")
+
 
 class ChangeDetectionTest(unittest.TestCase):
     def test_feature_branch_changes_are_compared_from_merge_base(self) -> None:
@@ -372,6 +390,15 @@ class GroupOrderTest(unittest.TestCase):
 
 
 class CrosslinkOutputTest(unittest.TestCase):
+    def test_null_crosslink_exports_are_treated_as_empty(self) -> None:
+        with mock.patch.object(datalink_sync, "update_crosslink") as update:
+            result = datalink_sync.update_crosslinks(
+                None, "https://api", "token"
+            )
+
+        self.assertEqual(result, (0, 0, 0))
+        update.assert_not_called()
+
     def test_crosslink_progress_is_written_to_stderr(self) -> None:
         stdout = io.StringIO()
         stderr = io.StringIO()

@@ -175,7 +175,7 @@ def _apply_resource(
             "navigator", navigator_id, prepare_payload(navigator), base_url, token
         )
         _, _, failed = update_crosslinks(
-            local.get("crossLinkExports", []), base_url, token
+            local.get("crossLinkExports") or [], base_url, token
         )
         return failed == 0
     if rtype == "group":
