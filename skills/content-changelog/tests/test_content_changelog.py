@@ -31,6 +31,61 @@ class ContentChangelogUnitTests(unittest.TestCase):
             {"detector/New.json", "detector/Old.json"},
         )
 
+    def test_navigator_description_reports_exact_display_name_change(self):
+        change = MODULE.ContentChange("M", "navigators/Apache/server.json")
+        old = {
+            "navigatorExport": {
+                "navigator": {
+                    "uiModel": {"displayName": "Apache Server CPU utilization"}
+                }
+            },
+            "hashCode": 1,
+        }
+        new = {
+            "navigatorExport": {
+                "navigator": {
+                    "uiModel": {"displayName": "Apache server CPU utilization"}
+                }
+            },
+            "hashCode": 2,
+        }
+        with mock.patch.object(MODULE, "previous_change_document", return_value=old), mock.patch.object(
+            MODULE, "read_change_document", return_value=new
+        ):
+            description = MODULE.describe_modified_content(
+                change, "Apache web servers", "navigator"
+            )
+
+        self.assertEqual(
+            description,
+            'Changed display name from "Apache Server CPU utilization" to "Apache server CPU utilization".',
+        )
+
+    def test_dashboard_group_description_counts_changed_chart_programs(self):
+        change = MODULE.ContentChange("M", "group/AWS Redshift.json")
+        old = {
+            "chartExports": [
+                {"chart": {"id": "one", "programText": "old one"}},
+                {"chart": {"id": "two", "programText": "old two"}},
+            ],
+            "hashCode": 1,
+        }
+        new = {
+            "chartExports": [
+                {"chart": {"id": "one", "programText": "new one"}},
+                {"chart": {"id": "two", "programText": "new two"}},
+            ],
+            "hashCode": 2,
+        }
+        with mock.patch.object(MODULE, "previous_change_document", return_value=old), mock.patch.object(
+            MODULE, "read_change_document", return_value=new
+        ):
+            description = MODULE.describe_modified_content(
+                change, "AWS Redshift", "dashboard_group"
+            )
+
+        self.assertEqual(description, "Updated program text in 2 charts.")
+
 
 class ContentChangelogIntegrationTests(unittest.TestCase):
     def run_git(self, root, *args):
@@ -79,6 +134,13 @@ class ContentChangelogIntegrationTests(unittest.TestCase):
             self.assertEqual(next(iter(data["versions"])), "2.0.1")
             entry = next(iter(data["versions"].values()))
             self.assertEqual(len(entry["files"]), 2)
+            detector_entry = next(
+                item for item in entry["files"] if item["category"] == "detector"
+            )
+            self.assertEqual(
+                detector_entry["description"],
+                'Changed name from "CPU" to "CPU usage".',
+            )
 
     def test_base_validation_rejects_only_historical_file_coverage(self):
         with tempfile.TemporaryDirectory() as temp:
