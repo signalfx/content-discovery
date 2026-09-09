@@ -61,6 +61,47 @@ class SfxApiTest(unittest.TestCase):
         )
         self.assertEqual(json.loads(stdout)["result"], {"id": "chart-1"})
 
+    def test_custom_base_url_rejects_non_splunk_host_before_request(self) -> None:
+        with mock.patch.object(sfx_api, "get_object") as getter:
+            exit_code, stdout, stderr = self.run_cli(
+                ["get", "chart", "chart-1", "--base-url", "https://attacker.example"]
+            )
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stdout, "")
+        self.assertIn("HTTPS Splunk Observability API host", stderr)
+        getter.assert_not_called()
+
+    def test_custom_splunk_base_url_is_normalized(self) -> None:
+        args = sfx_api.build_parser().parse_args(
+            [
+                "get",
+                "chart",
+                "chart-1",
+                "--base-url",
+                "https://api.eu0.observability.splunkcloud.com/v2/",
+            ]
+        )
+
+        self.assertEqual(
+            sfx_api.resolve_base_url(args),
+            "https://api.eu0.observability.splunkcloud.com",
+        )
+
+    def test_custom_base_url_requires_https(self) -> None:
+        args = sfx_api.build_parser().parse_args(
+            [
+                "get",
+                "chart",
+                "chart-1",
+                "--base-url",
+                "http://api.us0.observability.splunkcloud.com",
+            ]
+        )
+
+        with self.assertRaises(sfx_api.CliError):
+            sfx_api.resolve_base_url(args)
+
     def test_export_group_alias_writes_raw_export(self) -> None:
         output = self.write_payload({})
         export = {"groupExport": {"group": {"id": "group-1"}}}

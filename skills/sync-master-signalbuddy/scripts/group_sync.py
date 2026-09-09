@@ -86,7 +86,10 @@ def _sync_children(
                 f"created {resource} {object_id} but the API response contained no id"
             )
         created_ids[object_id] = new_id
-        print(f"  ➕ Created {resource}: {local.get('name', object_id)}")
+        print(
+            f"  ➕ Created {resource}: {local.get('name', object_id)}",
+            file=sys.stderr,
+        )
 
     all_replacements = {**replacements, **created_ids}
     for object_id in sorted(shared):
@@ -105,13 +108,17 @@ def _sync_children(
                 base_url,
                 token,
             )
-            print(f"  ✏️  Updated {resource}: {local.get('name', object_id)}")
+            print(
+                f"  ✏️  Updated {resource}: {local.get('name', object_id)}",
+                file=sys.stderr,
+            )
 
     removed = set(remote_objects) - set(local_objects)
     if removed:
         print(
             f"  ℹ️  {len(removed)} {resource}(s) exist remotely but not locally "
-            "(not deleted)"
+            "(not deleted)",
+            file=sys.stderr,
         )
     return created_ids
 
@@ -155,9 +162,12 @@ def update_dashboard_group(
             update_object(
                 "dashboard-group", group_id, prepared_group, base_url, token
             )
-            print(f"  ✏️  Updated dashboard group: {local_group.get('name', group_id)}")
+            print(
+                f"  ✏️  Updated dashboard group: {local_group.get('name', group_id)}",
+                file=sys.stderr,
+            )
         else:
-            print("  ℹ️  Dashboard group unchanged")
+            print("  ℹ️  Dashboard group unchanged", file=sys.stderr)
 
         local_crosslinks = _replace_ids(
             local_export.get("crossLinkExports", []), replacements

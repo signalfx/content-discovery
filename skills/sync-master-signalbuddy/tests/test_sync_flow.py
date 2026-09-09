@@ -17,6 +17,7 @@ for import_dir in (SCRIPT_DIR, SFX_SCRIPT_DIR):
     if str(import_dir) not in sys.path:
         sys.path.insert(0, str(import_dir))
 
+import datalink_sync
 import group_sync
 import sync_changed as cli
 import sync_utils as utils
@@ -50,6 +51,7 @@ class SyncApplyTest(unittest.TestCase):
                 side_effect=lambda *_: events.append("export") or path,
             ),
             contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
         ):
             exit_code = cli.cmd_apply(args)
 
@@ -102,6 +104,26 @@ class ChangeDetectionTest(unittest.TestCase):
 
 
 class GroupOrderTest(unittest.TestCase):
+    def test_group_progress_is_written_to_stderr(self) -> None:
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        local = {"chart-1": {"id": "chart-1", "name": "New chart"}}
+
+        with (
+            mock.patch.object(
+                group_sync, "create_object", return_value={"id": "new-chart-1"}
+            ),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stderr),
+        ):
+            replacements = group_sync._sync_children(
+                "chart", local, {}, {}, "https://api", "token"
+            )
+
+        self.assertEqual(replacements, {"chart-1": "new-chart-1"})
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("Created chart: New chart", stderr.getvalue())
+
     def test_group_updates_in_dependency_order(self) -> None:
         remote = {
             "chartExports": [{"chart": {"id": "chart-1", "name": "Old chart"}}],
@@ -146,6 +168,7 @@ class GroupOrderTest(unittest.TestCase):
                 side_effect=lambda *_: order.append("datalink") or (1, 0, 0),
             ),
             contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
         ):
             result = group_sync.update_dashboard_group(local, "https://api", "token")
 
@@ -190,6 +213,7 @@ class GroupOrderTest(unittest.TestCase):
             mock.patch.object(group_sync, "create_object", side_effect=create),
             mock.patch.object(group_sync, "update_object", return_value={}),
             contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
         ):
             result = group_sync.update_dashboard_group(local, "https://api", "token")
 
@@ -197,6 +221,26 @@ class GroupOrderTest(unittest.TestCase):
         self.assertEqual(
             created_payloads["dashboard"]["charts"][0]["chartId"], "new-chart"
         )
+
+
+class CrosslinkOutputTest(unittest.TestCase):
+    def test_crosslink_progress_is_written_to_stderr(self) -> None:
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        exports = [{"crosslink": {"propertyName": "host.name"}}]
+
+        with (
+            mock.patch.object(datalink_sync, "update_crosslink", return_value=True),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stderr),
+        ):
+            result = datalink_sync.update_crosslinks(
+                exports, "https://api", "token"
+            )
+
+        self.assertEqual(result, (0, 1, 0))
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("Created crosslink: host.name", stderr.getvalue())
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 import subprocess
 import sys
@@ -148,6 +150,28 @@ class PreCommitSyncTest(unittest.TestCase):
 
         command = run.call_args.args[0]
         self.assertEqual(command[-1], "--yes")
+
+    def test_sync_command_parses_json_when_progress_is_on_stderr(self) -> None:
+        output = json.dumps({"failed_count": 0, "results": []})
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with (
+            mock.patch.object(
+                hook,
+                "_run",
+                return_value=completed(
+                    stdout=output,
+                    stderr="  Created chart: New chart\n",
+                ),
+            ),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stderr),
+        ):
+            payload = hook.run_sync_command("apply", ["group/Kubernetes.json"])
+
+        self.assertEqual(payload, {"failed_count": 0, "results": []})
+        self.assertEqual(stdout.getvalue(), output + "\n")
+        self.assertIn("Created chart: New chart", stderr.getvalue())
 
 
 if __name__ == "__main__":
