@@ -1,0 +1,293 @@
+#!/usr/bin/env bash
+
+set -u
+set -o pipefail
+
+readonly SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+readonly REPO_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)"
+readonly LOCAL_CONFIG="$REPO_ROOT/configs/content-maintainer.local.yaml"
+readonly EXAMPLE_CONFIG="$REPO_ROOT/configs/content-maintainer.example.yaml"
+readonly TOKEN_FILE="$REPO_ROOT/.token"
+readonly SFX_CLI="$REPO_ROOT/skills/sfx-api/scripts/sfx_api.py"
+readonly AUTOMATION_PROMPT="Use \$content-maintainer to install or update this repository's Content Maintainer automation. This invocation was launched by tools/scripts/configure-content-maintainer and all deterministic prerequisite checks have passed, so do not run that setup script again. Read configs/codex/content-maintainer-automation.md and configs/content-maintainer.local.yaml completely. Use Codex automation management, update the existing project automation instead of creating a duplicate, activate it, and verify the installed job. Do not create an operating-system scheduler, edit automation storage files directly, or copy credentials into the automation. If automation management is unavailable, report the blocker. End the final response with exactly CONTENT_MAINTAINER_AUTOMATION_CONFIGURED only after verified success, or CONTENT_MAINTAINER_AUTOMATION_BLOCKED otherwise."
+
+check_only=false
+case "${1:-}" in
+  "") ;;
+  --check-only) check_only=true ;;
+  -h|--help)
+    printf 'Usage: %s [--check-only]\n' "$0"
+    printf 'Validate prerequisites and configure the Content Maintainer Codex automation.\n'
+    exit 0
+    ;;
+  *)
+    printf 'Unknown option: %s\n' "$1" >&2
+    exit 2
+    ;;
+esac
+
+cd "$REPO_ROOT" || exit 1
+
+failures=0
+tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/content-maintainer-setup.XXXXXX")" || exit 1
+trap 'rm -rf "$tmp_dir"' EXIT
+
+pass() {
+  printf '  OK  %s\n' "$1"
+}
+
+fail() {
+  printf ' FAIL %s\n' "$1" >&2
+  failures=$((failures + 1))
+}
+
+require_command() {
+  if command -v "$1" >/dev/null 2>&1; then
+    pass "$1 is installed"
+  else
+    fail "$1 is not installed${2:+; $2}"
+  fi
+}
+
+printf 'Content Maintainer local setup\n\n'
+printf 'Required tools\n'
+require_command git
+require_command codex 'install Codex CLI and sign in with your ChatGPT account'
+require_command ghost 'install Ghost and run: dev-login atlassian'
+require_command glab 'install glab and authenticate to cd.splunkdev.com'
+
+python_bin="$REPO_ROOT/.venv/bin/python"
+if [[ -x "$python_bin" ]] && "$python_bin" -c 'import yaml' >/dev/null 2>&1; then
+  pass 'repository Python environment and PyYAML are available'
+else
+  fail 'repository .venv with PyYAML is required'
+fi
+
+printf '\nLocal configuration\n'
+if [[ ! -f "$LOCAL_CONFIG" ]]; then
+  if [[ "$check_only" == true ]]; then
+    fail 'configs/content-maintainer.local.yaml is missing; copy the example and review it'
+  elif [[ -f "$EXAMPLE_CONFIG" ]]; then
+    cp "$EXAMPLE_CONFIG" "$LOCAL_CONFIG"
+    pass 'created ignored configs/content-maintainer.local.yaml from the repository example'
+  else
+    fail 'configs/content-maintainer.example.yaml is missing'
+  fi
+fi
+
+project_key=""
+if [[ -x "$python_bin" && -f "$LOCAL_CONFIG" ]]; then
+  if "$python_bin" - "$LOCAL_CONFIG" >"$tmp_dir/config.out" 2>"$tmp_dir/config.err" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+import yaml
+
+path = Path(sys.argv[1])
+data = yaml.safe_load(path.read_text(encoding="utf-8"))
+if not isinstance(data, dict):
+    raise ValueError("configuration must be a YAML object")
+
+def mapping(name):
+    value = data.get(name)
+    if not isinstance(value, dict):
+        raise ValueError(f"{name} must be an object")
+    return value
+
+def text_value(parent, key):
+    value = parent.get(key)
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{key} must be a non-empty string")
+    return value.strip()
+
+jira = mapping("jira")
+if text_value(jira, "site_url").rstrip("/") != "https://splunk.atlassian.net":
+    raise ValueError("jira.site_url must be https://splunk.atlassian.net")
+jql = text_value(jira, "jql")
+match = re.search(r"(?i)(?:^|\s|\()project\s*=\s*([A-Z][A-Z0-9_]*)", jql)
+if not match:
+    raise ValueError("jira.jql must contain a project = KEY boundary")
+text_value(jira, "ready_for_verification_transition")
+owners = jira.get("owner_emails")
+if not isinstance(owners, list) or not owners or any(
+    not isinstance(item, str) or "@" not in item for item in owners
+):
+    raise ValueError("jira.owner_emails must contain one or more email addresses")
+
+gitlab = mapping("gitlab")
+project_url = text_value(gitlab, "project_url")
+if not project_url.startswith("https://cd.splunkdev.com/"):
+    raise ValueError("gitlab.project_url must use https://cd.splunkdev.com/")
+reviewers = gitlab.get("reviewers")
+if not isinstance(reviewers, list) or not reviewers or any(
+    not isinstance(item, str) or not item.strip() for item in reviewers
+):
+    raise ValueError("gitlab.reviewers must contain one or more usernames")
+
+limits = mapping("limits")
+for key in (
+    "max_new_tickets_per_run",
+    "max_changed_files_per_ticket",
+    "max_diff_lines_per_ticket",
+    "reminder_interval_hours",
+):
+    if not isinstance(limits.get(key), int) or limits[key] <= 0:
+        raise ValueError(f"limits.{key} must be a positive integer")
+
+paths = data.get("allowed_repository_paths")
+if not isinstance(paths, list) or not paths or any(
+    not isinstance(item, str) or not item.strip() for item in paths
+):
+    raise ValueError("allowed_repository_paths must contain one or more paths")
+
+writes = mapping("remote_writes")
+for key in (
+    "jira_comments",
+    "jira_ready_for_verification_transition",
+    "gitlab_branches_and_merge_requests",
+    "signalbuddy_updates_and_exports",
+):
+    if not isinstance(writes.get(key), bool):
+        raise ValueError(f"remote_writes.{key} must be true or false")
+
+print(match.group(1).upper())
+PY
+  then
+    project_key="$(tr -d '\r\n' <"$tmp_dir/config.out")"
+    pass "local configuration is valid for Jira project $project_key"
+  else
+    fail "local configuration is invalid: $(tr '\n' ' ' <"$tmp_dir/config.err")"
+  fi
+fi
+
+for skill in content-maintainer jira-work-item content-mr sync-master-signalbuddy sfx-api content-changelog; do
+  if [[ -f "$REPO_ROOT/.agents/skills/$skill/SKILL.md" ]]; then
+    pass "project skill $skill is available"
+  else
+    fail "project skill $skill is missing under .agents/skills"
+  fi
+done
+
+printf '\nRepository pre-commit hook\n'
+hook_path="$(git config --get core.hooksPath 2>/dev/null || true)"
+if [[ "$hook_path" == "tools/scripts" ]]; then
+  pass 'core.hooksPath is tools/scripts'
+elif [[ "$check_only" == true ]]; then
+  fail 'core.hooksPath is not tools/scripts; run: git config core.hooksPath tools/scripts'
+elif git config core.hooksPath tools/scripts; then
+  pass 'configured core.hooksPath as tools/scripts for this clone'
+else
+  fail 'could not configure the repository pre-commit hook'
+fi
+
+if [[ -x "$REPO_ROOT/tools/scripts/pre-commit" ]]; then
+  pass 'pre-commit hook is executable'
+else
+  fail 'tools/scripts/pre-commit is missing or not executable'
+fi
+
+printf '\nService authentication\n'
+if command -v codex >/dev/null 2>&1; then
+  if codex login status >"$tmp_dir/codex.out" 2>"$tmp_dir/codex.err"; then
+    pass 'Codex CLI is logged in'
+  else
+    fail 'Codex CLI is not logged in; run: codex login'
+  fi
+fi
+
+if command -v ghost >/dev/null 2>&1 && [[ -n "$project_key" ]]; then
+  if ghost jira preflight --project "$project_key" --json >"$tmp_dir/jira.out" 2>"$tmp_dir/jira.err"; then
+    pass "Jira authentication and $project_key access are valid"
+  else
+    fail 'Jira authentication failed; run: dev-login atlassian'
+  fi
+
+  if ghost confluence preflight --json >"$tmp_dir/confluence.out" 2>"$tmp_dir/confluence.err"; then
+    pass 'Confluence authentication is valid'
+  else
+    fail 'Confluence authentication failed; run: dev-login atlassian'
+  fi
+fi
+
+if command -v glab >/dev/null 2>&1; then
+  glab api --hostname cd.splunkdev.com user >"$tmp_dir/gitlab.out" 2>"$tmp_dir/gitlab.err"
+  glab_status=$?
+  if [[ -x "$python_bin" ]] && "$python_bin" - "$tmp_dir/gitlab.out" <<'PY' >/dev/null 2>&1
+import json
+import sys
+
+value = json.load(open(sys.argv[1], encoding="utf-8"))
+if not isinstance(value, dict) or not value.get("username"):
+    raise SystemExit(1)
+PY
+  then
+    pass 'GitLab authentication to cd.splunkdev.com is valid'
+    if [[ $glab_status -ne 0 ]]; then
+      printf ' WARN glab returned an error after a valid API response; continuing with the verified response\n'
+    fi
+  else
+    fail 'GitLab authentication failed; run: glab auth login --hostname cd.splunkdev.com'
+  fi
+fi
+
+if [[ ! -f "$TOKEN_FILE" ]]; then
+  fail './.token is missing; add a Master SignalBuddy us0 token to that ignored file'
+elif [[ ! -s "$TOKEN_FILE" ]]; then
+  fail './.token is empty'
+elif git ls-files --error-unmatch .token >/dev/null 2>&1; then
+  fail './.token is tracked by Git; remove it from the index before continuing'
+else
+  if [[ "$check_only" == false ]]; then
+    chmod 600 "$TOKEN_FILE" || fail 'could not restrict ./.token permissions to the current user'
+  fi
+
+  detector_id=""
+  if [[ -x "$python_bin" ]]; then
+    detector_id="$($python_bin - "$REPO_ROOT/detector" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+for path in sorted(Path(sys.argv[1]).glob("*.json")):
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        value = data.get("detectorExport", {}).get("detector", {}).get("id")
+        if isinstance(value, str) and value:
+            print(value)
+            break
+    except (OSError, ValueError, AttributeError):
+        continue
+PY
+)"
+  fi
+
+  if [[ -z "$detector_id" ]]; then
+    fail 'could not find a repository detector ID for the Master SignalBuddy token check'
+  elif env -u SFX_ACCESS_TOKEN -u SIGNALBUDDY_TOKEN "$python_bin" "$SFX_CLI" get detector "$detector_id" >"$tmp_dir/sfx.out" 2>"$tmp_dir/sfx.err" &&
+       "$python_bin" -c 'import json,sys; raise SystemExit(0 if json.load(open(sys.argv[1])).get("ok") is True else 1)' "$tmp_dir/sfx.out"; then
+    pass './.token is valid for a read-only Master SignalBuddy us0 request'
+  else
+    fail './.token could not authenticate a read-only Master SignalBuddy us0 request'
+  fi
+fi
+
+if [[ $failures -ne 0 ]]; then
+  printf '\nSetup stopped with %d failed prerequisite check(s). No Codex automation change was requested.\n' "$failures" >&2
+  exit 1
+fi
+
+if [[ "$check_only" == true ]]; then
+  printf '\nAll Content Maintainer prerequisites passed. Codex was not invoked (--check-only).\n'
+  exit 0
+fi
+
+printf '\nAll prerequisites passed. Asking Codex to install or update the automation...\n'
+if codex --ask-for-approval never exec --ephemeral --color never --sandbox read-only \
+    --output-last-message "$tmp_dir/codex-final.txt" -C "$REPO_ROOT" "$AUTOMATION_PROMPT" &&
+   grep -Fxq 'CONTENT_MAINTAINER_AUTOMATION_CONFIGURED' "$tmp_dir/codex-final.txt"; then
+  printf '\nContent Maintainer configuration request completed. Review the Codex result above for the installed automation status.\n'
+else
+  printf '\nCodex did not verify the automation configuration. No operating-system scheduler was created.\n' >&2
+  exit 1
+fi

@@ -5,7 +5,7 @@
 - Jira site and complete JQL, including its project scope;
 - an authenticated Jira identity that preflight can discover and persist;
 - exact `Ready for verification` transition name or ID;
-- Jira owner account IDs for mentions;
+- Jira owner email addresses that preflight can resolve uniquely to active account IDs for mentions;
 - internal GitLab project URL;
 - optional additional GitLab reviewer usernames or an approved reference MR; the `$content-mr` baseline reviewers remain mandatory;
 - maximum new tickets, changed files, and diff size per run;

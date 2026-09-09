@@ -13,6 +13,8 @@ Read [references/run-contract.md](references/run-contract.md) before a run. Read
 
 When asked to install or update the scheduled job, read [`../../configs/codex/content-maintainer-automation.md`](../../configs/codex/content-maintainer-automation.md) completely and follow its installation contract. The repository file is the canonical job definition; the installed automation is a per-user Codex setting.
 
+For a new clone or a full local prerequisite check, run `tools/scripts/configure-content-maintainer`. It verifies the local configuration, project skills, hook installation, authenticated services, and repository `.token` before invoking Codex CLI with the fixed installation prompt. Use its `--check-only` mode when no automation change is wanted. When the setup script's fixed prompt says those checks already passed, do not invoke the script recursively.
+
 Do not create a duplicate automation. Update an existing `Content Maintainer` job for this project when one exists. Never copy credentials into the automation prompt or committed configuration.
 
 ## Run priority
