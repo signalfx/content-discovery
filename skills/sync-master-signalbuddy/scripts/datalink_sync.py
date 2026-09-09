@@ -96,7 +96,10 @@ def update_crosslinks(
         crosslink_id = crosslink.get("id")
         if not crosslink_id:
             if update_crosslink(crosslink, base_url, token):
-                print(f"  ➕ Created crosslink: {crosslink.get('propertyName', '<unnamed crosslink>')}")
+                print(
+                    f"  ➕ Created crosslink: {crosslink.get('propertyName', '<unnamed crosslink>')}",
+                    file=sys.stderr,
+                )
                 created_count += 1
             else:
                 failed_count += 1
@@ -110,7 +113,10 @@ def update_crosslinks(
             if remote_crosslink != crosslink:
                 # Crosslink has changed, update it
                 if update_crosslink(crosslink, base_url, token):
-                    print(f"  ✏️  Updated crosslink: {crosslink.get('propertyName', crosslink_id)}")
+                    print(
+                        f"  ✏️  Updated crosslink: {crosslink.get('propertyName', crosslink_id)}",
+                        file=sys.stderr,
+                    )
                     updated_count += 1
                 else:
                     failed_count += 1
@@ -119,7 +125,10 @@ def update_crosslinks(
         except RuntimeError:
             # Crosslink doesn't exist, create it
             if update_crosslink(crosslink, base_url, token):
-                print(f"  ➕ Created crosslink: {crosslink.get('propertyName', crosslink_id)}")
+                print(
+                    f"  ➕ Created crosslink: {crosslink.get('propertyName', crosslink_id)}",
+                    file=sys.stderr,
+                )
                 created_count += 1
             else:
                 failed_count += 1

@@ -10,6 +10,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+from urllib.parse import urlsplit
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -30,6 +31,7 @@ from sfx_client import (  # noqa: E402
 
 
 OPERATIONS = ("get", "export", "create", "update", "delete")
+LEGACY_API_HOST = "api.signalfx.com"
 RESOURCE_ALIASES = {
     "navigator": "navigator",
     "detector": "detector",
@@ -78,7 +80,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--yes", action="store_true", help="Confirm a remote mutation")
     endpoint = parser.add_mutually_exclusive_group()
     endpoint.add_argument("--realm", default="us0", help="Splunk Observability realm")
-    endpoint.add_argument("--base-url", help="API host without the /v2 suffix")
+    endpoint.add_argument(
+        "--base-url",
+        help="HTTPS Splunk Observability API host, optionally ending in /v2",
+    )
     return parser
 
 
@@ -123,8 +128,31 @@ def resolve_token(environ: Mapping[str, str] = os.environ) -> str:
 
 def resolve_base_url(args: argparse.Namespace) -> str:
     if args.base_url:
-        base_url = args.base_url.rstrip("/")
-        return base_url[:-3] if base_url.endswith("/v2") else base_url
+        parsed = urlsplit(args.base_url)
+        hostname = (parsed.hostname or "").lower()
+        try:
+            port = parsed.port
+        except ValueError as exc:
+            raise CliError(f"invalid --base-url: {exc}") from exc
+        is_splunk_observability_host = (
+            hostname.startswith("api.")
+            and hostname.endswith(".observability.splunkcloud.com")
+        )
+        if (
+            parsed.scheme != "https"
+            or parsed.username is not None
+            or parsed.password is not None
+            or port not in (None, 443)
+            or not (is_splunk_observability_host or hostname == LEGACY_API_HOST)
+            or parsed.path.rstrip("/") not in ("", "/v2")
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise CliError(
+                "--base-url must be an HTTPS Splunk Observability API host "
+                "without credentials, query parameters, or a path other than /v2"
+            )
+        return f"https://{hostname}"
     return f"https://api.{args.realm}.observability.splunkcloud.com"
 
 
