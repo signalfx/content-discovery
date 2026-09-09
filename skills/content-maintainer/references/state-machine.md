@@ -2,7 +2,7 @@
 
 | State | Entry evidence | Next scheduled action | Valid exits |
 |---|---|---|---|
-| `discovered` | Ticket matched configured JQL | Hydrate and investigate | `needs_information`, `ready`, `blocked` |
+| `discovered` | Ticket matched configured JQL | Hydrate, exhaust evidence resolution, and investigate | `needs_information`, `ready`, `blocked` |
 | `needs_information` | Verified Jira question comment | Read comments after cursor | `ready`, `needs_information`, `blocked` |
 | `ready` | Complete acceptance criteria and plan | Create isolated worktree | `working`, `blocked` |
 | `working` | Worktree, branch, and plan recorded | Implement and validate | `mr_open`, `needs_information`, `blocked` |
@@ -13,6 +13,8 @@
 | `blocked` | Concrete terminal or run-policy blocker | Retry only when relevant state changes | Any justified state |
 
 Persist both `agent_status` and `jira_status`; never store Jira's status in the agent lifecycle field.
+
+`needs_information` is valid only after the run contract's evidence-resolution process leaves multiple materially different, technically valid outcomes that require owner judgment. A documented, evidence-backed assumption exits to `ready`; residual uncertainty by itself does not.
 
 ## Actionable open MR
 
