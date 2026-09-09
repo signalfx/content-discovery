@@ -9,7 +9,7 @@ readonly LOCAL_CONFIG="$REPO_ROOT/configs/content-maintainer.local.yaml"
 readonly EXAMPLE_CONFIG="$REPO_ROOT/configs/content-maintainer.example.yaml"
 readonly TOKEN_FILE="$REPO_ROOT/.token"
 readonly SFX_CLI="$REPO_ROOT/skills/sfx-api/scripts/sfx_api.py"
-readonly AUTOMATION_PROMPT="Use \$content-maintainer to install or update this repository's Content Maintainer automation. This invocation was launched by tools/scripts/configure-content-maintainer and all deterministic prerequisite checks have passed, so do not run that setup script again. Read configs/codex/content-maintainer-automation.md and configs/content-maintainer.local.yaml completely. Use Codex automation management, update the existing project automation instead of creating a duplicate, activate it, and verify the installed job. Do not create an operating-system scheduler, edit automation storage files directly, or copy credentials into the automation. If automation management is unavailable, report the blocker. End the final response with exactly CONTENT_MAINTAINER_AUTOMATION_CONFIGURED only after verified success, or CONTENT_MAINTAINER_AUTOMATION_BLOCKED otherwise."
+readonly AUTOMATION_PROMPT="Use \$content-maintainer to install or update this repository's Content Maintainer automation. This invocation was launched by tools/scripts/configure-content-maintainer after its shell-enforced local checks completed, so do not run that setup script again and do not assume Atlassian access from the script result. Read configs/codex/content-maintainer-automation.md and configs/content-maintainer.local.yaml completely. Before changing the automation, verify through Codex's Atlassian connection that the logged-in user can read the configured Jira project and Confluence. If the Atlassian connection is missing, disconnected, requires reauthentication, or cannot perform those reads, prompt the user to set up or reconnect the Atlassian connection in Codex, do not install, update, or activate the automation, and report the blocker. Do not ask the user for an Atlassian token or run dev-login. When access is verified, use Codex automation management, update the existing project automation instead of creating a duplicate, activate it, and verify the installed job. Do not create an operating-system scheduler, edit automation storage files directly, or copy credentials into the automation. If automation management is unavailable, report the blocker. End the final response with exactly CONTENT_MAINTAINER_AUTOMATION_CONFIGURED only after verified success, or CONTENT_MAINTAINER_AUTOMATION_BLOCKED otherwise."
 
 check_only=false
 case "${1:-}" in
@@ -41,6 +41,10 @@ fail() {
   failures=$((failures + 1))
 }
 
+warn() {
+  printf ' WARN %s\n' "$1"
+}
+
 require_command() {
   if command -v "$1" >/dev/null 2>&1; then
     pass "$1 is installed"
@@ -53,7 +57,6 @@ printf 'Content Maintainer local setup\n\n'
 printf 'Required tools\n'
 require_command git
 require_command codex 'install Codex CLI and sign in with your ChatGPT account'
-require_command ghost 'install Ghost and run: dev-login atlassian'
 require_command glab 'install glab and authenticate to cd.splunkdev.com'
 
 python_bin="$REPO_ROOT/.venv/bin/python"
@@ -196,17 +199,33 @@ if command -v codex >/dev/null 2>&1; then
   fi
 fi
 
-if command -v ghost >/dev/null 2>&1 && [[ -n "$project_key" ]]; then
-  if ghost jira preflight --project "$project_key" --json >"$tmp_dir/jira.out" 2>"$tmp_dir/jira.err"; then
-    pass "Jira authentication and $project_key access are valid"
-  else
-    fail 'Jira authentication failed; run: dev-login atlassian'
-  fi
+if command -v codex >/dev/null 2>&1; then
+  if codex mcp list --json >"$tmp_dir/mcp.out" 2>"$tmp_dir/mcp.err" &&
+     [[ -x "$python_bin" ]] &&
+     "$python_bin" - "$tmp_dir/mcp.out" <<'PY' >/dev/null 2>&1
+import json
+import sys
 
-  if ghost confluence preflight --json >"$tmp_dir/confluence.out" 2>"$tmp_dir/confluence.err"; then
-    pass 'Confluence authentication is valid'
+servers = json.load(open(sys.argv[1], encoding="utf-8"))
+if not isinstance(servers, list):
+    raise SystemExit(1)
+
+matches = [server for server in servers if server.get("name") == "atlassian"]
+if len(matches) != 1:
+    raise SystemExit(1)
+
+server = matches[0]
+if server.get("enabled") is not True:
+    raise SystemExit(1)
+if server.get("auth_status") not in {"o_auth", "oauth", "authenticated"}:
+    raise SystemExit(1)
+PY
+  then
+    pass 'Codex Atlassian connection is configured; Codex will verify live Jira and Confluence access'
+  elif [[ "$check_only" == true ]]; then
+    fail 'Codex Atlassian connection is not configured and authenticated; set it up in Codex'
   else
-    fail 'Confluence authentication failed; run: dev-login atlassian'
+    warn 'Codex Atlassian connection is not ready; Codex will prompt you to set it up before installing the automation'
   fi
 fi
 
@@ -282,7 +301,7 @@ if [[ "$check_only" == true ]]; then
   exit 0
 fi
 
-printf '\nAll prerequisites passed. Asking Codex to install or update the automation...\n'
+printf '\nAll shell-enforced prerequisites passed. Asking Codex to verify Atlassian access and install or update the automation...\n'
 if codex --ask-for-approval never exec --ephemeral --color never --sandbox read-only \
     --output-last-message "$tmp_dir/codex-final.txt" -C "$REPO_ROOT" "$AUTOMATION_PROMPT" &&
    grep -Fxq 'CONTENT_MAINTAINER_AUTOMATION_CONFIGURED' "$tmp_dir/codex-final.txt"; then

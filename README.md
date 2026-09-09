@@ -12,7 +12,7 @@ Others:
 
 # Install the Codex content maintainer
 
-The recurring content-maintainer job is versioned with this repository. After cloning the repository and opening it as a Codex project, run `./tools/scripts/configure-content-maintainer`. It validates the repository-local configuration, required project skills, pre-commit hook, Codex login, Jira and Confluence access, GitLab access, and the ignored `./.token` against a read-only Master SignalBuddy request. It then asks Codex, with the repository-owned fixed prompt, to install or update the automation.
+The recurring content-maintainer job is versioned with this repository. After cloning the repository and opening it as a Codex project, run `./tools/scripts/configure-content-maintainer`. It validates the repository-local configuration, required project skills, pre-commit hook, Codex login and Atlassian connection configuration, GitLab access, and the ignored `./.token` against a read-only Master SignalBuddy request. Codex then verifies live Jira and Confluence access through the logged-in user's Atlassian connection before installing or updating the automation. If that connection is missing or needs authentication, Codex prompts the user to set it up and leaves the automation unchanged.
 
 The script creates `configs/content-maintainer.local.yaml` from the example when needed; review that ignored file before re-running if validation reports a problem. Use `./tools/scripts/configure-content-maintainer --check-only` to run all prerequisite checks without asking Codex to change the automation.
 
