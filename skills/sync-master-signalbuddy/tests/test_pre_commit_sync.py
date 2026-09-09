@@ -96,7 +96,7 @@ class PreCommitSyncTest(unittest.TestCase):
         ):
             self.assertEqual(hook.main(), 0)
 
-        self.assertEqual(validate.call_count, 2)
+        validate.assert_called_once_with()
         self.assertEqual(
             sync.call_args_list,
             [mock.call("plan", paths), mock.call("apply", paths)],
@@ -104,6 +104,42 @@ class PreCommitSyncTest(unittest.TestCase):
         run.assert_called_once_with(
             ("git", "add", "--", "group/Kubernetes.json"), capture_output=True
         )
+
+    def test_content_validation_runs_only_after_sync_and_restage(self) -> None:
+        paths = ["navigators/Apache/apacheserverotel.json"]
+        events: list[str] = []
+
+        def sync(command: str, _paths: list[str]) -> dict[str, object]:
+            events.append(command)
+            if command == "plan":
+                return {
+                    "fetch_errors": 0,
+                    "resources": [{"path": paths[0]}],
+                }
+            return {
+                "failed_count": 0,
+                "results": [{"path": paths[0], "status": "applied"}],
+            }
+
+        with (
+            mock.patch.object(hook, "staged_content_paths", return_value=paths),
+            mock.patch.object(hook, "unstaged_versions", return_value=[]),
+            mock.patch.object(hook, "run_sync_command", side_effect=sync),
+            mock.patch.object(
+                hook,
+                "_run",
+                side_effect=lambda *_args, **_kwargs: events.append("restage")
+                or completed(),
+            ),
+            mock.patch.object(
+                hook,
+                "validate_content",
+                side_effect=lambda: events.append("validate"),
+            ),
+        ):
+            self.assertEqual(hook.main(), 0)
+
+        self.assertEqual(events, ["plan", "apply", "restage", "validate"])
 
     def test_fetch_error_blocks_apply(self) -> None:
         paths = ["detector/CPU.json"]

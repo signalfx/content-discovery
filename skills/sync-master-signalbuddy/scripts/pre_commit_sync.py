@@ -141,8 +141,8 @@ def require_exact_results(
 def main() -> int:
     try:
         paths = staged_content_paths()
-        validate_content()
         if not paths:
+            validate_content()
             return 0
 
         mixed = unstaged_versions(paths)
