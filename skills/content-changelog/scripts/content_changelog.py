@@ -28,6 +28,14 @@ CHANGELOG_RELATIVE_PATH = "content_release_notes.yaml"
 GENERATED_BY = "content-changelog/pre-commit"
 CONTENT_ROOTS = ("detector", "navigators", "group")
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+IGNORED_DESCRIPTION_FIELDS = {
+    "created",
+    "creator",
+    "hashCode",
+    "lastUpdated",
+    "lastUpdatedBy",
+}
+MISSING = object()
 
 
 @dataclass(frozen=True)
@@ -122,6 +130,115 @@ def content_metadata(change: ContentChange) -> tuple[str, str]:
     name = payload.get("name") if isinstance(payload, dict) else None
     fallback_path = change.previous_path if change.status == "D" else change.path
     return str(name or Path(fallback_path or change.path).stem), category
+
+
+def previous_change_document(change: ContentChange) -> dict[str, Any]:
+    path = change.previous_path or change.path
+    raw = read_git_text(f"HEAD:{path}")
+    if not raw:
+        return {}
+    try:
+        value = json.loads(raw)
+        return value if isinstance(value, dict) else {}
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"invalid previous JSON for {path}: {exc}") from exc
+
+
+def content_payload(document: dict[str, Any], category: str) -> Any:
+    if category == "detector":
+        return document.get("detectorExport", {}).get("detector", {})
+    if category == "navigator":
+        return document.get("navigatorExport", {}).get("navigator", {})
+    return document
+
+
+def semantic_changes(
+    old: Any, new: Any, path: tuple[str | int, ...] = ()
+) -> list[tuple[tuple[str | int, ...], Any, Any]]:
+    """Return meaningful leaf changes while ignoring export metadata churn."""
+    if old == new or (old is MISSING and new is None) or (new is MISSING and old is None):
+        return []
+    if isinstance(old, dict) and isinstance(new, dict):
+        changes = []
+        for key in sorted(set(old) | set(new)):
+            if key in IGNORED_DESCRIPTION_FIELDS:
+                continue
+            changes.extend(
+                semantic_changes(
+                    old.get(key, MISSING), new.get(key, MISSING), (*path, key)
+                )
+            )
+        return changes
+    if isinstance(old, list) and isinstance(new, list) and len(old) == len(new):
+        changes = []
+        for index, (old_item, new_item) in enumerate(zip(old, new)):
+            changes.extend(semantic_changes(old_item, new_item, (*path, index)))
+        return changes
+    return [(path, old, new)]
+
+
+def humanize_field(field: str) -> str:
+    words = re.sub(r"(?<!^)(?=[A-Z])", " ", field).replace("_", " ")
+    return words.lower()
+
+
+def render_value(value: Any) -> str:
+    if value is MISSING:
+        return "unset"
+    rendered = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    return rendered if len(rendered) <= 70 else rendered[:67] + "..."
+
+
+def describe_modified_content(
+    change: ContentChange, name: str, category: str
+) -> str:
+    old = content_payload(previous_change_document(change), category)
+    new = content_payload(read_change_document(change), category)
+    changes = semantic_changes(old, new)
+    if not changes:
+        return f"Refreshed exported metadata for {name}."
+
+    program_paths = [path for path, _, _ in changes if path and path[-1] == "programText"]
+    if category == "dashboard_group" and program_paths:
+        chart_indexes = {
+            path[path.index("chartExports") + 1]
+            for path in program_paths
+            if "chartExports" in path and path.index("chartExports") + 1 < len(path)
+        }
+        if chart_indexes and len(program_paths) == len(changes):
+            noun = "chart" if len(chart_indexes) == 1 else "charts"
+            return f"Updated program text in {len(chart_indexes)} {noun}."
+
+    if len(changes) == 1:
+        path, old_value, new_value = changes[0]
+        field = humanize_field(str(path[-1])) if path else "content"
+        return (
+            f"Changed {field} from {render_value(old_value)} "
+            f"to {render_value(new_value)}."
+        )
+
+    details: list[str] = []
+    for path, _, _ in changes:
+        string_path = [str(part) for part in path]
+        if "rules" in string_path:
+            label = "detector rules"
+        elif "visualizations" in string_path:
+            label = "visualizations"
+        elif path and path[-1] == "programText":
+            label = "program text"
+        else:
+            label = humanize_field(str(path[-1])) if path else "content"
+        if label not in details:
+            details.append(label)
+
+    shown = details[:3]
+    if len(details) > 3:
+        shown.append("other content fields")
+    if len(shown) == 1:
+        detail_text = shown[0]
+    else:
+        detail_text = ", ".join(shown[:-1]) + f", and {shown[-1]}"
+    return f"Updated {detail_text} in {name}."
 
 
 def blob_identity(change: ContentChange) -> str:
@@ -230,7 +347,8 @@ def generated_entry_for(changes: list[ContentChange], identifier: str) -> dict[s
             change_type = "updated"
             description = f"Renamed {Path(change.previous_path or '').stem} to {name}."
         else:
-            change_type, description = "updated", f"Updated {name}."
+            change_type = "updated"
+            description = describe_modified_content(change, name, category)
         entries.append(
             {
                 "name": name,
