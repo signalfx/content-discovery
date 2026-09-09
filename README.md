@@ -12,13 +12,11 @@ Others:
 
 # Install the Codex content maintainer
 
-The recurring content-maintainer job is versioned with this repository. After cloning the repository and opening it as a Codex project:
+The recurring content-maintainer job is versioned with this repository. After cloning the repository and opening it as a Codex project, run `./tools/scripts/configure-content-maintainer`. It validates the repository-local configuration, required project skills, pre-commit hook, Codex login, Jira and Confluence access, GitLab access, and the ignored `./.token` against a read-only Master SignalBuddy request. It then asks Codex, with the repository-owned fixed prompt, to install or update the automation.
 
-1. Copy `configs/content-maintainer.example.yaml` to `configs/content-maintainer.local.yaml` and fill in the non-secret project settings. The local file is ignored by Git.
-2. Configure Jira, GitLab, and Master SignalBuddy authentication for your local Codex environment. Do not put credentials in either configuration file.
-3. Ask Codex: `Use $content-maintainer to install or update this repository's Content Maintainer automation.`
+The script creates `configs/content-maintainer.local.yaml` from the example when needed; review that ignored file before re-running if validation reports a problem. Use `./tools/scripts/configure-content-maintainer --check-only` to run all prerequisite checks without asking Codex to change the automation.
 
-Codex will create or update one active project automation that runs every four hours. Re-run the same request after pulling repository changes to refresh the installed job from the canonical definition in `configs/codex/content-maintainer-automation.md`.
+Codex will create or update one active project automation that runs every four hours. Re-run the setup script after pulling repository changes to refresh the installed job from the canonical definition in `configs/codex/content-maintainer-automation.md`.
 
 Every maintainer invocation writes a separate secret-free local log under `tools/content-maintainer/.state/runs/`. The entire `.state` directory is ignored by Git, so run logs do not appear in repository changes. Logs are retained locally, including for dry runs and failed runs, and are not deleted automatically.
 

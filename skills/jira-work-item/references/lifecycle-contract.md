@@ -32,12 +32,12 @@ Current understanding:
 Open questions:
 1. <question and why it matters>
 
-Owners: <configured Jira mentions>
+Owners: <verified Jira mentions resolved from configured owner emails>
 
 Automation key: content-maintainer/<issue-key>/questions/<fingerprint>
 ```
 
-Use Atlassian Document Format mention nodes with configured Jira account IDs when direct REST is used. If no Jira account ID is configured, report an owner-mapping blocker rather than pretending plain text is a mention.
+During preflight, resolve every configured owner email to exactly one active Jira account and retain the email-to-account-ID mapping in local coordinator state. Use those account IDs in Atlassian Document Format mention nodes when direct REST is used. If an email has no unique active match, report an owner-mapping blocker rather than omitting that recipient or pretending plain text is a mention.
 
 ## MR-created comment
 
