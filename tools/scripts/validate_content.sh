@@ -6,6 +6,18 @@
 
 CONTENT_DIRECTORIES="group|navigators|detector"
 VALIDATION_FAILED=false
+VALIDATE_HASH_CODE=true
+
+# Before SignalBuddy synchronization, validate JSON and immutable identifiers.
+# The full post-export pass additionally requires the server-generated hash to change.
+case "${1:-}" in
+  "") ;;
+  --pre-sync) VALIDATE_HASH_CODE=false ;;
+  *)
+    echo "Usage: $0 [--pre-sync]" >&2
+    exit 2
+    ;;
+esac
 
 DIFF_BRANCH=HEAD # default to diffing local staged/working files against the current commit
 
@@ -65,7 +77,7 @@ while read file; do
       echo "  ERROR: uiModel.id has changed in $file: \"$navigator_code\" (previous id: \"$navigator_code_prev\"); navigator uiModel.id should be immutable. Please correct."
       VALIDATION_FAILED=true
     # check if hashcode is changed
-    elif [ "$hash_code" == "$hash_code_prev" ]; then
+    elif [ "$VALIDATE_HASH_CODE" = true ] && [ "$hash_code" == "$hash_code_prev" ]; then
       if [[ "$file" == detector/* ]]; then
         import_qualifiers=$(jq -c '.detectorExport.detector.importQualifiers' "$file")
         import_qualifiers_prev=$(git show "$DIFF_BRANCH:$file" | jq -c '.detectorExport.detector.importQualifiers')

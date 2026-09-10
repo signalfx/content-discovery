@@ -96,7 +96,10 @@ class PreCommitSyncTest(unittest.TestCase):
         ):
             self.assertEqual(hook.main(), 0)
 
-        validate.assert_called_once_with()
+        self.assertEqual(
+            validate.call_args_list,
+            [mock.call(pre_sync=True), mock.call()],
+        )
         self.assertEqual(
             sync.call_args_list,
             [mock.call("plan", paths), mock.call("apply", paths)],
@@ -105,7 +108,7 @@ class PreCommitSyncTest(unittest.TestCase):
             ("git", "add", "--", "group/Kubernetes.json"), capture_output=True
         )
 
-    def test_content_validation_runs_only_after_sync_and_restage(self) -> None:
+    def test_content_validation_runs_before_sync_and_after_restage(self) -> None:
         paths = ["navigators/Apache/apacheserverotel.json"]
         events: list[str] = []
 
@@ -134,12 +137,48 @@ class PreCommitSyncTest(unittest.TestCase):
             mock.patch.object(
                 hook,
                 "validate_content",
-                side_effect=lambda: events.append("validate"),
+                side_effect=lambda *, pre_sync=False: events.append(
+                    "pre-validate" if pre_sync else "post-validate"
+                ),
             ),
         ):
             self.assertEqual(hook.main(), 0)
 
-        self.assertEqual(events, ["plan", "apply", "restage", "validate"])
+        self.assertEqual(
+            events,
+            ["pre-validate", "plan", "apply", "restage", "post-validate"],
+        )
+
+    def test_failed_pre_sync_validation_blocks_remote_commands(self) -> None:
+        paths = ["detector/CPU.json"]
+        with (
+            mock.patch.object(hook, "staged_content_paths", return_value=paths),
+            mock.patch.object(hook, "unstaged_versions", return_value=[]),
+            mock.patch.object(
+                hook,
+                "validate_content",
+                side_effect=hook.HookError("content validation failed"),
+            ),
+            mock.patch.object(hook, "run_sync_command") as sync,
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            self.assertEqual(hook.main(), 1)
+
+        sync.assert_not_called()
+
+    def test_validation_script_uses_pre_sync_mode_only_when_requested(self) -> None:
+        with mock.patch.object(hook, "_run", return_value=completed()) as run:
+            hook.validate_content(pre_sync=True)
+            hook.validate_content()
+
+        self.assertEqual(
+            run.call_args_list[0].args[0],
+            ("/bin/bash", str(hook.VALIDATION_SCRIPT), "--pre-sync"),
+        )
+        self.assertEqual(
+            run.call_args_list[1].args[0],
+            ("/bin/bash", str(hook.VALIDATION_SCRIPT)),
+        )
 
     def test_fetch_error_blocks_apply(self) -> None:
         paths = ["detector/CPU.json"]

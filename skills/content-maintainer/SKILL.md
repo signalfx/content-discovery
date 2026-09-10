@@ -31,8 +31,8 @@ Failure on one ticket must not stop independent tickets. Authentication, configu
 ## Reconcile existing work
 
 - `needs_information`: use `$jira-work-item` to inspect comments after the saved cursor. Resume planning when a human answer is material; otherwise remind only when due.
-- `mr_open`: use `$content-mr` to inspect merge state, pipelines, conflicts, approvals, and discussions. Fix branch-caused problems in the existing ticket worktree. Remind reviewers only when the MR is healthy and waiting.
-- `merged`: use `$jira-work-item` to add merge evidence and move the ticket to the configured `Ready for verification` transition.
+- `mr_open`: use `$content-mr` to inspect merge state, pipelines, conflicts, approvals, and discussions. Ensure Jira has reached the configured `In Review` target status, fix branch-caused problems in the existing ticket worktree, and remind reviewers only when the MR is healthy and waiting.
+- `merged`: use `$jira-work-item` to add merge evidence and move the ticket through the configured `Ready For Verification` transition, then verify the separately configured target status.
 - `closed_unmerged`: return the ticket to planning or ask owners whether work should continue; never claim delivery.
 
 ## Investigate a new ticket
@@ -47,7 +47,7 @@ Use `$jira-work-item` to post questions and persist `needs_information` only whe
 
 ## Execute an actionable ticket
 
-1. Use `$jira-work-item` to transition the ticket through the configured `In Progress` transition, re-read Jira to verify the resulting status, and post the idempotent work-started comment with the interpreted scope and plan. If any step fails, do not begin repository work.
+1. Use `$jira-work-item` to transition the ticket through the configured `In Progress` transition selector when needed, re-read Jira to verify the separately configured `In Progress` target status, and post the idempotent work-started comment with the interpreted scope and plan. If any step fails, do not begin repository work.
 2. Refresh the remote default branch.
 3. Create or reuse the ticket's isolated worktree and branch.
 4. Confirm the worktree is clean and contains no unrelated work.
@@ -57,7 +57,7 @@ Use `$jira-work-item` to post questions and persist `needs_information` only whe
 8. Commit the ticket change. For staged navigator, detector, or group JSON files, allow the installed pre-commit workflow to synchronize and export canonical Master SignalBuddy content, then use `$content-changelog` to generate and stage one release-note entry per final staged content file.
 9. Review the generated changelog descriptions and re-run relevant validation if the canonical export or changelog generation changed files.
 10. Use `$content-mr` to push, create or reuse the MR, assign reviewers, and verify it remotely.
-11. Use `$jira-work-item` to record the verified MR.
+11. Use `$jira-work-item` to record the verified MR, execute the configured `In Review` transition selector when needed, and re-read Jira to verify the separately configured `In Review` target status. Persist `mr_open` only after this boundary is complete.
 
 Do not create an MR after a failed validation, failed SignalBuddy sync, partial commit, or unverified push.
 
@@ -66,7 +66,7 @@ If work fails after Jira was moved to `In Progress`, post one idempotent progres
 ## Boundaries
 
 - Never merge an MR automatically.
-- Never delete a remote SignalBuddy object unless separately requested and approved.
+- Never delete a remote SignalBuddy object. The repository automation does not expose this operation.
 - Never guess Jira account IDs, GitLab reviewer usernames, transition IDs, or project targets.
 - Never expose service credentials to an editing subprocess or log.
 - Use the Codex Atlassian connection for scheduled Jira and Confluence access; do not make scheduled runs depend on a short-lived `dev-login` token.

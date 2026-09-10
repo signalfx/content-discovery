@@ -25,7 +25,7 @@ Treat an existing comment as a completed operation only when the same key is pre
 
 ## Work-start transition and comment
 
-For an actionable ticket, discover and execute the configured `In Progress` transition unless Jira already reports that exact status. Re-read the issue after the transition. Only after status verification, post:
+For an actionable ticket, compare Jira's current status with the configured `In Progress` target status. If they differ, discover and execute the separately configured `In Progress` transition selector. Re-read the issue and require the exact target status. A transition selector may be an ID or an action name such as `Start Progress`; never compare it with Jira's current status. Only after status verification, post:
 
 ```text
 Content maintainer started work
@@ -82,6 +82,8 @@ Commit: <SHA>
 Automation key: content-maintainer/<issue-key>/mr-created/<project-and-iid>
 ```
 
+After this comment is created or verified, compare Jira's current status with the configured `In Review` target status. If they differ, discover and execute the separately configured `In Review` transition selector, then re-read Jira and require the target status. Persist `agent_status: mr_open` only after both the comment and status are verified.
+
 ## Waiting-for-review reminder
 
 Post no more than once per configured interval. Include current MR status, pipeline status, outstanding approvals or discussions, and the existing MR URL. Do not post a generic reminder when the MR has actionable failures that the agent should address.
@@ -112,9 +114,9 @@ Do not move the ticket out of `In Progress` merely because a run failed.
 ```text
 Fix merged: <verified MR URL>
 Merged commit: <SHA>
-The work item is being moved to Ready for verification.
+The work item is being moved to Ready For Verification.
 
 Automation key: content-maintainer/<issue-key>/merged/<SHA>
 ```
 
-The sequence is read MR, write merge evidence, discover transition, transition, then re-read Jira. A transition response without a matching final Jira status is a failure.
+The sequence is read MR, write merge evidence, compare against the configured target status, discover and execute the separately configured transition when needed, then re-read Jira. A transition response without the configured final Jira status is a failure. Never compare a transition selector with Jira's current status.

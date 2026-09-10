@@ -1,6 +1,6 @@
 ---
 name: jira-work-item
-description: Read, track, comment on, and transition content-discovery Jira work items with idempotent scheduled follow-up. Use when gathering ticket requirements, asking owners questions, recording a verified merge request, detecting new answers, or moving a merged fix to Ready for verification.
+description: Read, track, comment on, and transition content-discovery Jira work items with idempotent scheduled follow-up. Use when gathering ticket requirements, asking owners questions, recording a verified merge request, detecting new answers, or moving a merged fix to Ready For Verification.
 ---
 
 # Manage content-discovery Jira work items
@@ -21,7 +21,7 @@ Never request or print Jira tokens. A scheduled run may perform only the comment
 
 ## Start actionable work
 
-Before repository implementation begins, re-read the issue and its comments. Discover the available transition matching the configured `In Progress` name or ID. If the issue is not already in that status, execute the transition and then fetch the issue again to verify the resulting Jira status. After status verification, create or verify the work-started comment from the lifecycle contract.
+Before repository implementation begins, re-read the issue and its comments. Compare the current status only with the configured `In Progress` target status. If they differ, discover the available transition matching the separately configured transition name or ID, execute it, and fetch the issue again. Require the resulting Jira status to equal the configured target status. After status verification, create or verify the work-started comment from the lifecycle contract.
 
 The comment must state the evidence-backed interpretation, planned files or content objects, intended validation and delivery steps, and any non-blocking assumptions. Use a stable plan fingerprint so reruns do not duplicate it. Treat an existing comment as valid only when its marker, author, and expected content satisfy the idempotency contract.
 
@@ -51,11 +51,13 @@ Record the comment ID, newest observed comment ID, question fingerprint, and men
 
 Comment only after `$content-mr` has verified the MR remotely. Include the MR URL, source branch, commit SHA, concise change summary, validation evidence, and assigned reviewers. Use the stable operation marker from the lifecycle contract to prevent duplicates.
 
+After the comment is created or verified, compare the current status only with the configured `In Review` target status. If they differ, discover and execute the separately configured `In Review` transition name or ID, then fetch the issue again and require the target status. Only then may the coordinator persist `agent_status: mr_open`. On retry, perform only the missing comment or transition operation.
+
 When implementation fails after the verified work-start boundary, post one idempotent progress comment describing completed work, the concrete blocker, whether any remote operation succeeded, and the next retry action. Do not automatically transition the Jira ticket backward.
 
 ## Transition after merge
 
-Move a ticket to `Ready for verification` only after independently verifying that its recorded MR is merged. Discover available transitions and use the configured exact transition name or ID. Add merge evidence first, perform the transition, then fetch the issue again to verify the resulting Jira status.
+Move a ticket to `Ready For Verification` only after independently verifying that its recorded MR is merged. Add merge evidence first. Compare the current status only with the configured `Ready For Verification` target status; when they differ, discover and execute the separately configured transition name or ID. Fetch the issue again and require the configured target status.
 
 Do not transition an open, closed-unmerged, missing, or unverifiable MR. Do not close or resolve the ticket unless separately configured and authorized.
 

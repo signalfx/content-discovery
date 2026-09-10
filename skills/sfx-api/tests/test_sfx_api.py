@@ -36,14 +36,22 @@ class SfxApiTest(unittest.TestCase):
             json.dump(payload, handle)
         return Path(handle.name)
 
-    def test_all_six_resources_expose_all_five_commands(self) -> None:
+    def test_all_six_resources_expose_only_non_delete_commands(self) -> None:
         self.assertEqual(
             set(sfx_api.RESOURCE_ALIASES.values()),
             {"navigator", "detector", "datalink", "dashboard-group", "chart", "dashboard"},
         )
         self.assertEqual(
-            set(sfx_api.OPERATIONS), {"get", "export", "create", "update", "delete"}
+            set(sfx_api.OPERATIONS), {"get", "export", "create", "update"}
         )
+
+        with (
+            contextlib.redirect_stderr(io.StringIO()),
+            self.assertRaises(SystemExit),
+        ):
+            sfx_api.build_parser().parse_args(
+                ["delete", "dashboard", "dashboard-1", "--yes"]
+            )
 
     def test_get_chart_dispatches_to_master_signalbuddy(self) -> None:
         with mock.patch.object(sfx_api, "get_object", return_value={"id": "chart-1"}) as getter:
@@ -168,28 +176,6 @@ class SfxApiTest(unittest.TestCase):
             "https://api.us0.observability.splunkcloud.com",
             "secret",
         )
-
-    def test_delete_requires_confirmation(self) -> None:
-        with mock.patch.object(sfx_api, "delete_object") as deleter:
-            exit_code, stdout, stderr = self.run_cli(
-                ["delete", "dashboard", "dashboard-1"]
-            )
-
-        self.assertEqual(exit_code, 2)
-        self.assertEqual(stdout, "")
-        self.assertIn("pass --yes to confirm", stderr)
-        deleter.assert_not_called()
-
-    def test_delete_dispatches_and_reports_empty_success(self) -> None:
-        with mock.patch.object(sfx_api, "delete_object", return_value=None) as deleter:
-            exit_code, stdout, _ = self.run_cli(
-                ["delete", "detector", "detector-1", "--yes"]
-            )
-
-        self.assertEqual(exit_code, 0)
-        deleter.assert_called_once()
-        self.assertEqual(json.loads(stdout)["result"], {"deleted": "detector-1"})
-
 
 if __name__ == "__main__":
     unittest.main()

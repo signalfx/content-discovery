@@ -64,10 +64,13 @@ def unstaged_versions(paths: Sequence[str]) -> list[str]:
     return [path for path in paths if path in changed]
 
 
-def validate_content() -> None:
+def validate_content(*, pre_sync: bool = False) -> None:
     env = os.environ.copy()
     env.pop("CI_MR_TARGET_BRANCH", None)
-    result = _run(("/bin/bash", str(VALIDATION_SCRIPT)), env=env)
+    command = ("/bin/bash", str(VALIDATION_SCRIPT))
+    if pre_sync:
+        command += ("--pre-sync",)
+    result = _run(command, env=env)
     if result.returncode != 0:
         raise HookError("content validation failed")
 
@@ -152,6 +155,11 @@ def main() -> int:
                 "these staged content files also have unstaged edits; stage or "
                 f"discard those edits before committing:\n{formatted}"
             )
+
+        # Reject malformed content and immutable ID/uiModel changes before any
+        # remote write. SignalBuddy supplies the canonical hash during export,
+        # so hash-change validation remains in the full post-restage pass.
+        validate_content(pre_sync=True)
 
         print("Synchronizing staged content with Master SignalBuddy:")
         for path in paths:

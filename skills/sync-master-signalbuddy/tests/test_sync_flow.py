@@ -232,6 +232,52 @@ class FormatPreservingWriteTest(unittest.TestCase):
         )
         self.assertEqual(merged["hashCode"], 3)
 
+    def test_three_way_writeback_handles_child_addition_and_removal(self) -> None:
+        baseline = {
+            "chartExports": [
+                {"chart": {"id": "chart-1", "programText": "unchanged"}},
+                {"chart": {"id": "chart-removed", "programText": "remove"}},
+            ]
+        }
+        local = {
+            "chartExports": [
+                {"chart": {"id": "chart-1", "programText": "unchanged"}},
+                {
+                    "chart": {
+                        "id": "chart-local-new",
+                        "programText": "new",
+                        "tags": None,
+                    }
+                },
+            ]
+        }
+        fresh = {
+            "chartExports": [
+                {
+                    "chart": {
+                        "id": "chart-server-new",
+                        "programText": "new",
+                        "tags": [],
+                    }
+                },
+                {"chart": {"id": "chart-1", "programText": "remote drift"}},
+            ]
+        }
+
+        merged = cli._merge_changed_export_values(baseline, local, fresh)
+
+        charts = merged["chartExports"]
+        self.assertEqual(
+            [item["chart"]["id"] for item in charts],
+            ["chart-1", "chart-server-new"],
+        )
+        self.assertEqual(charts[0]["chart"]["programText"], "unchanged")
+        self.assertEqual(charts[1]["chart"]["programText"], "new")
+        self.assertEqual(charts[1]["chart"]["tags"], [])
+        self.assertNotIn(
+            "chart-removed", {item["chart"]["id"] for item in charts}
+        )
+
 
 class GroupOrderTest(unittest.TestCase):
     def test_group_progress_is_written_to_stderr(self) -> None:

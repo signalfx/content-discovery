@@ -39,11 +39,14 @@ On `main` or `master`, it compares the working tree with `HEAD`. On a feature br
 
 The repository hook at `tools/scripts/pre-commit` runs `scripts/pre_commit_sync.py`. For commits containing staged JSON files under `navigators/`, `detector/`, or `group/`, it automatically:
 
-1. Validates repository content.
+1. Runs pre-sync validation for parseability and immutable content IDs and
+   navigator UI-model IDs. The server-generated hash check is deferred until
+   after canonical export.
 2. Refuses partially staged content files that also have unstaged edits.
 3. Plans only the staged content paths and stops on remote fetch errors.
 4. Applies those paths to Master SignalBuddy without another prompt; invoking `git commit` is the approval for this hook-managed sync.
-5. Exports the canonical server objects, stages those refreshed files, and validates again.
+5. Exports the canonical server objects, stages those refreshed files, and runs
+   full validation, including the required hash change.
 
 After this sync step succeeds, the repository hook invokes `$content-changelog` to generate, stage, and validate release-note entries from the final staged exports. The changelog step is deterministic and does not make additional SignalBuddy calls.
 
@@ -95,7 +98,7 @@ For a dashboard group:
    updating changed JSON values without reordering keys or reformatting untouched
    content. Treat API-normalized null and empty collection values as equivalent.
 
-Do not delete remote charts, dashboards, or data links merely because they are absent locally. Deletion requires a separate explicit request and plan.
+Never delete remote charts, dashboards, data links, navigators, or detectors. The synchronization workflow and SFX API skill do not expose remote deletion.
 
 If any API operation for a file fails, mark that file failed and do not overwrite it with a partial export. Successful files are refreshed independently. Report partial failures and their API errors.
 
