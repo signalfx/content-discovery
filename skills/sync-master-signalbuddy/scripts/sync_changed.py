@@ -381,81 +381,6 @@ def _load_baseline_json(
         raise CliError(f"failed to parse baseline JSON for {relative}: {exc}") from exc
 
 
-def _merge_changed_export_values(base: Any, local: Any, fresh: Any) -> Any:
-    """Take server values only at paths changed locally from ``base``."""
-    from sync_utils import export_values_equal
-
-    if export_values_equal(base, local):
-        return local
-    if isinstance(base, dict) and isinstance(local, dict) and isinstance(fresh, dict):
-        merged: dict[str, Any] = {}
-        for key, local_value in local.items():
-            if key in base and key in fresh:
-                merged[key] = _merge_changed_export_values(
-                    base[key], local_value, fresh[key]
-                )
-            elif key in fresh:
-                merged[key] = fresh[key]
-            else:
-                merged[key] = local_value
-        return merged
-    if isinstance(base, list) and isinstance(local, list) and isinstance(fresh, list):
-        base_by_id = _export_items_by_id(base)
-        local_by_id = _export_items_by_id(local)
-        fresh_by_id = _export_items_by_id(fresh)
-        if (
-            base_by_id is not None
-            and local_by_id is not None
-            and fresh_by_id is not None
-        ):
-            common_ids = set(base_by_id) & set(local_by_id) & set(fresh_by_id)
-            merged_items = [
-                (
-                    _merge_changed_export_values(
-                        base_by_id[item_id],
-                        local_by_id[item_id],
-                        fresh_by_id[item_id],
-                    )
-                    if item_id in common_ids
-                    else fresh_by_id[item_id]
-                )
-                for item_id in local_by_id
-                if item_id in fresh_by_id
-            ]
-            retained_ids = set(local_by_id) & set(fresh_by_id)
-            merged_items.extend(
-                fresh_by_id[item_id]
-                for item_id in fresh_by_id
-                if item_id not in retained_ids
-            )
-            return merged_items
-        if len(base) == len(local) == len(fresh):
-            return [
-                _merge_changed_export_values(base_item, local_item, fresh_item)
-                for base_item, local_item, fresh_item in zip(base, local, fresh)
-            ]
-    return fresh
-
-
-def _export_items_by_id(items: list[Any]) -> dict[str, Any] | None:
-    """Index wrapped chart/dashboard/data-link exports when IDs are stable."""
-    indexed: dict[str, Any] = {}
-    for item in items:
-        if not isinstance(item, dict):
-            return None
-        object_id = item.get("id")
-        if not object_id:
-            for wrapper in ("chart", "dashboard", "crosslink"):
-                child = item.get(wrapper)
-                if isinstance(child, dict) and child.get("id"):
-                    object_id = child["id"]
-                    break
-        if not isinstance(object_id, str) or object_id in indexed:
-            return None
-        indexed[object_id] = item
-    return indexed or None
-
-
 def _filter_changed_by_paths(
     changed: list[tuple[str, Path]], wanted: list[str] | None
 ) -> list[tuple[str, Path]]:
@@ -558,8 +483,6 @@ def cmd_apply(args: argparse.Namespace) -> int:
                     base_url,
                     token,
                     path,
-                    local_payload=local,
-                    baseline=baseline,
                 )
                 entry["status"] = "applied"
                 entry["local_file_written"] = (
@@ -713,8 +636,6 @@ def _refresh_local(
     base_url: str,
     token: str,
     explicit_out: Path | None = None,
-    local_payload: dict[str, Any] | None = None,
-    baseline: dict[str, Any] | None = None,
 ) -> Path:
     """Re-fetch ``rid`` from master and write the export to disk.
 
@@ -731,8 +652,6 @@ def _refresh_local(
             exit_code=EXIT_API_FAILURE,
         ) from e
     target = _resolve_writeback_path(rtype, rid, fresh, explicit_out)
-    if rtype == "group" and local_payload is not None and baseline is not None:
-        fresh = _merge_changed_export_values(baseline, local_payload, fresh)
     write_local_resource(target, fresh, preserve_format=rtype == "group")
     return target
 
@@ -784,8 +703,6 @@ def cmd_update(args: argparse.Namespace) -> int:
         base_url,
         token,
         local_path,
-        local_payload=payload,
-        baseline=baseline,
     )
     rel = str(target.relative_to(REPO_ROOT)) if REPO_ROOT in target.parents else str(target)
 

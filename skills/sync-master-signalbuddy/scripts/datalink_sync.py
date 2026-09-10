@@ -122,7 +122,7 @@ def update_crosslinks(
                     failed_count += 1
             # else: crosslink unchanged, skip
             
-        except RuntimeError:
+        except RemoteNotFound:
             # Crosslink doesn't exist, create it
             if update_crosslink(crosslink, base_url, token):
                 print(
