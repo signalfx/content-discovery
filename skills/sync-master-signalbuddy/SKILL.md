@@ -95,8 +95,10 @@ For a dashboard group:
 7. Update the dashboard-group object only when selected group fields changed.
 8. Create or update only selected associated data links.
 9. Export the complete group from Master SignalBuddy into the same local file,
-   updating changed JSON values without reordering keys or reformatting untouched
-   content. Treat API-normalized null and empty collection values as equivalent.
+   accepting all current remote values, including changes made remotely outside
+   the local branch. Preserve the existing JSON layout whenever the exported
+   structure can be mapped safely, and treat API-normalized null and empty
+   collection values as equivalent.
 
 Never delete remote charts, dashboards, data links, navigators, or detectors. The synchronization workflow and SFX API skill do not expose remote deletion.
 

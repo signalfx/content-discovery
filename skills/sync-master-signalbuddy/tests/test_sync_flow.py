@@ -97,6 +97,30 @@ class SyncApplyTest(unittest.TestCase):
         self.assertTrue(result)
         crosslinks.assert_called_once_with([], "https://api", "token")
 
+    def test_group_refresh_writes_complete_fresh_remote_export(self) -> None:
+        path = Path(tempfile.NamedTemporaryFile(suffix=".json", delete=False).name)
+        self.addCleanup(path.unlink, missing_ok=True)
+        fresh = {
+            "chartExports": [
+                {"chart": {"id": "chart-1", "programText": "remote update"}},
+                {"chart": {"id": "chart-2", "programText": "remote addition"}},
+            ],
+            "groupExport": {"group": {"id": "group-1", "name": "Group"}},
+            "hashCode": 2,
+        }
+
+        with (
+            mock.patch.object(cli, "_fetch_resource", return_value=fresh),
+            mock.patch.object(cli, "_resolve_writeback_path", return_value=path),
+            mock.patch.object(cli, "write_local_resource") as writer,
+        ):
+            result = cli._refresh_local(
+                "group", "group-1", "https://api", "token", path
+            )
+
+        self.assertEqual(result, path)
+        writer.assert_called_once_with(path, fresh, preserve_format=True)
+
 
 class ChangeDetectionTest(unittest.TestCase):
     def test_feature_branch_changes_are_compared_from_merge_base(self) -> None:
@@ -199,85 +223,6 @@ class FormatPreservingWriteTest(unittest.TestCase):
 
         self.assertFalse(utils.export_values_equal(local, remote))
         self.assertTrue(group_sync._has_chart_changed(local, remote))
-
-    def test_three_way_writeback_keeps_unrelated_remote_drift_out(self) -> None:
-        baseline = {
-            "chartExports": [
-                {"chart": {"id": "chart-1", "programText": "old", "tags": None}},
-                {"chart": {"id": "chart-2", "programText": "unchanged"}},
-            ],
-            "hashCode": 1,
-        }
-        local = {
-            "chartExports": [
-                {"chart": {"id": "chart-1", "programText": "new", "tags": None}},
-                {"chart": {"id": "chart-2", "programText": "unchanged"}},
-            ],
-            "hashCode": 2,
-        }
-        fresh = {
-            "chartExports": [
-                {"chart": {"id": "chart-2", "programText": "remote drift"}},
-                {"chart": {"id": "chart-1", "programText": "new", "tags": []}},
-            ],
-            "hashCode": 3,
-        }
-
-        merged = cli._merge_changed_export_values(baseline, local, fresh)
-
-        self.assertEqual(merged["chartExports"][0]["chart"]["programText"], "new")
-        self.assertIsNone(merged["chartExports"][0]["chart"]["tags"])
-        self.assertEqual(
-            merged["chartExports"][1]["chart"]["programText"], "unchanged"
-        )
-        self.assertEqual(merged["hashCode"], 3)
-
-    def test_three_way_writeback_handles_child_addition_and_removal(self) -> None:
-        baseline = {
-            "chartExports": [
-                {"chart": {"id": "chart-1", "programText": "unchanged"}},
-                {"chart": {"id": "chart-removed", "programText": "remove"}},
-            ]
-        }
-        local = {
-            "chartExports": [
-                {"chart": {"id": "chart-1", "programText": "unchanged"}},
-                {
-                    "chart": {
-                        "id": "chart-local-new",
-                        "programText": "new",
-                        "tags": None,
-                    }
-                },
-            ]
-        }
-        fresh = {
-            "chartExports": [
-                {
-                    "chart": {
-                        "id": "chart-server-new",
-                        "programText": "new",
-                        "tags": [],
-                    }
-                },
-                {"chart": {"id": "chart-1", "programText": "remote drift"}},
-            ]
-        }
-
-        merged = cli._merge_changed_export_values(baseline, local, fresh)
-
-        charts = merged["chartExports"]
-        self.assertEqual(
-            [item["chart"]["id"] for item in charts],
-            ["chart-1", "chart-server-new"],
-        )
-        self.assertEqual(charts[0]["chart"]["programText"], "unchanged")
-        self.assertEqual(charts[1]["chart"]["programText"], "new")
-        self.assertEqual(charts[1]["chart"]["tags"], [])
-        self.assertNotIn(
-            "chart-removed", {item["chart"]["id"] for item in charts}
-        )
-
 
 class GroupOrderTest(unittest.TestCase):
     def test_group_progress_is_written_to_stderr(self) -> None:
@@ -462,6 +407,44 @@ class CrosslinkOutputTest(unittest.TestCase):
         self.assertEqual(result, (0, 1, 0))
         self.assertEqual(stdout.getvalue(), "")
         self.assertIn("Created crosslink: host.name", stderr.getvalue())
+
+    def test_missing_crosslink_is_created(self) -> None:
+        crosslink = {"id": "missing-link", "propertyName": "host.name"}
+        exports = [{"crosslink": crosslink}]
+
+        with (
+            mock.patch.object(
+                datalink_sync,
+                "fetch_crosslink_by_id",
+                side_effect=datalink_sync.RemoteNotFound("not found"),
+            ),
+            mock.patch.object(datalink_sync, "update_crosslink", return_value=True) as update,
+        ):
+            result = datalink_sync.update_crosslinks(
+                exports, "https://api", "token"
+            )
+
+        self.assertEqual(result, (0, 1, 0))
+        update.assert_called_once_with(crosslink, "https://api", "token")
+
+    def test_crosslink_fetch_failure_propagates_without_update(self) -> None:
+        crosslink = {"id": "link-1", "propertyName": "host.name"}
+        exports = [{"crosslink": crosslink}]
+
+        with (
+            mock.patch.object(
+                datalink_sync,
+                "fetch_crosslink_by_id",
+                side_effect=RuntimeError("request failed"),
+            ),
+            mock.patch.object(datalink_sync, "update_crosslink") as update,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "request failed"):
+                datalink_sync.update_crosslinks(
+                    exports, "https://api", "token"
+                )
+
+        update.assert_not_called()
 
 
 if __name__ == "__main__":
