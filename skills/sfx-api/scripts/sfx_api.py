@@ -22,7 +22,6 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from sfx_client import (  # noqa: E402
     create_object,
-    delete_object,
     export_object,
     get_object,
     prepare_payload,
@@ -30,7 +29,7 @@ from sfx_client import (  # noqa: E402
 )
 
 
-OPERATIONS = ("get", "export", "create", "update", "delete")
+OPERATIONS = ("get", "export", "create", "update")
 MASTER_REALM = "us0"
 MASTER_API_HOSTS = {
     "api.us0.observability.splunkcloud.com",
@@ -66,14 +65,14 @@ class CliError(RuntimeError):
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Get, export, create, update, or delete SignalFx content objects."
+        description="Get, export, create, or update SignalFx content objects."
     )
     parser.add_argument("operation", choices=OPERATIONS)
     parser.add_argument("resource", choices=tuple(RESOURCE_ALIASES))
     parser.add_argument(
         "id",
         nargs="?",
-        help="Remote object ID; required for get, export, update, and delete",
+        help="Remote object ID; required for get, export, and update",
     )
     parser.add_argument("--file", type=Path, help="JSON request or export payload")
     parser.add_argument(
@@ -92,7 +91,7 @@ def build_parser() -> argparse.ArgumentParser:
 def validate_args(args: argparse.Namespace) -> None:
     read_operation = args.operation in ("get", "export")
 
-    if args.operation in ("get", "export", "update", "delete") and not args.id:
+    if args.operation in ("get", "export", "update") and not args.id:
         raise CliError(f"{args.operation} requires a remote object ID")
     if args.operation == "create" and args.id:
         raise CliError("create does not accept a remote object ID")
@@ -104,7 +103,7 @@ def validate_args(args: argparse.Namespace) -> None:
 
     if read_operation and args.yes:
         raise CliError(f"{args.operation} does not accept --yes")
-    if args.operation in ("create", "update", "delete") and not args.yes:
+    if args.operation in ("create", "update") and not args.yes:
         raise CliError(f"{args.operation} changes remote content; pass --yes to confirm")
 
     if args.output and args.operation != "export":
@@ -195,9 +194,6 @@ def invoke(args: argparse.Namespace, token: str, base_url: str) -> Any:
             return get_object(resource, args.id, base_url, token)
         if args.operation == "export":
             return export_object(resource, args.id, base_url, token)
-        if args.operation == "delete":
-            return delete_object(resource, args.id, base_url, token)
-
         payload = load_payload(args.file, resource, args.operation)
         if args.operation == "create":
             return create_object(resource, payload, base_url, token)
@@ -210,9 +206,6 @@ def emit_result(args: argparse.Namespace, result: Any) -> None:
             json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
         result = {"output": str(args.output)}
-    elif args.operation == "delete" and result is None:
-        result = {"deleted": args.id}
-
     json.dump(
         {
             "ok": True,

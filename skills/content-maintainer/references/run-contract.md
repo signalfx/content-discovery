@@ -4,8 +4,9 @@
 
 - Jira site and complete JQL, including its project scope;
 - an authenticated Codex Atlassian connection with Jira and Confluence access, from which preflight can discover and persist the logged-in Jira identity;
-- exact `In Progress` transition name or ID;
-- exact `Ready for verification` transition name or ID;
+- exact transition name or ID and exact resulting Jira status name for `In Progress`;
+- exact transition name or ID and exact resulting Jira status name for `In Review`;
+- exact transition name or ID and exact resulting Jira status name for `Ready For Verification`;
 - Jira owner email addresses that preflight can resolve uniquely to active account IDs for mentions;
 - internal GitLab project URL;
 - optional additional GitLab reviewer usernames or an approved reference MR; the `$content-mr` baseline reviewers remain mandatory;
@@ -17,9 +18,13 @@ When content JSON is in scope, `content_release_notes.yaml` is an allowed requir
 
 Refuse apply mode when a required write setting is absent. Read-only inventory and planning may still run.
 
-For an actionable ticket in apply mode, the work-start boundary is: discover the configured `In Progress` transition, execute it when the ticket is not already in that status, re-read Jira to verify the status, and create or verify the idempotent work-started comment. Complete this boundary before creating a worktree or editing repository files. If it fails, leave the ticket's agent state at `ready` or `blocked`, record any verified partial Jira operation, and do not begin implementation. A dry run renders these operations without performing them.
+For an actionable ticket in apply mode, the work-start boundary is: compare the current Jira status with `jira.in_progress_status`; when they differ, discover and execute the selector in `jira.in_progress_transition`; re-read Jira and require the exact configured target status; then create or verify the idempotent work-started comment. Never compare a transition ID or transition name with the current status. Complete this boundary before creating a worktree or editing repository files. If it fails, leave the ticket's agent state at `ready` or `blocked`, record any verified partial Jira operation, and do not begin implementation. A dry run renders these operations without performing them.
 
-Apply mode requires both `remote_writes.jira_in_progress_transition` and `remote_writes.jira_comments` to be `true` before starting new ticket work. A false value is an intentional policy restriction, not permission to skip that part of the boundary.
+After an MR is remotely verified and its Jira comment is created or verified, compare the current Jira status with `jira.in_review_status`. When they differ, discover and execute `jira.in_review_transition`, re-read Jira, and require the exact configured target status before persisting `agent_status: mr_open`. A retry must perform only the missing comment or transition operation.
+
+After an MR is independently verified as merged and merge evidence is created or verified in Jira, compare the current Jira status with `jira.ready_for_verification_status`. When they differ, discover and execute `jira.ready_for_verification_transition`, re-read Jira, and require the exact configured target status before persisting `agent_status: ready_for_verification`.
+
+Apply mode requires `remote_writes.jira_comments`, `remote_writes.jira_in_progress_transition`, `remote_writes.jira_in_review_transition`, and `remote_writes.jira_ready_for_verification_transition` to be `true` before starting new ticket work. A false value is an intentional policy restriction, not permission to skip a lifecycle boundary.
 
 Preflight must perform a real Jira read through the Codex Atlassian connection and verify Confluence access before a run that may need linked documentation. Configuration metadata or a successful process exit alone is not proof of access. If the connection is absent, disconnected, or requires reauthentication, stop before external writes and prompt the user to set up or reconnect Atlassian in Codex. Never ask for an Atlassian token or make scheduled runs depend on `dev-login`. Ghost may be used only as an explicitly chosen manual diagnostic fallback, not as the scheduled authentication path.
 

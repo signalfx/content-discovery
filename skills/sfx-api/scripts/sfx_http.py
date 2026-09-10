@@ -75,8 +75,3 @@ def do_post(
         headers={"X-SF-TOKEN": token, "Content-Type": content_type},
         json=data,
     )
-
-
-def do_delete(url: str, token: str) -> requests.Response:
-    """Perform a DELETE request."""
-    return requests.delete(url, headers={"X-SF-TOKEN": token})

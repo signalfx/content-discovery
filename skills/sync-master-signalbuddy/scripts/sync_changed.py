@@ -407,14 +407,28 @@ def _merge_changed_export_values(base: Any, local: Any, fresh: Any) -> Any:
             base_by_id is not None
             and local_by_id is not None
             and fresh_by_id is not None
-            and set(base_by_id) == set(local_by_id) == set(fresh_by_id)
         ):
-            return [
-                _merge_changed_export_values(
-                    base_by_id[item_id], local_by_id[item_id], fresh_by_id[item_id]
+            common_ids = set(base_by_id) & set(local_by_id) & set(fresh_by_id)
+            merged_items = [
+                (
+                    _merge_changed_export_values(
+                        base_by_id[item_id],
+                        local_by_id[item_id],
+                        fresh_by_id[item_id],
+                    )
+                    if item_id in common_ids
+                    else fresh_by_id[item_id]
                 )
                 for item_id in local_by_id
+                if item_id in fresh_by_id
             ]
+            retained_ids = set(local_by_id) & set(fresh_by_id)
+            merged_items.extend(
+                fresh_by_id[item_id]
+                for item_id in fresh_by_id
+                if item_id not in retained_ids
+            )
+            return merged_items
         if len(base) == len(local) == len(fresh):
             return [
                 _merge_changed_export_values(base_item, local_item, fresh_item)

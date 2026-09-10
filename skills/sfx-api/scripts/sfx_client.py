@@ -1,10 +1,10 @@
-"""Strict CRUD and export client for SignalFx content objects."""
+"""Strict read, create, update, and export client for SignalFx content objects."""
 
 from __future__ import annotations
 
 from typing import Any, Dict
 
-from sfx_http import RemoteNotFound, do_delete, do_get, do_post, do_put
+from sfx_http import RemoteNotFound, do_get, do_post, do_put
 
 
 RESOURCE_PATHS = {
@@ -117,8 +117,3 @@ def update_object(
         "application/json",
     )
     return _require_success(response, (200,), "update", resource, resource_id)
-
-
-def delete_object(resource: str, resource_id: str, base_url: str, token: str) -> Any:
-    response = do_delete(f"{base_url}/v2/{_path(resource)}/{resource_id}", token)
-    return _require_success(response, (200, 204), "delete", resource, resource_id)

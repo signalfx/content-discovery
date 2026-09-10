@@ -121,15 +121,5 @@ class SfxClientTest(unittest.TestCase):
                     "datalink", "missing", {}, "https://api", "token"
                 )
 
-    def test_delete_accepts_no_content(self) -> None:
-        with mock.patch.object(
-            sfx_client, "do_delete", return_value=FakeResponse(204)
-        ) as request:
-            result = sfx_client.delete_object("detector", "1", "https://api", "token")
-
-        request.assert_called_once_with("https://api/v2/detector/1", "token")
-        self.assertIsNone(result)
-
-
 if __name__ == "__main__":
     unittest.main()
