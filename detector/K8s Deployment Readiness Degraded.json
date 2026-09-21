@@ -1,0 +1,115 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Triggers alerts when the number of missing pods for the deployment increases.",
+      "detectorOrigin": "Standard",
+      "entityTypeSummary": {
+        "contributing": true,
+        "types": [
+          "k8s:deployment"
+        ]
+      },
+      "entityTypes": [],
+      "id": "HSg_k9eAYAA",
+      "labelResolutions": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "K8s Deployment Readiness Degraded",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import resource\nresource.deployment_not_at_spec_blended_detector().publish('Deployment Readiness Degraded')",
+      "rules": [
+        {
+          "description": "Number of missing pods for deployment is worse than it has been over the last 12 hours, the same time yesterday, and the same time last week.",
+          "detectLabel": "Deployment Readiness Degraded",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: Number of missing pods for the deployment is worse than it has been over the last 12 hours, the same time yesterday, and the same time last week.\"\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.deployment.available",
+        "k8s.deployment.desired"
+      ],
+      "status": "ABORTED",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "type": "METRIC",
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "Missing",
+            "label": "Missing",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "k8s.deployment.desired",
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.namespace.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.deployment.name",
+              "values": []
+            }
+          ]
+        },
+        {
+          "metric": "k8s.deployment.available",
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.namespace.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.deployment.name",
+              "values": []
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": -323314905,
+  "id": "HSg_k9eAYAA",
+  "packageType": "DETECTOR"
+}
