@@ -1,0 +1,91 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Alerts when API server /readyz endpoint error rate is above threshold.",
+      "detectorOrigin": "Standard",
+      "entityTypeSummary": {
+        "contributing": true,
+        "types": []
+      },
+      "entityTypes": [],
+      "id": "HQF-bQHAcAI",
+      "labelResolutions": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "K8s Control Plane API Server Readiness Degraded",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import kubeapiserver\nkubeapiserver.control_plane_api_server_readiness_degraded_detector().publish('Control Plane API server readiness')",
+      "rules": [
+        {
+          "description": "Control Plane API server /readyz endpoint error rate >20% for 5 minutes.",
+          "detectLabel": "Control Plane API server readiness",
+          "disabled": false,
+          "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
+          "runbookUrl": null,
+          "severity": "Critical",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "apiserver_request_total"
+      ],
+      "status": "ABORTED",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "type": "METRIC",
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "/readyz endpoint error rate (%)",
+            "label": "/readyz endpoint error rate (%)",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "apiserver_request_total",
+          "filters": [
+            {
+              "values": [
+                "200"
+              ],
+              "property": "code",
+              "not": false
+            },
+            {
+              "values": [
+                "/readyz"
+              ],
+              "property": "subresource",
+              "not": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": 1905658069,
+  "id": "HQF-bQHAcAI",
+  "packageType": "DETECTOR"
+}

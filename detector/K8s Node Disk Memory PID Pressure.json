@@ -1,0 +1,100 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "Alerts when node is under disk/memory/PID pressure.",
+      "detectorOrigin": "Standard",
+      "entityTypeSummary": {
+        "contributing": true,
+        "types": [
+          "k8s:node"
+        ]
+      },
+      "entityTypes": [
+        "k8s:node"
+      ],
+      "id": "HPiMwJRAcAA",
+      "labelResolutions": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "K8s Node Disk/Memory/PID Pressure",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import nodes\nnodes.node_disk_memory_pid_pressure_detector().publish('Node Disk/Memory/PID Pressure')",
+      "rules": [
+        {
+          "description": "Node under disk/memory/PID pressure for 15 minutes.",
+          "detectLabel": "Node Disk/Memory/PID Pressure",
+          "disabled": false,
+          "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
+          "runbookUrl": null,
+          "severity": "Warning",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.node.condition"
+      ],
+      "status": "ABORTED",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "type": "METRIC",
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "Node condition",
+            "label": "Node condition",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 10800000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "k8s.node.condition",
+          "filters": [
+            {
+              "values": [],
+              "property": "k8s.node.name",
+              "not": false
+            },
+            {
+              "values": [],
+              "property": "k8s.cluster.name",
+              "not": false
+            },
+            {
+              "values": [
+                "DiskPressure",
+                "MemoryPressure",
+                "PIDPressure"
+              ],
+              "property": "condition",
+              "not": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hashCode": 613758743,
+  "id": "HPiMwJRAcAA",
+  "packageType": "DETECTOR"
+}
