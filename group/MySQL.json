@@ -6,10 +6,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWId1AgAE",
+      "id" : "X0xo8VXOFH4",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Overall query cache hit %",
+      "name" : "InnoDB buffer pool pages",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -17,7 +17,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "%",
+          "label" : "Pages",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : 110.0,
@@ -25,7 +25,7 @@
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "Hit ratio",
+          "label" : "Pages",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -57,7 +57,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Query cache hits",
+          "displayName" : "Data pages",
           "label" : "A",
           "paletteIndex" : 14,
           "plotType" : null,
@@ -66,7 +66,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Uncached query results",
+          "displayName" : "Free pages",
           "label" : "B",
           "paletteIndex" : 4,
           "plotType" : null,
@@ -75,7 +75,7 @@
           "valueUnit" : null,
           "yAxis" : 0
         }, {
-          "displayName" : "Hit %",
+          "displayName" : "Misc pages",
           "label" : "C",
           "paletteIndex" : null,
           "plotType" : null,
@@ -95,7 +95,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cache_result.qcache-hits', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='A', enable=False)\nB = data('cache_result.qcache-not_cached', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='B', enable=False)\nC = (A/(A+B)).publish(label='C')",
+      "programText" : "A = data('mysql.buffer_pool.pages', filter=filter('kind', 'data')).sum(by=['host.name']).publish(label='A')\nB = data('mysql.buffer_pool.pages', filter=filter('kind', 'free')).sum(by=['host.name']).publish(label='B')\nC = data('mysql.buffer_pool.pages', filter=filter('kind', 'misc')).sum(by=['host.name']).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -106,7 +106,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWJFFAcAA",
+      "id" : "im6ABraIfe3",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Total table locks/sec",
@@ -178,7 +178,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_locks.immediate', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='A')\nB = data('mysql_locks.waited', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='B')",
+      "programText" : "A = data('mysql.locks', filter=filter('kind', 'immediate'), rollup='rate').sum().publish(label='A')\nB = data('mysql.locks', filter=filter('kind', 'waited'), rollup='rate').sum().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -189,7 +189,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWJMYAgIo",
+      "id" : "g9G6318JD6g",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Top commands/sec",
@@ -218,43 +218,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "Select",
-          "label" : "Select",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Update",
-          "label" : "Update",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Delete",
-          "label" : "Delete",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Begin",
-          "label" : "Begin",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
+        "publishLabelOptions" : [{"displayName":"Commands/sec by type","label":"A","paletteIndex":null,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
@@ -267,7 +231,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.select', filter=filter('plugin', 'mysql'), rollup='rate').sum(by=['sf_metric']).top(count=5).publish(label='Select')\nB = data('mysql_commands.update', filter=filter('plugin', 'mysql'), rollup='rate').sum(by=['sf_metric']).top(count=5).publish(label='Update')\nC = data('mysql_commands.delete', filter=filter('plugin', 'mysql'), rollup='rate').sum(by=['sf_metric']).top(count=5).publish(label='Delete')\nD = data('mysql_commands.begin', filter=filter('plugin', 'mysql'), rollup='rate').sum(by=['sf_metric']).top(count=5).publish(label='Begin')",
+      "programText" : "A = data('mysql.commands', rollup='rate').sum(by=['command']).top(count=5).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -278,7 +242,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWJePAYAA",
+      "id" : "RKxBpqi4AB0",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Total threads by state",
@@ -358,7 +322,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('threads.cached', filter=filter('plugin', 'mysql')).sum().publish(label='A')\nB = data('threads.connected', filter=filter('plugin', 'mysql')).sum().publish(label='B')",
+      "programText" : "A = data('mysql.threads', filter=filter('kind', 'cached')).sum().publish(label='A')\nB = data('mysql.threads', filter=filter('kind', 'connected')).sum().publish(label='B')\nC = data('mysql.threads', filter=filter('kind', 'created')).sum().publish(label='C')\nD = data('mysql.threads', filter=filter('kind', 'running')).sum().publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -369,7 +333,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWKUlAYAA",
+      "id" : "8fh6i1tmYhL",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Top selects/sec",
@@ -402,7 +366,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "mysql_commands.select - Mean by host - Top 5",
+          "displayName" : "Selects/sec by host",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -423,7 +387,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.select', filter=filter('plugin', 'mysql'), rollup='rate').mean(by=['host']).top(count=5).publish(label='A')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'select'), rollup='rate').sum(by=['host.name']).top(count=5).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -434,7 +398,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWKspAcD0",
+      "id" : "aPZHsMhtLKQ",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Total selects/sec",
@@ -497,7 +461,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.select', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='A')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'select'), rollup='rate').sum().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -508,7 +472,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "Percentile distribution",
-      "id" : "DiVWLfwAgAA",
+      "id" : "Gbqvfk0014R",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Selects/sec",
@@ -616,7 +580,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.select', filter=filter('plugin', 'mysql'),rollup='rate').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'select'), rollup='rate').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -627,7 +591,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "Percentile distribution of per host (inserts+updates+deletes)/sec",
-      "id" : "DiVWL-hAYAA",
+      "id" : "EzXHPPnWzYK",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Mutations/sec",
@@ -669,88 +633,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "mysql_commands.insert",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "mysql_commands.delete",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A+B+C",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Min",
-          "label" : "E",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P10",
-          "label" : "F",
-          "paletteIndex" : 15,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Median",
-          "label" : "G",
-          "paletteIndex" : 2,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "P90",
-          "label" : "H",
-          "paletteIndex" : 9,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Max",
-          "label" : "I",
-          "paletteIndex" : 7,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
+        "publishLabelOptions" : [{"displayName":"Inserts/sec","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Updates/sec","label":"B","paletteIndex":1,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Multi-row updates/sec","label":"C","paletteIndex":4,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Deletes/sec","label":"D","paletteIndex":null,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Total mutations/sec","label":"E","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Minimum","label":"F","paletteIndex":15,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"10th percentile","label":"G","paletteIndex":2,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Median","label":"H","paletteIndex":9,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"90th percentile","label":"I","paletteIndex":7,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Maximum","label":"J","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
@@ -762,7 +645,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.insert', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='A', enable=False)\nB = data('mysql_commands.update*', filter=filter('plugin', 'mysql'),rollup='rate').sum(by=['sf_metric']).publish(label='B', enable=False)\nC = data('mysql_commands.delete', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='C', enable=False)\nD = (A+B+C).publish(label='D', enable=False)\nE = (D).min().publish(label='E')\nF = (D).percentile(pct=10).publish(label='F')\nG = (D).percentile(pct=50).publish(label='G')\nH = (D).percentile(pct=90).publish(label='H')\nI = (D).max().publish(label='I')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'insert'), rollup='rate').sum().publish(label='A', enable=False)\nB = data('mysql.commands', filter=filter('command', 'update'), rollup='rate').sum().publish(label='B', enable=False)\nC = data('mysql.commands', filter=filter('command', 'update_multi'), rollup='rate').sum().publish(label='C', enable=False)\nD = data('mysql.commands', filter=filter('command', 'delete'), rollup='rate').sum().publish(label='D', enable=False)\nE = (A+B+C+D).publish(label='E', enable=False)\nF = (E).min().publish(label='F')\nG = (E).percentile(pct=10).publish(label='G')\nH = (E).percentile(pct=50).publish(label='H')\nI = (E).percentile(pct=90).publish(label='I')\nJ = (E).max().publish(label='J')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -773,10 +656,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWMVoAYAA",
+      "id" : "XVDgFwFei0N",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Total query cache operations/sec, size",
+      "name" : "InnoDB buffer pool usage by status",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -784,7 +667,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "Inserts, prunes",
+          "label" : "Bytes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -792,7 +675,7 @@
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "Qcache size - BLUE",
+          "label" : "Bytes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -823,34 +706,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "Inserts/sec",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Prunes/sec",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Cache size in bytes",
-          "label" : "C",
-          "paletteIndex" : 1,
-          "plotType" : "AreaChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
+        "publishLabelOptions" : [{"displayName":"Clean bytes","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Dirty bytes","label":"B","paletteIndex":4,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
@@ -862,7 +718,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cache_result.qcache-inserts', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='A')\nB = data('cache_result.qcache-prunes', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='B')\nC = data('cache_size.qcache', filter=filter('plugin', 'mysql')).sum().publish(label='C')",
+      "programText" : "A = data('mysql.buffer_pool.usage', filter=filter('status', 'clean')).sum(by=['host.name']).publish(label='A')\nB = data('mysql.buffer_pool.usage', filter=filter('status', 'dirty')).sum(by=['host.name']).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -873,7 +729,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWMjAAYAA",
+      "id" : "1HnqQCoNx0n",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Top mutations/sec",
@@ -902,43 +758,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "mysql_commands.insert - Mean by host",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "mysql_commands.update* - Mean by host,sf_metric",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "mysql_commands.delete - Mean by host",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A+B+C - Sum by host - Top 5",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
+        "publishLabelOptions" : [{"displayName":"Inserts/sec","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Updates/sec","label":"B","paletteIndex":1,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Multi-row updates/sec","label":"C","paletteIndex":4,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Deletes/sec","label":"D","paletteIndex":null,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Top mutations/sec","label":"E","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "refreshInterval" : 60000,
         "secondaryVisualization" : "Sparkline",
         "sortBy" : "-value",
@@ -951,7 +771,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.insert', filter=filter('plugin', 'mysql'), rollup='rate').mean(by=['host']).publish(label='A', enable=False)\nB = data('mysql_commands.update*', filter=filter('plugin', 'mysql'), rollup='rate').mean(by=['host', 'sf_metric']).publish(label='B', enable=False)\nC = data('mysql_commands.delete', filter=filter('plugin', 'mysql'), rollup='rate').mean(by=['host']).publish(label='C', enable=False)\nD = (A+B+C).sum(by=['host']).top(count=5).publish(label='D')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'insert'), rollup='rate').sum(by=['host.name']).publish(label='A', enable=False)\nB = data('mysql.commands', filter=filter('command', 'update'), rollup='rate').sum(by=['host.name']).publish(label='B', enable=False)\nC = data('mysql.commands', filter=filter('command', 'update_multi'), rollup='rate').sum(by=['host.name']).publish(label='C', enable=False)\nD = data('mysql.commands', filter=filter('command', 'delete'), rollup='rate').sum(by=['host.name']).publish(label='D', enable=False)\nE = (A+B+C+D).sum(by=['host.name']).top(count=5).publish(label='E')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -962,7 +782,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWMppAcAA",
+      "id" : "iFfgKHrWfbW",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Total inserts, updates, deletes /sec",
@@ -1004,34 +824,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "mysql_commands.insert",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : null,
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "mysql_commands.delete",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
+        "publishLabelOptions" : [{"displayName":"Inserts/sec","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Updates/sec","label":"B","paletteIndex":1,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Multi-row updates/sec","label":"C","paletteIndex":4,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Deletes/sec","label":"D","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
@@ -1043,7 +836,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.insert', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='A')\nB = data('mysql_commands.update*', filter=filter('plugin', 'mysql'),rollup='rate').sum(by=['sf_metric']).publish(label='B')\nC = data('mysql_commands.delete', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='C')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'insert'), rollup='rate').sum().publish(label='A')\nB = data('mysql.commands', filter=filter('command', 'update'), rollup='rate').sum().publish(label='B')\nC = data('mysql.commands', filter=filter('command', 'update_multi'), rollup='rate').sum().publish(label='C')\nD = data('mysql.commands', filter=filter('command', 'delete'), rollup='rate').sum().publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1054,7 +847,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWNJqAgAA",
+      "id" : "NAYlt6XbtAE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Total MySQL bytes/sec",
@@ -1134,7 +927,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_octets.rx', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='A')\nB = data('mysql_octets.tx', filter=filter('plugin', 'mysql'),rollup='rate').sum().publish(label='B')",
+      "programText" : "A = data('mysql.client.network.io', filter=filter('kind', 'received'), rollup='rate').sum().publish(label='A')\nB = data('mysql.client.network.io', filter=filter('kind', 'sent'), rollup='rate').sum().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1145,7 +938,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWNgCAYAA",
+      "id" : "zmB3gGbE7sR",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "# Hosts",
@@ -1188,7 +981,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_octets.rx', filter=filter('plugin', 'mysql'), rollup='rate', extrapolation='last_value', maxExtrapolations=5).count(by=['host']).count().publish(label='A')",
+      "programText" : "A = data('mysql.uptime', rollup='latest').count(by=['host.name']).count().publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1199,7 +992,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWN5sAYAA",
+      "id" : "ogYO4P3xee6",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Table locks/sec",
@@ -1283,7 +1076,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_locks.immediate', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='A')\nB = data('mysql_locks.waited', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='B')",
+      "programText" : "A = data('mysql.locks', filter=filter('kind', 'immediate'), rollup='rate').publish(label='A')\nB = data('mysql.locks', filter=filter('kind', 'waited'), rollup='rate').publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1294,7 +1087,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWOBzAcAA",
+      "id" : "ATEYB1o3fIX",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Mutations/sec 24h change %",
@@ -1348,61 +1141,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "Inserts",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Updates",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Deletes",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "A+B+C - Mean(1h)",
-          "label" : "D",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "E - Timeshift 1d",
-          "label" : "E",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "24h change %",
-          "label" : "F",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
+        "publishLabelOptions" : [{"displayName":"Inserts/sec","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Updates/sec","label":"B","paletteIndex":1,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Multi-row updates/sec","label":"C","paletteIndex":4,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Deletes/sec","label":"D","paletteIndex":null,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Current hour rate","label":"E","paletteIndex":null,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Previous day rate","label":"F","paletteIndex":null,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Change %","label":"G","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
@@ -1414,7 +1153,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.insert', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='A', enable=False)\nB = data('mysql_commands.update', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='B', enable=False)\nC = data('mysql_commands.delete', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='C', enable=False)\nD = (A+B+C).mean(over='1h').publish(label='D', enable=False)\nE = (D).timeshift('1d').publish(label='E', enable=False)\nF = (D/E-1).scale(100).publish(label='F')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'insert'), rollup='rate').publish(label='A', enable=False)\nB = data('mysql.commands', filter=filter('command', 'update'), rollup='rate').publish(label='B', enable=False)\nC = data('mysql.commands', filter=filter('command', 'update_multi'), rollup='rate').publish(label='C', enable=False)\nD = data('mysql.commands', filter=filter('command', 'delete'), rollup='rate').publish(label='D', enable=False)\nE = (A+B+C+D).mean(over='1h').publish(label='E', enable=False)\nF = (E).timeshift('1d').publish(label='F', enable=False)\nG = (E/F-1).scale(100).publish(label='G')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1425,10 +1164,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWOhzAgAA",
+      "id" : "AiY8VhF1UvF",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Query cache hit %",
+      "name" : "InnoDB buffer pool pages by kind",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1436,7 +1175,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "%",
+          "label" : "Pages",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : 110.0,
@@ -1444,7 +1183,7 @@
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "Hit ratio",
+          "label" : "Pages",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -1479,34 +1218,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "Query cache hits",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Uncached query results",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Hit %",
-          "label" : "C",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
+        "publishLabelOptions" : [{"displayName":"Pages by kind","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
@@ -1518,7 +1230,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cache_result.qcache-hits', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='A', enable=False)\nB = data('cache_result.qcache-not_cached', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='B', enable=False)\nC = (A/(A+B)).publish(label='C')",
+      "programText" : "A = data('mysql.buffer_pool.pages').sum(by=['host.name', 'kind']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1529,10 +1241,10 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWPXEAYAA",
+      "id" : "u3qZ5Wt0wpu",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Query cache operations/sec, size",
+      "name" : "InnoDB buffer pool usage",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1540,7 +1252,7 @@
         "axes" : [ {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "Inserts, prunes",
+          "label" : "Bytes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -1548,7 +1260,7 @@
         }, {
           "highWatermark" : null,
           "highWatermarkLabel" : null,
-          "label" : "Qcache size - BLUE",
+          "label" : "Bytes",
           "lowWatermark" : null,
           "lowWatermarkLabel" : null,
           "max" : null,
@@ -1583,34 +1295,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "Inserts/sec",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Prunes/sec",
-          "label" : "B",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Cache size in bytes",
-          "label" : "C",
-          "paletteIndex" : 1,
-          "plotType" : "AreaChart",
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 1
-        } ],
+        "publishLabelOptions" : [{"displayName":"Clean bytes","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Dirty bytes","label":"B","paletteIndex":4,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "showEventLines" : false,
         "stacked" : false,
         "time" : {
@@ -1622,7 +1307,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('cache_result.qcache-inserts', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='A')\nB = data('cache_result.qcache-prunes', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='B')\nC = data('cache_size.qcache', filter=filter('plugin', 'mysql')).publish(label='C')",
+      "programText" : "A = data('mysql.buffer_pool.usage', filter=filter('status', 'clean')).sum().publish(label='A')\nB = data('mysql.buffer_pool.usage', filter=filter('status', 'dirty')).sum().publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1633,7 +1318,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWPnxAgAA",
+      "id" : "9D7FSUAopG0",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Inserts, updates, deletes /sec",
@@ -1687,34 +1372,7 @@
           "minimumResolution" : 0,
           "timezone" : null
         },
-        "publishLabelOptions" : [ {
-          "displayName" : "Inserts",
-          "label" : "A",
-          "paletteIndex" : 14,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Updates",
-          "label" : "B",
-          "paletteIndex" : 1,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "Deletes",
-          "label" : "C",
-          "paletteIndex" : 4,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        } ],
+        "publishLabelOptions" : [{"displayName":"Inserts/sec","label":"A","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Updates/sec","label":"B","paletteIndex":1,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Multi-row updates/sec","label":"C","paletteIndex":4,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0},{"displayName":"Deletes/sec","label":"D","paletteIndex":14,"plotType":null,"valuePrefix":null,"valueSuffix":null,"valueUnit":null,"yAxis":0}],
         "showEventLines" : false,
         "stacked" : true,
         "time" : {
@@ -1726,7 +1384,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.insert', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='A')\nB = data('mysql_commands.update*', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='B')\nC = data('mysql_commands.delete', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='C')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'insert'), rollup='rate').publish(label='A')\nB = data('mysql.commands', filter=filter('command', 'update'), rollup='rate').publish(label='B')\nC = data('mysql.commands', filter=filter('command', 'update_multi'), rollup='rate').publish(label='C')\nD = data('mysql.commands', filter=filter('command', 'delete'), rollup='rate').publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1737,7 +1395,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWQGGAYAA",
+      "id" : "J615p8Z7Y8g",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Selects/sec 24h change %",
@@ -1830,7 +1488,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.select', filter=filter('plugin', 'mysql'), rollup='rate').mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B-1).scale(100).publish(label='C')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'select'), rollup='rate').mean(over='1h').publish(label='A', enable=False)\nB = (A).timeshift('1d').publish(label='B', enable=False)\nC = (A/B-1).scale(100).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1841,7 +1499,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWQlNAYAA",
+      "id" : "39wcbIqGxfV",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "MySQL bytes/sec",
@@ -1925,7 +1583,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_octets.rx', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='A')\nB = data('mysql_octets.tx', filter=filter('plugin', 'mysql'), rollup='rate').publish(label='B')",
+      "programText" : "A = data('mysql.client.network.io', filter=filter('kind', 'received'), rollup='rate').publish(label='A')\nB = data('mysql.client.network.io', filter=filter('kind', 'sent'), rollup='rate').publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1936,7 +1594,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWRSpAcAA",
+      "id" : "YRH5mqLdHRC",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Threads by state",
@@ -2020,7 +1678,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('threads.cached', filter=filter('plugin', 'mysql')).publish(label='A')\nB = data('threads.connected', filter=filter('plugin', 'mysql')).publish(label='B')",
+      "programText" : "A = data('mysql.threads', filter=filter('kind', 'cached')).publish(label='A')\nB = data('mysql.threads', filter=filter('kind', 'connected')).publish(label='B')\nC = data('mysql.threads', filter=filter('kind', 'created')).publish(label='C')\nD = data('mysql.threads', filter=filter('kind', 'running')).publish(label='D')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2031,7 +1689,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWRZhAYAA",
+      "id" : "6RYX9fOvv4z",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Selects/sec",
@@ -2106,7 +1764,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.select', filter=filter('plugin', 'mysql')).publish(label='A')",
+      "programText" : "A = data('mysql.commands', filter=filter('command', 'select'), rollup='rate').publish(label='A', enable=False)\nB = (A).min().publish(label='B')\nC = (A).percentile(pct=10).publish(label='C')\nD = (A).percentile(pct=50).publish(label='D')\nE = (A).percentile(pct=90).publish(label='E')\nF = (A).max().publish(label='F')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2117,7 +1775,7 @@
       "creator" : null,
       "customProperties" : { },
       "description" : "",
-      "id" : "DiVWSTTAcJU",
+      "id" : "3OCTkxHqCPJ",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "Top commands/sec",
@@ -2147,7 +1805,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "mysql_commands.* - Mean by sf_metric - Top 5",
+          "displayName" : "Commands/sec by type",
           "label" : "A",
           "paletteIndex" : 3,
           "plotType" : null,
@@ -2168,7 +1826,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('mysql_commands.*', filter=filter('plugin', 'mysql'), rollup='rate').mean(by=['sf_metric']).top(count=5).publish(label='A')",
+      "programText" : "A = data('mysql.commands', rollup='rate').sum(by=['command']).top(count=5).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2179,79 +1837,79 @@
       "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
-        "chartId" : "DiVWNgCAYAA",
+        "chartId" : "zmB3gGbE7sR",
         "column" : 0,
         "height" : 1,
         "row" : 0,
         "width" : 4
       }, {
-        "chartId" : "DiVWJePAYAA",
+        "chartId" : "RKxBpqi4AB0",
         "column" : 4,
         "height" : 1,
         "row" : 0,
         "width" : 4
       }, {
-        "chartId" : "DiVWNJqAgAA",
+        "chartId" : "NAYlt6XbtAE",
         "column" : 8,
         "height" : 1,
         "row" : 0,
         "width" : 4
       }, {
-        "chartId" : "DiVWKspAcD0",
+        "chartId" : "aPZHsMhtLKQ",
         "column" : 0,
         "height" : 1,
         "row" : 1,
         "width" : 6
       }, {
-        "chartId" : "DiVWLfwAgAA",
+        "chartId" : "Gbqvfk0014R",
         "column" : 6,
         "height" : 1,
         "row" : 1,
         "width" : 6
       }, {
-        "chartId" : "DiVWMppAcAA",
+        "chartId" : "iFfgKHrWfbW",
         "column" : 0,
         "height" : 1,
         "row" : 2,
         "width" : 6
       }, {
-        "chartId" : "DiVWL-hAYAA",
+        "chartId" : "EzXHPPnWzYK",
         "column" : 6,
         "height" : 1,
         "row" : 2,
         "width" : 6
       }, {
-        "chartId" : "DiVWJFFAcAA",
+        "chartId" : "im6ABraIfe3",
         "column" : 0,
         "height" : 1,
         "row" : 3,
         "width" : 4
       }, {
-        "chartId" : "DiVWMVoAYAA",
+        "chartId" : "XVDgFwFei0N",
         "column" : 4,
         "height" : 1,
         "row" : 3,
         "width" : 4
       }, {
-        "chartId" : "DiVWId1AgAE",
+        "chartId" : "X0xo8VXOFH4",
         "column" : 8,
         "height" : 1,
         "row" : 3,
         "width" : 4
       }, {
-        "chartId" : "DiVWJMYAgIo",
+        "chartId" : "g9G6318JD6g",
         "column" : 8,
         "height" : 1,
         "row" : 4,
         "width" : 4
       }, {
-        "chartId" : "DiVWMjAAYAA",
+        "chartId" : "1HnqQCoNx0n",
         "column" : 4,
         "height" : 1,
         "row" : 4,
         "width" : 4
       }, {
-        "chartId" : "DiVWKUlAYAA",
+        "chartId" : "8fh6i1tmYhL",
         "column" : 0,
         "height" : 1,
         "row" : 4,
@@ -2261,19 +1919,16 @@
       "creator" : null,
       "customProperties" : null,
       "description" : "",
-      "discoveryOptions" : {
-        "query" : "plugin:mysql",
-        "selectors" : [ "plugin:mysql" ]
-      },
+      "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
         "sources" : null,
         "time" : null,
         "variables" : null
       },
-      "groupId" : "DiVWITqAgAA",
+      "groupId" : "mkoK2w3U5sa",
       "groupName" : "MySQL",
-      "id" : "DiVWIWUAgAE",
+      "id" : "RhmM0u39ALD",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
@@ -2287,61 +1942,61 @@
       "authorizedWriters" : null,
       "chartDensity" : "DEFAULT",
       "charts" : [ {
-        "chartId" : "DiVWRZhAYAA",
+        "chartId" : "6RYX9fOvv4z",
         "column" : 0,
         "height" : 1,
         "row" : 0,
         "width" : 6
       }, {
-        "chartId" : "DiVWPnxAgAA",
+        "chartId" : "9D7FSUAopG0",
         "column" : 6,
         "height" : 1,
         "row" : 0,
         "width" : 6
       }, {
-        "chartId" : "DiVWSTTAcJU",
+        "chartId" : "3OCTkxHqCPJ",
         "column" : 8,
         "height" : 1,
         "row" : 1,
         "width" : 4
       }, {
-        "chartId" : "DiVWRSpAcAA",
+        "chartId" : "YRH5mqLdHRC",
         "column" : 0,
         "height" : 1,
         "row" : 1,
         "width" : 4
       }, {
-        "chartId" : "DiVWQlNAYAA",
+        "chartId" : "39wcbIqGxfV",
         "column" : 4,
         "height" : 1,
         "row" : 1,
         "width" : 4
       }, {
-        "chartId" : "DiVWOhzAgAA",
+        "chartId" : "AiY8VhF1UvF",
         "column" : 8,
         "height" : 1,
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "DiVWN5sAYAA",
+        "chartId" : "ogYO4P3xee6",
         "column" : 0,
         "height" : 1,
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "DiVWPXEAYAA",
+        "chartId" : "u3qZ5Wt0wpu",
         "column" : 4,
         "height" : 1,
         "row" : 2,
         "width" : 4
       }, {
-        "chartId" : "DiVWQGGAYAA",
+        "chartId" : "J615p8Z7Y8g",
         "column" : 0,
         "height" : 1,
         "row" : 3,
         "width" : 6
       }, {
-        "chartId" : "DiVWOBzAcAA",
+        "chartId" : "ATEYB1o3fIX",
         "column" : 6,
         "height" : 1,
         "row" : 3,
@@ -2351,10 +2006,7 @@
       "creator" : null,
       "customProperties" : null,
       "description" : "",
-      "discoveryOptions" : {
-        "query" : "plugin:mysql",
-        "selectors" : [ "_exists_:host" ]
-      },
+      "discoveryOptions" : null,
       "eventOverlays" : null,
       "filters" : {
         "sources" : null,
@@ -2372,9 +2024,9 @@
           "value" : [ "Choose host" ]
         } ]
       },
-      "groupId" : "DiVWITqAgAA",
+      "groupId" : "mkoK2w3U5sa",
       "groupName" : "MySQL",
-      "id" : "DiVWN1NAcAA",
+      "id" : "NjnDOENh3kB",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "maxDelayOverride" : null,
@@ -2390,30 +2042,23 @@
       "created" : 0,
       "creator" : null,
       "dashboardConfigs" : [ {
-        "configId" : "DoN5I7fAcAA",
-        "dashboardId" : "DiVWIWUAgAE",
+        "configId" : "Vt6w5k9dqdi",
+        "dashboardId" : "RhmM0u39ALD",
         "descriptionOverride" : null,
         "filtersOverride" : null,
         "nameOverride" : null
       }, {
-        "configId" : "DoN5I7dAYAA",
-        "dashboardId" : "DiVWN1NAcAA",
+        "configId" : "uqyQfrph0fJ",
+        "dashboardId" : "NjnDOENh3kB",
         "descriptionOverride" : null,
         "filtersOverride" : null,
         "nameOverride" : null
       } ],
-      "dashboards" : [ "DiVWIWUAgAE", "DiVWN1NAcAA" ],
-      "description" : "Dashboards about MySQL.",
+      "dashboards" : [ "RhmM0u39ALD", "NjnDOENh3kB" ],
+      "description" : "Dashboards for MySQL metrics collected by the OpenTelemetry Collector contrib mysqlreceiver. The mysql.commands and mysql.client.network.io metrics are optional and must be enabled in receiver configuration.",
       "email" : null,
-      "id" : "DiVWITqAgAA",
-      "importQualifiers" : [ {
-        "filters" : [ {
-          "not" : false,
-          "property" : "plugin",
-          "values" : [ "mysql" ]
-        } ],
-        "metric" : "threads.connected"
-      } ],
+      "id" : "mkoK2w3U5sa",
+      "importQualifiers" : [ {"metric":"mysql.threads","filters":[{"not":false,"property":"kind","values":["connected"]}]} ],
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
       "name" : "MySQL",
@@ -2421,8 +2066,8 @@
       "teams" : null
     }
   },
-  "hashCode" : 1835242931,
-  "id" : "DiVWITqAgAA",
+  "hashCode" : 0,
+  "id" : "mkoK2w3U5sa",
   "modelVersion" : 1,
   "packageType" : "GROUP"
 }
