@@ -1,4 +1,4 @@
-echo "Deleting colletion data"
+echo "Deleting collection data"
 mongo --port 28018 --quiet --eval "db = db.getSiblingDB('test');db.restaurants.deleteMany({})"
 echo "wait 5 sec"
 sleep 5

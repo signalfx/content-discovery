@@ -109,9 +109,9 @@ MaxConnectionsPerChild 10000
 ```
          
 
-# Load Genrator For apache:
+# Load Generator For apache:
 
-Create SH file and add below contant 
+Create SH file and add below content
 
 ``` 
 

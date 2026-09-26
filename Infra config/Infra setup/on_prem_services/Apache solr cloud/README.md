@@ -54,7 +54,7 @@ Next, the script prompts you for the number of shards to distribute the collecti
 
 Next, the script will prompt you for the number of replicas to create for each shard. Replication is covered in more detail later in the guide, so if you’re unsure, then use the default of 2 so that you can see how replication is handled in SolrCloud.
 
-Lastly, the script will prompt you for the name of a configuration directory for your collection. You can choose basic_configs, data_driven_schema_configs, or sample_techproducts_configs. The configuration directories are pulled from server/solr/configsets/ so you can review them beforehand if you wish. The data_driven_schema_configs configuration (the default) is useful when you’re still designing a schema for your documents and need some flexiblity as you experiment with Solr.
+Lastly, the script will prompt you for the name of a configuration directory for your collection. You can choose basic_configs, data_driven_schema_configs, or sample_techproducts_configs. The configuration directories are pulled from server/solr/configsets/ so you can review them beforehand if you wish. The data_driven_schema_configs configuration (the default) is useful when you’re still designing a schema for your documents and need some flexibility as you experiment with Solr.
 
 At this point, you should have a new collection created in your local SolrCloud cluster. To verify this, you can run the status command:
 
