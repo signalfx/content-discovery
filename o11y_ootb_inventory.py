@@ -441,7 +441,7 @@ class GitlabInventory:
                     metric_selectors_set = {""}
 
                     for metric in nav_json['uiModel']['metrics']:
-                        metric_selectors = metric.get("metricSelectors")
+                        metric_selectors = metric.get("metricSelectors") or []
                         metric_selectors_set.update(metric_selectors)
 
                     metric_selector_str = '\n'.join(sorted(item for item in metric_selectors_set if item != ''))
