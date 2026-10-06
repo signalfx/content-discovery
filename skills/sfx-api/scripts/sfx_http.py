@@ -3,6 +3,8 @@
 import requests
 from typing import Dict, Any
 
+REQUEST_TIMEOUT = (5, 30)
+
 
 class RemoteNotFound(RuntimeError):
     """A resource id does not exist in the target SignalBuddy env.
@@ -26,7 +28,11 @@ def do_get(url: str, token: str) -> requests.Response:
     Returns:
         Response object
     """
-    return requests.get(url, headers={"X-SF-TOKEN": token, "Accept": "application/json"})
+    return requests.get(
+        url,
+        headers={"X-SF-TOKEN": token, "Accept": "application/json"},
+        timeout=REQUEST_TIMEOUT,
+    )
 
 
 def do_put(
@@ -50,6 +56,7 @@ def do_put(
         url,
         headers={"X-SF-TOKEN": token, "Content-Type": content_type},
         json=data,
+        timeout=REQUEST_TIMEOUT,
     )
 
 
@@ -74,4 +81,5 @@ def do_post(
         url,
         headers={"X-SF-TOKEN": token, "Content-Type": content_type},
         json=data,
+        timeout=REQUEST_TIMEOUT,
     )
