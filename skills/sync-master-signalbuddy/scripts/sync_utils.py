@@ -501,7 +501,13 @@ def _format_preserving_replacements(
                 )
             return replacements
     if root:
-        raise ValueError("exported dashboard-group structure cannot be mapped safely")
+        return [
+            (
+                start,
+                end,
+                json.dumps(fresh, indent=2, sort_keys=True, ensure_ascii=False),
+            )
+        ]
     return [(start, end, json.dumps(fresh, ensure_ascii=False, separators=(",", ":")))]
 
 

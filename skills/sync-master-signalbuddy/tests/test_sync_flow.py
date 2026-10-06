@@ -183,20 +183,17 @@ class FormatPreservingWriteTest(unittest.TestCase):
         self.assertEqual(path.read_text(encoding="utf-8"), expected)
         self.assertIn('"tags" : null', path.read_text(encoding="utf-8"))
 
-    def test_group_write_refuses_unmappable_root_instead_of_reformatting(self) -> None:
+    def test_group_write_replaces_unmappable_root_with_full_export(self) -> None:
         path = Path(tempfile.NamedTemporaryFile(suffix=".json", delete=False).name)
         self.addCleanup(path.unlink, missing_ok=True)
         original = '{\n  "hashCode" : 1\n}\n'
         path.write_text(original, encoding="utf-8")
+        fresh = {"hashCode": 2, "chartExports": []}
 
-        with self.assertRaisesRegex(RuntimeError, "cannot safely preserve"):
-            utils.write_local_resource(
-                path,
-                {"hashCode": 2, "chartExports": []},
-                preserve_format=True,
-            )
+        utils.write_local_resource(path, fresh, preserve_format=True)
 
-        self.assertEqual(path.read_text(encoding="utf-8"), original)
+        expected = json.dumps(fresh, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+        self.assertEqual(path.read_text(encoding="utf-8"), expected)
 
     def test_export_comparison_ignores_null_empty_collection_normalization(self) -> None:
         local = {
