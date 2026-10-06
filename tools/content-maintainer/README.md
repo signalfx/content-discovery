@@ -69,5 +69,6 @@ also configures the tracked pre-commit hook and creates or updates one active
 every four hours.
 
 Run the setup command again after pulling changes to the repository-owned
-automation definition. Local run state and unique logs are stored under
-`tools/content-maintainer/.state/` and remain ignored by Git.
+automation definition. Unique run logs and the non-overlapping run lock are
+stored under `tools/content-maintainer/.state/` and remain ignored by Git. The
+workflow does not store per-ticket lifecycle or processed-ticket state locally.

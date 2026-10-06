@@ -5,7 +5,7 @@ description: Read, track, comment on, and transition content-discovery Jira work
 
 # Manage content-discovery Jira work items
 
-Use this skill for the Jira side of the content-maintainer workflow. Jira is the work-item system of record; keep the agent lifecycle state separate from the ticket's Jira status.
+Use this skill for the Jira side of the content-maintainer workflow. Jira is the source of truth for the ticket's current status and comments; do not maintain a separate per-ticket lifecycle state.
 
 Read [references/lifecycle-contract.md](references/lifecycle-contract.md) before writing a comment or changing a status.
 
@@ -15,7 +15,7 @@ Use the complete configured JQL without broadening it. Use the authenticated Cod
 
 Preflight must verify a real Jira read and discover the authenticated identity through the Atlassian connection. If the connection is missing, disconnected, requires reauthentication, or cannot access the configured site and project, stop before Jira writes and prompt the user to set up or reconnect Atlassian in Codex. Do not infer readiness only from connector configuration metadata or a command's exit status.
 
-During preflight, discover the authenticated Jira account ID and persist it with coordinator state for write verification and idempotency. Do not require a separately configured automation account ID. Resolve every configured owner email to exactly one active Jira account, deduplicate the resulting account IDs, and persist the verified mapping for mentions. Refuse Jira question writes when any configured owner cannot be resolved uniquely. Treat the project predicate in the complete configured JQL as the project boundary; reject a returned work item that does not satisfy it.
+During preflight, discover the authenticated Jira account ID for this run's write verification and idempotency checks. Do not persist it in a per-ticket lifecycle state file. Resolve every configured owner email to exactly one active Jira account, deduplicate the resulting account IDs for this run, and use them for mentions. Refuse Jira question writes when any configured owner cannot be resolved uniquely. The complete configured JQL is the operation boundary for all tickets assessed in the run.
 
 Never request or print Jira tokens. A scheduled run may perform only the comment and transition operations enabled by its configuration.
 
@@ -45,13 +45,13 @@ Ask questions only after `$content-maintainer` has exhausted its evidence-resolu
 
 Before writing, require the coordinator to provide the competing outcomes, sources already checked, and why repository evidence or authoritative documentation cannot resolve them. Post one concise comment with the current understanding, numbered questions, and why each answer matters. Mention the owners resolved from configured email addresses using their verified Jira account IDs; never render an email address or display name as if it were a Jira mention.
 
-Record the comment ID, newest observed comment ID, question fingerprint, and mentioned owner IDs. On later runs, inspect every newer comment, including comments authored by the logged-in automation identity because that account may also be used manually. Exclude only comment IDs already recorded as successful automation writes, or comments whose operation marker and expected content are verified under the idempotency contract. Do not repost unchanged questions. A reminder is allowed at most once per configured reminder interval.
+On later runs, inspect current comment history, including comments authored by the logged-in automation identity because that account may also be used manually. Do not persist comment cursors. Exclude comments only when their operation marker, author, and expected content verify the intended operation. Do not repost unchanged questions. A reminder is allowed at most once per configured reminder interval, measured from the latest matching reminder comment.
 
 ## Record a merge request
 
 Comment only after `$content-mr` has verified the MR remotely. Include the MR URL, source branch, commit SHA, concise change summary, validation evidence, and assigned reviewers. Use the stable operation marker from the lifecycle contract to prevent duplicates.
 
-After the comment is created or verified, compare the current status only with the configured `In Review` target status. If they differ, discover and execute the separately configured `In Review` transition name or ID, then fetch the issue again and require the target status. Only then may the coordinator persist `agent_status: mr_open`. On retry, perform only the missing comment or transition operation.
+After the comment is created or verified, compare the current status only with the configured `In Review` target status. If they differ, discover and execute the separately configured `In Review` transition name or ID, then fetch the issue again and require the target status. On a later run, read current Jira status and comment evidence to decide whether either operation remains necessary.
 
 When implementation fails after the verified work-start boundary, post one idempotent progress comment describing completed work, the concrete blocker, whether any remote operation succeeded, and the next retry action. Do not automatically transition the Jira ticket backward.
 
@@ -63,4 +63,4 @@ Do not transition an open, closed-unmerged, missing, or unverifiable MR. Do not 
 
 ## Completion output
 
-Return a structured result containing the issue key, agent lifecycle state, Jira status, read cursor, external operation performed, resulting comment or transition ID, and any retryable or terminal error. Never include credentials or full sensitive response headers.
+Return a structured result containing the issue key, current Jira status, recommended or completed next action, relevant comment or transition ID, and any retryable or terminal error. Never include credentials or full sensitive response headers.

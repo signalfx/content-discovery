@@ -1,33 +1,31 @@
-# Content maintainer state machine
+# Content maintainer next-action guide
 
-| State | Entry evidence | Next scheduled action | Valid exits |
-|---|---|---|---|
-| `discovered` | Ticket matched configured JQL | Hydrate, exhaust evidence resolution, and investigate | `needs_information`, `ready`, `blocked` |
-| `needs_information` | Verified Jira question comment | Read comments after cursor | `ready`, `needs_information`, `blocked` |
-| `ready` | Complete acceptance criteria and plan | Execute the configured work-start transition if needed, verify Jira `In Progress`, and create the work-started comment before an isolated worktree | `working`, `blocked` |
-| `working` | Verified Jira work-start boundary plus worktree, branch, and plan | Implement, validate, and post an idempotent blocker update if execution stops | `mr_open`, `needs_information`, `blocked` |
-| `mr_open` | Verified GitLab project and IID, MR comment, and Jira `In Review` status | Reconcile MR and feedback | `mr_open`, `merged`, `closed_unmerged`, `blocked` |
-| `merged` | GitLab reports merged with commit | Comment and transition Jira | `ready_for_verification`, `blocked` |
-| `ready_for_verification` | Jira re-read confirms target status | No action unless reopened | `discovered` if Jira reopens |
-| `closed_unmerged` | GitLab reports closed without merge | Re-plan or ask owner | `ready`, `needs_information`, `blocked` |
-| `blocked` | Concrete terminal or run-policy blocker | Retry only when relevant state changes | Any justified state |
+Determine each ticket's next action from its current Jira status and current Jira, GitLab, and repository evidence. Jira is the source of truth. Do not use a durable local lifecycle state or processed-ticket registry.
 
-Persist both `agent_status` and `jira_status`; never store Jira's status in the agent lifecycle field.
+| Current evidence | Next action |
+|---|---|
+| Jira status equals configured Todo status | Select for new processing only while fewer than `max_todo_tickets_per_run` Todo tickets have been selected in this run; otherwise leave it for a later run. |
+| Jira status equals configured In Progress status | Always inspect and continue regardless of the Todo limit. Resume from the current comments, ticket branch/worktree, and linked MR. Ask for owner input only when evidence cannot resolve a material decision. |
+| Jira status equals configured In Review status or has a linked open MR | Inspect MR state, pipeline, conflicts, approvals, reviewers, and discussions. Fix branch-caused failures and actionable review feedback. Remind reviewers only if the MR is otherwise healthy and the configured interval has elapsed since the latest reminder. |
+| Linked MR is merged | Verify the merge and commit, add merge evidence to Jira, then transition to and verify the configured Ready For Verification status. |
+| Linked MR is closed without merge | Re-plan the work or ask owners whether it should continue. Never report it as delivered. |
+| Jira is resolved, verified, or otherwise terminal | Check for contradictory current MR/Jira evidence. If none, take no action. If reopened or unfinished work is evident, handle it according to the current status and evidence. |
+| Any other status | Inspect the ticket and linked work to decide whether a defined action is needed; otherwise report that no action is needed. |
 
-`needs_information` is valid only after the run contract's evidence-resolution process leaves multiple materially different, technically valid outcomes that require owner judgment. A documented, evidence-backed assumption exits to `ready`; residual uncertainty by itself does not.
+The configured Todo limit counts only Todo tickets selected for new processing. It never caps In Progress work or follow-up of existing MRs. Assess all tickets returned by the complete configured JQL on every run, including those that may have appeared in earlier runs.
 
-Enter `working` only after Jira has been re-read in the configured `In Progress` status and the authenticated maintainer's work-started comment has been created or verified under the idempotency contract. Never use a local branch or worktree alone as evidence that Jira progress tracking succeeded.
+## Idempotent follow-up
 
-Enter `mr_open` only after the MR has been verified remotely, its Jira comment has been created or verified, and Jira has been re-read in the configured `In Review` target status. Transition selectors and target status names are distinct configuration values at every boundary.
+Before a Jira write, re-read current status and comments and verify whether the intended operation has already happened. Use stable operation markers in comments to avoid duplicates. Detect new owner replies by reading current comment history; do not store a local comment cursor. Determine reminder eligibility from the timestamp of the latest matching reminder comment, not a local reminder-date record.
 
 ## Actionable open MR
 
-When an MR is open, prioritize actions in this order:
+When an MR is open, prioritize:
 
 1. Resolve branch-caused pipeline failures.
 2. Resolve merge conflicts against the current target branch.
 3. Address actionable unresolved review discussions.
 4. Retry missing reviewer assignment.
-5. Remind reviewers only if the MR is otherwise healthy.
+5. Remind reviewers only if the MR is otherwise healthy and the reminder interval has elapsed.
 
 External runner, registry, or credential failures are evidence, not permission to change unrelated code.
