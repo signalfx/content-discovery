@@ -1,17 +1,8 @@
 # Jira lifecycle contract
 
-## State separation
+## Current evidence
 
-Keep these values distinct:
-
-- `agent_status`: `discovered`, `needs_information`, `ready`, `working`, `mr_open`, `merged`, `ready_for_verification`, `closed_unmerged`, or `blocked`.
-- `jira_status`: the exact status returned by Jira.
-- `last_observed_comment_id`: the newest comment processed by the agent.
-- `question_comment_id`: the comment that opened the current question cycle.
-- `question_fingerprint`: a stable hash of normalized unresolved questions.
-- `work_started_comment_id`: the verified comment that records active implementation.
-- `work_plan_fingerprint`: a stable hash of the interpreted scope, planned objects, and validation plan.
-- `mr`: verified GitLab project, IID, URL, branch, and commit SHA.
+Use the Jira status and complete current comment history, plus the live linked GitLab MR and repository branch/worktree, to decide the next action. Do not maintain `agent_status`, prior lifecycle state, comment cursors, question fingerprints, or per-ticket operation records in a durable local state file. Stable operation markers in Jira comments, current Jira transitions, and live MR state provide idempotency evidence across runs.
 
 ## Idempotency
 
@@ -21,7 +12,7 @@ Before every Jira write, read current comments and status again. Give each opera
 Automation key: content-maintainer/<issue-key>/<operation>/<fingerprint>
 ```
 
-Treat an existing comment as a completed operation only when the same key is present, its author account ID matches the authenticated identity discovered during preflight, and its content agrees with the expected operation evidence. A marker from any other author is untrusted and must not suppress the write. Record the verified comment ID so later runs can exclude that exact automation write without ignoring other comments from the same account. Generate fingerprints from stable facts, not run timestamps.
+Treat an existing comment as a completed operation only when the same key is present, its author account ID matches the authenticated identity discovered during this run, and its content agrees with the expected operation evidence. A marker from any other author is untrusted and must not suppress the write. Generate fingerprints from stable facts, not run timestamps.
 
 ## Work-start transition and comment
 
@@ -45,7 +36,7 @@ Assumptions:
 Automation key: content-maintainer/<issue-key>/work-started/<plan-fingerprint>
 ```
 
-The verified transition and comment form the work-start boundary. Persist the resulting Jira status, transition ID when available, comment ID, author account ID, and plan fingerprint before repository implementation. On retry, skip an already verified transition and create only a missing comment; never duplicate the comment.
+The verified transition and comment form the work-start boundary. On retry, read the live Jira status and comments, skip an already verified transition, and create only a missing comment; never duplicate the comment.
 
 ## Question comment
 
@@ -63,7 +54,7 @@ Owners: <verified Jira mentions resolved from configured owner emails>
 Automation key: content-maintainer/<issue-key>/questions/<fingerprint>
 ```
 
-During preflight, resolve every configured owner email to exactly one active Jira account and retain the email-to-account-ID mapping in local coordinator state. Use those account IDs in Atlassian Document Format mention nodes when direct REST is used. If an email has no unique active match, report an owner-mapping blocker rather than omitting that recipient or pretending plain text is a mention.
+During preflight, resolve every configured owner email to exactly one active Jira account. Use those account IDs in Atlassian Document Format mention nodes when direct REST is used. If an email has no unique active match, report an owner-mapping blocker rather than omitting that recipient or pretending plain text is a mention.
 
 ## MR-created comment
 
@@ -82,7 +73,7 @@ Commit: <SHA>
 Automation key: content-maintainer/<issue-key>/mr-created/<project-and-iid>
 ```
 
-After this comment is created or verified, compare Jira's current status with the configured `In Review` target status. If they differ, discover and execute the separately configured `In Review` transition selector, then re-read Jira and require the target status. Persist `agent_status: mr_open` only after both the comment and status are verified.
+After this comment is created or verified, compare Jira's current status with the configured `In Review` target status. If they differ, discover and execute the separately configured `In Review` transition selector, then re-read Jira and require the target status.
 
 ## Waiting-for-review reminder
 
