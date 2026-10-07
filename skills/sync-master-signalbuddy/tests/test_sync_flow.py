@@ -119,7 +119,7 @@ class SyncApplyTest(unittest.TestCase):
             )
 
         self.assertEqual(result, path)
-        writer.assert_called_once_with(path, fresh, preserve_format=True)
+        writer.assert_called_once_with(path, fresh)
 
 
 class ChangeDetectionTest(unittest.TestCase):
@@ -146,8 +146,8 @@ class ChangeDetectionTest(unittest.TestCase):
         self.assertEqual(changed, [("navigator", navigator)])
 
 
-class FormatPreservingWriteTest(unittest.TestCase):
-    def test_group_write_changes_values_without_reformatting_existing_json(self) -> None:
+class FullFormatWriteTest(unittest.TestCase):
+    def test_group_write_formats_the_entire_document(self) -> None:
         path = Path(tempfile.NamedTemporaryFile(suffix=".json", delete=False).name)
         self.addCleanup(path.unlink, missing_ok=True)
         original = """{
@@ -175,22 +175,19 @@ class FormatPreservingWriteTest(unittest.TestCase):
             "hashCode": 2,
         }
 
-        utils.write_local_resource(path, fresh, preserve_format=True)
+        utils.write_local_resource(path, fresh)
 
-        expected = original.replace("old program", "new program").replace(
-            '"hashCode" : 1', '"hashCode" : 2'
-        )
+        expected = json.dumps(fresh, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
         self.assertEqual(path.read_text(encoding="utf-8"), expected)
-        self.assertIn('"tags" : null', path.read_text(encoding="utf-8"))
 
-    def test_group_write_replaces_unmappable_root_with_full_export(self) -> None:
+    def test_group_write_replaces_existing_document_with_full_export(self) -> None:
         path = Path(tempfile.NamedTemporaryFile(suffix=".json", delete=False).name)
         self.addCleanup(path.unlink, missing_ok=True)
         original = '{\n  "hashCode" : 1\n}\n'
         path.write_text(original, encoding="utf-8")
         fresh = {"hashCode": 2, "chartExports": []}
 
-        utils.write_local_resource(path, fresh, preserve_format=True)
+        utils.write_local_resource(path, fresh)
 
         expected = json.dumps(fresh, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
         self.assertEqual(path.read_text(encoding="utf-8"), expected)

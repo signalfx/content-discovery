@@ -652,7 +652,7 @@ def _refresh_local(
             exit_code=EXIT_API_FAILURE,
         ) from e
     target = _resolve_writeback_path(rtype, rid, fresh, explicit_out)
-    write_local_resource(target, fresh, preserve_format=rtype == "group")
+    write_local_resource(target, fresh)
     return target
 
 
@@ -820,7 +820,7 @@ def cmd_pull(args: argparse.Namespace) -> int:
 
     explicit_out = Path(args.out) if args.out else None
     target = _resolve_writeback_path(args.type, args.id, fresh, explicit_out)
-    write_local_resource(target, fresh, preserve_format=args.type == "group")
+    write_local_resource(target, fresh)
     rel = str(target.relative_to(REPO_ROOT)) if REPO_ROOT in target.parents else str(target)
     emit(
         {
