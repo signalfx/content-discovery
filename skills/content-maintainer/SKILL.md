@@ -34,8 +34,8 @@ The complete configured JQL is the operation boundary. Fully paginate it each ru
 
 - Configured Todo status: select at most `limits.max_todo_tickets_per_run` tickets for new investigation and processing. This is the only ticket-count limit.
 - Configured In Progress status: always inspect and continue the ticket, regardless of the Todo limit. Resume from its current Jira comments, repository branch/worktree, and linked MR. If it needs owner input, check the latest Jira comments and remind only when due. If actionable, continue work; if blocked, report the concrete blocker.
-- Configured In Review status or a linked open MR: inspect merge state, pipeline, conflicts, approvals, reviewers, and discussions. Ensure Jira's configured In Review target status is correct, fix branch-caused problems in the existing ticket worktree, and remind reviewers only when the MR is healthy and waiting.
-- Merged MR: add verified merge evidence to Jira and move it through the configured Ready For Verification transition, then verify the target status.
+- Configured In Review status or a linked open MR: inspect merge state, pipeline, conflicts, approvals, reviewers, and discussions. When Jira writes are enabled, ensure Jira's configured In Review target status is correct and remind reviewers only when the MR is healthy and waiting. In Jira read-only mode, skip those writes while continuing MR follow-up.
+- Merged MR: when Jira writes are enabled, add verified merge evidence to Jira and move it through the configured Ready For Verification transition, then verify the target status. In Jira read-only mode, verify the merge and skip Jira updates.
 - Closed unmerged MR: re-plan or ask owners whether work should continue; never claim delivery.
 - Resolved, verified, or otherwise terminal status: verify linked work if needed, then take no action unless Jira or MR evidence shows it was reopened or has unfinished work.
 
@@ -53,7 +53,7 @@ Use `$jira-work-item` to post questions only when exhaustive research still leav
 
 ## Execute an actionable ticket
 
-1. Use `$jira-work-item` to transition the ticket through the configured `In Progress` transition selector when needed, re-read Jira to verify the separately configured `In Progress` target status, and post the idempotent work-started comment with the interpreted scope and plan. If any step fails, do not begin repository work.
+1. If `jira.read_only` is false, use `$jira-work-item` to transition the ticket through the configured `In Progress` transition selector when needed, re-read Jira to verify the separately configured `In Progress` target status, and post the idempotent work-started comment with the interpreted scope and plan. If any step fails, do not begin repository work. If `jira.read_only` is true, keep Jira reads enabled, skip every Jira write and lifecycle transition, record the policy in the run log, and continue with repository work.
 2. Refresh the remote default branch.
 3. Create or reuse the ticket's isolated worktree and branch.
 4. Confirm the worktree is clean and contains no unrelated work.
@@ -63,7 +63,7 @@ Use `$jira-work-item` to post questions only when exhaustive research still leav
 8. Commit the ticket change. For staged navigator, detector, or group JSON files, allow the installed pre-commit workflow to synchronize and export canonical Master SignalBuddy content, then use `$content-changelog` to generate and stage one release-note entry per final staged content file.
 9. Review the generated changelog descriptions and re-run relevant validation if the canonical export or changelog generation changed files.
 10. Use `$content-mr` to push, create or reuse the MR, assign reviewers, and verify it remotely.
-11. Use `$jira-work-item` to record the verified MR, execute the configured `In Review` transition selector when needed, and re-read Jira to verify the separately configured `In Review` target status. Persist `mr_open` only after this boundary is complete.
+11. If `jira.read_only` is false, use `$jira-work-item` to record the verified MR, execute the configured `In Review` transition selector when needed, and re-read Jira to verify the separately configured `In Review` target status. Persist `mr_open` only after this boundary is complete. If `jira.read_only` is true, verify the MR in GitLab and skip Jira comments and transitions; report that Jira was not updated.
 
 Do not create an MR after a failed validation, failed SignalBuddy sync, partial commit, or unverified push.
 
