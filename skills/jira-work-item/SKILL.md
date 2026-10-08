@@ -19,7 +19,11 @@ During preflight, discover the authenticated Jira account ID for this run's writ
 
 Never request or print Jira tokens. A scheduled run may perform only the comment and transition operations enabled by its configuration.
 
+When `jira.read_only` is true, use Jira only for reads. Do not create or edit comments, transition issues, or perform any other Jira write. This setting overrides all `remote_writes.jira_*` flags. The orchestrator may continue repository and GitLab work without Jira lifecycle updates, and must report that Jira writes were skipped by policy.
+
 ## Start actionable work
+
+The Jira write steps in this section apply only when `jira.read_only` is false. In read-only mode, do not attempt a transition or work-start comment; the orchestrator may continue with repository and GitLab work after Jira reads are complete.
 
 Before repository implementation begins, re-read the issue and its comments. Compare the current status only with the configured `In Progress` target status. If they differ, discover the available transition matching the separately configured transition name or ID, execute it, and fetch the issue again. Require the resulting Jira status to equal the configured target status. After status verification, create or verify the work-started comment from the lifecycle contract.
 
@@ -49,6 +53,8 @@ On later runs, inspect current comment history, including comments authored by t
 
 ## Record a merge request
 
+In Jira read-only mode, verify the MR in GitLab but do not write its link or status to Jira.
+
 Comment only after `$content-mr` has verified the MR remotely. Include the MR URL, source branch, commit SHA, concise change summary, validation evidence, and assigned reviewers. Use the stable operation marker from the lifecycle contract to prevent duplicates.
 
 After the comment is created or verified, compare the current status only with the configured `In Review` target status. If they differ, discover and execute the separately configured `In Review` transition name or ID, then fetch the issue again and require the target status. On a later run, read current Jira status and comment evidence to decide whether either operation remains necessary.
@@ -56,6 +62,8 @@ After the comment is created or verified, compare the current status only with t
 When implementation fails after the verified work-start boundary, post one idempotent progress comment describing completed work, the concrete blocker, whether any remote operation succeeded, and the next retry action. Do not automatically transition the Jira ticket backward.
 
 ## Transition after merge
+
+In Jira read-only mode, verify the merge in GitLab and skip the Jira merge comment and transition.
 
 Move a ticket to `Ready For Verification` only after independently verifying that its recorded MR is merged. Add merge evidence first. Compare the current status only with the configured `Ready For Verification` target status; when they differ, discover and execute the separately configured transition name or ID. Fetch the issue again and require the configured target status.
 

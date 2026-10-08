@@ -29,8 +29,8 @@ Ghost CLI and Jira CLI are not required.
 
 - Codex Atlassian connection authenticated to `https://splunk.atlassian.net`
   with access to the configured Jira project and linked Confluence content
-- Jira permission to read, comment, and perform the configured `In Progress`,
-  `In Review`, and `Ready For Verification` transitions
+- Jira permission to read the configured project and Confluence. Jira write
+  permission is needed only when `jira.read_only` is `false`.
 - GitLab permission to read the content-discovery project, push branches, create
   merge requests, and assign the configured reviewers
 - A Master SignalBuddy `us0` token with permission to read, create, update, and
@@ -67,6 +67,11 @@ The first command performs read-only prerequisite checks. The second command
 also configures the tracked pre-commit hook and creates or updates one active
 `Content Maintainer` Codex automation for this project. The automation runs
 every four hours.
+
+Set `jira.read_only: true` in the ignored `configs/content-maintainer.local.yaml`
+to keep Jira reads enabled while suppressing every Jira comment, transition, or
+other Jira write. The maintainer can still process tickets and deliver GitLab
+merge requests under the separate GitLab write policy.
 
 Run the setup command again after pulling changes to the repository-owned
 automation definition. Unique run logs and the non-overlapping run lock are
