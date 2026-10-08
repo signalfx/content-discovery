@@ -155,7 +155,7 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "The average number of bytes successfully put to the Kinesis Stream",
+      "description" : "The total number of bytes successfully put to the Kinesis Stream in each interval",
       "id" : "FUPrsjEAcAA",
       "importOf" : "FJYNFqNAEAk",
       "lastUpdated" : 0,
@@ -220,7 +220,7 @@
         "unitPrefix" : "Binary"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('IncomingBytes', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean')).mean(by=['StreamName']).publish(label='A')",
+      "programText" : "A = data('IncomingBytes', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').sum(by=['StreamName']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -235,7 +235,7 @@
       "importOf" : "FJYNFqNAEBA",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Successful PutRecord(s) per stream",
+      "name" : "# Successful PutRecord and PutRecords per stream",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -305,17 +305,8 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "PutRecord success",
+          "displayName" : "PutRecord and PutRecords success",
           "label" : "A",
-          "paletteIndex" : null,
-          "plotType" : null,
-          "valuePrefix" : null,
-          "valueSuffix" : null,
-          "valueUnit" : null,
-          "yAxis" : 0
-        }, {
-          "displayName" : "PutRecords success",
-          "label" : "B",
           "paletteIndex" : null,
           "plotType" : null,
           "valuePrefix" : null,
@@ -334,7 +325,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('PutRecord.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'count'), rollup='latest').sum(by=['StreamName']).publish(label='A')\nB = data('PutRecords.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'count'), rollup='latest').sum(by=['StreamName']).publish(label='B')",
+      "programText" : "A = data('PutRecord*.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').sum(by=['StreamName']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -412,7 +403,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('ReadProvisionedThroughputExceeded', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean'), rollup='latest').mean(by=['StreamName']).publish(label='A')",
+      "programText" : "A = data('ReadProvisionedThroughputExceeded', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').sum(by=['StreamName']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -487,7 +478,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('GetRecords.IteratorAgeMilliseconds', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean')).mean(by=['StreamName']).publish(label='A')",
+      "programText" : "A = data('GetRecords.IteratorAgeMilliseconds', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'upper')).max(by=['StreamName']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -617,7 +608,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('IncomingRecords', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'count'), rollup='latest').sum(by=['StreamName']).publish(label='A')",
+      "programText" : "A = data('IncomingRecords', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').sum(by=['StreamName']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -722,7 +713,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('GetRecords.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'count'), rollup='latest').sum(by=['StreamName']).publish(label='A')",
+      "programText" : "A = data('GetRecords.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').sum(by=['StreamName']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -797,7 +788,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('WriteProvisionedThroughputExceeded', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean')).mean(by=['StreamName']).publish(label='A')",
+      "programText" : "A = data('WriteProvisionedThroughputExceeded', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').sum(by=['StreamName']).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -812,7 +803,7 @@
       "importOf" : "FJYNFqNAEAM",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Average incoming bytes",
+      "name" : "Average incoming bytes",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -862,12 +853,12 @@
       "created" : 0,
       "creator" : null,
       "customProperties" : { },
-      "description" : "The total number of successful PutRecord(s) operations",
+      "description" : "The total number of successful PutRecord and PutRecords operations",
       "id" : "FUPr2M6AgAA",
       "importOf" : "FJYNFqNAEBE",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "# Successful PutRecord(s) operations",
+      "name" : "# Successful PutRecord and PutRecords operations",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -937,7 +928,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "Successful PutRecord(s) ops",
+          "displayName" : "Successful PutRecord and PutRecords ops",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -957,7 +948,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('PutRecord*.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'count'), rollup='latest').publish(label='A')",
+      "programText" : "A = data('PutRecord*.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1185,7 +1176,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('IncomingRecords', filter=filter('stat', 'count') and filter('namespace', 'AWS/Kinesis'), rollup='latest').publish(label='A')",
+      "programText" : "A = data('IncomingRecords', filter=filter('stat', 'sum') and filter('namespace', 'AWS/Kinesis'), rollup='sum').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1240,7 +1231,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('PutRecord*.Latency', filter=filter('stat', 'mean')).publish(label='A')",
+      "programText" : "A = data('PutRecord*.Latency', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean')).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1255,7 +1246,7 @@
       "importOf" : "FJYNFqNAEA0",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "Average GetRecord latency (ms)",
+      "name" : "Average GetRecords latency (ms)",
       "options" : {
         "colorBy" : "Dimension",
         "colorScale" : null,
@@ -1295,7 +1286,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('GetRecords.Latency', filter=filter('stat', 'mean')).publish(label='A')",
+      "programText" : "A = data('GetRecords.Latency', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean')).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1400,7 +1391,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('GetRecords.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'count'), rollup='latest').publish(label='A')",
+      "programText" : "A = data('GetRecords.Success', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1538,7 +1529,7 @@
       "importOf" : "FJYNFqNAEBU",
       "lastUpdated" : 0,
       "lastUpdatedBy" : null,
-      "name" : "GetRecord latency (ms) distribution",
+      "name" : "GetRecords latency (ms) distribution",
       "options" : {
         "areaChartOptions" : {
           "showDataMarkers" : false
@@ -1646,7 +1637,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C = data('GetRecords.Latency', filter=filter('stat', 'lower')).publish(label='C')\nA = data('GetRecords.Latency', filter=filter('stat', 'mean')).publish(label='A')\nB = data('GetRecords.Latency', filter=filter('stat', 'upper')).publish(label='B')",
+      "programText" : "C = data('GetRecords.Latency', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'lower')).publish(label='C')\nA = data('GetRecords.Latency', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean')).publish(label='A')\nB = data('GetRecords.Latency', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'upper')).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1751,7 +1742,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('WriteProvisionedThroughputExceeded', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'mean')).publish(label='A')",
+      "programText" : "A = data('WriteProvisionedThroughputExceeded', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1806,7 +1797,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('IncomingRecords', filter=filter('stat', 'count'), rollup='latest').publish(label='A')",
+      "programText" : "A = data('IncomingRecords', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -1914,7 +1905,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('ReadProvisionedThroughputExceeded', filter=filter('stat', 'mean')).publish(label='A')",
+      "programText" : "A = data('ReadProvisionedThroughputExceeded', filter=filter('namespace', 'AWS/Kinesis') and filter('stat', 'sum'), rollup='sum').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2019,7 +2010,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('GetRecords.IteratorAgeMilliseconds', filter=filter('stat', 'mean') and filter('namespace', 'AWS/Kinesis')).publish(label='A')",
+      "programText" : "A = data('GetRecords.IteratorAgeMilliseconds', filter=filter('stat', 'upper') and filter('namespace', 'AWS/Kinesis')).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : null
     }
@@ -2278,7 +2269,7 @@
       "teams" : null
     }
   },
-  "hashCode" : -1878286453,
+  "hashCode" : -589235310,
   "id" : "DiVWOHHAcAA",
   "modelVersion" : 1,
   "packageType" : "GROUP"
