@@ -25,9 +25,10 @@
       "programText": "from signalfx.detectors.autodetect.infra.k8s import hpa\nhpa.hpa_max_replicas_reached_detector().publish('K8s HPA Max Replicas Reached')",
       "rules": [
         {
-          "description": "",
+          "description": "HPA has scaled the workload to its maximum configured replica count for 10 minutes.",
           "detectLabel": "K8s HPA Max Replicas Reached",
           "disabled": false,
+          "parameterizedBody": "\n{{#if anomalous}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n    Rule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n",
           "severity": "Warning",
           "tip": null,
           "runbookUrl": null
@@ -55,17 +56,17 @@
       },
       "importQualifiers": [
         {
-          "metric": "k8s.hpa.max_replicas",
+          "metric": "k8s.hpa.current_replicas",
           "filters": []
         },
         {
-          "metric": "k8s.hpa.current_replicas",
+          "metric": "k8s.hpa.max_replicas",
           "filters": []
         }
       ]
     }
   },
-  "hashCode": -2056722532,
+  "hashCode": 1952356154,
   "id": "HTdwVtzAYAE",
   "packageType": "DETECTOR"
 }
