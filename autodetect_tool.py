@@ -485,6 +485,18 @@ def extract_detector_export_props(detector, existing_detectors_props, realm, tok
         }
     else:
         detector_state = DetectorExportState.UPDATE_EXISTING
+        if detector_settings.get(DetectorScheme.IMPORT_QUALIFIERS) is None:
+            new_qualifiers = extract_import_qualifiers_from_detector_program_text(
+                detector, realm=realm, token=token
+            )
+            detector_settings = {
+                **detector_settings,
+                DetectorScheme.IMPORT_QUALIFIERS: new_qualifiers,
+            }
+            print(
+                f"{Colors.WARNING}[Warning] importQualifiers was null — derived from getPlotsInfo. "
+                f"Please review before merging (API does not support all scenarios).{Colors.ENDC}"
+            )
     return {**detector_settings, "detector_state": detector_state}
 
 
