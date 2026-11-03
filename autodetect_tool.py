@@ -491,6 +491,7 @@ def extract_detector_export_props(detector, existing_detectors_props, realm, tok
             )
             detector_settings = {
                 **detector_settings,
+                DetectorExportScheme.HASH_CODE: None,
                 DetectorScheme.IMPORT_QUALIFIERS: new_qualifiers,
             }
             print(
