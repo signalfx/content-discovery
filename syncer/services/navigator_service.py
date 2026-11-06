@@ -1,5 +1,7 @@
 """Navigator API service for fetching and updating navigators."""
 
+from __future__ import annotations
+
 import copy
 import sys
 from typing import Any, Dict, List
