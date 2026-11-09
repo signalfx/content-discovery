@@ -66,9 +66,26 @@ while read file; do
       VALIDATION_FAILED=true
     # check if hashcode is changed
     elif [ "$hash_code" == "$hash_code_prev" ]; then
-      echo
-      echo "  ERROR: hashCode is not changed in $file: Current hash code \"$hash_code\", previous hash code \"$hash_code_prev\". Please correct. "
-      VALIDATION_FAILED=true
+      if [[ "$file" == detector/* ]]; then
+        import_qualifiers=$(jq -c '.detectorExport.detector.importQualifiers' "$file")
+        import_qualifiers_prev=$(git show "$DIFF_BRANCH:$file" | jq -c '.detectorExport.detector.importQualifiers')
+        detector_without_qualifiers=$(jq -S -c 'del(.detectorExport.detector.importQualifiers)' "$file")
+        detector_without_qualifiers_prev=$(git show "$DIFF_BRANCH:$file" | jq -S -c 'del(.detectorExport.detector.importQualifiers)')
+
+        # Qualifier backfills do not change the remote detector, so the hash is expected to remain the same.
+        if [ "$import_qualifiers_prev" == "null" ] && [ "$import_qualifiers" != "null" ] && \
+          [ "$detector_without_qualifiers" == "$detector_without_qualifiers_prev" ]; then
+          echo " ... success (importQualifiers backfilled; detector hash unchanged)"
+        else
+          echo
+          echo "  ERROR: hashCode is not changed in $file: Current hash code \"$hash_code\", previous hash code \"$hash_code_prev\". Please correct. "
+          VALIDATION_FAILED=true
+        fi
+      else
+        echo
+        echo "  ERROR: hashCode is not changed in $file: Current hash code \"$hash_code\", previous hash code \"$hash_code_prev\". Please correct. "
+        VALIDATION_FAILED=true
+      fi
     else
       echo " ... success"
     fi
