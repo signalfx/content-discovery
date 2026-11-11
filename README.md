@@ -1,3 +1,8 @@
+# Important
+Please always export dashboards from SBMO using the `tool` in this repo.
+e.g. `.venv/bin/python tools/scripts/tool group-export $dashboard_group_id > group/$your_dashboard_name`
+This ensures clean diffs when making pull requests.
+
 Splunk/SignalFx Employees: 
     Please visit the Confluence page link below to get details about how to use this repo to update built-in content managed by SignalBuddy:
     https://signalfuse.atlassian.net/wiki/spaces/APPS/pages/669220923
@@ -5,63 +10,39 @@ Splunk/SignalFx Employees:
 Others:
     Make a pull request to master, or open an issue. We will help you resolve.
 
+# Install the Codex content maintainer
 
-# git pre-commit hook
+See [Content Maintainer setup prerequisites](tools/content-maintainer/README.md)
+for the complete tool, authentication, permission, and local-file checklist.
 
-Copy the `scripts/pre-commit` hook to this git repo; this will run validation against the content files to ensure that 
-content id's haven't inadvertently changed. (That situation can cause issues with existing content
-if it gets deployed, and requires remediation against production realms).
+The recurring content-maintainer job is versioned with this repository. After cloning the repository and opening it as a Codex project, run `./tools/scripts/configure-content-maintainer`. It validates the repository-local configuration, required project skills, pre-commit hook, Codex login and Atlassian connection configuration, GitLab access, and the ignored `./.token` against a read-only Master SignalBuddy request. Codex then verifies live Jira and Confluence access through the logged-in user's Atlassian connection before installing or updating the automation. If that connection is missing or needs authentication, Codex prompts the user to set it up and leaves the automation unchanged.
+
+The script creates `configs/content-maintainer.local.yaml` from the example when needed; review that ignored file before re-running if validation reports a problem. Use `./tools/scripts/configure-content-maintainer --check-only` to run all prerequisite checks without asking Codex to change the automation.
+
+Codex will create or update one active project automation that runs every four hours. Re-run the setup script after pulling repository changes to refresh the installed job from the canonical definition in `configs/codex/content-maintainer-automation.md`.
+
+Every maintainer invocation writes a separate secret-free local log under `tools/content-maintainer/.state/runs/`. The entire `.state` directory is ignored by Git, so run logs do not appear in repository changes. Logs are retained locally, including for dry runs and failed runs, and are not deleted automatically.
+
+
+# Git pre-commit hook
+
+Enable the tracked hook once for this checkout. It validates content on every commit. When staged navigator, detector, or group JSON files are present, it updates those exact files in Master SignalBuddy, exports and stages the canonical objects, and then generates and stages one `content_release_notes.yaml` entry per final staged content file.
 
 ```
-mkdir -p .git/hooks && cp scripts/pre-commit .git/hooks
+git config core.hooksPath tools/scripts
 ```
 
-(to force skip of the commit validation, you can run `git commit --no-verify`)
+The commit is blocked on validation, credentials, API, export, changelog coverage, or staging failures. It also blocks a selected content or changelog file that has unstaged edits, preventing the hook from including changes you did not stage.
+
+To explicitly bypass all hook checks and synchronization, run `git commit --no-verify`.
 
 Note: The hook script uses the `jq` library to parse json files. You'll need this installed if not already: `brew install jq`
 
-# Exporting detectors using autodetect_tool
-autodetect_tool - script that allows you to export detectors from Master Signal Buddy Org into the local content repo and automate some of the required actions:
+See `content_release_notes.yaml` and the `content-changelog` skill for changelog data and manual update or validation commands.
 
-- extracting import qualifiers(however, you need to review it afterward as API does not support all the scenarios)
+# Syncing content with the skill CLI
 
-- validating the detector: several checks are applied to make sure that the detector has all expected components to be correctly deployed as AutoDetect, including:
-
-    - SF model validation (required for UI)
-
-    - number of rules (autodetect supports only one rule
-
-    - description (must be present as shown in the UI)
-
-    - Dry run
-
-    Requirement to run autodetect_tool
-    - pip
-    - requests using pip
-
-    ```
-    pip install requests
-    ```
-autodetect_tool has two options for the export: plan and apply
-
-Plan
-
-Identifies all the detectors that should be exported and do all the checks but do not overwrite/add files in your repo
-
-```
-python3 autodetect_tool.py --env us0 --access-token <MasterSignalBuddyOrgToken> export plan 
-```
-Apply
-
-Writes all the detectors that require changes to the files in your local repository
-
-```
-python3 autodetect_tool.py --env us0 --access-token <MasterSignalBuddyOrgToken> export apply
-```
-
-# Syncing content with the `syncer` CLI
-
-`syncer/cli.py` is a non-interactive CLI for pushing local JSON edits
+`skills/sync-master-signalbuddy/scripts/sync_changed.py` is a non-interactive CLI for pushing local JSON edits
 to Master SignalBuddy, pulling current state back into the repo, and
 previewing diffs. It is the same tool that the
 `sync-master-signalbuddy` skill drives — these examples work whether
@@ -80,7 +61,7 @@ in `.gitignore`) as a single line — nothing else:
 For CI / agent runs, export the same value as `SIGNALBUDDY_TOKEN`
 instead.
 
-The realm is hardcoded in `syncer/utils.MASTER_REALM` (currently
+The realm is hardcoded in `skills/sync-master-signalbuddy/scripts/sync_utils.py` (currently
 `us0`); it is not a config field.
 
 ## Five common workflows
@@ -88,8 +69,8 @@ The realm is hardcoded in `syncer/utils.MASTER_REALM` (currently
 ### 1. Push all my local changes to Master SignalBuddy
 
 ```bash
-python -m syncer.cli plan
-python -m syncer.cli apply --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py plan
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py apply --yes
 ```
 
 Plan first, review the JSON output, then apply. The bulk path is
@@ -99,7 +80,7 @@ and `detector/`.
 ### 2. Update one file in master and refresh it locally
 
 ```bash
-python -m syncer.cli update "detector/APM Error Rate Increased.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py update "detector/APM Error Rate Increased.json" --yes
 ```
 
 Strict update — fails fast if the resource doesn't exist (use
@@ -110,7 +91,7 @@ of master.
 ### 3. Create a brand-new resource in master from a local file
 
 ```bash
-python -m syncer.cli create "group/AWS Lambda.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py create "group/AWS Lambda.json" --yes
 ```
 
 For groups this uses `POST /v2/dashboardgroup/import`, so the backend
@@ -121,7 +102,7 @@ so it now carries the new server-assigned id.
 ### 4. Refresh a local file from master without pushing anything
 
 ```bash
-python -m syncer.cli pull --type group --id <GROUP_ID> --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py pull --type group --id <GROUP_ID> --yes
 ```
 
 If the id is already present in the repo, the matching local file is
@@ -133,8 +114,8 @@ navigators without an existing local match, pass
 ### 5. Inspect remote state or preview a local change
 
 ```bash
-python -m syncer.cli fetch detector <DETECTOR_ID>
-python -m syncer.cli diff   "detector/K8s Node CPU.json"
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py fetch detector <DETECTOR_ID>
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py diff "detector/K8s Node CPU.json"
 ```
 
 `fetch` prints the current master state to stdout; `diff` shows

@@ -8,11 +8,10 @@ The same `SKILL.md` is discovered by **Cursor**, **OpenAI Codex CLI**, and
 **GitLab Duo** — one canonical file, three discovery paths (see
 [Runtime discovery](#runtime-discovery) below).
 
-The skill itself is just instructions (see [`SKILL.md`](./SKILL.md)). The
-work is done by the small, scriptable CLI at
-[`syncer/cli.py`](../../syncer/cli.py) — a local Python program that
-talks to the SignalFx REST API over HTTPS. There is no daemon, no TUI,
-and no server-side component to deploy.
+The orchestration rules live in [`SKILL.md`](./SKILL.md). The executable
+workflow is [`scripts/sync_changed.py`](./scripts/sync_changed.py), and its
+object operations share the strict API service used by the `sfx-api`
+skill. There is no daemon, TUI, or server-side component to deploy.
 
 ## What it can sync
 
@@ -67,7 +66,7 @@ line:
 
 Tokens are per-user — never share, never commit, never paste into chat.
 
-The realm is hardcoded in `syncer/utils.MASTER_REALM` (currently
+The realm is hardcoded in `scripts/sync_utils.MASTER_REALM` (currently
 `us0`); it is not a config field.
 
 **CI / agent mode**: export the token as `SIGNALBUDDY_TOKEN` and skip
@@ -81,7 +80,7 @@ progress goes to stderr.
 | Command  | Purpose                                                           | Writes local files? | Writes MSB? |
 | -------- | ----------------------------------------------------------------- | :-----------------: | :---------: |
 | `plan`   | Show what would change for every modified JSON file.              |         no          |     no      |
-| `apply`  | Push every git-changed file to MSB. Requires `--yes`.             |         no          |   **YES**   |
+| `apply`  | Push every git-changed file, then export it back. Requires `--yes`.|       **YES**       |   **YES**   |
 | `update` | Strict update of one resource from a local file; refreshes local. |       **YES**       |   **YES**   |
 | `create` | Strict create of one resource from a local file; refreshes local. |       **YES**       |   **YES**   |
 | `pull`   | Fetch one resource from MSB and overwrite the local file.         |       **YES**       |     no      |
@@ -94,23 +93,47 @@ This is the day-to-day "I changed some JSON files, push them" flow.
 The skill always forces the order **plan → human approval → apply**.
 
 ```bash
-# 1. See what you actually changed
-git diff --name-only HEAD -- 'navigators/*' 'group/*' 'detector/*'
+# 1. Dry-run branch, staged, unstaged, and untracked changes against MSB
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py plan
 
-# 2. Dry-run against MSB
-python -m syncer.cli plan
-
-# 3. Review the JSON the agent shows you. If it looks good:
-python -m syncer.cli apply --yes
+# 2. Review the JSON the agent shows you. If it looks good:
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py apply --yes
 ```
 
 Restrict to a subset (the agent does this when you only approve some
 items in the plan):
 
 ```bash
-python -m syncer.cli plan  --paths "navigators/AWS/AWS Instances - unified.json"
-python -m syncer.cli apply --paths "navigators/AWS/AWS Instances - unified.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py plan  --paths "navigators/AWS/AWS Instances - unified.json"
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py apply --paths "navigators/AWS/AWS Instances - unified.json" --yes
 ```
+
+## Automatic pre-commit workflow
+
+Enable the tracked hook once in this checkout:
+
+```bash
+git config core.hooksPath tools/scripts
+```
+
+After that, `git commit` automatically handles staged navigator,
+detector, and group JSON files. The hook validates the repository,
+plans and applies only those staged content paths to Master
+SignalBuddy, exports the canonical objects back into the same files, and
+re-stages and validates them. Dashboard-group updates are scoped by the
+repository baseline so only locally changed charts, dashboards, group fields,
+and data links are written. Their writeback preserves existing JSON spacing,
+key order, and semantically equivalent null/empty collection values. The hook
+then runs the `content-changelog` skill's deterministic CLI to generate, stage, and
+validate release-note entries for those final staged exports. The commit
+itself is approval for this hook-managed remote update, so there is no
+second prompt.
+
+The commit is blocked if a selected content or changelog file has
+unstaged edits, or if validation, credentials, network access, planning,
+update, export, changelog coverage, or re-staging fails. Commits without
+selected content still run normal validation but do not contact Master
+SignalBuddy or modify the changelog.
 
 Exit codes worth knowing:
 
@@ -127,14 +150,14 @@ Exit codes worth knowing:
 
 ```bash
 # Update one existing resource in MSB and refresh the local file
-python -m syncer.cli update "detector/APM Error Rate Increased.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py update "detector/APM Error Rate Increased.json" --yes
 
 # Create a brand-new resource in MSB from a local file (and rewrite
 # the local file with the server-assigned id)
-python -m syncer.cli create "group/AWS Lambda.json" --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py create "group/AWS Lambda.json" --yes
 
 # Pull one resource from MSB into the local file (overwrites existing)
-python -m syncer.cli pull --type group --id <ID> --yes
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py pull --type group --id <ID> --yes
 ```
 
 `update` and `create` are strict:
@@ -150,15 +173,15 @@ For navigators with no existing local match, `pull` needs an explicit
 export:
 
 ```bash
-python -m syncer.cli pull --type navigator --id <ID> \
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py pull --type navigator --id <ID> \
     --out "navigators/AWS/aws lambda.json" --yes
 ```
 
 ## Workflow C — see what differs without writing
 
 ```bash
-python -m syncer.cli diff "navigators/AWS/AWS Instances - unified.json"
-python -m syncer.cli fetch navigator <ID>
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py diff "navigators/AWS/AWS Instances - unified.json"
+.venv/bin/python skills/sync-master-signalbuddy/scripts/sync_changed.py fetch navigator <ID>
 ```
 
 `diff` infers the resource type from the path (`navigators/`, `group/`,
@@ -168,7 +191,7 @@ payload from MSB without touching disk.
 
 ## Safety rails the skill enforces
 
-The agent will refuse to:
+For manually invoked sync commands, the agent will refuse to:
 
 - Run `apply` without first running `plan` and showing you the diff.
 - Run `apply` / `update` / `create` / `pull` without explicit user
@@ -180,6 +203,10 @@ The agent will refuse to:
   the group sync is additive / update-only on purpose. The
   `change_summary` surfaces the count so you know they exist; no
   destructive action is taken.
+
+The installed pre-commit workflow is the one exception to a separate
+approval prompt: running `git commit` authorizes synchronization of the
+staged navigator, detector, and group JSON files only.
 
 ## Troubleshooting
 
@@ -255,11 +282,11 @@ content-discovery/
 ├── .codex/skills/sync-master-signalbuddy/SKILL.md         # symlink
 ├── .gitlab/duo/skills/sync-master-signalbuddy/SKILL.md    # symlink
 ├── .token                # gitignored Master SignalBuddy credentials
-├── syncer/
-│   ├── cli.py            # the only entry point — `python -m syncer.cli ...`
-│   ├── __init__.py
-│   ├── services/         # navigator / group / detector update + create logic
-│   └── utils.py          # token + diff helpers
+├── skills/sync-master-signalbuddy/scripts/
+│   ├── sync_changed.py   # orchestration entry point
+│   ├── sync_utils.py     # token + git diff helpers
+│   ├── group_sync.py     # chart/dashboard/group dependency flow
+│   └── datalink_sync.py  # associated data-link flow
 ├── navigators/<provider>/<name>.json
 ├── group/<name>.json
 └── detector/<name>.json

@@ -16,7 +16,29 @@ validate:
   except:
     - schedules
   script:
-    - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
+    - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash tools/scripts/validate_content.sh
+
+validate-release-notes:
+  image: python:3
+  stage: validate-content
+  script:
+    - pip install pyyaml==6.0.1
+    - |
+      if [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
+        git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+        CHANGELOG_BASE="origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+      else
+        CHANGELOG_BASE="HEAD^"
+      fi
+      python skills/content-changelog/scripts/content_changelog.py validate --base "$CHANGELOG_BASE"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+    - when: never
 
 validate-ai-experimental:
   image: docker.repo.splunkdev.net/ci-cd/ci-container/node-20-alpine:3.2.1
@@ -24,7 +46,7 @@ validate-ai-experimental:
   except:
     - schedules
   script:
-    - node scripts/bridge_it_validate_content.mjs
+    - node tools/scripts/bridge_it_validate_content.mjs
   allow_failure: true
 
 update-ootb-inventory:
@@ -37,7 +59,7 @@ update-ootb-inventory:
     - when: never
   script:
     - pip install -r requirement.txt
-    - python o11y_ootb_inventory.py -ti $MS_TENANT_ID -mci $MS_CLIENT_ID -mcs $MS_CLIENT_SECRET -gdi $MS_GRAPH_DRIVE_ID -gii $MS_GRAPH_ITEM_ID -gpt $GITLAB_API_PRIVATE_TOKEN
+    - python tools/scripts/o11y_ootb_inventory.py -ti $MS_TENANT_ID -mci $MS_CLIENT_ID -mcs $MS_CLIENT_SECRET -gdi $MS_GRAPH_DRIVE_ID -gii $MS_GRAPH_ITEM_ID -gpt $GITLAB_API_PRIVATE_TOKEN
 
 
 variables:
@@ -67,5 +89,5 @@ update-o11y-doc-github:
 
   script:
     - pip install -r requirement.txt
-    - python o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME -fn $GITHUB_FOLDER_NAME
+    - python tools/scripts/o11y_ootb_doc_automation.py -pat $GITHUB_PRIVATE_ACCESS_TOKEN -un $USER_OR_ORG_NAME -grn $GITHUB_REPO_NAME -bn $BRANCH_NAME -fn $GITHUB_FOLDER_NAME
 
