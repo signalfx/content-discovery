@@ -82,7 +82,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "C_old = data('process.runtime.dotnet.gc.collections.count', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='C_old')\nC_new = data('dotnet.gc.collections', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='C_new')",
+      "programText" : "C = data('process.runtime.dotnet.gc.collections.count', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='C')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -199,7 +199,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A_old = data('process.runtime.dotnet.gc.allocations.size', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='A_old')\nA_new = data('dotnet.gc.heap.total_allocated', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='A_new')\nB_old = data('process.runtime.dotnet.gc.pause.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').scale(0.1).publish(label='B_old')\nB_new = data('dotnet.gc.pause.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').scale(0.1).publish(label='B_new')",
+        "programText" : "A = data('process.runtime.dotnet.gc.allocations.size', filter=filter('sf_environment', '*') and filter('sf_service', '*'))\nB = data('dotnet.gc.heap.total_allocated', filter=filter('sf_environment', '*') and filter('sf_service', '*'))\ncombine(A if A is not None else B).publish(label='A')\nC = data('process.runtime.dotnet.gc.pause.time', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='rate').scale(0.1).publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -316,7 +316,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A_old = data('process.runtime.dotnet.gc.committed_memory.size', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average').publish(label='A_old')\nA_new = data('dotnet.gc.last_collection.memory.committed_size', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average').publish(label='A_new')\nB = data('process.runtime.dotnet.gc.objects.size', filter=filter('sf_service', '*') and filter('sf_environment', '*'), rollup='average').publish(label='B')",
+        "programText" : "A = data('process.runtime.dotnet.gc.committed_memory.size', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average')\nC = data('dotnet.gc.last_collection.memory.committed_size', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average')\ncombine(A if A is not None else C).publish(label='A')\nB = data('process.runtime.dotnet.gc.objects.size', filter=filter('sf_service', '*') and filter('sf_environment', '*'), rollup='average').publish(label='B')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4095,7 +4095,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A_old = data('process.runtime.dotnet.gc.heap.size', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average').publish(label='A_old')\nA_new = data('dotnet.gc.last_collection.heap.size', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average').publish(label='A_new')",
+        "programText" : "A = data('process.runtime.dotnet.gc.heap.size', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4181,7 +4181,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A = data('process.runtime.dotnet.gc.duration', filter=filter('sf_service', '*') and filter('sf_environment', '*')).sum(by=['sf_service', 'sf_environment']).scale(0.000001).publish(label='A')",
+        "programText" : "A = data('process.runtime.dotnet.gc.duration', filter=filter('sf_service', '*') and filter('sf_environment', '*')).sum(by=['sf_service', 'sf_environment']).scale(0.000001).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4247,7 +4247,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "dotnet.monitor.lock_contentions",
+          "displayName" : "process.runtime.dotnet.monitor.lock_contention.count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -4267,7 +4267,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A_old = data('process.runtime.dotnet.monitor.lock_contention.count', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='A_old')\nA_new = data('dotnet.monitor.lock_contentions', filter=filter('sf_environment', '*') and filter('sf_service', '*')).publish(label='A_new')",
+        "programText" : "A = data('process.runtime.dotnet.monitor.lock_contention.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'))\nB = data('dotnet.monitor.lock_contentions', filter=filter('sf_environment', '*') and filter('sf_service', '*'))\ncombine(A if A is not None else B).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4333,7 +4333,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "dotnet.thread_pool.thread.count",
+          "displayName" : "process.runtime.dotnet.thread_pool.threads.count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -4353,7 +4353,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A_old = data('process.runtime.dotnet.thread_pool.threads.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average').publish(label='A_old')\nA_new = data('dotnet.thread_pool.thread.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average').publish(label='A_new')",
+        "programText" : "A = data('process.runtime.dotnet.thread_pool.threads.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average')\nB = data('dotnet.thread_pool.thread.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='average')\ncombine(A if A is not None else B).publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -4419,7 +4419,7 @@
           "timezone" : null
         },
         "publishLabelOptions" : [ {
-          "displayName" : "dotnet.exceptions",
+          "displayName" : "process.runtime.dotnet.exceptions.count",
           "label" : "A",
           "paletteIndex" : null,
           "plotType" : null,
@@ -4439,7 +4439,7 @@
         "unitPrefix" : "Metric"
       },
       "packageSpecifications" : "",
-      "programText" : "A_old = data('process.runtime.dotnet.exceptions.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='sum').publish(label='A_old')\nA_new = data('dotnet.exceptions', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='sum').publish(label='A_new')",
+        "programText" : "A = data('process.runtime.dotnet.exceptions.count', filter=filter('sf_environment', '*') and filter('sf_service', '*'), rollup='sum').publish(label='A')",
       "relatedDetectorIds" : [ ],
       "tags" : [ ]
     }
@@ -5092,7 +5092,7 @@
       "teams" : null
     }
   },
-  "hashCode" : 762764305,
+  "hashCode" : -910960754,
   "id" : "FjxT94aAcAI",
   "modelVersion" : 1,
   "packageType" : "GROUP"
