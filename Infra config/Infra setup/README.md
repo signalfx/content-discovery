@@ -1,1 +1,0 @@
-Reference Page for [Install Splunk Otel Collector](https://docs.splunk.com/Observability/gdi/opentelemetry/install-the-collector.html#otel-install-platform)
