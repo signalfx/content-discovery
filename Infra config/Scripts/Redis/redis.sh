@@ -1,1 +1,0 @@
-echo -e 'SET anotherkey "will expire in a minute" EX  10' | redis-cli -h 172.31.32.208 -a **** -p 6379

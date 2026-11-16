@@ -1,1 +1,0 @@
- kubectl exec -it loadgenerator-687c75d55f-wgxbw -n default -- locust --headless -f locustfile.py -u 500 -r 20 -t 1m  --host http://frontend:80
