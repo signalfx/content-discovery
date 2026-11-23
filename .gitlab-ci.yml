@@ -1,0 +1,44 @@
+include:
+  - project: "observability/shared/gitlab-jobs"
+    ref: 1.0.65
+    file: "sast-scan-template.yml"
+  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+
+stages:
+  - code_analysis
+  - validate-content
+  - O11y-Out-of-the-Box-Inventory
+
+validate:
+  stage: validate-content
+  except:
+    - schedules
+  script:
+    - CI_MR_TARGET_BRANCH=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME /bin/bash scripts/validate_content.sh
+
+update-ootb-inventory:
+  image: python:3
+  stage: O11y-Out-of-the-Box-Inventory
+  # To run this job to just only on master branch
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - when: never
+  script:
+    - pip install -r requirement.txt
+    - python o11y_ootb_inventory.py -ti $MS_TENANT_ID -mci $MS_CLIENT_ID -mcs $MS_CLIENT_SECRET -gdi $MS_GRAPH_DRIVE_ID -gii $MS_GRAPH_ITEM_ID -gpt $GITLAB_API_PRIVATE_TOKEN
+
+
+variables:
+  USER_OR_ORG_NAME:
+    value: "splunk"
+    description: "Provide user name for which we need to use in GitHub API calls. Default: bkanzariya"
+  GITHUB_REPO_NAME:
+    value: "o11y-gdi-metadata"
+    description: "Provide GitHub repo name on which we need to commit yaml files. Default: bits-test"
+  BRANCH_NAME:
+    value: "bits-o11y-doc-automation"
+    description: "Provide Branch name on which yaml files needs to be committed. Default: o11y-doc-automation"
+  GITHUB_FOLDER_NAME:
+    value: "ootb"
+    description: "Provide folder/path on which yaml files needs to be committed. Please add '-' (dash) in case to commit file on root/main folder  Default: ootb "

@@ -1,0 +1,68 @@
+{
+    "detectorExport": {
+        "detector": {
+            "authorizedWriters": null,
+            "created": 0,
+            "creator": null,
+            "customProperties": null,
+            "description": "Alerts when a business transaction's error rate degrades relative to its historical baselines from the last 12 hours, yesterday, and last week.",
+            "detectorOrigin": "AutoDetect",
+            "entityTypeSummary": {
+                "contributing": true,
+                "types": [
+                    "apm:business_transaction"
+                ]
+            },
+            "entityTypes": [
+                "apm:business_transaction"
+            ],
+            "id": "HK9KFmRAYAA",
+            "labelResolutions": {
+                "Error Rate Increased": 60000
+            },
+            "lastUpdated": 0,
+            "lastUpdatedBy": null,
+            "locked": false,
+            "maxDelay": null,
+            "minDelay": null,
+            "name": "APM Business Transaction Error Rate Increased",
+            "overMTSLimit": false,
+            "packageSpecifications": "",
+            "programText": "from signalfx.detectors.autodetect.apm import errors\nerrors.blended_business_transaction(headroom=1.65).publish(\"Error Rate Increased\")\n",
+            "rules": [
+                {
+                    "description": "Business transaction error rate is worse than it has been over the last 12 hours, the same time yesterday, and the same time last week.",
+                    "detectLabel": "Error Rate Increased",
+                    "disabled": false,
+                    "parameterizedBody": "{{#if anomalous}}\n{{dimensions.sf_business_transaction}} in {{dimensions.sf_environment}} has experienced degraded error rate for the last 15 minutes.\nTriggered at {{timestamp}}: {{ruleName}}.\n{{else}}\nResolved at {{timestamp}}: {{ruleName}}.\n{{/if}}",
+                    "parameterizedSubject": "{{#if anomalous}}\n{{dimensions.sf_business_transaction}} in {{dimensions.sf_environment}} - {{detectorName}}\n{{else}}\nResolved: {{dimensions.sf_business_transaction}} in {{dimensions.sf_environment}} - {{detectorName}}\n{{/if}}",
+                    "severity": "Warning",
+                    "tip": "See the signalflow powering this detector: https://cd.splunkdev.com/observability/imm/signalflow-library/-/blob/master/library/signalfx/detectors/autodetect/apm/errors.flow"
+                }
+            ],
+            "sf_metricsInObjectProgramText": [
+                "business.transactions"
+            ],
+            "status": "ACTIVE",
+            "tags": null,
+            "teams": null,
+            "timezone": null,
+            "type": "METRIC",
+            "visualizationOptions": {
+                "disableSampling": false,
+                "showDataMarkers": true,
+                "showEventLines": false,
+                "time": null
+            },
+            "importQualifiers": [
+                {
+                    "metric": "business.transactions",
+                    "filters": []
+                }
+            ]
+        }
+    },
+    "hashCode": 1268852866,
+    "id": "HK9KFmRAYAA",
+    "packageType": "DETECTOR"
+}

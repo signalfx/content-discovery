@@ -1,0 +1,2888 @@
+{
+  "chartExports": [
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Blue represents input tokens, while orange represents output tokens.",
+        "id": "HMINbfQAcAU",
+        "importOf": "HJUmhK5AcAQ",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Input vs Output token trend",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "tokens",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.provider.name"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Output tokens",
+              "label": "A",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "No of tokens",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Input tokens",
+              "label": "B",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "No of tokens",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'output')).sum(by=['service.name', 'gen_ai.operation.name', 'gen_ai.request.model', 'gen_ai.provider.name']).sum(by=['gen_ai.operation.name', 'gen_ai.request.model', 'service.name', 'gen_ai.provider.name']).publish(label='A')\nB = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'input')).sum(by=['service.name', 'gen_ai.operation.name', 'gen_ai.request.model', 'gen_ai.provider.name']).sum(by=['gen_ai.operation.name', 'service.name', 'gen_ai.request.model', 'gen_ai.provider.name']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total output token used over selected time window.",
+        "id": "HMINbfQAcAY",
+        "importOf": "HJUn9WYAYB8",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Output tokens usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Output Tokens in inventory",
+              "label": "A",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'output')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Lower ratios indicate concise responses; higher ratios indicate verbose generation.",
+        "id": "HMINdSBAYAA",
+        "importOf": "HJUolWjAcAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Token output-to-input ratio",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.provider.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total output tokens",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total input tokens",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Output to input ratio",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'output')).sum(by=['gen_ai.operation.name', 'gen_ai.provider.name', 'gen_ai.request.model', 'service.name']).sum(by=['gen_ai.operation.name', 'gen_ai.request.model', 'gen_ai.provider.name', 'service.name']).publish(label='A', enable=False)\nB = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'input')).sum(by=['gen_ai.operation.name', 'gen_ai.request.model', 'service.name', 'gen_ai.provider.name']).sum(by=['gen_ai.request.model', 'gen_ai.provider.name', 'gen_ai.operation.name', 'service.name']).publish(label='B', enable=False)\nC = (A/B).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "HMINdSBAYAE",
+        "importOf": "HJUsugMAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request volume",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# Requests",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.provider.name"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "service.name",
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requestes",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).count(by=['service.name', 'gen_ai.operation.name', 'gen_ai.request.model', 'gen_ai.provider.name']).sum(by=['service.name', 'gen_ai.operation.name', 'gen_ai.request.model', 'gen_ai.provider.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "HMINdSBAYAI",
+        "importOf": "HJUmhDZAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg operation duration",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "seconds",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.provider.name"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Operation duration by service",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['gen_ai.request.model', 'gen_ai.operation.name', 'service.name', 'gen_ai.provider.name']).mean(by=['gen_ai.request.model', 'gen_ai.operation.name', 'service.name', 'gen_ai.provider.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total input token used over selected time window.",
+        "id": "HMINdSBAYAM",
+        "importOf": "HJUnFWAAYAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Input tokens usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total Input tokens in inventory",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'input') and filter('gen_ai.framework', 'llamaindex')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Latency from request start until the first streamed token/chunk is received.",
+        "id": "HMINdSBAYAQ",
+        "importOf": "HJypCkKAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg Time to First Chunk",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "seconds",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "service.name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average TTFC",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.time_to_first_chunk', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['gen_ai.request.model', 'gen_ai.operation.name', 'service.name']).mean(by=['gen_ai.operation.name', 'gen_ai.request.model', 'service.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "HMINdSBAYAU",
+        "importOf": "HJUo0L1AcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "95th percentile operation duration",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "P95",
+              "label": "B",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).percentile(pct=95).mean().publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window.",
+        "id": "HMIOlBJAgAE",
+        "importOf": "HJTsUetAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top models by token usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Models by token usage",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex')).sum(by=['gen_ai.request.model'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['gen_ai.request.model']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "(TTFC) is essentially synonymous with Time to First Token (TTFT) in the AI space. It measures the latency from the moment a request is sent to an API until the very first piece of output (token or chunk) is received, representing the initial waiting time.",
+        "id": "HMIOlBJAgAI",
+        "importOf": "HJym5hgAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg Time to First Chunk",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "seconds",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "service.name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average TTFC",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.time_to_first_chunk', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['service.name']).mean(by=['service.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window",
+        "id": "HMIOlBJAgAM",
+        "importOf": "HJUk7w1AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Highest latency providers",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.provider.name"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Provider latency",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['gen_ai.provider.name'], over=Args.get('ui.dashboard_window', '15m')).mean(by=['gen_ai.provider.name']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window.",
+        "id": "HMIOlBJAgAQ",
+        "importOf": "HJTzjW_AgAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Most used response models",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.response.model"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Top response models",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).count(by=['gen_ai.response.model'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['gen_ai.response.model']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total output token used over selected time window.",
+        "id": "HMIOlBJAgAU",
+        "importOf": "HJPnihYAcAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Output tokens usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Output Tokens in inventory",
+              "label": "A",
+              "paletteIndex": 11,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'output')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window",
+        "id": "HMIOlBJAgAY",
+        "importOf": "HJUk9ebAcAY",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Highest latency models",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.provider.name"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Model latency",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['gen_ai.request.model'], over=Args.get('ui.dashboard_window', '15m')).mean(by=['gen_ai.request.model']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window.",
+        "id": "HMIOlBJAgAc",
+        "importOf": "HJT49lfAYA4",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top provider by token usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.provider.name"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Models provider by token usage",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex')).sum(by=['gen_ai.provider.name'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['gen_ai.provider.name']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Latency of GenAI operations per service.",
+        "id": "HMIOlBJAgAg",
+        "importOf": "HIrs_UmAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg operation duration by service",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "seconds",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "service.name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Operation duration by service",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['service.name']).mean(by=['service.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Percentile distribution",
+        "id": "HMIOlBJAgAk",
+        "importOf": "HJTlKwNAYAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg operation duration by service",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "seconds",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Mean",
+              "label": "A",
+              "paletteIndex": 14,
+              "plotType": "AreaChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P95",
+              "label": "B",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P99",
+              "label": "C",
+              "paletteIndex": 8,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "P75",
+              "label": "D",
+              "paletteIndex": 6,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean().mean().publish(label='A')\nB = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).percentile(pct=95).mean().publish(label='B')\nC = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).percentile(pct=99).mean().publish(label='C')\nD = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).percentile(pct=75).mean().publish(label='D')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total tokens across services.",
+        "id": "HMIOlBJAgAo",
+        "importOf": "HIruSMIAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Tokens across services",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "tokens",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "service.name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Tokens across services",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "No of tokens",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex')).sum(by=['service.name']).sum(by=['service.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "",
+        "id": "HMIOlBJAgAs",
+        "importOf": "HJUtsGDAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request volume",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "# Requests",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "service.name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requestes",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).count(by=['service.name']).sum(by=['service.name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window.",
+        "id": "HMIOlBJAgAw",
+        "importOf": "HJTsKRTAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top operation by token usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Tokens in inventory by service",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex')).sum(by=['gen_ai.operation.name'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['gen_ai.operation.name']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total token used over selected time window.",
+        "id": "HMIOlBJAgA0",
+        "importOf": "HIrtSRvAcAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Tokens usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Tokens in inventory by service",
+              "label": "A",
+              "paletteIndex": 0,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex')).sum().sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window",
+        "id": "HMIOlBJAgA4",
+        "importOf": "HJT4Vp-AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Slowest operation by average latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Top latency operation",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['gen_ai.operation.name'], over=Args.get('ui.dashboard_window', '15m')).mean(by=['gen_ai.operation.name']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total input token used over selected time window.",
+        "id": "HMIOlBJAgA8",
+        "importOf": "HJPooa1AcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Input tokens usage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total Input tokens in inventory",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'input') and filter('gen_ai.framework', 'llamaindex')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total LlamaIndex services with observed GenAI client activity.",
+        "id": "HMIOlBJAgBA",
+        "importOf": "HIsA9KhAgBY",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Active services",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": null,
+            "linkUrl": null,
+            "noDataMessage": null
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Number of LLMs",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "B = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).count(by=['service.name']).sum(over=Args.get('ui.dashboard_window', '15m')).sum(by=['service.name']).count().publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window",
+        "id": "HMIOlBJAgBE",
+        "importOf": "HIrsTZrAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Slowest services by average latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Top latency services",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['service.name']).mean(over=Args.get('ui.dashboard_window', '15m')).mean(by=['service.name']).top(count=50).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Lower ratios indicate concise responses; higher ratios indicate verbose generation.",
+        "id": "HMIOlBJAgBI",
+        "importOf": "HJTrDxaAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Token output-to-input ratio",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale": null,
+          "colorScale2": [
+            {
+              "gt": 1.5,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": 0.75,
+              "gte": null,
+              "lt": null,
+              "lte": 1.5,
+              "paletteIndex": 18
+            },
+            {
+              "gt": 0.25,
+              "gte": null,
+              "lt": null,
+              "lte": 0.75,
+              "paletteIndex": 20
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0.25,
+              "paletteIndex": 1
+            }
+          ],
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total output tokens",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total input tokens",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Output to input ratio",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'output')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='A', enable=False)\nB = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex') and filter('gen_ai.token.type', 'input')).sum(over=Args.get('ui.dashboard_window', '15m')).sum().publish(label='B', enable=False)\nC = (A/B).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window.",
+        "id": "HMIOlBJAgBM",
+        "importOf": "HJTx9FoAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Most requested models",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.request.model"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Top Models",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).count(by=['gen_ai.request.model'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['gen_ai.request.model']).top(count=100).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Over selected time window",
+        "id": "HMIOlBJAgBQ",
+        "importOf": "HJPR80jAcAI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Overview",
+        "options": {
+          "columnSizes": {
+            "Input tokens": 168,
+            "Output tokens": 159,
+            "service.name": 490
+          },
+          "groupBy": [
+            "service.name"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "gen_ai.application_name"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": true,
+                "property": "computationId"
+              },
+              {
+                "enabled": false,
+                "property": "telemetry.sdk.name"
+              },
+              {
+                "enabled": false,
+                "property": "telemetry.sdk.language"
+              },
+              {
+                "enabled": false,
+                "property": "gen_ai.operation.name"
+              },
+              {
+                "enabled": true,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "gen_ai.environment"
+              },
+              {
+                "enabled": false,
+                "property": "gen_ai.request.model"
+              },
+              {
+                "enabled": false,
+                "property": "host.name"
+              },
+              {
+                "enabled": false,
+                "property": "telemetry.sdk.version"
+              },
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "deployment.environment"
+              },
+              {
+                "enabled": true,
+                "property": "gen_ai.system"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# Total tokens",
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Input tokens",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Output tokens",
+              "label": "C",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "# Requests",
+              "label": "D",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Avg latency",
+              "label": "E",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond"
+            },
+            {
+              "displayName": "Avg TTFC",
+              "label": "F",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond"
+            }
+          ],
+          "refreshInterval": 60000,
+          "sortBy": "-Total",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": true,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.framework', 'llamaindex')).sum(by=['service.name'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['service.name']).publish(label='A')\nB = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'input') and filter('gen_ai.framework', 'llamaindex')).sum(by=['service.name'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['service.name']).publish(label='B')\nC = histogram('gen_ai.client.token.usage', filter=filter('gen_ai.token.type', 'output') and filter('gen_ai.framework', 'llamaindex')).sum(by=['service.name'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['service.name']).publish(label='C')\nD = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).count(by=['service.name'], over=Args.get('ui.dashboard_window', '15m')).sum(by=['service.name']).publish(label='D')\nE = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['service.name'], over=Args.get('ui.dashboard_window', '15m')).mean(by=['service.name']).publish(label='E')\nF = histogram('gen_ai.client.operation.time_to_first_chunk', filter=filter('gen_ai.framework', 'llamaindex')).mean(by=['service.name'], over=Args.get('ui.dashboard_window', '15m')).mean(by=['service.name']).mean(by=['service.name']).publish(label='F')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    }
+  ],
+  "crossLinkExports": [
+    {
+      "crossLink": {
+        "aliases": null,
+        "contextId": "HMIOlBJAgBU",
+        "created": 0,
+        "creator": null,
+        "id": "HMIPMB9AgAI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "propertyName": "service.name",
+        "targets": [
+          {
+            "dashboardGroupId": "HJyPS_wAcAI",
+            "dashboardId": "HMINdSBAYAY",
+            "isDefault": true,
+            "name": "LlamaIndex Instance",
+            "type": "INTERNAL_LINK"
+          }
+        ]
+      }
+    }
+  ],
+  "dashboardExports": [
+    {
+      "dashboard": {
+        "authorizedWriters": null,
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "HMIOlBJAgBQ",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 12
+          },
+          {
+            "chartId": "HMIOlBJAgBA",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgA0",
+            "column": 4,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgBI",
+            "column": 8,
+            "height": 1,
+            "row": 1,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgAs",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "HMIOlBJAgAU",
+            "column": 6,
+            "height": 1,
+            "row": 2,
+            "width": 3
+          },
+          {
+            "chartId": "HMIOlBJAgA8",
+            "column": 9,
+            "height": 1,
+            "row": 2,
+            "width": 3
+          },
+          {
+            "chartId": "HMIOlBJAgAg",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "HMIOlBJAgAk",
+            "column": 6,
+            "height": 1,
+            "row": 3,
+            "width": 6
+          },
+          {
+            "chartId": "HMIOlBJAgAo",
+            "column": 6,
+            "height": 1,
+            "row": 4,
+            "width": 6
+          },
+          {
+            "chartId": "HMIOlBJAgAI",
+            "column": 0,
+            "height": 1,
+            "row": 4,
+            "width": 6
+          },
+          {
+            "chartId": "HMIOlBJAgAw",
+            "column": 0,
+            "height": 2,
+            "row": 5,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgAE",
+            "column": 4,
+            "height": 2,
+            "row": 5,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgAc",
+            "column": 8,
+            "height": 2,
+            "row": 5,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgA4",
+            "column": 8,
+            "height": 2,
+            "row": 7,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgBM",
+            "column": 0,
+            "height": 2,
+            "row": 7,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgAQ",
+            "column": 4,
+            "height": 2,
+            "row": 7,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgAY",
+            "column": 8,
+            "height": 2,
+            "row": 9,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgBE",
+            "column": 4,
+            "height": 2,
+            "row": 9,
+            "width": 4
+          },
+          {
+            "chartId": "HMIOlBJAgAM",
+            "column": 0,
+            "height": 2,
+            "row": 9,
+            "width": 4
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": []
+        },
+        "groupId": "HJyPS_wAcAI",
+        "groupName": "Llamaindex",
+        "id": "HMIOlBJAgBU",
+        "importOf": "HIrtJNmAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "Instances",
+        "permissions": null,
+        "selectedEventOverlays": [],
+        "tags": []
+      }
+    },
+    {
+      "dashboard": {
+        "authorizedWriters": null,
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "HMINdSBAYAM",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "HMINbfQAcAY",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "HMINdSBAYAU",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "HMINdSBAYAE",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "HMINbfQAcAU",
+            "column": 6,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "HMINdSBAYAA",
+            "column": 6,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "HMINdSBAYAI",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "HMINdSBAYAQ",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 12
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": [
+            {
+              "alias": "Service Name",
+              "applyIfExists": false,
+              "description": "Service Name",
+              "preferredSuggestions": [],
+              "property": "service.name",
+              "propertyMappings": [
+                "service.name"
+              ],
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": [
+                "Choose service"
+              ]
+            }
+          ]
+        },
+        "groupId": "HJyPS_wAcAI",
+        "groupName": "Llamaindex",
+        "id": "HMINdSBAYAY",
+        "importOf": "HIrsK2cAgAI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "Instance",
+        "permissions": null,
+        "selectedEventOverlays": [],
+        "tags": []
+      }
+    }
+  ],
+  "groupExport": {
+    "group": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "dashboardConfigs": [
+        {
+          "configId": "HMIOlBJAgBY",
+          "dashboardId": "HMIOlBJAgBU",
+          "descriptionOverride": null,
+          "filtersOverride": null,
+          "nameOverride": null
+        },
+        {
+          "configId": "HMINdSBAYAc",
+          "dashboardId": "HMINdSBAYAY",
+          "descriptionOverride": null,
+          "filtersOverride": null,
+          "nameOverride": null
+        }
+      ],
+      "dashboards": [
+        "HMIOlBJAgBU",
+        "HMINdSBAYAY"
+      ],
+      "description": "",
+      "email": null,
+      "id": "HJyPS_wAcAI",
+      "importDetails": {
+        "hashCode": -321366838,
+        "importOf": "HIrmtcMAYAE",
+        "importTime": 1780388196040
+      },
+      "importOf": "HIrmtcMAYAE",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "gen_ai.framework",
+              "values": [
+                "llamaindex"
+              ]
+            },
+            {
+              "not": false,
+              "property": "service.name",
+              "values": []
+            }
+          ],
+          "metric": "gen_ai.client.operation.duration"
+        }
+      ],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "Llamaindex",
+      "permissions": null,
+      "teams": null
+    }
+  },
+  "hashCode": 1802863001,
+  "id": "HJyPS_wAcAI",
+  "modelVersion": 1,
+  "packageType": "GROUP"
+}
