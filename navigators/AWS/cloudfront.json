@@ -1,0 +1,462 @@
+{
+  "crossLinkExports": null,
+  "hashCode": -2122919781,
+  "id": "DiVVOGwAgAE",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "DiVWIOIAgAA"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": "aws_region",
+      "description": "",
+      "id": "DiVVOGwAgAE",
+      "idDisplayName": "{{aws_domain_name}}",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "DistributionId"
+              ]
+            }
+          ],
+          "metric": "Requests"
+        }
+      ],
+      "instanceDashboards": [
+        "DiVWHdlAgAA"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "CloudFront distributions",
+      "navigatorCategory": "Amazon Web Services",
+      "navigatorCategoryDisplayName": "Amazon Web Services",
+      "navigatorCategoryGroupDisplayName": "Public Clouds",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "splunk",
+      "pinnedFilters": null,
+      "relationships": [],
+      "requiresFilter": false,
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": "_exists_:DistributionId",
+        "category": "Amazon Web Services",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "CloudFront distributions",
+        "filterProperties": null,
+        "id": "cloudfront",
+        "idName": "Distribution",
+        "idTemplate": "{{DistributionId}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Name",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Id",
+            "format": null,
+            "metric": null,
+            "property": "DistributionId",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": [
+                {
+                  "color": "#ea1849",
+                  "lowerLimit": 20.0
+                },
+                {
+                  "color": "#e2ed6a",
+                  "lowerLimit": 5.0
+                },
+                {
+                  "color": "#6bd37e",
+                  "lowerLimit": 0.0
+                }
+              ],
+              "maxValue": null,
+              "method": "threshold",
+              "minValue": null,
+              "range": null
+            },
+            "description": "Percentage of all requests for which the HTTP status code is 4xx or 5xx. Under 5% is green, 5-20% yellow, above 20% is red",
+            "displayName": "Total error rate",
+            "id": "aws.cloudfront.totalerrorrate",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/CloudFront",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "DistributionId",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "TOTAL_ERROR_RATE = data(\"TotalErrorRate\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"DistributionId\"])",
+              "varName": "TOTAL_ERROR_RATE"
+            },
+            "metricSelectors": [
+              "TotalErrorRate"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Error %",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Number of requests for all HTTP methods and for both HTTP and HTTPS requests",
+            "displayName": "Requests",
+            "id": "aws.cloudfront.requests",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/CloudFront",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "DistributionId",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "Requests = data(\"Requests\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"DistributionId\"]).scale(60)",
+              "varName": "Requests"
+            },
+            "metricSelectors": [
+              "Requests"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Requests / min",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Number of bytes downloaded by viewers for GET, HEAD, and OPTIONS requests per minute",
+            "displayName": "Bytes downloaded",
+            "id": "aws.cloudfront.downloadedbytes",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/CloudFront",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "DistributionId",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "BytesDownloaded = data(\"BytesDownloaded\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"DistributionId\"]).scale(60)",
+              "varName": "BytesDownloaded"
+            },
+            "metricSelectors": [
+              "BytesDownloaded"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Bytes / min",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Number of bytes uploaded to your origin with CloudFront using POST and PUT requests per minute",
+            "displayName": "Bytes uploaded",
+            "id": "aws.cloudfront.uploadedbytes",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/CloudFront",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "DistributionId",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "BYTES_UPLOADED = data(\"BytesUploaded\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"DistributionId\"]).scale(60)",
+              "varName": "BYTES_UPLOADED"
+            },
+            "metricSelectors": [
+              "BytesUploaded"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Bytes / min",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": [
+                {
+                  "color": "#ea1849",
+                  "lowerLimit": 20.0
+                },
+                {
+                  "color": "#e2ed6a",
+                  "lowerLimit": 5.0
+                },
+                {
+                  "color": "#6bd37e",
+                  "lowerLimit": 0.0
+                }
+              ],
+              "maxValue": null,
+              "method": "threshold",
+              "minValue": null,
+              "range": null
+            },
+            "description": "Percentage of all requests for which the HTTP status code is 4xx. Under 5% is green, 5-20% yellow, above 20% is red",
+            "displayName": "4xx error rate",
+            "id": "aws.cloudfront.4xx_error_rate",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/CloudFront",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "ERROR4XX = data(\"4xxErrorRate\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2)",
+              "varName": "ERROR4XX"
+            },
+            "metricSelectors": [
+              "4xxErrorRate"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "4xx error %",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": [
+                {
+                  "color": "#ea1849",
+                  "lowerLimit": 20.0
+                },
+                {
+                  "color": "#e2ed6a",
+                  "lowerLimit": 5.0
+                },
+                {
+                  "color": "#6bd37e",
+                  "lowerLimit": 0.0
+                }
+              ],
+              "maxValue": null,
+              "method": "threshold",
+              "minValue": null,
+              "range": null
+            },
+            "description": "Percentage of all requests for which the HTTP status code is 5xx. Under 5% is green, 5-20% yellow, above 20% is red",
+            "displayName": "5xx error rate",
+            "id": "aws.cloudfront.5xx_error_rate",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/CloudFront",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "DistributionId",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "ERROR5XX = data(\"5xxErrorRate\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"DistributionId\"])",
+              "varName": "ERROR5XX"
+            },
+            "metricSelectors": [
+              "5xxErrorRate"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "5xx error %",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Active distributions",
+        "o11yMetricUnit": null,
+        "o11yProductName": "CloudFront distributions",
+        "o11ySignalflowTemplate": "A = data('TotalErrorRate', filter=filter('namespace', 'AWS/CloudFront') and filter('stat', 'mean') and filter('DistributionId', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['DistributionId']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "DistributionId"
+        ],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": "CloudFront",
+        "tooltipKeyList": [
+          {
+            "displayName": "Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          },
+          {
+            "displayName": "Engine",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "aws_engine"
+          },
+          {
+            "displayName": "Class",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "aws_db_instance_class"
+          },
+          {
+            "displayName": "Availability zone",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "aws_availability_zone"
+          },
+          {
+            "displayName": "Second availability zone",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "aws_second_availability_zone"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": []
+    }
+  },
+  "packageType": "NAVIGATOR"
+}

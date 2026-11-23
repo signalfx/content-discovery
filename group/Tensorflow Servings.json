@@ -1,0 +1,3195 @@
+{
+  "chartExports": [
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows total requests for the selected metric.",
+        "id": "G_VjM0LAcAg",
+        "importOf": "G-cIsv9AgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Requests",
+        "options": {
+          "colorBy": "Metric",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total number of requests",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_count', rollup='delta').sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Compares model load latency for each stage",
+        "id": "G_VmXztAgAA",
+        "importOf": "G-cIopeAgAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg load latency by stage",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "model_path"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "init_graph",
+              "label": "M",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond"
+            },
+            {
+              "displayName": "restore_graph",
+              "label": "N",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond"
+            }
+          ],
+          "refreshInterval": null,
+          "sortBy": "",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:cc:saved_model:load_latency_by_stage_sum', filter=filter('stage', 'init_graph'), rollup='latest').sum(by=['model_path', 'server.address'])\nB = data(':tensorflow:cc:saved_model:load_latency_by_stage_sum', filter=filter('stage', 'restore_graph'), rollup='latest').sum(by=['model_path', 'server.address'])\nC = data(':tensorflow:cc:saved_model:load_latency_by_stage_count', filter=filter('stage', 'init_graph'), rollup='latest').sum(by=['model_path', 'server.address'])\nD = data(':tensorflow:cc:saved_model:load_latency_by_stage_count', filter=filter('stage', 'restore_graph'), rollup='latest').sum(by=['model_path', 'server.address'])\nE = ((0 if A is None else A)/(1 if C is None else 1 if C is 0 else C)).sum(by=['model_path', 'server.address'])\nF = ((0 if B is None else B)/(1 if D is None else 1 if D is 0 else D)).sum(by=['model_path', 'server.address'])\nG = histogram(':tensorflow:cc:saved_model:load_latency_by_stage', filter=filter('stage', 'init_graph')).sum(by=['model_path', 'server.address']).sum(by=['model_path', 'server.address'])\nH = histogram(':tensorflow:cc:saved_model:load_latency_by_stage', filter=filter('stage', 'restore_graph')).sum(by=['model_path', 'server.address']).sum(by=['model_path', 'server.address'])\nI = histogram(':tensorflow:cc:saved_model:load_latency_by_stage', filter=filter('stage', 'init_graph')).count(by=['model_path', 'server.address']).sum(by=['model_path', 'server.address'])\nJ = histogram(':tensorflow:cc:saved_model:load_latency_by_stage', filter=filter('stage', 'restore_graph')).count(by=['model_path', 'server.address']).sum(by=['model_path', 'server.address'])\nK = ((0 if G is None else G)/(1 if I is None else 1 if I is 0 else I)).sum(by=['model_path', 'server.address'])\nL = ((0 if H is None else H)/(1 if J is None else 1 if J is 0 else J)).sum(by=['model_path', 'server.address'])\nM = union(E,K).sum(by=['model_path', 'server.address']).publish(label='M', enable=True)\nN = union(F,L).sum(by=['model_path', 'server.address']).publish(label='N', enable=True)",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Tracks the number of graph runs performed over time.",
+        "id": "G_VnqLqAYAA",
+        "importOf": "G-cIpVXAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Graph runs",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "Graph runs",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Number of graph runs",
+              "label": "A",
+              "paletteIndex": 9,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:graph_runs', rollup='delta').mean().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Monitors error counts indicating system health",
+        "id": "G_VntbgAYAA",
+        "importOf": "G-cO9A7AgAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Errors",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale2": [
+            {
+              "gt": 0.0,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0.0,
+              "paletteIndex": 20
+            }
+          ],
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Eager client error",
+              "label": "A",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "File logger error",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Data transfer protocol error",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "TPU operation error",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Eager client error",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "File logger error",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Data transfer protocol error",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "TPU operation error",
+              "label": "H",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:eager_client_error_count', rollup='latest').sum().publish(label='A', enable=False)\nB = data(':tensorflow:data:file_logger_errors').sum().publish(label='B', enable=False)\nC = data(':tensorflow:data:service:data_transfer_protocol_error').sum().publish(label='C', enable=False)\nD = data(':tensorflow:tpu:op_error_count').sum().publish(label='D', enable=False)\nE = (0 if A is None else A).sum().publish(label='E', enable=True)\nF = (0 if B is None else B).sum().publish(label='F', enable=True)\nG = (0 if C is None else C).sum().publish(label='G', enable=True)\nH = (0 if D is None else D).sum().publish(label='H')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows duration of graph runs for the given metric.",
+        "id": "G_VnutnAcAA",
+        "importOf": "G-cIqoyAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Graph run time",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "Time (usecs)",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average graph run time",
+              "label": "A",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:graph_run_time_usecs').mean().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows run time latency for serving the model.",
+        "id": "G_VoGBBAgAE",
+        "importOf": "G-cIte6AcAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Runtime latency",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "None"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": 4,
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average runtime latency",
+              "label": "G",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond"
+            }
+          ],
+          "refreshInterval": 60000,
+          "sortBy": "",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:runtime_latency_sum').sum(by=['model_name'])\nB = data(':tensorflow:serving:runtime_latency_count').sum(by=['model_name'])\nC = (A/B).sum(by=['model_name'])\nD = histogram(':tensorflow:serving:runtime_latency').sum(by=['model_name']).sum(by=['model_name'])\nE = histogram(':tensorflow:serving:runtime_latency').count(by=['model_name']).sum(by=['model_name'])\nF = (D/E).sum(by=['model_name'])\nG = combine(C if F is None else F).publish(label='G')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Visualizes graph build duration trends for performance",
+        "id": "G_VoWKCAYAA",
+        "importOf": "G-hNhSfAcAQ",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Graph build time",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 3,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average graph build time",
+              "label": "A",
+              "paletteIndex": 3,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:graph_build_time_usecs', rollup='latest').mean().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows latency of model loading for the specified metric.",
+        "id": "G_VoatxAcAE",
+        "importOf": "G-cIti4AgAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Model load latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_path"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Average model load latency",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:cc:saved_model:load_latency', rollup='latest').sum(by=['model_path']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Displays latency for requests over time.",
+        "id": "G_VoayFAgAI",
+        "importOf": "G-cIsEXAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request latency",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "Latency (ms)",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "ColumnChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": false,
+                "property": "url.scheme"
+              },
+              {
+                "enabled": false,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": false,
+                "property": "entrypoint"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              },
+              {
+                "enabled": true,
+                "property": "API"
+              },
+              {
+                "enabled": false,
+                "property": "host.name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Request latency over time",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Number of request observed",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average request latency",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Request latency over time - Histogram",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Number of request observed - Histogram",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average request latency - Histogram",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average latency",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_latency_sum').sum(by=['model_name']).publish(label='A', enable=False)\nB = data(':tensorflow:serving:request_latency_count').sum(by=['model_name']).publish(label='B', enable=False)\nC = ((0 if A is None else A)/(1 if B is None else 1 if B is 0 else B)).sum(by=['model_name']).publish(label='C', enable=True)\nD = histogram(':tensorflow:serving:request_latency').sum(by=['model_name']).sum(by=['model_name']).publish(label='D', enable=False)\nE = histogram(':tensorflow:serving:request_latency').count(by=['model_name']).sum(by=['model_name']).publish(label='E', enable=False)\nF = ((0 if D is None else D)/(1 if E is None else 1 if E is 0 else E)).sum(by=['model_name']).publish(label='F', enable=True)\nG = (C if F is None else F).publish(label='G')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Monitors Tensorflow session creation to assess load",
+        "id": "G_VoayKAcAA",
+        "importOf": "G-cO9DAAYAo",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Session creation count",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "Session count",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Session creations count",
+              "label": "A",
+              "paletteIndex": 13,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "    No of sessions",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:session_created', rollup='latest').sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Tracks trends in saved model loading latency over time",
+        "id": "G_VorxpAgAA",
+        "importOf": "G-cO9V4AYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Model load latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 3,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Model load latency (mean)",
+              "label": "A",
+              "paletteIndex": 0,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:cc:saved_model:load_latency').mean().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "This chart shows the number of client request types (such as Predict, Classify, or Regress) received by each loaded model.",
+        "id": "G_VqBBrAYAA",
+        "importOf": "G-cIns9AYAg",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Request by API",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "API"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": null,
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "# API request",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "# API request - Histogram",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total requests",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": true,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_latency_count', rollup='delta').sum(by=['API', 'model_name']).publish(label='A', enable=False)\nB = histogram(':tensorflow:serving:request_latency').count(by=['API', 'model_name']).sum(by=['API', 'model_name']).publish(label='B', enable=False)\nC = union(A,B).sum(by=['API', 'model_name']).publish(label='C')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Number of requests handled by the model with status not OK",
+        "id": "G_Vt3k_AcAU",
+        "importOf": "G-jYC1WAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# HTTP request errors by models",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale": null,
+          "colorScale2": [
+            {
+              "gt": 0.0,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0.0,
+              "paletteIndex": 20
+            }
+          ],
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requests served",
+              "label": "A",
+              "paletteIndex": 8,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_count', filter=(not filter('status', 'OK')), rollup='delta').sum(by=['model_name', 'status']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows how long warmup procedures take for readiness group by model.",
+        "id": "G_VuYrgAYAA",
+        "importOf": "G-cO9NeAgCI",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg model warmup latency ",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_path"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Model warmup latency",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total number of models",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average latency",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Histogram model warmup latency",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Histogram model count",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average latency - Histogram",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Avg latency",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:model_warmup_latency_sum').sum(by=['model_path']).publish(label='A')\nB = data(':tensorflow:serving:model_warmup_latency_count').sum(by=['model_path']).publish(label='B', enable=False)\nC = ((0 if A is None else A)/(1 if B is None else 1 if B is 0 else B)).sum(by=['model_path']).publish(label='C', enable=False)\nD = histogram(':tensorflow:serving:model_warmup_latency').sum(by=['model_path']).sum(by=['model_path']).publish(label='D', enable=False)\nE = histogram(':tensorflow:serving:model_warmup_latency').count(by=['model_path']).sum(by=['model_path']).publish(label='E', enable=False)\nF = ((0 if D is None else D)/(1 if E is None else 1 if E is 0 else E)).sum(by=['model_path']).publish(label='F', enable=False)\nG = (C if F is None else F).publish(label='G', enable=True)",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows request processing times for performance health",
+        "id": "G_VuYrgAYAE",
+        "importOf": "G-cO9RnAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Request latency",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "Latency (ms)",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": true,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "sf_originatingMetric"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total request latency",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total number of request",
+              "label": "B",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average model warmup latency",
+              "label": "C",
+              "paletteIndex": 3,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average batching session queue latency",
+              "label": "D",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average request latency",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total request latency histogram",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total number of request histogram",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average latency",
+              "label": "H",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 1800000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_latency_sum').sum(by=['model_name']).publish(label='A', enable=False)\nB = data(':tensorflow:serving:request_latency_count').sum(by=['model_name']).publish(label='B', enable=False)\nC = data(':tensorflow:serving:model_warmup_latency').mean().publish(label='C', enable=False)\nD = data(':tensorflow:serving:batching_session:queuing_latency').mean().publish(label='D', enable=False)\nE = ((A)/(1 if B is None else B)).sum(by=['model_name']).publish(label='E')\nF = histogram(':tensorflow:serving:request_latency').sum(by=['model_name']).sum(by=['model_name']).publish(label='F', enable=False)\nG = histogram(':tensorflow:serving:request_latency').count(by=['model_name']).sum(by=['model_name']).publish(label='G', enable=False)\nH = ((F)/(1 if G is None else G)).sum(by=['model_name']).publish(label='H')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Number of requests handled by the model with status not OK",
+        "id": "G_VuYrgAYAI",
+        "importOf": "G-hxY6CAYAk",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# HTTP request errors by models",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale2": [
+            {
+              "gt": 0.0,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0.0,
+              "paletteIndex": 20
+            }
+          ],
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "status"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requests served",
+              "label": "A",
+              "paletteIndex": 13,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_count', filter=(not filter('status', 'OK')), rollup='delta').sum(by=['model_name', 'status']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Lists frequency of graph executions over selected time window for inventory tracking",
+        "id": "G_VuYrgAYAM",
+        "importOf": "G-cO9kWAgAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Graph run count",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Graph run execution count",
+              "label": "A",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:graph_runs', rollup='delta').sum().sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total session runs executed over selected time window",
+        "id": "G_VuYrgAYAQ",
+        "importOf": "G-cO9cvAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Session runs",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total session runs executed",
+              "label": "A",
+              "paletteIndex": 2,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:direct_session_runs', rollup='delta').sum().sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total number of requests handled over time",
+        "id": "G_VuYrgAYAU",
+        "importOf": "G-dYQrZAYAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Requests served",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": null
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requests served",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 1800000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_count', rollup='delta').sum(by=['model_name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total number of requests handled to display throughput in selected time window",
+        "id": "G_VuYrgAYAY",
+        "importOf": "G-cO8-2AcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Requests",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requests served",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_count', rollup='delta').sum().sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Visualizes runtime latency for serving environment health",
+        "id": "G_VuYrgAYAc",
+        "importOf": "G-cO9PjAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Top instances by runtime latency",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": true,
+                "property": "runtime"
+              },
+              {
+                "enabled": true,
+                "property": "os.type"
+              },
+              {
+                "enabled": true,
+                "property": "url.scheme"
+              },
+              {
+                "enabled": true,
+                "property": "server.address"
+              },
+              {
+                "enabled": true,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": true,
+                "property": "server.port"
+              },
+              {
+                "enabled": true,
+                "property": "API"
+              },
+              {
+                "enabled": true,
+                "property": "host.name"
+              }
+            ]
+          },
+          "maximumPrecision": null,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total runtime latency",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Number of active runtime",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Avg runtime latency",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total runtime latency - Histogram",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Number of active runtime - Histogram",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Avg runtime latency - Histogram",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "max load time",
+              "label": "max load time",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "-value",
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:runtime_latency_sum').sum(by=['model_name']).publish(label='A', enable=False)\nB = data(':tensorflow:serving:runtime_latency_count').sum(by=['model_name']).publish(label='B', enable=False)\nC = ((0 if A is None else 0 if A is 0 else A)/(1 if B is None else 1 if B is 0 else B)).sum(by=['model_name']).publish(label='C', enable=False)\nD = histogram(':tensorflow:serving:runtime_latency').sum(by=['model_name']).sum(by=['model_name']).publish(label='D', enable=False)\nE = histogram(':tensorflow:serving:runtime_latency').count(by=['model_name']).sum(by=['model_name']).publish(label='E', enable=False)\nF = ((0 if D is None else 0 if D is 0 else D)/(1 if E is None else 1 if E is 0 else E)).sum(by=['model_name']).publish(label='F', enable=False)\nG = union(C, F).sum(by='model_name').top(count=100).publish('max load time')\n",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Tracks graph execution durations to assess responsiveness",
+        "id": "G_VuYrgAYAg",
+        "importOf": "G-cO9LaAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Avg graph run time",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "Time (usec)",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "AreaChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": true,
+                "property": "host.name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": false,
+                "property": "os.type"
+              },
+              {
+                "enabled": true,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "server.address"
+              },
+              {
+                "enabled": false,
+                "property": "server.port"
+              },
+              {
+                "enabled": false,
+                "property": "service.instance.id"
+              },
+              {
+                "enabled": true,
+                "property": "service.name"
+              },
+              {
+                "enabled": false,
+                "property": "url.scheme"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "sf_metric",
+            "showLegend": false
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total run time",
+              "label": "A",
+              "paletteIndex": 1,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total run count",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Average graph run time",
+              "label": "C",
+              "paletteIndex": 5,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
+              "yAxis": 1
+            },
+            {
+              "displayName": "Total run time - Histogram",
+              "label": "D",
+              "paletteIndex": 1,
+              "plotType": "Histogram",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Nanosecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total run count - Histogram",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": "LineChart",
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 1
+            },
+            {
+              "displayName": "Average graph run time - Histogram",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Avg graph runtime",
+              "label": "G",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Microsecond",
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:graph_run_time_usecs_histogram_sum', rollup='latest').sum().publish(label='A', enable=False)\nB = data(':tensorflow:core:graph_run_time_usecs_histogram_count', rollup='latest').sum().publish(label='B', enable=False)\nC = ((A)/(1 if B is None else B)).publish(label='C', enable=False)\nD = histogram(':tensorflow:core:graph_run_time_usecs_histogram').sum().sum().publish(label='D', enable=False)\nE = histogram(':tensorflow:core:graph_run_time_usecs_histogram').count().sum().publish(label='E', enable=False)\nF = ((D)/(1 if E is None else E)).publish(label='F', enable=False)\nG = (C if F is None else F).publish(label='G', enable=True)",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Tracks number of times models were read for usage against load attempts.",
+        "id": "G_VuYrgAYAk",
+        "importOf": "G-cO9FHAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "Saved model read vs load attempts",
+        "options": {
+          "columnSizes": {},
+          "groupBy": [
+            "server.address"
+          ],
+          "groupBySort": "Descending",
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": null
+          },
+          "maximumPrecision": null,
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Saved model read",
+              "label": "A",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            },
+            {
+              "displayName": "Model load attempts",
+              "label": "B",
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null
+            }
+          ],
+          "refreshInterval": 60000,
+          "sortBy": "",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "TableChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:saved_model:read:count', rollup='latest').sum(by=['server.address']).publish(label='A')\nB = data(':tensorflow:cc:saved_model:load_attempt_count', rollup='latest').sum(by=['server.address']).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows frequency of graph build operations for utilization",
+        "id": "G_VuYrgAYAo",
+        "importOf": "G-cO9X1AcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Graph build calls",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Number of graph build calls",
+              "label": "A",
+              "paletteIndex": 5,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:graph_build_calls', rollup='latest').sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Average load latency observed for a model by stage over selected time window.",
+        "id": "G_VuYrgAYAs",
+        "importOf": "G-cO9mfAYAY",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": " Model load latency by stage",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale2": null,
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "stage"
+              },
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_path"
+              }
+            ]
+          },
+          "maximumPrecision": 3,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Number of saved model",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total latency",
+              "label": "B",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Model load latency by stage",
+              "label": "C",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Model Latency - Histogram",
+              "label": "D",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "Number of models - Histogram",
+              "label": "E",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Model load latency by stage - Histogram",
+              "label": "F",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            },
+            {
+              "displayName": "avg load latency",
+              "label": "avg load latency",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": null,
+              "valueUnit": "Millisecond",
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "None",
+          "sortBy": "-value",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:cc:saved_model:load_latency_by_stage_count', rollup='delta').sum(by=['stage', 'model_path']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='A', enable=False)\nB = data(':tensorflow:cc:saved_model:load_latency_by_stage_sum', rollup='delta').sum(by=['stage', 'model_path']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='B', enable=False)\nC = (B/(1 if A is None else 1 if A is 0 else A)).publish(label='C', enable=False)\nD = histogram(':tensorflow:cc:saved_model:load_latency_by_stage').sum(by=['stage', 'model_path']).sum(by=['stage', 'model_path']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='D', enable=False)\nE = histogram(':tensorflow:cc:saved_model:load_latency_by_stage').count(by=['stage', 'model_path']).sum(by=['stage', 'model_path']).sum(over=Args.get('ui.dashboard_window', '15m')).publish(label='E', enable=False)\nF = (D/(1 if E is None else 1 if E is 0 else E)).publish(label='F', enable=False)\nG = union(C, F).mean(by=['stage', 'model_path']).publish('avg load latency')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Shows the count of TPU operation errors.",
+        "id": "G_VuixKAgAE",
+        "importOf": "G-cItCUAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Operation errors",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": false,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Number of operation errors",
+              "label": "A",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "No of errors",
+              "valueUnit": null,
+              "yAxis": 0
+            },
+            {
+              "displayName": "Total number of errors",
+              "label": "B",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": null,
+              "valueSuffix": "No of errors",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:tpu:op_error_count', rollup='latest').sum().publish(label='A', enable=False)\nB = (0 if A is None else A).publish(label='B')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Total number of requests handled over time",
+        "id": "G_Vw7ftAYAA",
+        "importOf": "G-jV5feAYAE",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Requests served",
+        "options": {
+          "areaChartOptions": {
+            "showDataMarkers": false
+          },
+          "axes": [
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            },
+            {
+              "highWatermark": null,
+              "highWatermarkLabel": null,
+              "label": "",
+              "lowWatermark": null,
+              "lowWatermarkLabel": null,
+              "max": null,
+              "min": null
+            }
+          ],
+          "axisPrecision": null,
+          "colorBy": "Dimension",
+          "defaultPlotType": "LineChart",
+          "eventPublishLabelOptions": [],
+          "histogramChartOptions": {
+            "colorThemeIndex": 16
+          },
+          "includeZero": false,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              }
+            ]
+          },
+          "lineChartOptions": {
+            "showDataMarkers": false
+          },
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "onChartLegendOptions": {
+            "dimensionInLegend": "model_name",
+            "showLegend": true
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requests served",
+              "label": "A",
+              "paletteIndex": null,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "showEventLines": false,
+          "stacked": false,
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "TimeSeriesChart",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_count', rollup='delta').sum(by=['model_name']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Displays count of eager client errors.",
+        "id": "G_Vw7ftAYAE",
+        "importOf": "G-cIoDYAcAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# Eager client errors",
+        "options": {
+          "colorBy": "Dimension",
+          "colorScale": null,
+          "colorScale2": null,
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "No of eager client errors",
+              "label": "A",
+              "paletteIndex": 4,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": null,
+          "secondaryVisualization": "Sparkline",
+          "showSparkLine": false,
+          "time": {
+            "range": 900000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "timestampHidden": false,
+          "type": "SingleValue",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:core:eager_client_error_count', rollup='latest').sum().publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    },
+    {
+      "chart": {
+        "autoDetectRelatedDetectorIds": [],
+        "chartLinks": [],
+        "created": 0,
+        "creator": null,
+        "customProperties": {},
+        "description": "Number of requests handled by the model with status not OK",
+        "id": "G_4_L97AcAM",
+        "importOf": "G-hxY6CAYAk",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "name": "# HTTP request errors by models",
+        "options": {
+          "colorBy": "Scale",
+          "colorScale2": [
+            {
+              "gt": 0.0,
+              "gte": null,
+              "lt": null,
+              "lte": null,
+              "paletteIndex": 16
+            },
+            {
+              "gt": null,
+              "gte": null,
+              "lt": null,
+              "lte": 0.0,
+              "paletteIndex": 20
+            }
+          ],
+          "hideMissingValues": true,
+          "legendOptions": {
+            "fields": [
+              {
+                "enabled": false,
+                "property": "sf_originatingMetric"
+              },
+              {
+                "enabled": true,
+                "property": "model_name"
+              },
+              {
+                "enabled": false,
+                "property": "sf_metric"
+              },
+              {
+                "enabled": true,
+                "property": "status"
+              }
+            ]
+          },
+          "maximumPrecision": 4,
+          "noDataOptions": {
+            "linkText": "Set up Splunk OpenTelemetry",
+            "linkUrl": "https://docs.splunk.com/Observability/gdi/opentelemetry/opentelemetry.html",
+            "noDataMessage": "Currently, no data is available for this chart"
+          },
+          "programOptions": {
+            "disableSampling": true,
+            "maxDelay": 0,
+            "minimumResolution": 0,
+            "timezone": null
+          },
+          "publishLabelOptions": [
+            {
+              "displayName": "Total requests served",
+              "label": "A",
+              "paletteIndex": 13,
+              "plotType": null,
+              "valuePrefix": "",
+              "valueSuffix": "",
+              "valueUnit": null,
+              "yAxis": 0
+            }
+          ],
+          "refreshInterval": 60000,
+          "secondaryVisualization": "Sparkline",
+          "sortBy": "",
+          "time": {
+            "range": 3600000,
+            "rangeEnd": 0,
+            "type": "relative"
+          },
+          "type": "List",
+          "unitPrefix": "Metric"
+        },
+        "packageSpecifications": "",
+        "programText": "A = data(':tensorflow:serving:request_count', filter=(not filter('status', 'OK')), rollup='delta').sum(by=['model_name', 'status']).publish(label='A')",
+        "relatedDetectorIds": [],
+        "tags": []
+      }
+    }
+  ],
+  "crossLinkExports": [],
+  "dashboardExports": [
+    {
+      "dashboard": {
+        "authorizedWriters": null,
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "G_VuYrgAYAY",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "G_VuYrgAYAQ",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "G_VorxpAgAA",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "G_VuYrgAYAU",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "G_VuYrgAYAM",
+            "column": 9,
+            "height": 1,
+            "row": 1,
+            "width": 3
+          },
+          {
+            "chartId": "G_VuYrgAYAI",
+            "column": 6,
+            "height": 2,
+            "row": 1,
+            "width": 3
+          },
+          {
+            "chartId": "G_VuYrgAYAE",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 6
+          },
+          {
+            "chartId": "G_VuYrgAYAo",
+            "column": 9,
+            "height": 1,
+            "row": 2,
+            "width": 3
+          },
+          {
+            "chartId": "G_VuYrgAYAk",
+            "column": 8,
+            "height": 1,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "G_VuYrgAYAc",
+            "column": 0,
+            "height": 2,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "G_VuYrgAYAs",
+            "column": 4,
+            "height": 2,
+            "row": 3,
+            "width": 4
+          },
+          {
+            "chartId": "G_VntbgAYAA",
+            "column": 8,
+            "height": 2,
+            "row": 4,
+            "width": 4
+          },
+          {
+            "chartId": "G_VuYrgAYAg",
+            "column": 0,
+            "height": 1,
+            "row": 5,
+            "width": 8
+          },
+          {
+            "chartId": "G_VuYrgAYAA",
+            "column": 6,
+            "height": 1,
+            "row": 6,
+            "width": 6
+          },
+          {
+            "chartId": "G_VoayKAcAA",
+            "column": 0,
+            "height": 1,
+            "row": 6,
+            "width": 6
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": null,
+          "variables": []
+        },
+        "groupId": "G_Vh9SKAgAA",
+        "groupName": "TensorFlow Servings",
+        "id": "G_VuYrgAYAw",
+        "importOf": "G-cO9ssAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "Servers",
+        "permissions": null,
+        "selectedEventOverlays": [],
+        "tags": []
+      }
+    },
+    {
+      "dashboard": {
+        "authorizedWriters": null,
+        "chartDensity": "DEFAULT",
+        "charts": [
+          {
+            "chartId": "G_VjM0LAcAg",
+            "column": 0,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "G_Vt3k_AcAU",
+            "column": 4,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "G_VoWKCAYAA",
+            "column": 8,
+            "height": 1,
+            "row": 0,
+            "width": 4
+          },
+          {
+            "chartId": "G_VuixKAgAE",
+            "column": 9,
+            "height": 1,
+            "row": 1,
+            "width": 3
+          },
+          {
+            "chartId": "G_Vw7ftAYAE",
+            "column": 6,
+            "height": 1,
+            "row": 1,
+            "width": 3
+          },
+          {
+            "chartId": "G_Vw7ftAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 1,
+            "width": 6
+          },
+          {
+            "chartId": "G_VoayFAgAI",
+            "column": 0,
+            "height": 1,
+            "row": 2,
+            "width": 7
+          },
+          {
+            "chartId": "G_4_L97AcAM",
+            "column": 7,
+            "height": 1,
+            "row": 2,
+            "width": 5
+          },
+          {
+            "chartId": "G_VoatxAcAE",
+            "column": 7,
+            "height": 2,
+            "row": 3,
+            "width": 5
+          },
+          {
+            "chartId": "G_VmXztAgAA",
+            "column": 0,
+            "height": 1,
+            "row": 3,
+            "width": 7
+          },
+          {
+            "chartId": "G_VnqLqAYAA",
+            "column": 0,
+            "height": 1,
+            "row": 4,
+            "width": 7
+          },
+          {
+            "chartId": "G_VoGBBAgAE",
+            "column": 0,
+            "height": 1,
+            "row": 5,
+            "width": 6
+          },
+          {
+            "chartId": "G_VqBBrAYAA",
+            "column": 6,
+            "height": 2,
+            "row": 5,
+            "width": 6
+          },
+          {
+            "chartId": "G_VnutnAcAA",
+            "column": 0,
+            "height": 1,
+            "row": 6,
+            "width": 6
+          }
+        ],
+        "created": 0,
+        "creator": null,
+        "customProperties": null,
+        "description": "This dashboard shows metrics for a single metric identified by the sf_metric attribute.",
+        "discoveryOptions": null,
+        "eventOverlays": null,
+        "filters": {
+          "sources": [],
+          "time": {
+            "end": "Now",
+            "start": "-1d"
+          },
+          "variables": [
+            {
+              "alias": "Server address",
+              "applyIfExists": false,
+              "description": "",
+              "preferredSuggestions": [],
+              "property": "server.address",
+              "propertyMappings": [
+                "server.address"
+              ],
+              "replaceOnly": false,
+              "required": true,
+              "restricted": false,
+              "value": [
+                "Choose server"
+              ]
+            }
+          ]
+        },
+        "groupId": "G_Vh9SKAgAA",
+        "groupName": "TensorFlow Servings",
+        "id": "G_Vw7ftAYAM",
+        "importOf": "G-cItwtAYAA",
+        "lastUpdated": 0,
+        "lastUpdatedBy": null,
+        "locked": false,
+        "maxDelayOverride": null,
+        "name": "Server",
+        "permissions": null,
+        "selectedEventOverlays": [],
+        "tags": []
+      }
+    }
+  ],
+  "groupExport": {
+    "group": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "dashboardConfigs": [
+        {
+          "configId": "G_VuYrgAYA0",
+          "dashboardId": "G_VuYrgAYAw",
+          "descriptionOverride": null,
+          "filtersOverride": null,
+          "nameOverride": null
+        },
+        {
+          "configId": "G_Vw7ftAYAQ",
+          "dashboardId": "G_Vw7ftAYAM",
+          "descriptionOverride": null,
+          "filtersOverride": null,
+          "nameOverride": null
+        }
+      ],
+      "dashboards": [
+        "G_VuYrgAYAw",
+        "G_Vw7ftAYAM"
+      ],
+      "description": "",
+      "email": null,
+      "id": "G_Vh9SKAgAA",
+      "importDetails": {
+        "hashCode": -197521652,
+        "importOf": "G-cJEYbAgAA",
+        "importTime": 1769169565918
+      },
+      "importOf": "G-cJEYbAgAA",
+      "importQualifiers": [
+        {
+          "filters": [],
+          "metric": ":tensorflow:serving:request_count"
+        },
+        {
+          "filters": [],
+          "metric": ":tensorflow:core:saved_model:read:count"
+        }
+      ],
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "TensorFlow Servings",
+      "permissions": null,
+      "teams": null
+    }
+  },
+  "hashCode": -2066242602,
+  "id": "G_Vh9SKAgAA",
+  "modelVersion": 1,
+  "packageType": "GROUP"
+}

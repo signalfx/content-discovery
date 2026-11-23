@@ -1,0 +1,64 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Generates an alert when the number of blocked spans is above the specified threshold. [Learn more](https://quickdraw.splunk.com/redirect/?product=APM&location=apm.autodetect.spanblocked&version=current)",
+      "detectorOrigin": "Standard",
+      "id": "FsVgGmLAgAA",
+      "labelResolutions": {
+        "Splunk operational - APM spans are blocked": 30000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": null,
+      "name": "Splunk operational - APM spans are blocked",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "parentDetectorId": null,
+      "programText": "from signalfx.detectors.autodetect.apm import operational\n\noperational.spans_blocked_detector().publish('Splunk operational - APM spans are blocked')",
+      "rules": [
+        {
+          "description": "Splunk operational - APM spans are blocked",
+          "detectLabel": "Splunk operational - APM spans are blocked",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}({{inputs.fire_threshold_stream.value}})\n{{/if}}\n\nSpans dropped: {{inputs.stream.value}}\nThe total number of spans that were blocked due to the 100k spans-per-trace limit or the 100k spans-per-trace in a single ingest instance limit.\n\n{{#notEmpty dimensions}}Signal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": null,
+          "runbookUrl": null,
+          "severity": "Info",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "sf.org.apm.numSpansDroppedBlocked"
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "metric": "sf.org.apm.numSpansDroppedBlocked",
+          "filters": []
+        }
+      ]
+    }
+  },
+  "hashCode": 1234303207,
+  "id": "FsVgGmLAgAA",
+  "packageType": "DETECTOR"
+}

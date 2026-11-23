@@ -1,0 +1,70 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": null,
+      "description": "",
+      "detectorOrigin": "Standard",
+      "id": "GoMzov-AYAI",
+      "importQualifiers": [
+        {
+          "filters": [],
+          "metric": "gen_ai.client.token.usage"
+        }
+      ],
+      "labelResolutions": {
+        "Sudden change in operation duration sum": 5000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "locked": false,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "OpenAI  -  Sudden change in operation duration sum",
+      "overMTSLimit": false,
+      "packageSpecifications": "signalfx==0.1.891",
+      "programText": "from signalfx.detectors.against_recent import against_recent\nAB = alerts(detector_name='OpenAI Operation Duration Detector').publish(label='AB')\nAD = alerts(detector_name='OpenAI  -  Operation Duration Detector').publish(label='AD')\nA = histogram('gen_ai.client.operation.duration', filter=filter('gen_ai.system', 'openai')).sum().publish(label='A')\nagainst_recent.detector_mean_std(stream=A, current_window='10m', historical_window='1h', fire_num_stddev=3.5, clear_num_stddev=3, orientation='above', ignore_extremes=True, calculation_mode='vanilla').publish('Sudden change in operation duration sum')",
+      "rules": [
+        {
+          "description": "All the values of gen_ai.client.operation.duration in the last 10m are more than 3.5 standard deviation(s) above the mean of its preceding 1h.",
+          "detectLabel": "Sudden change in operation duration sum",
+          "disabled": false,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" in detector \"{{{detectorName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\nMinimum value of signal in the last {{event_annotations.current_window}}: {{inputs.recent_min.value}}\n{{#if anomalous}}Trigger threshold: {{inputs.f_top.value}}\n{{else}}Clear threshold: {{inputs.c_top.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}\n\n{{#if detectorTags}}Tags: {{detectorTags}}{{/if}}\n\n{{#if detectorTeams}}\nTeams:{{#each detectorTeams}} {{name}}{{#unless @last}},{{/unless}}{{/each}}.\n{{/if}}",
+          "severity": "Warning"
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "gen_ai.client.operation.duration"
+      ],
+      "status": "ACTIVE",
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [
+          {
+            "displayName": "gen_ai.client.operation.duration",
+            "label": "A",
+            "paletteIndex": null,
+            "valuePrefix": null,
+            "valueSuffix": null,
+            "valueUnit": null
+          }
+        ],
+        "showDataMarkers": true,
+        "showEventLines": false,
+        "time": {
+          "range": 86400000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      }
+    }
+  },
+  "hashCode": -1694367382,
+  "id": "GoMzov-AYAI",
+  "packageType": "DETECTOR"
+}

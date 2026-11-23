@@ -1,0 +1,322 @@
+{
+  "crossLinkExports": null,
+  "hashCode": 360748825,
+  "id": "GOBQRPyAYAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "GOA477vAYAg"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": null,
+      "description": "",
+      "id": "GOBQRPyAYAA",
+      "idDisplayName": "{{server.address}}",
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "server.address",
+              "values": []
+            }
+          ],
+          "metric": "mongodb.storage.size"
+        },
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "server.address",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "database",
+              "values": []
+            }
+          ],
+          "metric": "mongodb.memory.usage"
+        }
+      ],
+      "instanceDashboards": [
+        "GOA477vAYAk"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "MongoDB instances (OTel)",
+      "navigatorCategory": "Datastores",
+      "navigatorCategoryDisplayName": "Datastores",
+      "navigatorCategoryGroupDisplayName": "Others",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "splunk",
+      "pinnedFilters": [],
+      "relationships": [],
+      "requiresFilter": false,
+      "sites": "o11y",
+      "systemTypes": [
+        "mongodb"
+      ],
+      "uiModel": {
+        "alertQuery": "sf_key:server.address AND (sf_metric:mongodb.operation.count OR sf_metric:mongodb.memory.usage OR sf_metric:mongodb.connection.count)",
+        "category": "Datastores",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "MongoDB instances (OTel)",
+        "filterProperties": null,
+        "id": "mongodb",
+        "idName": "Host",
+        "idTemplate": "{{server.address}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Instance",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the number of current connections. Darker colors indicate higher relative values.",
+            "displayName": "# Current connections",
+            "id": "mongodb_current_connections",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "type",
+                  "propertyValue": "current",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "CONNECTIONS = data('mongodb.connection.count'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').sum(by=['server.address'])",
+              "varName": "CONNECTIONS"
+            },
+            "metricSelectors": [
+              "mongodb.connection.count"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Current connections",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the size of the collections (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Data size (bytes)",
+            "id": "mongodb_data_size",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "DATA_SIZE = data('mongodb.data.size'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='average').sum(by=['server.address'])",
+              "varName": "DATA_SIZE"
+            },
+            "metricSelectors": [
+              "mongodb.data.size"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Data size",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": [
+                {
+                  "color": "#6bd37e",
+                  "lowerLimit": 80.0
+                },
+                {
+                  "color": "#e2ed6a",
+                  "lowerLimit": 20.0
+                },
+                {
+                  "color": "#ea1849",
+                  "lowerLimit": 0.0
+                }
+              ],
+              "maxValue": null,
+              "method": "threshold",
+              "minValue": null,
+              "range": null
+            },
+            "description": "This metric shows the current mongodb cache hit ratio of hosts. Under 20% red, 20-80% yellow, over 80% green.",
+            "displayName": "Hit ratio (%)",
+            "id": "mongodb_hit_ratio",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "CACHE_HIT = data('mongodb.cache.operations', filter=filter('type', 'hit'){{#filter}}and{{{filter}}}{{/filter}}).sum(by=['server.address'])\nCACHE_MISS = data('mongodb.cache.operations', filter=filter('type', 'miss'){{#filter}}and{{{filter}}}{{/filter}}).sum(by=['server.address'])\nHIT_RATIO = ((CACHE_HIT+1)/(CACHE_HIT+CACHE_MISS+1)).scale(100)",
+              "varName": "HIT_RATIO"
+            },
+            "metricSelectors": [
+              "mongodb.cache.operations"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Hit ratio",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the amount of memory used (bytes). Darker colors indicate higher relative values.",
+            "displayName": "Memory usage (bytes)",
+            "id": "mongodb_memory_usage",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "MEMORY_USAGE = data('mongodb.memory.usage'{{#filter}}, filter={{{filter}}}{{/filter}}).sum(by=['server.address'])",
+              "varName": "MEMORY_USAGE"
+            },
+            "metricSelectors": [
+              "mongodb.memory.usage"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Memory usage",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of bytes received. Darker colors indicate higher relative values.",
+            "displayName": "Network I/O bytes received (bytes)",
+            "id": "mongodb_network_io_bytes_received",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "NETWORK_RECEIVE = data('mongodb.network.io.receive'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=['server.address'])",
+              "varName": "NETWORK_RECEIVE"
+            },
+            "metricSelectors": [
+              "mongodb.network.io.receive"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Network I/O bytes received",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "This metric shows the total number of bytes transmitted. Darker colors indicate higher relative values.",
+            "displayName": "Network I/O bytes sent (bytes)",
+            "id": "mongodb_network_io_bytes_sent",
+            "job": {
+              "filters": [],
+              "resolution": 300000,
+              "template": "NETWORK_SENT = data('mongodb.network.io.transmit'{{#filter}}, filter={{{filter}}}{{/filter}}, rollup='delta').sum(by=['server.address'])",
+              "varName": "NETWORK_SENT"
+            },
+            "metricSelectors": [
+              "mongodb.network.io.transmit"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Network I/O bytes sent",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Running instances",
+        "o11yMetricUnit": null,
+        "o11yProductName": "MongoDB instances (OTel)",
+        "o11ySignalflowTemplate": "A = data('mongodb.storage.size').sum(by=['server.address']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": null,
+        "tooltipKeyList": [
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": []
+    }
+  },
+  "packageType": "NAVIGATOR"
+}

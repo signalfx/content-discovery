@@ -1,0 +1,326 @@
+{
+  "crossLinkExports": null,
+  "hashCode": -2095287394,
+  "id": "DiVVFMLAcAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "DiVV273AYAA"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": "azure_region",
+      "description": "",
+      "entityHighlightedAttributes": [],
+      "id": "DiVVFMLAcAA",
+      "idDisplayName": null,
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "resource_type",
+              "values": [
+                "microsoft.storage/storageaccounts",
+                "Microsoft.Storage/storageAccounts"
+              ]
+            }
+          ],
+          "metric": "Ingress"
+        }
+      ],
+      "instanceDashboards": [
+        "DiVV12TAgAA"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "metricClasses": [],
+      "metricColumns": [],
+      "name": "Storage",
+      "navigatorCategory": "Microsoft Azure",
+      "navigatorCategoryDisplayName": "Microsoft Azure",
+      "navigatorCategoryGroupDisplayName": "Public Clouds",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "splunk",
+      "pinnedFilters": [],
+      "propertyDisplayFormatters": [],
+      "relationships": [],
+      "requiresFilter": false,
+      "sites": "o11y",
+      "systemTypes": [],
+      "uiModel": {
+        "alertQuery": "_exists_:azure_resource_id AND (resource_type:\"microsoft.storage/storageaccounts\" OR resource_type:\"Microsoft.Storage/storageAccounts\")",
+        "category": "Microsoft Azure",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "Storage",
+        "filterProperties": null,
+        "id": "azurestorage",
+        "idName": "Account",
+        "idTemplate": "{{azure_resource_name}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Resource name",
+            "format": null,
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Group",
+            "format": null,
+            "metric": null,
+            "property": "azure_resource_group_name",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Region",
+            "format": null,
+            "metric": null,
+            "property": "azure_region",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color hosts by amount of ingress (bytes) traffic",
+            "displayName": "Ingress traffic",
+            "id": "azure.storage.ingress",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "primary_aggregation_type",
+                  "propertyValue": "true",
+                  "type": null
+                }
+              ],
+              "resolution": 60000,
+              "template": "INGRESS_TRAFFIC = data(\"Ingress\", filter=filter('resource_type', 'microsoft.storage/storageaccounts', 'Microsoft.Storage/storageAccounts') {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"zero\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+              "varName": "INGRESS_TRAFFIC"
+            },
+            "metricSelectors": [
+              "Ingress"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Ingress",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color hosts by amount of egress (bytes) traffic",
+            "displayName": "Egress traffic",
+            "id": "azure.storage.egress",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "primary_aggregation_type",
+                  "propertyValue": "true",
+                  "type": null
+                }
+              ],
+              "resolution": 60000,
+              "template": "EGRESS_TRAFFIC = data(\"Egress\", filter=filter('resource_type', 'microsoft.storage/storageaccounts', 'Microsoft.Storage/storageAccounts') {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"zero\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+              "varName": "EGRESS_TRAFFIC"
+            },
+            "metricSelectors": [
+              "Egress"
+            ],
+            "type": "metric",
+            "valueFormat": "Bytes",
+            "valueLabel": "Egress",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color hosts by amount of average latency (ms) of successful requests. This does not include network latency.",
+            "displayName": "Successful latency(ms)",
+            "id": "azure.storage.success_latency",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "primary_aggregation_type",
+                  "propertyValue": "true",
+                  "type": null
+                }
+              ],
+              "resolution": 60000,
+              "template": "SUCCESS_LATENCY = data(\"SuccessServerLatency\", filter=filter('resource_type', 'microsoft.storage/storageaccounts', 'Microsoft.Storage/storageAccounts') {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"zero\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+              "varName": "SUCCESS_LATENCY"
+            },
+            "metricSelectors": [
+              "Egress"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Latency (ms)",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color hosts by amount of average end-to-end latency (ms) of successful requests",
+            "displayName": "Successful E2E latency(ms)",
+            "id": "azure.storage.e2elatency",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "primary_aggregation_type",
+                  "propertyValue": "true",
+                  "type": null
+                }
+              ],
+              "resolution": 60000,
+              "template": "SUCCESS_E2ELATENCY = data(\"SuccessE2ELatency\", filter=filter('resource_type', 'microsoft.storage/storageaccounts', 'Microsoft.Storage/storageAccounts') {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"average\", extrapolation=\"zero\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+              "varName": "SUCCESS_E2ELATENCY"
+            },
+            "metricSelectors": [
+              "Egress"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Latency (ms)",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Color hosts by total number of transactions in the past minute",
+            "displayName": "Transactions",
+            "id": "azure.storage.transactions",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "primary_aggregation_type",
+                  "propertyValue": "true",
+                  "type": null
+                }
+              ],
+              "resolution": 60000,
+              "template": "TRANSACTIONS = data(\"Transactions\", filter=filter('resource_type', 'microsoft.storage/storageaccounts', 'Microsoft.Storage/storageAccounts') {{#filter}} and {{{filter}}}{{/filter}}, rollup=\"sum\", extrapolation=\"zero\", maxExtrapolations=-1).mean(by=[\"azure_resource_name\", \"azure_resource_group_name\", \"azure_region\"])",
+              "varName": "TRANSACTIONS"
+            },
+            "metricSelectors": [
+              "Egress"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Transactions",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Active accounts",
+        "o11yMetricUnit": null,
+        "o11yProductName": "Storage",
+        "o11ySignalflowTemplate": "A = data('Ingress', filter=filter('resource_type', 'microsoft.storage/storageaccounts', 'Microsoft.Storage/storageAccounts') and filter('primary_aggregation_type', 'true'), rollup='average', extrapolation='zero', maxExtrapolations=-1).mean(by=['azure_resource_name', 'azure_resource_group_name', 'azure_region']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "azure_resource_name"
+        ],
+        "singleHostSystemDashboardName": "Azure Storage Account",
+        "systemDashboardName": null,
+        "systemDashboardPrefix": "Azure Storage Accounts",
+        "tooltipKeyList": [
+          {
+            "displayName": "Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": []
+    }
+  },
+  "packageType": "NAVIGATOR"
+}

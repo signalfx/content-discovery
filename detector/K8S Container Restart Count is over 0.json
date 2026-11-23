@@ -1,0 +1,90 @@
+{
+  "detectorExport": {
+    "detector": {
+      "authorizedWriters": null,
+      "created": 0,
+      "creator": null,
+      "customProperties": {},
+      "description": "Alerts when container restarted count in the last 5m is > 0",
+      "detectorOrigin": "Standard",
+      "entityTypeSummary": {
+        "contributing": true,
+        "types": [
+          "infra:container"
+        ]
+      },
+      "id": "E_wPbeQAgAA",
+      "labelResolutions": {
+        "K8s container restarted count is > 0": 1000
+      },
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "maxDelay": 0,
+      "minDelay": 0,
+      "name": "K8s container restarted count is > 0",
+      "overMTSLimit": false,
+      "packageSpecifications": "",
+      "programText": "from signalfx.detectors.autodetect.infra.k8s import containers\ncontainers.container_restarts_detector().publish('K8s container restarted count is > 0')",
+      "rules": [
+        {
+          "description": "The value of container restarted is above 0.",
+          "detectLabel": "K8s container restarted count is > 0",
+          "disabled": false,
+          "notifications": null,
+          "parameterizedBody": "{{#if anomalous}}\n\tRule \"{{{ruleName}}}\" triggered at {{dateTimeFormat timestamp format=\"full\"}}.\n{{else}}\n\tRule \"{{{ruleName}}}\" cleared at {{dateTimeFormat timestamp format=\"full\"}}.\n{{/if}}\n\n{{#if anomalous}}\nTriggering condition: {{{readableRule}}}\n{{/if}}\n\n{{#if anomalous}}Signal value for Container Restarts: {{inputs.stream.value}}\n{{else}}Current signal value for Container Restarts: {{inputs.stream.value}}\n{{/if}}\n\n{{#notEmpty dimensions}}\nSignal details:\n{{{dimensions}}}\n{{/notEmpty}}\n\n{{#if anomalous}}\n{{#if runbookUrl}}Runbook: {{{runbookUrl}}}{{/if}}\n{{#if tip}}Tip: {{{tip}}}{{/if}}\n{{/if}}",
+          "parameterizedSubject": "{{#if anomalous}}{{ruleSeverity}} Alert:{{else}}Back to normal:{{/if}} {{{ruleName}}}",
+          "runbookUrl": null,
+          "severity": "Major",
+          "tip": null
+        }
+      ],
+      "sf_metricsInObjectProgramText": [
+        "k8s.container.restarts"
+      ],
+      "tags": null,
+      "teams": null,
+      "timezone": null,
+      "visualizationOptions": {
+        "disableSampling": false,
+        "publishLabelOptions": [],
+        "showDataMarkers": false,
+        "showEventLines": false,
+        "time": {
+          "range": 900000,
+          "rangeEnd": 0,
+          "type": "relative"
+        }
+      },
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "k8s.namespace.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.pod.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.container.name",
+              "values": []
+            },
+            {
+              "not": false,
+              "property": "k8s.cluster.name",
+              "values": []
+            }
+          ],
+          "metric": "k8s.container.restarts"
+        }
+      ]
+    }
+  },
+  "hashCode": -447625057,
+  "id": "E_wPbeQAgAA",
+  "packageType": "DETECTOR"
+}

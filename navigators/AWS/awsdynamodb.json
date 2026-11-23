@@ -1,0 +1,604 @@
+{
+  "hashCode": -453588296,
+  "id": "DiVVE8tAYAA",
+  "modelVersion": 1,
+  "navigatorExport": {
+    "navigator": {
+      "aggregateDashboards": [
+        "DiVV4rWAYAA"
+      ],
+      "connectedCategory": null,
+      "created": 0,
+      "creator": null,
+      "defaultGroupBy": "aws_region",
+      "description": "",
+      "id": "DiVVE8tAYAA",
+      "idDisplayName": null,
+      "importQualifiers": [
+        {
+          "filters": [
+            {
+              "not": false,
+              "property": "sf_key",
+              "values": [
+                "TableName"
+              ]
+            }
+          ],
+          "metric": "SuccessfulRequestLatency"
+        }
+      ],
+      "instanceDashboards": [
+        "DiVV4rWAYAA"
+      ],
+      "instanceDisplayText": null,
+      "lastUpdated": 0,
+      "lastUpdatedBy": null,
+      "name": "DynamoDB",
+      "navigatorCategory": "Amazon Web Services",
+      "navigatorCategoryDisplayName": "Amazon Web Services",
+      "navigatorCategoryGroupDisplayName": "Public Clouds",
+      "navigatorCategoryInstancesName": "entity",
+      "navigatorType": "elemental",
+      "ownerScope": "splunk",
+      "relationships": [],
+      "sites": "o11y",
+      "systemTypes": [
+        "aws-dynamodb"
+      ],
+      "uiModel": {
+        "alertQuery": "_exists_:TableName",
+        "category": "Amazon Web Services",
+        "categoryPriority": 0,
+        "discoveryQuery": [],
+        "displayName": "DynamoDB",
+        "filterProperties": null,
+        "id": "awsdynamodb",
+        "idName": "Table",
+        "idTemplate": "{{TableName}}",
+        "listColumns": [
+          {
+            "aggregate": null,
+            "displayName": "Id",
+            "format": "id",
+            "metric": null,
+            "property": "id",
+            "sortable": null
+          },
+          {
+            "aggregate": null,
+            "displayName": "Value",
+            "format": "Number",
+            "metric": null,
+            "property": "value",
+            "sortable": null
+          }
+        ],
+        "metrics": [
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Response time of successful requests of table & it's GSI",
+            "displayName": "Successful request latency",
+            "id": "aws.dynamodb.successful_request_latency",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "mean",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "SUCCESS_REQ_LATENCY = data(\"SuccessfulRequestLatency\"{{#filter}}, filter={{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TableName\", \"AWSUniqueId\"])",
+              "varName": "SUCCESS_REQ_LATENCY"
+            },
+            "metricSelectors": [
+              "SuccessfulRequestLatency"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Latency (ms)",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Requests to DynamoDB that exceed the provisioned throughput limits for table & it's GSI per minute",
+            "displayName": "Throttled requests",
+            "id": "aws.dynamodb.throttledrequests",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "THROTTLED_REQUESTS = data(\"ThrottledRequests\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"]).scale(60)",
+              "varName": "THROTTLED_REQUESTS"
+            },
+            "metricSelectors": [
+              "ThrottledRequests"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Throttled requests / minute",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Requests to DynamoDB that exceed the provisioned read capacity units for a table & it's GSI",
+            "displayName": "Read throttle events",
+            "id": "aws.dynamodb.read_throttle_events",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "READ_THROTTLED_EVENTS = data(\"ReadThrottleEvents\"{{#filter}}, filter={{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"]).scale(60)",
+              "varName": "READ_THROTTLED_EVENTS"
+            },
+            "metricSelectors": [
+              "ReadThrottleEvents"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Throttled / min",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Requests to DynamoDB that exceed the provisioned write capacity units for a table & it's GSI",
+            "displayName": "Write throttle events",
+            "id": "aws.dynamodb.write_throttle_events",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "WRITE_THROTTLED_EVENTS = data(\"WriteThrottleEvents\"{{#filter}}, filter={{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"]).scale(60)",
+              "varName": "WRITE_THROTTLED_EVENTS"
+            },
+            "metricSelectors": [
+              "WriteThrottleEvents"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Throttled / min",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Percent of provisioned reads consumed for a table & it's GSI",
+            "displayName": "Consumed provisioned reads",
+            "id": "aws.dynamodb.consumed_read_capacity",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "CONSUMED_READ_CAP = data(\"ConsumedReadCapacityUnits\", filter=filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nPROVISIONED_READ_CAP = data(\"ProvisionedReadCapacityUnits\", filter=filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nCONSUMED_PERCENT = (CONSUMED_READ_CAP / PROVISIONED_READ_CAP) * 100",
+              "varName": "CONSUMED_PERCENT"
+            },
+            "metricSelectors": [
+              "ConsumedReadCapacityUnits",
+              "ProvisionedReadCapacityUnits"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Consumed %",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": 100,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#6bd37e",
+                "#acef7f",
+                "#e2ed6a",
+                "#eac24b",
+                "#ea1849"
+              ]
+            },
+            "description": "Percent of provisioned writes consumed for a table & it's GSI",
+            "displayName": "Consumed provisioned writes",
+            "id": "aws.dynamodb.consumed_write_capacity",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "CONSUMED_WRITE_CAP = data(\"ConsumedWriteCapacityUnits\", filter=filter(\"stat\", \"sum\"){{#filter}} and {{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nPROVISIONED_WRITE_CAP = data(\"ProvisionedWriteCapacityUnits\", filter=filter(\"stat\", \"mean\"){{#filter}} and {{{filter}}}{{/filter}}, extrapolation=\"last_value\", maxExtrapolations=2).sum(by=[\"TableName\", \"AWSUniqueId\"])\nCONSUMED_WRITE_PERCENT = (CONSUMED_WRITE_CAP / PROVISIONED_WRITE_CAP) * 100",
+              "varName": "CONSUMED_WRITE_PERCENT"
+            },
+            "metricSelectors": [
+              "ConsumedWriteCapacityUnits",
+              "ProvisionedWriteCapacityUnits"
+            ],
+            "type": "metric",
+            "valueFormat": "Percentage",
+            "valueLabel": "Consumed %",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Number of failed attempts to perform conditional writes of a table & it's GSI, per minute",
+            "displayName": "Conditional check failed requests",
+            "id": "aws.dynamodb.conditionalcheckfailed",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "FAILED_REQUESTS = data(\"ConditionalCheckFailedRequests\"{{#filter}}, filter={{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TableName\", \"AWSUniqueId\"]).scale(60)",
+              "varName": "FAILED_REQUESTS"
+            },
+            "metricSelectors": [
+              "ConditionalCheckFailedRequests"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Requests / min",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Requests to DynamoDB that generate an HTTP 500 status code of a table and it's GSI",
+            "displayName": "System errors",
+            "id": "aws.dynamodb.systemerrors",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "SYSTEM_ERRORS = data(\"SystemErrors\"{{#filter}}, filter={{{filter}}}{{/filter}}, rollup=\"rate\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TableName\", \"AWSUniqueId\"]).scale(60)",
+              "varName": "SYSTEM_ERRORS"
+            },
+            "metricSelectors": [
+              "SystemErrors"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Errors / min",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Number of write throttle events that occur when adding a new global secondary index to a table per minute",
+            "displayName": "Online index throttle events",
+            "id": "aws.dynamodb.onlineindexthrottle",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "ONLINE_INDEX = data(\"OnlineIndexThrottleEvents\"{{#filter}}, filter={{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TableName\", \"AWSUniqueId\"]).scale(60)",
+              "varName": "ONLINE_INDEX"
+            },
+            "metricSelectors": [
+              "OnlineIndexThrottleEvents"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Events / minute",
+            "valueType": null
+          },
+          {
+            "coloring": {
+              "limits": null,
+              "maxValue": null,
+              "method": "quantile",
+              "minValue": 0,
+              "range": [
+                "#bfd3e6",
+                "#9ebcda",
+                "#8c96c6",
+                "#8856a7",
+                "#810f7c"
+              ]
+            },
+            "description": "Number of write capacity units consumed when adding a new global secondary index to a table per minute",
+            "displayName": "Online index consumed write capacity",
+            "id": "aws.dynamodb.onlineindexwritecap",
+            "job": {
+              "filters": [
+                {
+                  "not": false,
+                  "property": "namespace",
+                  "propertyValue": "AWS/DynamoDB",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "stat",
+                  "propertyValue": "sum",
+                  "type": "property"
+                },
+                {
+                  "not": false,
+                  "property": "TableName",
+                  "propertyValue": "*",
+                  "type": "property"
+                }
+              ],
+              "resolution": 300000,
+              "template": "ONLINE_WRITE_INDEX = data(\"OnlineIndexConsumedWriteCapacity\"{{#filter}}, filter={{{filter}}}{{/filter}}, rate=\"rollup\", extrapolation=\"last_value\", maxExtrapolations=2).mean(by=[\"TableName\", \"AWSUniqueId\"]).scale(60)",
+              "varName": "ONLINE_WRITE_INDEX"
+            },
+            "metricSelectors": [
+              "OnlineIndexConsumedWriteCapacity"
+            ],
+            "type": "metric",
+            "valueFormat": "Number",
+            "valueLabel": "Write units / minute",
+            "valueType": null
+          }
+        ],
+        "mtsQuery": null,
+        "o11yMetricName": "Running databases",
+        "o11yMetricUnit": null,
+        "o11yProductName": "DynamoDB",
+        "o11ySignalflowTemplate": "A = data('SuccessfulRequestLatency', filter=filter('namespace', 'AWS/DynamoDB') and filter('stat', 'mean') and filter('TableName', '*'), extrapolation='last_value', maxExtrapolations=2).mean(by=['TableName', 'AWSUniqueId']).count().publish(label='A')",
+        "o11yTrendDisplayMode": null,
+        "propertyColumns": null,
+        "proxyProperties": null,
+        "requiredProperties": [
+          "TableName"
+        ],
+        "singleHostSystemDashboardName": null,
+        "systemDashboardName": null,
+        "systemDashboardPrefix": "AWS DynamoDB",
+        "tooltipKeyList": [
+          {
+            "displayName": "Id",
+            "format": null,
+            "isSummaryProperty": true,
+            "property": "id"
+          },
+          {
+            "displayName": "Value",
+            "format": "Number",
+            "isSummaryProperty": true,
+            "property": "value"
+          }
+        ],
+        "type": "elemental",
+        "unreleased": false
+      },
+      "visualizations": []
+    }
+  },
+  "packageType": "NAVIGATOR"
+}
